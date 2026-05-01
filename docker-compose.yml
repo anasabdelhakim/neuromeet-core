@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  # 1. PostgreSQL Database
+  postgres:
+    image: postgres:alpine  # سحب أحدث إصدار خفيف ومستقر تلقائياً
+    container_name: neuromeet-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: rootpassword
+      POSTGRES_DB: neuromeet_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # 2. Redis In-Memory Cache
+  redis:
+    image: redis:alpine # سحب أحدث إصدار تلقائياً
+    container_name: neuromeet-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+
+volumes:
+  pgdata:
+  redisdata:
