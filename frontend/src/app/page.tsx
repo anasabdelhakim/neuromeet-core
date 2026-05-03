@@ -1,6 +1,8 @@
 "use client";
 import { useActionState } from "react";
 import { handleEmail } from "@/src/actions/handleEmail";
+import Image from "next/image";
+
 export default function Home() {
   const [state, action, pending] = useActionState(handleEmail, {
     errorMassege: "",
@@ -30,6 +32,7 @@ export default function Home() {
           <p className="text-green-500">Email sent successfully</p>
         )}
       </form>
+      {/* <Image width={150} height={150} src="/logo.webp" alt="chat" /> */}
     </div>
   );
 }

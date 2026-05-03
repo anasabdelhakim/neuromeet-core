@@ -5,13 +5,15 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+import fastifyMultipart from '@fastify/multipart';
 
 async function bootstrap() {
+  const fastifyAdapter = new FastifyAdapter();
+  await fastifyAdapter.register(fastifyMultipart);
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter(),
+    fastifyAdapter,
   );
-
   // إعدادات الـ CORS عشان تسمح للـ Frontend يكلم الباك إند
   app.enableCors({
     origin: 'http://localhost:3000', // لينك الـ Next.js بتاعك
