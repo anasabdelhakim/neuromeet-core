@@ -3,7 +3,7 @@ import { AccessToken } from 'livekit-server-sdk';
 
 @Injectable()
 export class LivekitService {
-  createToken(room: string, user: string) {
+  async createToken(room: string, user: string) {
     const at = new AccessToken(
       process.env.LIVEKIT_API_KEY,
       process.env.LIVEKIT_API_SECRET,
@@ -19,6 +19,6 @@ export class LivekitService {
       canSubscribe: true,
     });
 
-    return at.toJwt();
+    return await at.toJwt();
   }
 }

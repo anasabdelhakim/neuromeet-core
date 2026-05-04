@@ -6,8 +6,9 @@ export class LivekitController {
   constructor(private readonly livekitService: LivekitService) {}
 
   @Get('token')
-  getToken(@Query('room') room: string, @Query('user') user: string) {
+  async getToken(@Query('room') room: string, @Query('user') user: string) {
     return {
-      token: this.livekitService.createToken(room, user),
+      token: await this.livekitService.createToken(room, user),
     };
-  }}
+  }
+}
