@@ -14,6 +14,17 @@ async function bootstrap() {
     AppModule,
     fastifyAdapter,
   );
+
+  // 2️⃣ Redis Microservice
+  const redisMicroservice = app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.REDIS,
+    options: {
+      host: 'localhost',
+      port: 6379,
+    },
+  });
+
+  await app.startAllMicroservices();
   // إعدادات الـ CORS عشان تسمح للـ Frontend يكلم الباك إند
   app.enableCors({
     origin: 'http://localhost:3000', // لينك الـ Next.js بتاعك
