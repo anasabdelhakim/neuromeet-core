@@ -1,26 +1,30 @@
-import { Injectable } from '@nestjs/common';
-import { google } from 'googleapis';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { google, drive_v3 } from 'googleapis';
 import { Readable } from 'stream';
 
 @Injectable()
-export class DriveTestService {
+export class DriveTestService implements OnModuleInit {
+  private drive: drive_v3.Drive;
+
+  onModuleInit() {
+    const oauth2Client = new google.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      'https://developers.google.com/oauthplayground',
+    );
+
+    oauth2Client.setCredentials({
+      refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+    });
+
+    this.drive = google.drive({ version: 'v3', auth: oauth2Client });
+  }
+
   // ==========================================
   // 1. دالة التست (رفع ملف نصي وهمي)
   // ==========================================
   async testUpload() {
     try {
-      const oauth2Client = new google.auth.OAuth2(
-        process.env.GOOGLE_CLIENT_ID,
-        process.env.GOOGLE_CLIENT_SECRET,
-        'https://developers.google.com/oauthplayground',
-      );
-
-      oauth2Client.setCredentials({
-        refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
-      });
-
-      const drive = google.drive({ version: 'v3', auth: oauth2Client });
-
       const fileMetadata = {
         name: 'NeuroMeet-Test-OAuth.txt',
         parents: [process.env.GOOGLE_DRIVE_FOLDER_ID as string],
@@ -33,7 +37,7 @@ export class DriveTestService {
         ]),
       };
 
-      const response = (await drive.files.create({
+      const response = (await this.drive.files.create({
         requestBody: fileMetadata,
         media: media,
         fields: 'id, webViewLink',
@@ -59,18 +63,6 @@ export class DriveTestService {
     buffer: Buffer;
   }) {
     try {
-      const oauth2Client = new google.auth.OAuth2(
-        process.env.GOOGLE_CLIENT_ID,
-        process.env.GOOGLE_CLIENT_SECRET,
-        'https://developers.google.com/oauthplayground',
-      );
-
-      oauth2Client.setCredentials({
-        refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
-      });
-
-      const drive = google.drive({ version: 'v3', auth: oauth2Client });
-
       const fileMetadata = {
         name: fileData.originalname,
         parents: [process.env.GOOGLE_DRIVE_FOLDER_ID as string],
@@ -81,7 +73,7 @@ export class DriveTestService {
         body: Readable.from(fileData.buffer), // بنقرأ الـ Buffer اللي جاي من Fastify
       };
 
-      const response = (await drive.files.create({
+      const response = (await this.drive.files.create({
         requestBody: fileMetadata,
         media: media,
         fields: 'id, webViewLink',

@@ -6,12 +6,13 @@ import { DriveTestController } from './Drive/drive.controller';
 import { DriveTestService } from 'src/Drive/drive.service';
 import { PrismaModule } from './database/database.module';
 import { LivekitModule } from './livekit/livekit.module';
-
+import { EmailModule } from 'lib/emails/email.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
     LivekitModule,
+    EmailModule,
   ],
   controllers: [AppController, DriveTestController],
   providers: [AppService, DriveTestService],
