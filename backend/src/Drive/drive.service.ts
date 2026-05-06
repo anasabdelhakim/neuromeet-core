@@ -20,9 +20,6 @@ export class DriveTestService implements OnModuleInit {
     this.drive = google.drive({ version: 'v3', auth: oauth2Client });
   }
 
-  // ==========================================
-  // 1. دالة التست (رفع ملف نصي وهمي)
-  // ==========================================
   async testUpload() {
     try {
       const fileMetadata = {
@@ -32,9 +29,7 @@ export class DriveTestService implements OnModuleInit {
 
       const media = {
         mimeType: 'text/plain',
-        body: Readable.from([
-          'Hello NeuroMeet! الرفع اشتغل بالـ 5 تيرا مباشرة وبدون أي ليميت!',
-        ]),
+        body: Readable.from(['Hello NeuroMeet!']),
       };
 
       const response = (await this.drive.files.create({
@@ -44,19 +39,16 @@ export class DriveTestService implements OnModuleInit {
       })) as any;
 
       return {
-        message: 'تم الرفع بنجاح على مساحتك الشخصية يا هندسة!',
+        message: 'all the worked has upluded in the 5tera space',
         fileId: response.data.id,
         link: response.data.webViewLink,
       };
     } catch (error: any) {
-      console.error('إيرور في الرفع:', error.message);
-      return { error: 'حصلت مشكلة في الرفع، راجع الـ Console' };
+      console.error('error', error.message);
+      return { error: 'console error' };
     }
   }
 
-  // ==========================================
-  // 2. دالة رفع الصور والملفات الحقيقية (Fastify Compatible)
-  // ==========================================
   async uploadImage(fileData: {
     originalname: string;
     mimetype: string;
@@ -70,7 +62,7 @@ export class DriveTestService implements OnModuleInit {
 
       const media = {
         mimeType: fileData.mimetype,
-        body: Readable.from(fileData.buffer), // بنقرأ الـ Buffer اللي جاي من Fastify
+        body: Readable.from(fileData.buffer),
       };
 
       const response = (await this.drive.files.create({
@@ -80,13 +72,13 @@ export class DriveTestService implements OnModuleInit {
       })) as any;
 
       return {
-        message: 'تم رفع الصورة الحقيقية بنجاح عبر Fastify يا هندسة! 🚀',
+        message: 'the files have upluded successfuly🚀',
         fileId: response.data.id,
         link: response.data.webViewLink,
       };
     } catch (error: any) {
-      console.error('إيرور في رفع الصورة:', error.message);
-      return { error: 'حصلت مشكلة في رفع الصورة، راجع الكونسول' };
+      console.error('error', error.message);
+      return { error: 'console error' };
     }
   }
 }

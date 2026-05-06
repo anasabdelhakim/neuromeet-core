@@ -1,7 +1,6 @@
 "use server";
 
-import { apiPost } from "../lib/apiClient";
-
+import { apiPost } from "../lib/api-client";
 
 export async function handleEmail(_: unknown, formData: FormData) {
   const email = formData.get("email") as string;
@@ -18,7 +17,8 @@ export async function handleEmail(_: unknown, formData: FormData) {
     }
     return { errorMassege: res.message, success: false };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Something went wrong";
+    const errorMessage =
+      error instanceof Error ? error.message : "Something went wrong";
     return { errorMassege: errorMessage, success: false };
   }
 }
