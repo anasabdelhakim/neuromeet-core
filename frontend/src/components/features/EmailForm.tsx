@@ -1,6 +1,6 @@
 "use client";
 import { useActionState } from "react";
-import { handleEmail } from "@/src/actions/handleEmail";
+import { handleEmail } from "@/src/features/auth/actions/handleEmail";
 
 export function EmailForm() {
   const [state, action, pending] = useActionState(handleEmail, {

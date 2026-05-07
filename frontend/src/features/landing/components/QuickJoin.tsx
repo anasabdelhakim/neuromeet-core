@@ -37,7 +37,7 @@ export const QuickJoin = () => {
         <CardContent>
           <form
             onSubmit={handleJoin}
-            className="relative mb-4 flex items-center bg-input/10 rounded-full border border-border/30 focus-within:border-border focus-within:ring-1 focus-within:ring-primary transition-all p-0.5 p-1"
+            className="relative mb-4 flex items-center bg-input/10 rounded-full border border-border/30 transition-all p-0.5 p-1 focus-within:border-border focus-within:ring-2 focus-within:ring-primary"
           >
             <Input
               type="text"
