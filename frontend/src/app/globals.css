@@ -55,7 +55,7 @@
 ────────────────────────────────────────────────────────────────────────────── */
 :root {
   /* Deep-space background that echoes the landing hero image */
-  --background: oklch(0.10 0.012 265);
+  --background: oklch(0.1 0.012 265);
   --foreground: oklch(0.96 0.008 265);
 
   /* Cards: slightly lifted surface with a cool-blue tint */
@@ -69,13 +69,13 @@
   --primary: #1a768d;
   --primary-foreground: oklch(0.97 0.014 200);
 
-  --secondary: oklch(0.20 0.018 265);
+  --secondary: oklch(0.2 0.018 265);
   --secondary-foreground: oklch(0.96 0.008 265);
 
   --muted: oklch(0.18 0.014 265);
-  --muted-foreground: oklch(0.60 0.010 265);
+  --muted-foreground: oklch(0.6 0.01 265);
 
-  --accent: oklch(0.20 0.030 230);
+  --accent: oklch(0.2 0.03 230);
   --accent-foreground: oklch(0.96 0.008 265);
 
   --destructive: oklch(0.65 0.22 25);
@@ -83,13 +83,13 @@
   /* White-tinted borders for the glass aesthetic */
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.50 0.08 230);
+  --ring: oklch(0.5 0.08 230);
 
-  --chart-1: oklch(0.70 0.18 230);
-  --chart-2: oklch(0.60 0.15 270);
-  --chart-3: oklch(0.50 0.12 290);
-  --chart-4: oklch(0.40 0.10 300);
-  --chart-5: oklch(0.30 0.08 310);
+  --chart-1: oklch(0.7 0.18 230);
+  --chart-2: oklch(0.6 0.15 270);
+  --chart-3: oklch(0.5 0.12 290);
+  --chart-4: oklch(0.4 0.1 300);
+  --chart-5: oklch(0.3 0.08 310);
 
   --radius: 0.75rem;
 
@@ -100,7 +100,7 @@
   --sidebar-accent: oklch(0.18 0.018 265);
   --sidebar-accent-foreground: oklch(0.96 0.008 265);
   --sidebar-border: oklch(1 0 0 / 8%);
-  --sidebar-ring: oklch(0.50 0.08 230);
+  --sidebar-ring: oklch(0.5 0.08 230);
 }
 
 /* Light-mode override (app ships dark, but kept for future use) */
@@ -150,15 +150,79 @@
 }
 
 /* ─── Keyframes ──────────────────────────────────────────────────────────── */
-@keyframes gradient-shift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+
+@keyframes kf-gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
-@keyframes orb-float {
-  0%, 100% { transform: translateY(0px) scale(1); }
-  50%       { transform: translateY(-24px) scale(1.04); }
+@keyframes kf-orb-float {
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.04);
+  }
+}
+
+/* Border glow pulse — snappy cyan ring on the card */
+@keyframes kf-glow-pulse {
+  0% {
+    box-shadow:
+      0 0 0 0px rgba(0, 210, 255, 0.3),
+      0 8px 32px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  60% {
+    box-shadow:
+      0 0 0 8px rgba(0, 210, 255, 0),
+      0 8px 32px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  100% {
+    box-shadow:
+      0 0 0 0px rgba(0, 210, 255, 0),
+      0 8px 32px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+}
+
+/* Input focus glow — soft breathing ring when an input is focused */
+@keyframes kf-input-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px rgba(0, 210, 255, 0.25),
+      0 0 12px rgba(0, 210, 255, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 0 3px rgba(0, 210, 255, 0.45),
+      0 0 20px rgba(0, 210, 255, 0.18);
+  }
+}
+
+/* Input focus glow — soft breathing ring when an input is focused */
+@keyframes kf-input-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px rgba(0, 210, 255, 0.25),
+      0 0 12px rgba(0, 210, 255, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 0 3px rgba(0, 210, 255, 0.45),
+      0 0 20px rgba(0, 210, 255, 0.18);
+  }
 }
 
 /* ─── Utilities ──────────────────────────────────────────────────────────── */
@@ -187,23 +251,22 @@
     background: linear-gradient(
       135deg,
       oklch(0.08 0.025 260) 0%,
-      oklch(0.10 0.020 240) 40%,
-      oklch(0.12 0.030 290) 100%
+      oklch(0.1 0.02 240) 40%,
+      oklch(0.12 0.03 290) 100%
     );
     background-size: 300% 300%;
-    animation: gradient-shift 12s ease infinite;
+    animation: kf-gradient-shift 10s ease infinite;
     overflow: hidden;
   }
 
-  /* Ambient glow orbs via pseudo-elements (no extra markup needed) */
+  /* Water-flow ambient orbs — three layered blobs that drift */
   .bg-auth-scene::before,
   .bg-auth-scene::after {
     content: "";
     position: absolute;
     border-radius: 50%;
-    filter: blur(80px);
+    filter: blur(90px);
     pointer-events: none;
-    animation: orb-float 8s ease-in-out infinite;
   }
 
   .bg-auth-scene::before {
@@ -211,7 +274,12 @@
     height: 480px;
     top: -120px;
     left: -100px;
-    background: radial-gradient(circle, rgba(0, 210, 255, 0.18) 0%, transparent 70%);
+    background: radial-gradient(
+      circle,
+      rgba(0, 210, 255, 0.18) 0%,
+      transparent 70%
+    );
+    animation: kf-orb-float 9s ease-in-out infinite;
     animation-delay: 0s;
   }
 
@@ -220,26 +288,28 @@
     height: 400px;
     bottom: -80px;
     right: -80px;
-    background: radial-gradient(circle, rgba(126, 87, 194, 0.20) 0%, transparent 70%);
+    background: radial-gradient(
+      circle,
+      rgba(126, 87, 194, 0.2) 0%,
+      transparent 70%
+    );
+    animation: kf-orb-float 11s ease-in-out infinite;
     animation-delay: -4s;
   }
 
   /* ── Glassmorphism card ───────────────────────────────────────────────────
-     Matches the QuickJoin card on the landing page.
      Add class `card-glass` alongside shadcn <Card> className.
   ─────────────────────────────────────────────────────────────────────────── */
   .card-glass {
     background: linear-gradient(
       135deg,
       rgba(0, 210, 255, 0.08) 0%,
-      rgba(126, 87, 194, 0.10) 100%
+      rgba(126, 87, 194, 0.1) 100%
     ) !important;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid oklch(1 0 0 / 12%) !important;
-    box-shadow:
-      0 8px 32px oklch(0 0 0 / 40%),
-      inset 0 1px 0 oklch(1 0 0 / 8%);
+    animation: kf-glow-pulse 2.2s ease-out infinite;
   }
 }
 

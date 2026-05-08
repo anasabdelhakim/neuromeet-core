@@ -25,7 +25,7 @@ export const QuickJoin = () => {
 
   return (
     <section className="w-full max-w-2xl mx-auto mb-20">
-      <Card className="bg-card-gradient backdrop-blur-xl border-border/40 border-2 shadow-2xl rounded-2xl overflow-hidden">
+      <Card className="card-glass backdrop-blur-xl border-border/40 border-2 shadow-2xl rounded-2xl overflow-hidden">
         <CardHeader className="text-center pb-4">
           <CardDescription className="font-medium text-lg text-muted-foreground mb-1">
             Quick Join
@@ -37,7 +37,7 @@ export const QuickJoin = () => {
         <CardContent>
           <form
             onSubmit={handleJoin}
-            className="relative mb-4 flex items-center bg-input/10 rounded-full border border-border/30 transition-all p-0.5 p-1 focus-within:border-border focus-within:ring-2 focus-within:ring-primary"
+            className="relative mb-4 flex items-center bg-input/10 rounded-full border border-border/30 transition-all p-0.5 p-1 focus-within:border-[#00d2ff]/50 focus-within:[animation:kf-input-glow_2s_ease-in-out_infinite] focus-within:ring-0"
           >
             <Input
               type="text"
