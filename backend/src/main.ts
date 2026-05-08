@@ -10,7 +10,7 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const fastifyAdapter = new FastifyAdapter();
-  await fastifyAdapter.register(fastifyMultipart);
+  await fastifyAdapter.register(fastifyMultipart as any);
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     fastifyAdapter,

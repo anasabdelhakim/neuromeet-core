@@ -8,12 +8,21 @@ import { LivekitModule } from './livekit/livekit.module';
 import { EmailModule } from 'lib/emails/email.module';
 import { DriveTestController } from './Drive/drive.controller';
 import { DriveTestService } from './Drive/drive.service';
+import { AuthModule } from './auth/auth.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+     ThrottlerModule.forRoot([
+  {
+    ttl: 60,
+    limit: 10,
+  },
+]),
     PrismaModule,
     LivekitModule,
     EmailModule,
+      AuthModule,
   ],
   controllers: [AppController, DriveTestController],
   providers: [AppService, DriveTestService],
