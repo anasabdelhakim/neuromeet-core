@@ -1,21 +1,10 @@
-import { EmailService } from './email.service';
 import { Controller, Post, Body } from '@nestjs/common';
+import { EmailService } from './email.service';
 
-@Controller('send-email')
+@Controller('email')
 export class EmailController {
   constructor(private readonly emailService: EmailService) {}
 
-<<<<<<< Updated upstream
-  @Post()
-  async sendEmail(@Body() body: { email: string }) {
-    try {
-      await this.emailService.sendWelcomeEmail(body.email);
-      return { success: true };
-    } catch (error) {
-      return { success: false, message: 'Failed to send email' };
-    }
-  }
-=======
   // 1️⃣ Welcome Email
   @Post('welcome')
   async sendWelcomeEmail(@Body() body: { email: string }) {
@@ -67,5 +56,4 @@ export class EmailController {
       data: result,
     };
   }
->>>>>>> Stashed changes
 }

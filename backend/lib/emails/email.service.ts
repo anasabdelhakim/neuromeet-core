@@ -1,50 +1,128 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Resend } from 'resend';
 import { getWelcomeEmailHtml } from './templates/welcome-email.template';
+import { getVerificationEmailHtml } from './templates/verification-email';
+import { getPasswordResetConfirmationEmailHtml } from './templates/reset-password-email';
+import { getResetPasswordHtml } from './templates/verification-resetpassword';
 
 @Injectable()
 export class EmailService {
   private resend: Resend;
   private readonly logger = new Logger(EmailService.name);
+  
+  private readonly defaultFrom = 'NeuroMeet <info@anasdev.shop>';
 
   constructor() {
     const apiKey = process.env.RESEND_API_KEY;
+
     if (!apiKey) {
-      this.logger.warn('RESEND_API_KEY is not defined in .env file!');
-      // Pass a dummy key so the server doesn't crash on startup
-      this.resend = new Resend('re_dummy_key_to_prevent_crash');
-    } else {
-      this.resend = new Resend(apiKey);
+      throw new Error('Resend API key is required');
     }
+
+    this.resend = new Resend(apiKey);
   }
 
+  // =========================
+  // ✅ Welcome Email
+  // =========================
   async sendWelcomeEmail(userEmail: string) {
     try {
       const htmlContent = getWelcomeEmailHtml(userEmail);
 
       const { data, error } = await this.resend.emails.send({
-        from: 'NeuroMeet <welcome@anasdev.shop>',
+        from: this.defaultFrom, // ✅ التعديل هنا
         to: userEmail,
         subject: 'Welcome to NeuroMeet!',
         html: htmlContent,
       });
 
-      // لو فيه إيرور من سيرفر Resend نفسه
-      if (error) {
-        this.logger.error(`❌ Resend API Error for ${userEmail}:`, error);
-        throw new Error(error.name);
+      if (error) throw error;
+
+      this.logger.log(`✅ Welcome email sent to ${userEmail}`);
+      return data;
+    } catch (error) {
+      this.logger.error(`❌ Failed to send welcome email`, error);
+      throw new Error('Could not send welcome email');
+    }
+  }
+
+  // =========================
+  // ✅ Signup Code Email
+  // =========================
+  async sendSignupCode(email: string, code: string) {
+    try {
+      if (!email || !code) {
+        throw new Error('Email and code are required');
       }
 
-      this.logger.log(`✅ Welcome email sent successfully to ${userEmail}`);
+      const htmlContent = getVerificationEmailHtml(code);
+
+      const { data, error } = await this.resend.emails.send({
+        from: this.defaultFrom, // ✅ التعديل هنا
+        to: email, 
+        subject: 'Your Verification Code',
+        html: htmlContent,
+      });
+
+      if (error) throw error;
+
+      this.logger.log(`✅ Signup code sent to ${email}`);
       return data;
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      this.logger.error(
-        `❌ Failed to send email to ${userEmail}`,
-        errorMessage,
-      );
-      throw new Error('Could not send the email');
+    } catch (error) {
+      this.logger.error(`❌ Failed to send signup code`, error);
+      throw new Error('Could not send signup code email');
+    }
+  }
+
+  // =========================
+  // ✅ Password Change Email
+  // =========================
+  async sendPasswordChangeEmail(email: string) {
+    try {
+      const htmlContent = getPasswordResetConfirmationEmailHtml(email);
+
+      const { data, error } = await this.resend.emails.send({
+        from: this.defaultFrom, // ✅ التعديل هنا
+        to: email,
+        subject: 'Password Change Confirmation',
+        html: htmlContent,
+      });
+
+      if (error) throw error;
+
+      this.logger.log(`✅ Password change email sent to ${email}`);
+      return data;
+    } catch (error) {
+      this.logger.error(`❌ Failed to send password change email`, error);
+      throw new Error('Could not send password change email');
+    }
+  }
+
+  // =========================
+  // ✅ Reset Password Code
+  // =========================
+  async resetPasswordCode(email: string, code: string) {
+    try {
+      if (!email || !code) {
+        throw new Error('Email and code are required');
+      }
+
+      const htmlContent = getResetPasswordHtml(code);
+
+      const { data, error } = await this.resend.emails.send({
+        from: this.defaultFrom, // ✅ التعديل هنا
+        to: email,
+        subject: 'Your Verification Code',
+        html: htmlContent,
+      });
+
+      if (error) throw error;
+
+      this.logger.log(`✅ Reset password code sent to ${email}`);
+      return data;
+    } catch (error) {
+      this.logger.error(`❌ Failed to send reset password code`, error);
+      throw new Error('Could not send reset password code email');
     }
   }
 }

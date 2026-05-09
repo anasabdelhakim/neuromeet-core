@@ -15,6 +15,7 @@ export default function MeetingPage({ token }) {
       serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
       data-lk-theme="default"
       style={{ height: "100vh" }}
+      connect={true}
     >
       {/* المكون ده بيرسم شبكة الكاميرات وشريط الأدوات بالكامل أوتوماتيك */}
       <VideoConference />
