@@ -19,7 +19,7 @@ model User {
   name                String
   email               String      @unique
   password            String
-  role                Role        @default(PATIENT)
+  role                Role        @default(USER)
   phone               String?
   dateOfBirth         DateTime?
   refreshToken        String?
@@ -37,10 +37,11 @@ model User {
 
 enum Role {
   USER
-  PATIENT
+  INSTRUCTOR
+    ADMIN
 }
 
 enum OtpPurpose {
   SIGN_UP
-  RESET_PASSWOED
+  RESET_PASSWORD
 }

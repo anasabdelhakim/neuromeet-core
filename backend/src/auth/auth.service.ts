@@ -265,7 +265,7 @@ export class AuthService {
       where: { email: dto.email },
       data: {
         verificationCode: code,
-        otpPurpose: 'RESET_PASSWOED', // Set purpose to RESET_PASSWORD for later verification
+        otpPurpose: 'RESET_PASSWORD', // Set purpose to RESET_PASSWORD for later verification
       },
     });
 
@@ -292,7 +292,7 @@ export class AuthService {
     if (!user) throw new NotFoundException('User not found');
 
     // SECURITY: Verify that this OTP was issued for RESET_PASSWORD, not SIGN_UP.
-    if (user.otpPurpose !== 'RESET_PASSWOED') {
+    if (user.otpPurpose !== 'RESET_PASSWORD') {
       throw new UnauthorizedException(
         'This code was not issued for password reset',
       );
