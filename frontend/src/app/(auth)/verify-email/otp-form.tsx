@@ -69,7 +69,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
     setResending(true);
     setResendError("");
     try {
-      const result = await resendCodeAction();
+      const result = await resendCodeAction(flow);
       if (result.success) {
         setTimeLeft(result.secondsRemaining ?? 120);
       } else {
@@ -134,6 +134,9 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
               type="submit"
               disabled={pending}
               className="shadow-lg shadow-primary/30 w-full py-5"
+              onMouseDown={(e) => {
+                e.preventDefault();
+              }}
             >
               {pending ? (
                 <span className="flex items-center gap-2">
@@ -153,6 +156,9 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
               variant="link"
               disabled={resending || timeLeft > 0}
               onClick={handleResend}
+              onMouseDown={(e) => {
+                e.preventDefault();
+              }}
             >
               {resending ? (
                 <Loader2 className="animate-spin mr-2" size={14} />

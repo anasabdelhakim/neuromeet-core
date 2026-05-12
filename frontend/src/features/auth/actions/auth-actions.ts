@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 // =========================
 // SERVER ACTIONS — AUTHENTICATION LAYER
@@ -8,8 +8,8 @@
 // Network tab, minimizing the attack surface. The browser only ever sees
 // requests to the Next.js domain.
 
-import { redirect } from 'next/navigation';
-import { apiPost, ApiError } from '@/src/lib/api-client';
+import { redirect } from "next/navigation";
+import { apiPost, ApiError } from "@/src/lib/api-client";
 import {
   setAuthCookies,
   setResetEmail,
@@ -19,14 +19,14 @@ import {
   clearResetData,
   setOtpSentAt,
   getOtpSecondsRemaining,
-} from '@/src/lib/auth-cookies';
+} from "@/src/lib/auth-cookies";
 import {
   loginFormSchema,
   SignUpFormSchema,
   forgetPasswordSchema,
   otpFormSchema,
   resetPasswordSchema,
-} from '@/src/validations/zod';
+} from "@/src/validations/zod";
 
 // ---------- Shared result type ----------
 export type ActionResult = {
@@ -37,7 +37,12 @@ export type ActionResult = {
 // ---------- NestJS response types ----------
 interface AuthResponse {
   status: string;
-  data: { id: string; name: string; email: string; role: 'PATIENT' | 'DOCTOR' };
+  data: {
+    id: string;
+    name: string;
+    email: string;
+    role: "INSTRUCTOR" | "STUDENT" | "ADMIN";
+  };
   access_token: string;
   refresh_token: string;
 }
@@ -45,7 +50,12 @@ interface AuthResponse {
 interface SignUpResponse {
   status: string;
   message: string;
-  data: { id: string; name: string; email: string; role: 'PATIENT' | 'DOCTOR' };
+  data: {
+    id: string;
+    name: string;
+    email: string;
+    role: "INSTRUCTOR" | "STUDENT" | "ADMIN";
+  };
 }
 
 interface MessageResponse {
@@ -67,8 +77,8 @@ export async function signInAction(
   formData: FormData,
 ): Promise<ActionResult> {
   const value = {
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
+    email: formData.get("email") as string,
+    password: formData.get("password") as string,
   };
 
   // SECURITY: Double-layer validation — Zod validates on the server even though
@@ -85,7 +95,7 @@ export async function signInAction(
   }
 
   try {
-    const res = await apiPost<AuthResponse>('/auth/sign-in', {
+    const res = await apiPost<AuthResponse>("/auth/sign-in", {
       email: parsed.data.email,
       password: parsed.data.password,
     });
@@ -94,11 +104,17 @@ export async function signInAction(
     // This prevents XSS attacks from stealing tokens via document.cookie or JS access.
     await setAuthCookies(res.access_token, res.refresh_token);
 
-    const redirectPath = res.data.role === 'DOCTOR' ? '/doctor' : '/patient';
+    const redirectPath =
+      res.data.role === "STUDENT"
+        ? "/dashboard-student"
+        : "/dashboard-instructor";
     redirect(redirectPath);
   } catch (err) {
-    if (err instanceof ApiError) {
-      return { success: false, errorMessage: { server: [err.message] } };
+    if ((err as any)?.name === "ApiError") {
+      return {
+        success: false,
+        errorMessage: { server: [(err as Error).message] },
+      };
     }
     throw err; // re-throw redirect errors (Next.js uses throw internally for redirect)
   }
@@ -115,10 +131,10 @@ export async function signUpAction(
   formData: FormData,
 ): Promise<ActionResult> {
   const value = {
-    username: formData.get('username') as string,
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
-    confirmPassword: formData.get('confirmPassword') as string,
+    username: formData.get("username") as string,
+    email: formData.get("email") as string,
+    password: formData.get("password") as string,
+    confirmPassword: formData.get("confirmPassword") as string,
   };
 
   const parsed = SignUpFormSchema.safeParse(value);
@@ -133,7 +149,7 @@ export async function signUpAction(
   }
 
   try {
-    await apiPost<SignUpResponse>('/auth/sign-up', {
+    await apiPost<SignUpResponse>("/auth/sign-up", {
       name: parsed.data.username,
       email: parsed.data.email,
       password: parsed.data.password,
@@ -144,10 +160,13 @@ export async function signUpAction(
     await setResetEmail(parsed.data.email);
     await setOtpSentAt();
 
-    redirect('/verify-email?flow=signup');
+    redirect("/verify-email?flow=signup");
   } catch (err) {
-    if (err instanceof ApiError) {
-      return { success: false, errorMessage: { server: [err.message] } };
+    if ((err as any)?.name === "ApiError") {
+      return {
+        success: false,
+        errorMessage: { server: [(err as Error).message] },
+      };
     }
     throw err;
   }
@@ -161,7 +180,7 @@ export async function forgotPasswordAction(
   formData: FormData,
 ): Promise<ActionResult> {
   const value = {
-    email: formData.get('email') as string,
+    email: formData.get("email") as string,
   };
 
   const parsed = forgetPasswordSchema.safeParse(value);
@@ -176,17 +195,20 @@ export async function forgotPasswordAction(
   }
 
   try {
-    await apiPost<MessageResponse>('/auth/reset-password', {
+    await apiPost<MessageResponse>("/auth/reset-password", {
       email: parsed.data.email,
     });
 
     await setResetEmail(parsed.data.email);
     await setOtpSentAt();
 
-    redirect('/verify-email?flow=reset');
+    redirect("/verify-email?flow=reset");
   } catch (err) {
-    if (err instanceof ApiError) {
-      return { success: false, errorMessage: { server: [err.message] } };
+    if ((err as any)?.name === "ApiError") {
+      return {
+        success: false,
+        errorMessage: { server: [(err as Error).message] },
+      };
     }
     throw err;
   }
@@ -196,16 +218,16 @@ export async function forgotPasswordAction(
 // VERIFY CODE
 // =========================
 // SECURITY: This action handles TWO different flows:
-//   - signup: calls /auth/signup-code → receives JWT tokens → sets cookies → redirect to /patient
+//   - signup: calls /auth/signup-code → receives JWT tokens → sets cookies → redirect to /dashboard
 //   - reset:  calls /auth/verify-code → receives resetToken → stores in cookie → redirect to /reset-password
 export async function verifyCodeAction(
   _: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
   const value = {
-    otp: formData.get('otp') as string,
+    otp: formData.get("otp") as string,
   };
-  const flow = (formData.get('flow') as string) || 'reset';
+  const flow = (formData.get("flow") as string) || "reset";
 
   const parsed = otpFormSchema.safeParse(value);
   if (!parsed.success) {
@@ -223,28 +245,34 @@ export async function verifyCodeAction(
     if (!email) {
       return {
         success: false,
-        errorMessage: { server: ['Session expired. Please start over.'] },
+        errorMessage: { server: ["Session expired. Please start over."] },
       };
     }
 
-    if (flow === 'signup') {
+    if (flow === "signup") {
       // SECURITY: Sign-up flow — verify email and receive first-time JWT tokens.
-      // Tokens are ONLY issued AFTER successful OTP verification.
-      const res = await apiPost<VerifyCodeResponse>('/auth/signup-code', {
+      const res = await apiPost<VerifyCodeResponse>("/auth/signup-code", {
         email,
         code: parsed.data.otp,
       });
 
-      // Now that email is verified, set auth cookies for the first time.
       if (res.access_token && res.refresh_token) {
         await setAuthCookies(res.access_token, res.refresh_token);
       }
 
-      redirect('/patient');
+      // 🔥 THE FIX: Dynamically determine the route based on the backend response
+      // (Assuming your NestJS returns the user object with the role here)
+      const userRole = res.data?.role || "STUDENT"; // Fallback to student just in case
+      const redirectPath =
+        userRole === "INSTRUCTOR"
+          ? "/dashboard-instructor"
+          : "/dashboard-student";
+
+      redirect(redirectPath);
     } else {
       // SECURITY: Password reset flow — verify OTP and receive a one-time resetToken.
       // The resetToken is stored in an HTTP-only cookie and required by /auth/change-password.
-      const res = await apiPost<VerifyCodeResponse>('/auth/verify-code', {
+      const res = await apiPost<VerifyCodeResponse>("/auth/verify-code", {
         email,
         code: parsed.data.otp,
       });
@@ -253,11 +281,14 @@ export async function verifyCodeAction(
         await setResetToken(res.resetToken);
       }
 
-      redirect('/reset-password');
+      redirect("/reset-password");
     }
   } catch (err) {
-    if (err instanceof ApiError) {
-      return { success: false, errorMessage: { server: [err.message] } };
+    if ((err as any)?.name === "ApiError") {
+      return {
+        success: false,
+        errorMessage: { server: [(err as Error).message] },
+      };
     }
     throw err;
   }
@@ -268,9 +299,9 @@ export async function verifyCodeAction(
 // =========================
 // SECURITY: Server-side cooldown enforcement via HTTP-only cookie timestamp.
 // Attackers cannot bypass the cooldown via DevTools because the cookie is httpOnly.
-export async function resendCodeAction(): Promise<
-  ActionResult & { secondsRemaining?: number }
-> {
+export async function resendCodeAction(
+  flow: string = "reset",
+): Promise<ActionResult & { secondsRemaining?: number }> {
   try {
     const remaining = await getOtpSecondsRemaining();
     if (remaining > 0) {
@@ -287,21 +318,32 @@ export async function resendCodeAction(): Promise<
     if (!email) {
       return {
         success: false,
-        errorMessage: { server: ['Session expired. Please start over.'] },
+        errorMessage: { server: ["Session expired. Please start over."] },
       };
     }
 
-    await apiPost<MessageResponse>('/auth/reset-password', { email });
+    if (flow === "signup") {
+      await apiPost<MessageResponse>("/auth/resend-signup-code", { email });
+    } else {
+      await apiPost<MessageResponse>("/auth/reset-password", { email });
+    }
+
     await setOtpSentAt();
 
     return { success: true, errorMessage: {}, secondsRemaining: 120 };
   } catch (err) {
-    if (err instanceof ApiError) {
-      return { success: false, errorMessage: { server: [err.message] } };
+    console.error("resendCodeAction error:", err);
+    if ((err as any)?.name === "ApiError") {
+      return {
+        success: false,
+        errorMessage: { server: [(err as Error).message] },
+      };
     }
     return {
       success: false,
-      errorMessage: { server: ['Failed to resend code'] },
+      errorMessage: {
+        server: [(err as Error)?.message || "Failed to resend code"],
+      },
     };
   }
 }
@@ -324,8 +366,8 @@ export async function changePasswordAction(
   formData: FormData,
 ): Promise<ActionResult> {
   const value = {
-    password: formData.get('password') as string,
-    confirmPassword: formData.get('confirmPassword') as string,
+    password: formData.get("password") as string,
+    confirmPassword: formData.get("confirmPassword") as string,
   };
 
   const parsed = resetPasswordSchema.safeParse(value);
@@ -347,14 +389,14 @@ export async function changePasswordAction(
       return {
         success: false,
         errorMessage: {
-          server: ['Session expired. Please start the reset process again.'],
+          server: ["Session expired. Please start the reset process again."],
         },
       };
     }
 
     // SECURITY: The resetToken ties this request to a verified OTP session.
     // Without it, an attacker cannot change anyone's password.
-    await apiPost<MessageResponse>('/auth/change-password', {
+    await apiPost<MessageResponse>("/auth/change-password", {
       email,
       password: parsed.data.password,
       resetToken,
@@ -363,10 +405,13 @@ export async function changePasswordAction(
     // SECURITY: Clear all reset-flow cookies after successful password change.
     await clearResetData();
 
-    redirect('/sign-in');
+    redirect("/sign-in");
   } catch (err) {
-    if (err instanceof ApiError) {
-      return { success: false, errorMessage: { server: [err.message] } };
+    if ((err as any)?.name === "ApiError") {
+      return {
+        success: false,
+        errorMessage: { server: [(err as Error).message] },
+      };
     }
     throw err;
   }
@@ -379,7 +424,7 @@ export async function changePasswordAction(
 // Since cookies are HTTP-only, they can ONLY be cleared by the server — not by
 // client-side JavaScript. This is why sign-out must be a server action.
 export async function signOutAction(): Promise<void> {
-  const { clearAuthCookies } = await import('@/src/lib/auth-cookies');
+  const { clearAuthCookies } = await import("@/src/lib/auth-cookies");
   await clearAuthCookies();
-  redirect('/sign-in');
+  redirect("/sign-in");
 }

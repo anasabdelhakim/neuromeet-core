@@ -137,13 +137,14 @@ export function LoginForm() {
 
           <div className="space-y-3 flex gap-2 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-[500ms] fill-mode-both">
             <Button
-              type="button"
+              nativeButton={false}
+              render={
+                <a
+                  href={process.env.NEXT_PUBLIC_OAUTH_URL || "#"}
+                  className="flex-1 py-5 border-border flex items-center justify-center hover:bg-background bg-muted transition-all group"
+                />
+              }
               variant="outline"
-              className="flex-1 py-5 border-border flex items-center justify-center hover:bg-background bg-muted  transition-all group"
-              onClick={() => {
-                window.location.href =
-                  "http://localhost:4000/api/v1/auth/google/sign";
-              }}
             >
               <Image
                 src="/icons8-google-logo.svg"
@@ -153,7 +154,6 @@ export function LoginForm() {
               />
               <span className="ml-2 font-medium">Google</span>
             </Button>
-
             <Button
               type="button"
               variant="outline"

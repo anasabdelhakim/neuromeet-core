@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('USER', 'PATIENT');
+CREATE TYPE "Role" AS ENUM ('INSTRUCTOR', 'STUDENT', 'ADMIN');
 
 -- CreateEnum
 CREATE TYPE "OtpPurpose" AS ENUM ('SIGN_UP', 'RESET_PASSWOED');
@@ -10,7 +10,7 @@ CREATE TABLE "User" (
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "role" "Role" NOT NULL DEFAULT 'PATIENT',
+    "role" "Role" NOT NULL DEFAULT 'STUDENT',
     "phone" TEXT,
     "dateOfBirth" TIMESTAMP(3),
     "refreshToken" TEXT,
@@ -24,9 +24,13 @@ CREATE TABLE "User" (
     "active" BOOLEAN NOT NULL DEFAULT true,
     "verificationCode" TEXT,
     "otpPurpose" "OtpPurpose",
+    "otpExpire" TIMESTAMP(3),
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE INDEX "User_verificationCode_created_at_idx" ON "User"("verificationCode", "created_at");
