@@ -35,7 +35,7 @@ export class AuthService {
       where: { email: signUpDto.email },
       select: { id: true }, // PERF: Only check existence
     });
-
+    console.log(existingUser);
     if (existingUser) {
       throw new HttpException('User already exists', 400);
     }

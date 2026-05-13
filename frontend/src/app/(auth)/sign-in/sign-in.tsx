@@ -96,13 +96,14 @@ export function LoginForm() {
                 {errors.password?.message || state.errorMessage.password?.[0]}
               </FieldError>
             </Field>
-
-            <Link
-              href="/forget-password"
-              className="inline-block w-full text-right text-sm text-muted-foreground underline-offset-4 hover:underline hover:text-primary transition-colors mt-2"
-            >
-              Forgot your password?
-            </Link>
+            <div className="flex justify-end w-full">
+              <Link
+                href="/forget-password"
+                className="inline-block  text-right text-sm text-muted-foreground underline-offset-4 hover:underline hover:text-primary transition-colors mt-2"
+              >
+                Forgot your password?
+              </Link>
+            </div>
           </div>
 
           {/* MAIN SUBMIT BUTTON */}
@@ -137,13 +138,9 @@ export function LoginForm() {
 
           <div className="space-y-3 flex gap-2 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-[500ms] fill-mode-both">
             <Button
+              className="flex-1 py-5 border-border flex items-center justify-center hover:bg-background bg-muted transition-all group"
               nativeButton={false}
-              render={
-                <a
-                  href={process.env.NEXT_PUBLIC_OAUTH_URL || "#"}
-                  className="flex-1 py-5 border-border flex items-center justify-center hover:bg-background bg-muted transition-all group"
-                />
-              }
+              render={<a href={process.env.NEXT_PUBLIC_OAUTH_URL || "#"} />}
               variant="outline"
             >
               <Image
