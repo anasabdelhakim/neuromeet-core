@@ -5,7 +5,7 @@ import { useActionState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Card, CardContent } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
@@ -176,7 +176,7 @@ export function SignUpForm() {
             >
               {pending ? (
                 <span className="flex items-center gap-2">
-                  <Loader2 className="animate-spin" size={20} />
+                  <Loader className="animate-spin" size={20} />
                   Signing up...
                 </span>
               ) : (

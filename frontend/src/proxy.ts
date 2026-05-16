@@ -25,7 +25,7 @@ export default function proxy(request: NextRequest) {
     "/verify-email",
     "/reset-password",
   ];
-  
+
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
   const isInstructorRoute = pathname.startsWith("/dashboard-instructor");
   const isStudentRoute = pathname.startsWith("/dashboard-student");
@@ -46,7 +46,9 @@ export default function proxy(request: NextRequest) {
   // RULE 1: Logged-in users visiting auth pages → redirect to THEIR dashboard
   // =================================================================
   if (isAuthRoute && token) {
-    return NextResponse.redirect(new URL(getCorrectDashboard(role), request.url));
+    return NextResponse.redirect(
+      new URL(getCorrectDashboard(role), request.url),
+    );
   }
 
   // =================================================================
@@ -62,19 +64,25 @@ export default function proxy(request: NextRequest) {
   // =================================================================
   if (isInstructorRoute && role !== "INSTRUCTOR") {
     // They are trying to sneak into the instructor area. Send them to their actual home.
-    return NextResponse.redirect(new URL(getCorrectDashboard(role), request.url));
+    return NextResponse.redirect(
+      new URL(getCorrectDashboard(role), request.url),
+    );
   }
-  
+
   if (isStudentRoute && role !== "STUDENT") {
     // They are trying to sneak into the student area. Send them to their actual home.
-    return NextResponse.redirect(new URL(getCorrectDashboard(role), request.url));
+    return NextResponse.redirect(
+      new URL(getCorrectDashboard(role), request.url),
+    );
   }
 
   // =================================================================
   // RULE 4: Root path "/" — redirect logged-in users to THEIR dashboard
   // =================================================================
   if (pathname === "/" && token) {
-    return NextResponse.redirect(new URL(getCorrectDashboard(role), request.url));
+    return NextResponse.redirect(
+      new URL(getCorrectDashboard(role), request.url),
+    );
   }
 
   // Let all other requests (like public marketing pages) pass through normally

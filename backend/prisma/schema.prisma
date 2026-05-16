@@ -18,7 +18,7 @@ model User {
   name                String
   email               String      @unique
   password            String
-  role                Role        @default(STUDENT)
+  role                Role        @default(INSTRUCTOR)
   phone               String?
   dateOfBirth         DateTime?
   refreshToken        String?

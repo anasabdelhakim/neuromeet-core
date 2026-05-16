@@ -4,7 +4,7 @@ import { useActionState, useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2 } from "lucide-react";
+import { Loader } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
 import { Button } from "@/src/components/ui/button";
@@ -140,7 +140,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
             >
               {pending ? (
                 <span className="flex items-center gap-2">
-                  <Loader2 className="animate-spin" size={20} />
+                  <Loader className="animate-spin" size={20} />
                   Verifying...
                 </span>
               ) : (
@@ -161,7 +161,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
               }}
             >
               {resending ? (
-                <Loader2 className="animate-spin mr-2" size={14} />
+                <Loader className="animate-spin mr-2" size={14} />
               ) : null}
               Resend Code
             </Button>

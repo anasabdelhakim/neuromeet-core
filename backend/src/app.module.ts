@@ -4,8 +4,8 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './database/database.module';
 import { LivekitModule } from './livekit/livekit.module';
-// import { DriveController } from './Drive/drive.controller';
-// import { DriveService } from './Drive/drive.service';
+import { DriveController } from './Drive/drive.controller';
+import { DriveService } from './Drive/drive.service';
 import { AuthModule } from './auth/auth.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { OAuthModule } from 'src/oauth/oauth.module';
@@ -36,7 +36,7 @@ import { RedisModule } from '@nestjs-modules/ioredis';
     AuthModule,
     OAuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, DriveController],
+  providers: [AppService, DriveService],
 })
 export class AppModule {}

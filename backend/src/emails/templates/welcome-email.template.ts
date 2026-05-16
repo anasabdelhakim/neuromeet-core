@@ -11,22 +11,30 @@ export const getWelcomeEmailHtml = (
   <title>Welcome to NeuroMeet</title>
 </head>
 <body style="margin:0;padding:0;background-color:#0d0f14;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;">
-  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#0d0f14;padding:24px 12px;">
+  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#0d0f14;padding:0px;">
     <tr>
       <td align="center">
         <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:560px;width:100%;">
 
           <!-- HEADER -->
-          <tr>
-            <td style="background:linear-gradient(135deg,#0e1a2b 0%,#111827 100%);border-radius:16px 16px 0 0;padding:28px 32px 24px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.07);">
-              <div style="display:inline-block;background:linear-gradient(90deg,#00d2ff,#7e57c2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:24px;font-weight:800;letter-spacing:-0.5px;margin-bottom:4px;">NeuroMeet</div>
-              <div style="color:#6b7280;font-size:12px;letter-spacing:1px;text-transform:uppercase;">Welcome aboard</div>
-            </td>
-          </tr>
+<td style="padding: 0;">
+  <!-- Apply your NeuroMeet styling to this inner wrapper -->
+  <div style="background:linear-gradient(135deg,#0e1a2b 0%,#111827 100%); border-radius:16px 16px 0 0; padding:28px 32px 24px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.07);">
+    
+    <div style="display:inline-block; background:linear-gradient(90deg,#00d2ff,#7e57c2); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-size:35px; font-weight:800; letter-spacing:-0.5px; margin-bottom:4px;">
+      NeuroMeet
+    </div>
+    
+    <div style="color:#6b7280; font-size:12px; letter-spacing:1px; text-transform:uppercase;">
+      Welcome aboard
+    </div>
+    
+  </div>
+</td>
 
           <!-- BODY -->
           <tr>
-            <td style="background-color:#111827;padding:32px 32px 28px;">
+            <td style="background-color:#111827;padding:32px 15px 28px;">
               <h1 style="color:#f9fafb;font-size:20px;font-weight:700;margin:0 0 12px;line-height:1.3;">You're in. Let's get started.</h1>
               <p style="color:#9ca3af;font-size:15px;line-height:1.65;margin:0 0 20px;">
                 Hi <strong style="color:#e5e7eb;">${userEmail}</strong>, your NeuroMeet account is ready. You now have full access to high-definition video meetings, seamless collaboration, and everything NeuroMeet has to offer.

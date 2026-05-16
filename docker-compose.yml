@@ -1,9 +1,9 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # 1. PostgreSQL Database
   postgres:
-    image: postgres:alpine  # سحب أحدث إصدار خفيف ومستقر تلقائياً
+    image: postgres:alpine # أحدث إصدار (Postgres 18)
     container_name: neuromeet-postgres
     restart: always
     environment:
@@ -13,11 +13,12 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      # 👇 التعديل هنا: شيلنا /data عشان Postgres 18 بيطلب المسار الرئيسي
+      - pgdata:/var/lib/postgresql
 
   # 2. Redis In-Memory Cache
   redis:
-    image: redis:alpine # سحب أحدث إصدار تلقائياً
+    image: redis:alpine
     container_name: neuromeet-redis
     restart: always
     ports:

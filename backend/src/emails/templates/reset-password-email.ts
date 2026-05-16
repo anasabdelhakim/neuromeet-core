@@ -10,7 +10,7 @@ export const getPasswordResetConfirmationEmailHtml = (
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Password Reset Successful</title>
 </head>
-<body style="background-color: #f3f4f6; margin: 0; padding: 40px 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-font-smoothing: antialiased;">
+<body style="background-color: #f3f4f6; margin: 0; padding:0px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-font-smoothing: antialiased;">
   <table width="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
       <td align="center">
@@ -24,7 +24,7 @@ export const getPasswordResetConfirmationEmailHtml = (
           </tr>
           <!-- Body -->
           <tr>
-            <td style="padding: 50px 40px;">
+            <td style="padding: 50px 15px;">
               <h2 style="color: #111827; font-size: 24px; font-weight: 700; margin-top: 0; margin-bottom: 24px;">Password Reset Successful</h2>
               <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
                 Hello <strong>${userEmail}</strong>,

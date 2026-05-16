@@ -37,10 +37,7 @@ export default function RootLayout({
         inter.variable,
       )}
     >
-      <body
-        className="lg:h-screen lg:overflow-y-hidden min-h-screen w-full"
-        suppressHydrationWarning
-      >
+      <body className="min-h-screen w-full" suppressHydrationWarning>
         {children}
       </body>
     </html>

@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
-import { Request } from 'express';
+import { FastifyRequest } from 'fastify';
 import { Roles } from '../decorators/user.decorators';
 
 // =========================
@@ -69,7 +69,7 @@ export class AuthGuard implements CanActivate {
 
   // SECURITY: Extracts Bearer token from the Authorization header.
   // Format: "Bearer <token>"
-  private extractTokenFromHeader(request: Request): string | undefined {
+  private extractTokenFromHeader(request: FastifyRequest): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
   }

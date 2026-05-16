@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@fastify/compress": "^8.3.1",
     "@fastify/cookie": "^11.0.2",
     "@fastify/helmet": "^13.0.2",
     "@fastify/multipart": "^10.0.0",
@@ -63,7 +64,6 @@
     "@swc/core": "^1.15.33",
     "@types/ioredis": "^5.0.0",
     "@types/jest": "^30.0.0",
-    "@types/multer": "^2.1.0",
     "@types/node": "^24.0.0",
     "@types/pg": "^8.20.0",
     "@types/supertest": "^7.0.0",

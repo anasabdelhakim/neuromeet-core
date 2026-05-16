@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { Button } from "@/src/components/ui/button";
 import { Card, CardContent } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
@@ -8,7 +8,7 @@ import { Field, FieldLabel, FieldError } from "@/src/components/ui/field";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Loader2 } from "lucide-react";
+import { Loader } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -30,6 +30,9 @@ export function LoginForm() {
     signInAction,
     { success: false, errorMessage: {} },
   );
+
+  // ✅ State جديدة عشان زرار جوجل يلف لما تدوس عليه
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const { errors } = form.formState;
 
@@ -67,7 +70,7 @@ export function LoginForm() {
                 id="email"
                 type="email"
                 placeholder="Enter your Email"
-                disabled={pending}
+                disabled={pending || isGoogleLoading}
                 {...emailRegister}
                 onKeyDown={handleFocusNext("password")}
                 aria-invalid={!!errors.email}
@@ -85,12 +88,12 @@ export function LoginForm() {
               <FieldLabel htmlFor="password">Password</FieldLabel>
               <PasswordInput
                 control={form.control}
-                pending={pending}
+                pending={pending || isGoogleLoading}
                 registerProps={passwordRegister}
                 errorMsg={
                   errors.password?.message || state.errorMessage.password?.[0]
                 }
-                onKeyDown={handleFocusNext("password")}
+                // ✅ تم مسح الـ onKeyDown من هنا عشان الـ Enter يعمل Submit للفورم طبيعي
               />
               <FieldError>
                 {errors.password?.message || state.errorMessage.password?.[0]}
@@ -99,7 +102,7 @@ export function LoginForm() {
             <div className="flex justify-end w-full">
               <Link
                 href="/forget-password"
-                className="inline-block  text-right text-sm text-muted-foreground underline-offset-4 hover:underline hover:text-primary transition-colors mt-2"
+                className="inline-block text-right text-sm text-muted-foreground underline-offset-4 hover:underline hover:text-primary transition-colors mt-2"
               >
                 Forgot your password?
               </Link>
@@ -110,12 +113,12 @@ export function LoginForm() {
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300 fill-mode-both pt-2">
             <Button
               type="submit"
-              disabled={pending}
+              disabled={pending || isGoogleLoading}
               className="shadow-lg shadow-primary/30 w-full py-5"
             >
               {pending ? (
                 <span className="flex items-center gap-2">
-                  <Loader2 className="animate-spin" size={20} />
+                  <Loader className="animate-spin" size={20} />
                   Signing in...
                 </span>
               ) : (
@@ -142,19 +145,35 @@ export function LoginForm() {
               nativeButton={false}
               render={<a href={process.env.NEXT_PUBLIC_OAUTH_URL || "#"} />}
               variant="outline"
+              disabled={pending || isGoogleLoading}
+              onClick={() => setIsGoogleLoading(true)} // ✅ ده هيخلي الزرار يلف لحظة ما يدوس عليه
             >
-              <Image
-                src="/icons8-google-logo.svg"
-                alt="google"
-                width={20}
-                height={20}
-              />
-              <span className="ml-2 font-medium">Google</span>
+              {isGoogleLoading ? (
+                <div className="flex items-center gap-2">
+                  <Loader
+                    className="animate-spin text-muted-foreground"
+                    size={20}
+                  />
+                  <span>Google...</span>
+                </div>
+              ) : (
+                <>
+                  <Image
+                    src="/icons8-google-logo.svg"
+                    alt="google"
+                    width={20}
+                    height={20}
+                  />
+                  <span className="ml-2 font-medium">Google</span>
+                </>
+              )}
             </Button>
+
             <Button
               type="button"
               variant="outline"
-              className="flex-1 py-5 border-border flex items-center justify-center hover:bg-background bg-muted  transition-all group"
+              disabled={pending || isGoogleLoading}
+              className="flex-1 py-5 border-border flex items-center justify-center hover:bg-background bg-muted transition-all group"
             >
               <Image src="/apple-32.png" alt="apple" width={21} height={21} />
               <span className="ml-2 font-medium">Apple</span>

@@ -44,7 +44,7 @@ export class OAuthService {
           email: userData.email,
           name: userData.name,
           password,
-          role: 'STUDENT', // ✅ Fixed: Matches your Prisma schema Enum
+          role: 'INSTRUCTOR', // ✅ Fixed: Matches your Prisma schema Enum
         },
         select: {
           id: true,
