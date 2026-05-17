@@ -17,7 +17,7 @@ export function TodaysMeetings() {
         </div>
         <Link
           href="/dashboard-instructor/meetings"
-          className="text-xs font-semibold text-cyan-400 hover:text-primary flex items-center transition-colors uppercase tracking-wider"
+          className="text-xs font-semibold text-primary-light hover:text-primary flex items-center transition-colors uppercase tracking-wider"
         >
           View all <ChevronRight className="w-3 h-3 ml-0.5" />
         </Link>
@@ -34,10 +34,10 @@ export function TodaysMeetings() {
               key={meeting.id}
               className={`w-full rounded-xl p-5 flex flex-col gap-4 transition-all duration-300 transform-gpu hover:border-primary/50 ${
                 isLive
-                  ? "card-glass border border-white/10 backdrop-blur-md shadow-lg shadow-black/20"
+                  ? "card-glass border  backdrop-blur-md shadow-lg shadow-black/20"
                   : isStartingSoon
-                    ? "bg-card-gradient border border-white/10 backdrop-blur-md shadow-lg shadow-black/20"
-                    : "bg-black/20 border border-white/5 shadow-none opacity-80 hover:opacity-100"
+                    ? "bg-card-gradient border  backdrop-blur-md shadow-lg shadow-black/20"
+                    : "bg-black/20 border  shadow-none opacity-80 hover:opacity-100"
               }`}
             >
               <div className="flex items-center justify-between w-full">
@@ -68,14 +68,14 @@ export function TodaysMeetings() {
                 <div className="flex items-center gap-4">
                   <AvatarChain />
                   {isLive ? (
-                    <Button className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:opacity-90 hover:scale-105 border-0 font-semibold transition-all duration-300 flex items-center gap-2">
+                    <Button className="live-btn">
                       <Play size={16} fill="currentColor" />
                       Join Now
                     </Button>
                   ) : (
                     <Button
                       variant="ghost"
-                      className="border rounded-sm border-white/10 flex items-center gap-2 font-semibold"
+                      className="border-border rounded-sm"
                     >
                       <NotebookPen size={18} />
                       Prepare

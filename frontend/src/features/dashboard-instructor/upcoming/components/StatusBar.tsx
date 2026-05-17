@@ -4,7 +4,11 @@ interface StatusBarProps {
   timeLabel?: string;
 }
 
-export function StatusBar({ duration, isArrived = false, timeLabel }: StatusBarProps) {
+export function StatusBar({
+  duration,
+  isArrived = false,
+  timeLabel,
+}: StatusBarProps) {
   const numberOfMarkers =
     Math.floor(duration / 15) - (duration % 15 === 0 ? 1 : 0);
 
@@ -33,10 +37,10 @@ export function StatusBar({ duration, isArrived = false, timeLabel }: StatusBarP
         }`}
       >
         <div className="absolute right-0.5 -top-7 flex flex-col items-center translate-x-1/2">
-          <span className="rounded px-2 py-0.5 text-xs font-medium bg-gray-300 text-background shadow-md whitespace-nowrap">
+          <span className="rounded px-2 py-0.5 text-xs font-medium bg-custom-gray text-foreground border shadow-md whitespace-nowrap">
             {timeLabel || (isArrived ? "Live" : "Starting Soon")}
           </span>
-          <div className="h-1.5 w-1.5 -translate-y-[3.5px] rotate-45 bg-gray-300"></div>
+          <div className="h-1.5 w-1.5 -translate-y-[3.5px] rotate-45 bg-custom-gray border-r border-b"></div>
         </div>
       </span>
     </div>

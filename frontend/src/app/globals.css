@@ -35,10 +35,13 @@
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-custom-gray: oklch(0.22 0.01 265);
+  --color-custom-gray-hover: oklch(0.3 0.01 265);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -85,7 +88,6 @@
         0 8px 32px rgba(0, 0, 0, 0.4);
     }
   }
-
 }
 
 :root {
@@ -96,6 +98,7 @@
   --popover: oklch(0.15 0.016 265);
   --popover-foreground: oklch(0.96 0.008 265);
   --primary: #1a768d;
+  --primary-light: #34a9b6;
   --primary-foreground: oklch(0.97 0.014 200);
   --secondary: oklch(0.2 0.018 265);
   --secondary-foreground: oklch(0.96 0.008 265);
@@ -167,7 +170,7 @@
     @apply bg-gradient-to-br from-[#00d2ff]/8 to-[#7e57c2]/10 transition-all duration-300;
   }
   .bg-card-gradient:hover {
-    @apply shadow-[0_10px_30px_-10px_rgba(0,210,255,0.4)];
+    @apply shadow-xl shadow-[#00d2ff]/40;
   }
 }
 .card-glass {
@@ -294,6 +297,9 @@
     @apply font-extrabold tracking-tight bg-gradient-to-r from-primary via-purple-600 to-white bg-clip-text text-transparent;
   }
   .logo-dropshadow-effect {
-    @apply drop-shadow-[0_0_10px_rgba(0,210,255,0.2)];
+    @apply drop-shadow-md;
+  }
+  .live-btn {
+    @apply bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:opacity-90 hover:scale-105 border-0 font-semibold transition-all duration-300 flex items-center gap-2;
   }
 }

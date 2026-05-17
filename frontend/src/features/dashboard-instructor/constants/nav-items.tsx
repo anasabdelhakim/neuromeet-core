@@ -1,11 +1,4 @@
-import {
-  Home,
-  CalendarDays,
-  History,
-  Video,
-  Users,
-  HatGlasses,
-} from "lucide-react";
+import { Home, CalendarDays, History, HatGlasses, Video } from "lucide-react";
 
 export const navItems = [
   { icon: Home, label: "Home", href: "/dashboard-instructor" },
@@ -20,10 +13,4 @@ export const navItems = [
     label: "Recordings",
     href: "/dashboard-instructor/recordings",
   },
-  {
-    icon: HatGlasses,
-    label: "Private Room",
-    href: "/dashboard-instructor/private-room",
-  },
-  { icon: Users, label: "Students", href: "/dashboard-instructor/students" },
 ];

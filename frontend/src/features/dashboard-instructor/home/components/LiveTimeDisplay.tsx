@@ -20,12 +20,27 @@ function formatDate(d: Date) {
 }
 
 export function LiveTimeDisplay() {
-  const [now, setNow] = useState(new Date());
+  const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {
+    setNow(new Date());
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
+
+  if (!now) {
+    return (
+      <>
+        <h1 className="text-6xl font-black tracking-tighter text-white drop-shadow-sm md:text-7xl opacity-0">
+          --:-- --
+        </h1>
+        <p className="mt-2 text-lg font-medium text-white/50 md:text-xl opacity-0">
+          Loading...
+        </p>
+      </>
+    );
+  }
+
 
   return (
     <>

@@ -21,7 +21,7 @@ export default function RootLayout({
         </div>
 
         <div className="flex-1 flex flex-col min-w-0">
-          <div className="sticky top-0 z-30 bg-black/10 backdrop-blur-md border-b border-white/5">
+          <div className="sticky top-0 z-30 bg-black/10 backdrop-blur-md border-b">
             <InstructorTopbar />
           </div>
 

@@ -9,17 +9,17 @@ export function EmailForm() {
   });
 
   return (
-    <form action={action} className="flex flex-col items-center gap-4">
+    <form action={action} className="flex flex-col items-center gap-4 w-full max-w-sm">
       <input
         type="email"
         placeholder="Enter your email"
         name="email"
-        className="border border-gray-300 rounded-md p-2"
+        className="w-full bg-custom-gray/50 hover:bg-custom-gray/80 focus:bg-custom-gray border border-border rounded-lg px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-all focus:ring-2 focus:ring-primary shadow-inner"
       />
       <button
         type="submit"
         disabled={pending}
-        className="bg-blue-500 text-white px-4 py-2 rounded-md"
+        className="w-full bg-custom-gray hover:bg-custom-gray-hover text-foreground font-semibold px-5 py-2.5 rounded-lg border border-white/5 transition-all cursor-pointer hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {pending ? "Checking..." : "Check your email"}
       </button>

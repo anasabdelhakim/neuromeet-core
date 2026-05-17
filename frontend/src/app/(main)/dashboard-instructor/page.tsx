@@ -1,8 +1,6 @@
 import { TodaysMeetings } from "@/src/features/dashboard-instructor/home/components/TodaysMeetings";
 import { InstructorGroups } from "@/src/features/dashboard-instructor/home/components/InstructorGroups";
-import {
-  HeroClock,
-} from "@/src/features/dashboard-instructor/home/components/HeroClock";
+import { HeroClock } from "@/src/features/dashboard-instructor/home/components/HeroClock";
 import { QuickActions } from "@/src/features/dashboard-instructor/home/components/QuickActions";
 
 export default function InstructorDashboardPage() {
@@ -26,3 +24,5 @@ export default function InstructorDashboardPage() {
     </>
   );
 }
+
+

@@ -3,17 +3,19 @@ import { SidebarNavLinks } from "./NavLinks";
 
 export function InstructorSidebar() {
   return (
-    <aside className="w-60 shrink-0 flex flex-col bg-white/2 border-r h-full overflow-y-auto px-4 py-8">
+    <aside className="w-60 max-lg:w-20 shrink-0 flex flex-col bg-white/2 border-r h-full overflow-y-auto px-4 py-8">
       {/* Logo */}
-      <div className="flex items-center gap-1 logo-dropshadow-effect">
+      <div className="flex max-lg:mx-auto items-center gap-1 logo-dropshadow-effect">
         <Image
-          src="/logo.webp"
-          alt="NeuroMeet Logo"
           width={40}
           height={40}
+          src="/logo.webp"
+          alt="NeuroMeet Logo"
           className=""
         />
-        <span className="logo-name-style text-2xl">NeuroMeet</span>
+        <span className="logo-name-style text-2xl max-lg:hidden">
+          NeuroMeet
+        </span>
       </div>
 
       {/* Main nav */}
