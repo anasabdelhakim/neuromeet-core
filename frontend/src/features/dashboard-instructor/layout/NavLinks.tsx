@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/src/lib/utils";
 import { navItems } from "../constants/nav-items";
 import {
-  TooltipProvider,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -14,7 +13,7 @@ export function SidebarNavLinks() {
   const pathname = usePathname();
 
   return (
-    <TooltipProvider>
+    <>
       {navItems.map(({ icon: Icon, label, href }) => {
         const active = pathname === href;
 
@@ -52,6 +51,6 @@ export function SidebarNavLinks() {
           </Tooltip>
         );
       })}
-    </TooltipProvider>
+    </>
   );
 }

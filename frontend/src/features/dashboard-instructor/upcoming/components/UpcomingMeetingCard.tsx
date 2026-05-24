@@ -4,7 +4,6 @@ import { AlarmClock } from "lucide-react";
 import { UpcomingMeeting } from "../types";
 import { StatusBar } from "./StatusBar";
 import { ActionsButton } from "./ActionsButton";
-import { useMemo } from "react";
 import { Badge } from "@/src/components/ui/badge";
 import { cn } from "@/src/lib/utils";
 import { calculateMeetingStatus } from "../helper/time-calc";
@@ -13,12 +12,13 @@ interface UpcomingMeetingCardProps {
   meeting: UpcomingMeeting;
 }
 
-export function UpcomingMeetingCard({ meeting }: UpcomingMeetingCardProps) {
-  const { isArrived, isStartingSoon, timeLabel } = useMemo(
-    () => calculateMeetingStatus(meeting.dateTime),
-    [meeting.dateTime],
+export  function UpcomingMeetingCard({
+  meeting,
+}: UpcomingMeetingCardProps) {
+  
+  const { isArrived, isStartingSoon, timeLabel } = calculateMeetingStatus(
+    meeting.dateTime,
   );
-
   return (
     <Card
       className={cn(

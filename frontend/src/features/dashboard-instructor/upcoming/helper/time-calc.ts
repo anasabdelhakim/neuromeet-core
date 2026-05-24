@@ -8,20 +8,24 @@ export function calculateMeetingStatus(dateTime: string): MeetingStatus {
   try {
     const meetingDate = new Date(dateTime);
     const now = new Date();
-    
+
     if (isNaN(meetingDate.getTime())) {
-      return { isArrived: false, isStartingSoon: false, timeLabel: "Date Error" };
+      return {
+        isArrived: false,
+        isStartingSoon: false,
+        timeLabel: "Date Error",
+      };
     }
 
     const diffMs = meetingDate.getTime() - now.getTime();
-    
+
     // Arrived/Live
     if (diffMs <= 0) {
       const diffMin = Math.round(Math.abs(diffMs) / 60000);
-      return { 
-        isArrived: true, 
+      return {
+        isArrived: true,
         isStartingSoon: false,
-        timeLabel: diffMin > 0 ? `${diffMin} min+` : "Just started" 
+        timeLabel: diffMin > 0 ? `${diffMin} min+` : "Just started",
       };
     }
 
@@ -34,17 +38,25 @@ export function calculateMeetingStatus(dateTime: string): MeetingStatus {
       return { isArrived: false, isStartingSoon: false, timeLabel: "Later" };
     }
     if (diffDays >= 1) {
-      return { isArrived: false, isStartingSoon: false, timeLabel: `${diffDays} day${diffDays > 1 ? 's' : ''}` };
+      return {
+        isArrived: false,
+        isStartingSoon: false,
+        timeLabel: `${diffDays} day${diffDays > 1 ? "s" : ""}`,
+      };
     }
     if (diffHours >= 1) {
-      return { isArrived: false, isStartingSoon: false, timeLabel: `${diffHours} hour${diffHours > 1 ? 's' : ''}` };
+      return {
+        isArrived: false,
+        isStartingSoon: false,
+        timeLabel: `${diffHours} hour${diffHours > 1 ? "s" : ""}`,
+      };
     }
 
     // Starting Soon (within 30 mins)
-    return { 
-      isArrived: false, 
+    return {
+      isArrived: false,
       isStartingSoon: diffMin <= 30,
-      timeLabel: `Start in ${diffMin} min` 
+      timeLabel: `Start in ${diffMin} min`,
     };
   } catch (e) {
     return { isArrived: false, isStartingSoon: false, timeLabel: "Error" };

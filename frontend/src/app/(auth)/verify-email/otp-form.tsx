@@ -42,7 +42,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
   const { isSubmitted, errors, touchedFields } = form.formState;
   const showOtpError = !!errors.otp && (isSubmitted || touchedFields.otp);
 
-  const otpRegister = form.register("otp");
+  const { onBlur: otpOnBlur, ...otpRest } = form.register("otp");
 
   // SECURITY: Timer state is seeded from a server-computed value (HTTP-only cookie).
   // The client only counts down from whatever the server told it — no localStorage,
@@ -114,11 +114,17 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
                 id="otp"
                 type="text"
                 autoFocus
+                required
                 maxLength={6}
                 placeholder="Enter OTP"
                 className="transition-all focus:ring-2 focus:ring-primary/20 text-center text-lg tracking-widest"
                 disabled={pending}
-                {...otpRegister}
+                {...otpRest}
+                onBlur={(e) => {
+                  if (e.target.value.trim() !== "") {
+                    otpOnBlur(e);
+                  }
+                }}
                 aria-invalid={showOtpError}
               />
               <FieldError>

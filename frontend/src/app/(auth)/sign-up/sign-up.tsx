@@ -45,10 +45,10 @@ export function SignUpForm() {
     { success: false, errorMessage: {} },
   );
 
-  const usernameRegister = register("username");
-  const emailRegister = register("email");
-  const passwordRegister = register("password");
-  const confirmPasswordRegister = register("confirmPassword");
+  const { onBlur: usernameOnBlur, ...usernameRest } = register("username");
+  const { onBlur: emailOnBlur, ...emailRest } = register("email");
+  const { onBlur: passwordOnBlur, ...passwordRest } = register("password");
+  const { onBlur: confirmPasswordOnBlur, ...confirmPasswordRest } = register("confirmPassword");
 
   const handleFocusNext =
     (field: "username" | "email" | "password" | "confirmPassword") =>
@@ -83,10 +83,16 @@ export function SignUpForm() {
                 placeholder="Enter your username"
                 className="transition-all focus:ring-2 focus:ring-primary/20"
                 disabled={pending}
-                {...usernameRegister}
+                {...usernameRest}
+                onBlur={(e) => {
+                  if (e.target.value.trim() !== "") {
+                    usernameOnBlur(e);
+                  }
+                }}
                 aria-invalid={!!errors.username}
                 onKeyDown={handleFocusNext("email")}
                 required
+                autoFocus
               />
               <FieldError>
                 {errors.username?.message || state.errorMessage.username?.[0]}
@@ -104,7 +110,12 @@ export function SignUpForm() {
                 placeholder="Enter your email"
                 className="transition-all focus:ring-2 focus:ring-primary/20"
                 disabled={pending}
-                {...emailRegister}
+                {...emailRest}
+                onBlur={(e) => {
+                  if (e.target.value.trim() !== "") {
+                    emailOnBlur(e);
+                  }
+                }}
                 aria-invalid={!!errors.email}
                 onKeyDown={handleFocusNext("password")}
                 required
@@ -121,9 +132,16 @@ export function SignUpForm() {
               <FieldLabel htmlFor="password">Password</FieldLabel>
 
               <PasswordInput
-                control={control}
+                control={control as any}
                 pending={pending}
-                registerProps={passwordRegister}
+                registerProps={{
+                  ...passwordRest,
+                  onBlur: (e: { target: any; type?: any }) => {
+                    if (e.target.value !== "") {
+                      passwordOnBlur(e);
+                    }
+                  },
+                }}
                 errorMsg={
                   errors.password?.message || state.errorMessage.password?.[0]
                 }
@@ -156,7 +174,12 @@ export function SignUpForm() {
                 placeholder="Confirm your password"
                 className="transition-all focus:ring-2 focus:ring-primary/20"
                 disabled={pending}
-                {...confirmPasswordRegister}
+                {...confirmPasswordRest}
+                onBlur={(e) => {
+                  if (e.target.value.trim() !== "") {
+                    confirmPasswordOnBlur(e);
+                  }
+                }}
                 aria-invalid={!!errors.confirmPassword}
                 required
               />

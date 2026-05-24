@@ -28,16 +28,16 @@ export function LoginForm() {
 
   const [state, action, pending] = useActionState<ActionResult, FormData>(
     signInAction,
-    { success: false, errorMessage: {} },
+    { success: false, errorMessage: {} }
   );
 
-  // ✅ State جديدة عشان زرار جوجل يلف لما تدوس عليه
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const { errors } = form.formState;
 
-  const emailRegister = form.register("email");
-  const passwordRegister = form.register("password");
+  // ✅ Extract onBlur from RHF register so we can control when it fires
+  const { onBlur: emailOnBlur, ...emailRest } = form.register("email");
+  const { onBlur: passwordOnBlur, ...passwordRest } = form.register("password");
 
   const handleFocusNext =
     (focusNext: "email" | "password") =>
@@ -62,7 +62,7 @@ export function LoginForm() {
             </div>
           )}
 
-          {/* EMAIL FIELD */}
+
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100 fill-mode-both">
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -71,10 +71,17 @@ export function LoginForm() {
                 type="email"
                 placeholder="Enter your Email"
                 disabled={pending || isGoogleLoading}
-                {...emailRegister}
+                {...emailRest}
+                // ✅ Let TypeScript infer the event type naturally here
+                onBlur={(e) => {
+                  if (e.target.value.trim() !== "") {
+                    emailOnBlur(e);
+                  }
+                }}
                 onKeyDown={handleFocusNext("password")}
                 aria-invalid={!!errors.email}
                 required
+                autoFocus
               />
               <FieldError>
                 {errors.email?.message || state.errorMessage.email?.[0]}
@@ -82,18 +89,25 @@ export function LoginForm() {
             </Field>
           </div>
 
-          {/* PASSWORD FIELD */}
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200 fill-mode-both">
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
               <PasswordInput
-                control={form.control}
+                // ✅ Cast control as any to satisfy PasswordInput's generic boundaries
+                control={form.control as any}
                 pending={pending || isGoogleLoading}
-                registerProps={passwordRegister}
+                registerProps={{
+                  ...passwordRest,
+                  // ✅ Match RHF's ChangeHandler parameter type exactly
+                  onBlur: (e: { target: any; type?: any }) => {
+                    if (e.target.value !== "") {
+                      passwordOnBlur(e);
+                    }
+                  },
+                }}
                 errorMsg={
                   errors.password?.message || state.errorMessage.password?.[0]
                 }
-                // ✅ تم مسح الـ onKeyDown من هنا عشان الـ Enter يعمل Submit للفورم طبيعي
               />
               <FieldError>
                 {errors.password?.message || state.errorMessage.password?.[0]}
@@ -146,7 +160,7 @@ export function LoginForm() {
               render={<a href={process.env.NEXT_PUBLIC_OAUTH_URL || "#"} />}
               variant="outline"
               disabled={pending || isGoogleLoading}
-              onClick={() => setIsGoogleLoading(true)} // ✅ ده هيخلي الزرار يلف لحظة ما يدوس عليه
+              onClick={() => setIsGoogleLoading(true)}
             >
               {isGoogleLoading ? (
                 <div className="flex items-center gap-2">

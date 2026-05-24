@@ -15,7 +15,7 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
   );
 
   return (
-    <Card className="w-full rounded-lg p-5 flex flex-col gap-4  border   transition-all duration-300 transform-gpu hover:border-primary/50">
+    <Card className="w-full rounded-lg p-5 flex flex-col gap-4 border transition-all duration-300 transform-gpu hover:border-primary/50">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full">
         {/* Left Side: Content */}
         <div className="flex flex-col gap-1.5 min-w-0">

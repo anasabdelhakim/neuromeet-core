@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { Badge } from "@/src/components/ui/badge";
 import { Card, CardContent, CardDescription } from "@/src/components/ui/card";
 import Image from "next/image";
-import { LiveTimeDisplay } from "./LiveTimeDisplay";
+import { ServerTimeDisplay } from "@/src/features/dashboard-instructor/home/components/LiveTimeDisplay";
 
 export function HeroClock() {
   return (
@@ -31,7 +31,7 @@ export function HeroClock() {
               </>
             }
           >
-            <LiveTimeDisplay />
+            <ServerTimeDisplay />
           </Suspense>
         </CardDescription>
 
@@ -43,7 +43,6 @@ export function HeroClock() {
     </Card>
   );
 }
-
 
 export function HeroClockSkeleton() {
   return (

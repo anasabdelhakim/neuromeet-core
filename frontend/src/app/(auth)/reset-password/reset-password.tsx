@@ -43,8 +43,8 @@ export default function ResetPasswordForm() {
     { success: false, errorMessage: {} },
   );
 
-  const passwordRegister = register("password");
-  const confirmPasswordRegister = register("confirmPassword");
+  const { onBlur: passwordOnBlur, ...passwordRest } = register("password");
+  const { onBlur: confirmPasswordOnBlur, ...confirmPasswordRest } = register("confirmPassword");
 
   const handleFocusNext =
     (field: "password" | "confirmPassword") =>
@@ -74,9 +74,16 @@ export default function ResetPasswordForm() {
               <FieldLabel htmlFor="password">New Password</FieldLabel>
 
               <PasswordInput
-                control={control}
+                control={control as any}
                 pending={pending}
-                registerProps={passwordRegister}
+                registerProps={{
+                  ...passwordRest,
+                  onBlur: (e: { target: any; type?: any }) => {
+                    if (e.target.value !== "") {
+                      passwordOnBlur(e);
+                    }
+                  },
+                }}
                 errorMsg={
                   errors.password?.message || state.errorMessage.password?.[0]
                 }
@@ -104,12 +111,19 @@ export default function ResetPasswordForm() {
                 Confirm Password
               </FieldLabel>
               <Input
+              
                 id="confirmPassword"
                 type="password"
                 placeholder="Confirm your password"
                 className="transition-all focus:ring-2 focus:ring-primary/20"
                 disabled={pending}
-                {...confirmPasswordRegister}
+                required
+                {...confirmPasswordRest}
+                onBlur={(e) => {
+                  if (e.target.value.trim() !== "") {
+                    confirmPasswordOnBlur(e);
+                  }
+                }}
                 aria-invalid={!!errors.confirmPassword}
                 required
               />

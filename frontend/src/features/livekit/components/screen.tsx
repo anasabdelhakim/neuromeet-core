@@ -6,7 +6,7 @@ import {
 } from "@livekit/components-react";
 import "@livekit/components-styles";
 
-export default function MeetingPage({ token }) {
+export default function MeetingPage({ token }: { token: string }) {
   return (
     <LiveKitRoom
       video={true}

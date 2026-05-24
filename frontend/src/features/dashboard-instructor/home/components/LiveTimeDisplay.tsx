@@ -1,6 +1,4 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import { connection } from "next/server";
 
 function formatTime(d: Date) {
   return d.toLocaleTimeString("en-US", {
@@ -19,41 +17,17 @@ function formatDate(d: Date) {
   });
 }
 
-export function LiveTimeDisplay() {
-  const [now, setNow] = useState<Date | null>(null);
+export async function ServerTimeDisplay() {
+  await connection();
 
-  useEffect(() => {
-    setNow(new Date());
-    const id = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(id);
-  }, []);
-
-  if (!now) {
-    return (
-      <>
-        <h1 className="text-6xl font-black tracking-tighter text-white drop-shadow-sm md:text-7xl opacity-0">
-          --:-- --
-        </h1>
-        <p className="mt-2 text-lg font-medium text-white/50 md:text-xl opacity-0">
-          Loading...
-        </p>
-      </>
-    );
-  }
-
+  const now = new Date();
 
   return (
     <>
-      <h1
-        suppressHydrationWarning
-        className="text-6xl font-black tracking-tighter text-white drop-shadow-sm md:text-7xl"
-      >
+      <h1 className="text-6xl font-black tracking-tighter text-white drop-shadow-sm md:text-7xl">
         {formatTime(now)}
       </h1>
-      <p
-        suppressHydrationWarning
-        className="mt-2 text-lg font-medium text-white/50 md:text-xl"
-      >
+      <p className="mt-2 text-lg font-medium text-white/50 md:text-xl">
         {formatDate(now)}
       </p>
     </>
