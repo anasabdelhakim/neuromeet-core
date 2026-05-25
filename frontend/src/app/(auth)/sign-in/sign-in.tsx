@@ -157,7 +157,7 @@ export function LoginForm() {
             <Button
               className="flex-1 py-5 border-border flex items-center justify-center hover:bg-background bg-muted transition-all group"
               nativeButton={false}
-              render={<a href={process.env.NEXT_PUBLIC_OAUTH_URL || "#"} />}
+              render={<a href="/api/auth/google" />}
               variant="outline"
               disabled={pending || isGoogleLoading}
               onClick={() => setIsGoogleLoading(true)}
