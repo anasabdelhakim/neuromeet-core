@@ -4,10 +4,9 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
-  output   = "../lib/prisma/_generated"
-  moduleFormat    = "cjs"
-
+  provider     = "prisma-client-js"
+  output       = "../lib/prisma/_generated"
+  moduleFormat = "cjs"
 }
 
 datasource db {
@@ -28,20 +27,121 @@ model User {
   passwordChangedAt   DateTime?
   failedLoginAttempts Int         @default(0)
   lockedUntil         DateTime?
-  created_at           DateTime    @default(now())
-  updated_at           DateTime    @updatedAt
+  created_at          DateTime    @default(now())
+  updated_at          DateTime    @updatedAt
   active              Boolean     @default(true)
   verificationCode    String?
   otpPurpose          OtpPurpose?
+  otpExpire           DateTime?
+
+  // Relations
+  hostedMeetings      Meeting[]            @relation("MeetingHost")
+  meetingParticipants MeetingParticipant[]
+  uploadedMaterials   MeetingMaterial[]
+
+  @@index([verificationCode, created_at])
 }
+
+// =========================
+// MEETING MODELS
+// =========================
+
+model Meeting {
+  id              String          @id @default(cuid())
+  hostId          String
+  title           String
+  description     String?
+  livekitRoomName String?
+  livekitRoomSid  String?
+  joinToken       String?
+  status          MeetingStatus   @default(SCHEDULED)
+  platform        MeetingPlatform @default(NEUROMEET)
+  scheduledAt     DateTime?
+  durationMinutes Int?
+  startedAt       DateTime?
+  endedAt         DateTime?
+  createdAt       DateTime        @default(now())
+
+  // Relations
+  host         User                 @relation("MeetingHost", fields: [hostId], references: [id])
+  participants MeetingParticipant[]
+  materials    MeetingMaterial[]
+
+  @@index([hostId])
+  @@index([status])
+}
+
+model MeetingParticipant {
+  id                 String          @id @default(cuid())
+  meetingId          String
+  userId             String
+  role               ParticipantRole @default(PARTICIPANT)
+  consentGiven       Boolean         @default(false)
+  joinedAt           DateTime?
+  leftAt             DateTime?
+  secondsPresent     Int             @default(0)
+  avgEngagementScore Float?
+  adhdFlagged        Boolean         @default(false)
+
+  // Relations
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@unique([meetingId, userId])
+  @@index([meetingId])
+  @@index([userId])
+}
+
+model MeetingMaterial {
+  id           String   @id @default(cuid())
+  meetingId    String
+  uploadedBy   String
+  driveFileId  String?
+  driveViewUrl String?
+  fileName     String
+  mimeType     String?
+  sizeBytes    Int?
+  uploadedAt   DateTime @default(now())
+
+  // Relations
+  meeting  Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  uploader User    @relation(fields: [uploadedBy], references: [id])
+
+  @@index([meetingId])
+}
+
+// =========================
+// ENUMS
+// =========================
 
 enum Role {
   USER
   INSTRUCTOR
-    ADMIN
+  STUDENT
+  ADMIN
 }
 
 enum OtpPurpose {
   SIGN_UP
   RESET_PASSWORD
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  LIVE
+  ENDED
+  CANCELLED
+}
+
+enum MeetingPlatform {
+  NEUROMEET
+  ZOOM
+  GOOGLE_MEET
+}
+
+enum ParticipantRole {
+  HOST
+  CO_HOST
+  PARTICIPANT
+  OBSERVER
 }

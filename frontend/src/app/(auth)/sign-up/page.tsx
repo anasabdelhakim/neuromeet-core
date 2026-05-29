@@ -1,4 +1,4 @@
-import { SignUpForm } from './sign-up';
+import { SignUpForm } from "./sign-up";
 
 export default async function Page() {
   return (

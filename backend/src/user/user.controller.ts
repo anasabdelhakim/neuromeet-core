@@ -1,84 +1,50 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
   Patch,
-  Param,
   Delete,
+  Body,
   ValidationPipe,
   UseGuards,
   Req,
-  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from './guard/auth.guard';
 import { Roles } from './decorators/user.decorators';
 
-@Controller('user')
-export class UserController {
-  constructor(private readonly userService: UserService) {}
-
-  @Post()
-  @Roles(['admin'])
-  @UseGuards(AuthGuard)
-  create(
-    @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
-    createUserDto: CreateUserDto,
-  ) {
-    return this.userService.create(createUserDto);
-  }
-
-  @Get()
-  @Roles(['admin'])
-  @UseGuards(AuthGuard)
-  findAll(@Query() query) {
-    return this.userService.findAll(query);
-  }
-
-  @Get(':id')
-   @Roles(['admin'])
-  @UseGuards(AuthGuard)
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(id);
-  }
-
-  @Patch(':id')
-   @Roles(['admin'])
-  @UseGuards(AuthGuard)
-  update(@Param('id') id: string, @Body(new ValidationPipe({forbidNonWhitelisted:true})) updateUserDto: UpdateUserDto) {
-    return this.userService.update(id, updateUserDto);
-  }
-
-  @Delete(':id')
-  @Roles(['admin'])
-  @UseGuards(AuthGuard)
-  remove(@Param('id') id: string) {
-    return this.userService.remove(id);
-  }
-}
 @Controller('userMe')
 export class UserMeController {
-  constructor(private readonly userService: UserService){}
-   @Get()
-  @Roles(['user','admin','constructor'])
+  constructor(private readonly userService: UserService) {}
+
+  @Get()
+  @Roles(['INSTRUCTOR', 'STUDENT'])
   @UseGuards(AuthGuard)
-  getMe(@Req() req){
-    console.log(req.user)
-    return this.userService.getMe(req.user)
+  getMe(@Req() req: any) {
+    return this.userService.getMe(req.user);
   }
+
   @Patch()
-  @Roles(['user','admin','constructor'])
+  @Roles(['INSTRUCTOR', 'STUDENT'])
   @UseGuards(AuthGuard)
-  updateMe(@Req() req,@Body(new ValidationPipe({forbidNonWhitelisted:true}))updateUserDto:UpdateUserDto){
-    return this.userService.updateMe(req.user,updateUserDto);
+  updateMe(
+    @Req() req: any,
+    @Body(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    )
+    updateUserDto: UpdateUserDto,
+  ) {
+    return this.userService.updateMe(req.user, updateUserDto);
   }
+
   @Delete()
-  @Roles(['user','admin','constructor'])
+  @Roles(['STUDENT'])
   @UseGuards(AuthGuard)
-  deleteMetadata(@Req()req) {
-    return this.userService.deleteMe(req.user)
+  deleteMe(@Req() req: any) {
+    return this.userService.deleteMe(req.user);
   }
 }

@@ -67,3 +67,5 @@ google-credentials.json
 package-lock.json
 yarn.lock
 /lib/prisma/_generated
+
+playground

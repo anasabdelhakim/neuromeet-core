@@ -9,7 +9,7 @@ export async function handleEmail(_: unknown, formData: FormData) {
   }
   try {
     const res: { success: boolean; message: string } = await apiPost(
-      "/send-email",
+      "/email/welcome",
       { email },
     );
     if (res.success) {

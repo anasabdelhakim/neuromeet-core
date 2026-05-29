@@ -1,9 +1,17 @@
+import Image from "next/image";
 import { Avtar, Hero, Logo, QuickJoin } from "@/src/features/landing";
 
 export default function ClarityConnectPage() {
   return (
-    <div className=" text-foreground flex flex-col relative overflow-x-hidden antialiased bg-[url('/landing.webp')] bg-cover bg-center bg-no-repeat">
-      <header className="w-full max-w-8xl mx-auto  py-4 px-6 md:px-12 lg:px-24 flex items-center justify-between z-10 relative">
+    <div className="text-foreground flex flex-col relative  lg:overflow-hidden lg:h-screen antialiased">
+      <Image
+        src="/landingbg.webp"
+        alt="Landing Background"
+        fill
+        priority
+        className="object-cover -z-10"
+      />
+      <header className="w-full max-w-8xl mx-auto py-4 px-6 md:px-12 lg:px-24 flex items-center justify-between z-10 relative">
         <Logo />
         <Avtar />
       </header>

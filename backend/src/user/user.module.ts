@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserController, UserMeController } from './user.controller';
-import { PrismaModule } from '../database/database.module';
-import { JwtConfigModule } from '../auth/jwt.config';
+import { UserMeController } from './user.controller';
+import { PrismaModule } from 'src/database/database.module';
 
 @Module({
-  imports:[PrismaModule , JwtConfigModule],
-  controllers: [UserController,UserMeController],
+  imports: [PrismaModule],
+  controllers: [UserMeController],
   providers: [UserService],
 })
-export class UserModule {};
-
+export class UserModule {}

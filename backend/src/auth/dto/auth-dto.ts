@@ -4,6 +4,7 @@ import {
   IsString,
   MaxLength,
   MinLength,
+  Length,
 } from 'class-validator';
 
 export class SignUpDto {
@@ -57,4 +58,21 @@ export class ChangePasswordDto {
   @IsString({ message: 'resetToken must be string' })
   @IsNotEmpty({ message: 'resetToken is required' })
   resetToken: string;
+}
+
+export class VerifyCodeDto {
+  @IsEmail({}, { message: 'email not valid' })
+  @IsNotEmpty({ message: 'email is required' })
+  email: string;
+
+  @IsString({ message: 'code must be a string' })
+  @Length(6, 6, { message: 'OTP must be exactly 6 digits' })
+  @IsNotEmpty({ message: 'code is required' })
+  code: string;
+}
+
+export class RefreshTokenDto {
+  @IsString()
+  @IsNotEmpty()
+  refreshToken: string;
 }

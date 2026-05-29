@@ -58,7 +58,7 @@ export function PasswordInput({
             'flex justify-center items-center h-[95%] w-10 absolute right-0.25 rounded-r-md top-1/2 -translate-y-1/2 transition-colors',
             errorMsg
               ? 'border-destructive bg-red-200 text-destructive'
-              : 'bg-white text-muted-foreground hover:text-foreground',
+              : 'bg-primary text-foreground hover:text-foreground',
           )}
         >
           {seePassword ? <Eye size={18} /> : <EyeOff size={18} />}

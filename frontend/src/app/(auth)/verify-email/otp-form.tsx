@@ -4,7 +4,7 @@ import { useActionState, useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2 } from "lucide-react";
+import { Loader } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
 import { Button } from "@/src/components/ui/button";
@@ -42,7 +42,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
   const { isSubmitted, errors, touchedFields } = form.formState;
   const showOtpError = !!errors.otp && (isSubmitted || touchedFields.otp);
 
-  const otpRegister = form.register("otp");
+  const { onBlur: otpOnBlur, ...otpRest } = form.register("otp");
 
   // SECURITY: Timer state is seeded from a server-computed value (HTTP-only cookie).
   // The client only counts down from whatever the server told it — no localStorage,
@@ -69,7 +69,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
     setResending(true);
     setResendError("");
     try {
-      const result = await resendCodeAction();
+      const result = await resendCodeAction(flow);
       if (result.success) {
         setTimeLeft(result.secondsRemaining ?? 120);
       } else {
@@ -114,11 +114,17 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
                 id="otp"
                 type="text"
                 autoFocus
+                required
                 maxLength={6}
                 placeholder="Enter OTP"
                 className="transition-all focus:ring-2 focus:ring-primary/20 text-center text-lg tracking-widest"
                 disabled={pending}
-                {...otpRegister}
+                {...otpRest}
+                onBlur={(e) => {
+                  if (e.target.value.trim() !== "") {
+                    otpOnBlur(e);
+                  }
+                }}
                 aria-invalid={showOtpError}
               />
               <FieldError>
@@ -134,10 +140,13 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
               type="submit"
               disabled={pending}
               className="shadow-lg shadow-primary/30 w-full py-5"
+              onMouseDown={(e) => {
+                e.preventDefault();
+              }}
             >
               {pending ? (
                 <span className="flex items-center gap-2">
-                  <Loader2 className="animate-spin" size={20} />
+                  <Loader className="animate-spin" size={20} />
                   Verifying...
                 </span>
               ) : (
@@ -153,9 +162,12 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
               variant="link"
               disabled={resending || timeLeft > 0}
               onClick={handleResend}
+              onMouseDown={(e) => {
+                e.preventDefault();
+              }}
             >
               {resending ? (
-                <Loader2 className="animate-spin mr-2" size={14} />
+                <Loader className="animate-spin mr-2" size={14} />
               ) : null}
               Resend Code
             </Button>

@@ -11,7 +11,7 @@ export default async function Livekit(props: {
   // 2. Fetch the token from your NestJS backend
   // Make sure your backend is running on localhost:4000
   const res = await fetch(
-    `http://localhost:4000/api/v1/livekit/token?room=${room}&user=${user}`,
+    `http://127.0.0.1:4000/api/v1/livekit/token?room=${room}&user=${user}`,
     { cache: "no-store" }, // Ensure we get a fresh token every time
   );
 

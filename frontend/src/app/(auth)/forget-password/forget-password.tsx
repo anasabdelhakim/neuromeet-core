@@ -5,7 +5,7 @@ import { useActionState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Loader2 } from "lucide-react";
+import { Loader } from "lucide-react";
 
 import { Button } from "@/src/components/ui/button";
 import { Card, CardContent } from "@/src/components/ui/card";
@@ -38,7 +38,7 @@ export default function ForgetPasswordPreview() {
   const showEmailError = !!errors.email && (isSubmitted || touchedFields.email);
 
   // 2. ADDED: Extract register so we can safely wrap it
-  const emailRegister = form.register("email");
+  const { onBlur: emailOnBlur, ...emailRest } = form.register("email");
 
   return (
     <Card className="card-glass transition-all duration-300 hover:shadow-xl border-border/50 rounded-2xl">
@@ -60,11 +60,18 @@ export default function ForgetPasswordPreview() {
               <Input
                 id="email"
                 type="email"
+                autoFocus
                 placeholder="johndoe@mail.com"
                 autoComplete="email"
                 className="transition-all focus:ring-2 focus:ring-primary/20"
                 disabled={pending}
-                {...emailRegister}
+                {...emailRest}
+                required
+                onBlur={(e) => {
+                  if (e.target.value.trim() !== "") {
+                    emailOnBlur(e);
+                  }
+                }}
                 aria-invalid={showEmailError}
               />
               <FieldError>
@@ -87,7 +94,7 @@ export default function ForgetPasswordPreview() {
             >
               {pending ? (
                 <span className="flex items-center gap-2">
-                  <Loader2 className="animate-spin" size={20} />
+                  <Loader className="animate-spin" size={20} />
                   Sending...
                 </span>
               ) : (
