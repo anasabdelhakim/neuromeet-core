@@ -46,45 +46,39 @@ export const Cards = [
 ] as const;
 
 export const gradientMap: Record<string, string> = {
-  new: "bg-[linear-gradient(135deg,rgba(255,143,113,0.3)_0%,rgba(255,143,113,0.9)_40%,rgba(225,90,70,0.9)_100%)]",
-  join: "bg-[linear-gradient(135deg,rgba(75,137,255,0.3)_0%,rgba(75,137,255,0.9)_40%,rgba(50,108,255,0.9)_100%)]",
-  schedule:
-    "bg-[linear-gradient(135deg,rgba(188,97,244,0.3)_0%,rgba(188,97,244,0.9)_40%,rgba(140,68,212,0.9)_100%)]",
-  recordings:
-    "bg-[linear-gradient(135deg,rgba(255,202,65,0.3)_0%,rgba(255,202,65,0.9)_40%,rgba(229,175,37,0.9)_100%)]",
+  new: "bg-action-new-gradient",
+  join: "bg-action-join-gradient",
+  schedule: "bg-action-schedule-gradient",
+  recordings: "bg-action-recordings-gradient",
 };
 
 export const iconGradientMap: Record<string, string> = {
-  new: "bg-[linear-gradient(315deg,rgba(255,143,113,0.2)_0%,rgba(255,143,113,0.9)_40%,rgba(225,90,70,0.9)_100%)]",
-  join: "bg-[linear-gradient(315deg,rgba(75,137,255,0.2)_0%,rgba(75,137,255,0.9)_40%,rgba(50,108,255,0.9)_100%)]",
-  schedule:
-    "bg-[linear-gradient(315deg,rgba(188,97,244,0.2)_0%,rgba(188,97,244,0.9)_40%,rgba(140,68,212,0.9)_100%)]",
-  recordings:
-    "bg-[linear-gradient(315deg,rgba(255,202,65,0.2)_0%,rgba(255,202,65,0.9)_40%,rgba(229,175,37,0.9)_100%)]",
+  new: "bg-icon-new-gradient",
+  join: "bg-icon-join-gradient",
+  schedule: "bg-icon-schedule-gradient",
+  recordings: "bg-icon-recordings-gradient",
 };
 
 export const shadowMap: Record<string, string> = {
-  new: "shadow-none hover:shadow-xl hover:shadow-[#ff8f71]/40",
-  join: "shadow-none hover:shadow-xl hover:shadow-[#4b89ff]/40",
-  schedule: "shadow-none hover:shadow-xl hover:shadow-[#bc61f4]/40",
-  recordings: "shadow-none hover:shadow-xl hover:shadow-[#ffca41]/40",
+  new: "shadow-none hover:shadow-action-new-40",
+  join: "shadow-none hover:shadow-action-join-40",
+  schedule: "shadow-none hover:shadow-action-schedule-40",
+  recordings: "shadow-none hover:shadow-action-recordings-40",
 };
 
 export const buttonGradientMap: Record<string, string> = {
-  new: "bg-[linear-gradient(135deg,rgba(255,143,113,1)_0%,rgba(225,90,70,1)_100%)]",
-  join: "bg-[linear-gradient(135deg,rgba(75,137,255,1)_0%,rgba(50,108,255,1)_100%)]",
-  schedule:
-    "bg-[linear-gradient(135deg,rgba(188,97,244,1)_0%,rgba(140,68,212,1)_100%)]",
-  recordings:
-    "bg-[linear-gradient(135deg,rgba(255,202,65,1)_0%,rgba(229,175,37,1)_100%)]",
+  new: "bg-btn-new-gradient",
+  join: "bg-btn-join-gradient",
+  schedule: "bg-btn-schedule-gradient",
+  recordings: "bg-btn-recordings-gradient",
 };
 
 export const dialogBgMap: Record<string, string> = {
-  new: "bg-[rgba(25,10,5,0.95)] border-red-500/20 shadow-2xl shadow-[#ff8f71]/15",
-  join: "bg-[rgba(5,10,25,0.95)] border-blue-500/20 shadow-2xl shadow-[#4b89ff]/15",
+  new: "bg-dialog-bg-new border-action-new-soft-50 shadow-2xl shadow-action-new-15",
+  join: "bg-dialog-bg-join border-action-join-soft shadow-2xl shadow-action-join-15",
   schedule:
-    "bg-[rgba(15,5,25,0.95)] border-purple-500/20 shadow-2xl shadow-[#bc61f4]/15",
+    "bg-dialog-bg-schedule border-action-schedule-soft shadow-2xl shadow-action-schedule-15",
   recordings:
-    "bg-[rgba(25,20,5,0.95)] border-yellow-500/20 shadow-2xl shadow-[#ffca41]/15",
+    "bg-dialog-bg-recordings border-action-recordings-soft shadow-2xl shadow-action-recordings-15",
 };
 

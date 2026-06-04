@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ChevronRight, Play, NotebookPen } from "lucide-react";
 import { todayMeetings } from "../constants";
 import { StatusBar } from "../../upcoming/components/StatusBar";
+import { cn } from "@/src/lib/utils";
 
 export function TodaysMeetings() {
   return (
@@ -32,13 +33,13 @@ export function TodaysMeetings() {
           return (
             <Card
               key={meeting.id}
-              className={`w-full rounded-xl p-5 flex flex-col gap-4 transition-all duration-300 transform-gpu hover:border-primary/50 ${
-                isLive
-                  ? "card-glass border  backdrop-blur-md shadow-lg shadow-black/20"
-                  : isStartingSoon
-                    ? "bg-card-gradient border  backdrop-blur-md shadow-lg shadow-black/20"
-                    : "bg-black/20 border  shadow-none opacity-80 hover:opacity-100"
-              }`}
+              variant={isLive ? "glass" : (isStartingSoon ? "gradient" : "default")}
+              className={cn(
+                "w-full p-5 flex flex-col gap-4 transition-all duration-normal ease-standard transform-gpu hover:border-primary-hover",
+                isLive || isStartingSoon
+                  ? "border backdrop-blur-md shadow-lg shadow-black-20"
+                  : "bg-black-soft-20 border shadow-none opacity-80 hover:opacity-100"
+              )}
             >
               <div className="flex items-center justify-between w-full">
                 <div className="flex flex-col gap-1.5">
@@ -50,14 +51,14 @@ export function TodaysMeetings() {
                   <CardDescription className="text-sm font-medium text-white/50 flex flex-wrap items-center gap-2 mt-1">
                     <span>{meeting.time}</span>
                     {isStartingSoon && (
-                      <Badge className="bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30 uppercase tracking-wider font-bold text-[10px]">
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                      <Badge className="bg-status-warning-soft text-status-warning border border-status-warning-border hover:bg-status-warning-hover uppercase tracking-wider font-bold text-[10px]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-status-warning animate-pulse"></span>
                         Soon
                       </Badge>
                     )}
                     {isLive && (
-                      <Badge className="bg-rose-500/20 text-rose-300 border border-rose-500/30 hover:bg-rose-500/30 uppercase tracking-wider font-bold text-[10px]">
-                        <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+                      <Badge className="bg-status-live-soft text-status-live border border-status-live-border hover:bg-status-live-hover uppercase tracking-wider font-bold text-[10px]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-status-live animate-pulse"></span>
                         Live
                       </Badge>
                     )}
@@ -68,14 +69,14 @@ export function TodaysMeetings() {
                 <div className="flex items-center gap-4">
                   <AvatarChain />
                   {isLive ? (
-                    <Button className="live-btn">
+                    <Button variant="live">
                       <Play size={16} fill="currentColor" />
                       Join Now
                     </Button>
                   ) : (
                     <Button
                       variant="ghost"
-                      className="border-border rounded-sm"
+                      className="border-border"
                     >
                       <NotebookPen size={18} />
                       Prepare

@@ -14,8 +14,9 @@ export const Hero = () => {
       </p>
       <Link href="livekit">
         <Button
+          variant="effect"
           size="lg"
-          className="btn-effect border-0  rounded-full px-10 py-6 text-base"
+          className="rounded-full px-10 py-6 text-base"
         >
           Get Started for Free
         </Button>

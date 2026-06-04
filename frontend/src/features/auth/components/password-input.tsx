@@ -40,8 +40,8 @@ export function PasswordInput({
         type={seePassword ? 'text' : 'password'}
         placeholder={placeholder}
         className={cn(
-          'transition-all focus:ring-2 focus:ring-primary/20',
-          errorMsg && 'border-destructive bg-destructive/10 text-destructive',
+          'transition-all duration-fast ease-standard focus:ring-2 focus:ring-primary-soft-high',
+          errorMsg && 'border-destructive bg-destructive-soft text-destructive',
         )}
         disabled={pending}
         {...registerProps}
@@ -55,9 +55,9 @@ export function PasswordInput({
           onClick={() => setSeePassword((p) => !p)}
           onMouseDown={(e) => e.preventDefault()}
           className={cn(
-            'flex justify-center items-center h-[95%] w-10 absolute right-0.25 rounded-r-md top-1/2 -translate-y-1/2 transition-colors',
+            'flex justify-center items-center h-[95%] w-10 absolute right-0.25 rounded-r-md top-1/2 -translate-y-1/2 transition-colors duration-fast ease-standard',
             errorMsg
-              ? 'border-destructive bg-red-200 text-destructive'
+              ? 'border-destructive bg-destructive-soft-hover text-destructive'
               : 'bg-primary text-foreground hover:text-foreground',
           )}
         >

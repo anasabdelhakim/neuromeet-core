@@ -56,7 +56,7 @@ export default function ResetPasswordForm() {
     };
 
   return (
-    <Card className="card-glass transition-all duration-300 hover:shadow-xl border-border/50 rounded-2xl">
+    <Card variant="gradient">
       <CardContent>
         <form action={action} className="space-y-4">
           {/* SERVER ERROR */}
@@ -139,7 +139,7 @@ export default function ResetPasswordForm() {
             <Button
               type="submit"
               disabled={pending}
-              className="shadow-lg shadow-primary/30 w-full py-5"
+              className="w-full py-5"
             >
               {pending ? (
                 <span className="flex items-center gap-2">

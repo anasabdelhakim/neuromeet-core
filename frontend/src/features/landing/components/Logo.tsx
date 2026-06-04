@@ -10,7 +10,7 @@ export const Logo = () => {
         height={500}
         className="w-14 h-14 object-contain drop-shadow-sm"
       />
-      <h1 className="text-4xl max-sm:hidden font-extrabold tracking-tight bg-gradient-to-r from-primary via-purple-600 to-white bg-clip-text text-transparent">
+      <h1 className="text-4xl max-sm:hidden font-extrabold tracking-tight bg-logo-gradient bg-clip-text text-transparent">
         NeuroMeet
       </h1>
     </div>

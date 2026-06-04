@@ -7,7 +7,7 @@ export const DashboardBackground: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   return (
     <div className="min-h-screen w-full relative text-foreground">
-      <div className="fixed inset-0 -z-10 bg-[oklch(0.1_0.012_265)]">
+      <div className="fixed inset-0 -z-10 bg-background">
         {/* Base Gradient Overlay to match auth pages */}
         <div
           className="absolute inset-0 opacity-60"

@@ -85,7 +85,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
   }, []);
 
   return (
-    <Card className="card-glass transition-all duration-300 hover:shadow-xl border-border/50 rounded-2xl">
+    <Card variant="gradient">
       <CardContent>
         <form action={action} className="space-y-4">
           <input type="hidden" name="flow" value={flow} />
@@ -139,7 +139,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
             <Button
               type="submit"
               disabled={pending}
-              className="shadow-lg shadow-primary/30 w-full py-5"
+              className="w-full py-5"
               onMouseDown={(e) => {
                 e.preventDefault();
               }}
