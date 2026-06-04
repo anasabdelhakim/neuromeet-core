@@ -25,6 +25,9 @@ export const AUTH_CONSTANTS = {
   /** How long an unverified user is kept before cleanup deletes it (24 hours) */
   UNVERIFIED_USER_MAX_AGE_MS: 24 * 60 * 60 * 1000,
 
+  /** Handoff token lifetime for OAuth exchange (1 minute) */
+  OAUTH_HANDOFF_TOKEN_EXPIRY: '1m',
+
   /** bcrypt cost factor — 12 is the recommended minimum for production */
   BCRYPT_SALT_ROUNDS: 12,
 } as const;

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { randomBytes } from 'crypto';
@@ -135,5 +135,77 @@ export class OAuthService {
       access_token: token,
       refresh_token,
     };
+  }
+  async generateHandoffToken(userId: string): Promise<string> {
+    return this.jwtService.signAsync(
+      { id: userId, purpose: 'handoff' }, // SECURITY: Added purpose to prevent Token Confusion
+      {
+        secret: process.env.JWT_SECRET,
+        expiresIn: AUTH_CONSTANTS.OAUTH_HANDOFF_TOKEN_EXPIRY,
+      },
+    );
+  }
+
+  async exchangeHandoffToken(handoffToken: string): Promise<any> {
+    try {
+      const payload = await this.jwtService.verifyAsync(handoffToken, {
+        secret: process.env.JWT_SECRET,
+      });
+
+      // SECURITY: Reject any token that wasn't specifically generated for handoff
+      if (payload.purpose !== 'handoff') {
+        throw new UnauthorizedException('Invalid token type');
+      }
+
+      const user = await this.prisma.user.findUnique({
+        where: { id: payload.id },
+        select: { id: true, email: true, name: true, role: true },
+      });
+
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      // Generate the final access_token and refresh_token
+      const tokenPayload = {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      };
+
+      const [token, refresh_token] = await Promise.all([
+        this.jwtService.signAsync(tokenPayload, {
+          secret: process.env.JWT_SECRET,
+          expiresIn: AUTH_CONSTANTS.ACCESS_TOKEN_EXPIRY,
+        }),
+        this.jwtService.signAsync(
+          { ...tokenPayload, countEx: AUTH_CONSTANTS.REFRESH_TOKEN_MAX_USES },
+          {
+            secret: process.env.JWT_REFRESH_SECRET,
+            expiresIn: AUTH_CONSTANTS.REFRESH_TOKEN_EXPIRY,
+          },
+        ),
+      ]);
+
+      const hashedRefreshToken = await bcrypt.hash(
+        refresh_token,
+        AUTH_CONSTANTS.BCRYPT_SALT_ROUNDS,
+      );
+
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { refreshToken: hashedRefreshToken },
+      });
+
+      return {
+        status: 200,
+        message: 'Tokens exchanged successfully',
+        data: user,
+        access_token: token,
+        refresh_token,
+      };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid or expired handoff token');
+    }
   }
 }

@@ -25,34 +25,7 @@ export class GoogleAuthGuard extends AuthGuard('google') {
       };
     }
 
-    // 2️⃣ Intercept the redirect to manually save the session before redirecting to Google
-    // This guarantees the OAuth state is saved in the session before the browser navigates away.
-    const originalRedirect = res.redirect.bind(res);
-    (res as any).redirect = async function (
-      statusCode: number | string,
-      url?: string,
-    ) {
-      const session = (req as any).session;
-      if (session && typeof session.save === 'function') {
-        try {
-          await new Promise<void>((resolve, reject) => {
-            session.save((err: any) => {
-              if (err) reject(err);
-              else resolve();
-            });
-          });
-        } catch (err) {
-          console.error('Session save error before redirect:', err);
-        }
-      }
-
-      if (url === undefined) {
-        return originalRedirect(statusCode as string);
-      }
-      return originalRedirect(statusCode as number, url);
-    };
-
-    // 3️⃣ باتش عشان Fastify يفهم دالة end ويبعت الرد فعلاً للمتصفح
+    // 2️⃣ باتش عشان Fastify يفهم دالة end ويبعت الرد فعلاً للمتصفح
     if (!(res as any).end) {
       (res as any).end = () => {
         if ((res as any).statusCode) {

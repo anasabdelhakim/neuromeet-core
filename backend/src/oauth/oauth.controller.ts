@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards, Post, Body } from '@nestjs/common';
 import { ThrottlerGuard, Throttle } from '@nestjs/throttler';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
@@ -45,34 +45,15 @@ export class OAuthController {
 
     try {
       // Validate the user and generate JWT tokens
-      const tokens = await this.authService.validateUser(user);
-      const isProd = process.env.NODE_ENV === 'production';
-
-      // =========================
-      // Secure Token Delivery (Fastify Syntax)
-      // =========================
-      res.setCookie('access_token', tokens.access_token, {
-        httpOnly: true,
-        secure: isProd,
-        sameSite: 'lax',
-        maxAge: 60 * 60, // 1 hour (in seconds)
-        path: '/',
-      });
-
-      res.setCookie('refresh_token', tokens.refresh_token, {
-        httpOnly: true,
-        secure: isProd,
-        sameSite: 'lax',
-        maxAge: 7 * 24 * 60 * 60, // 7 days (in seconds)
-        path: '/',
-      });
-
-      // SECURITY: Redirect cleanly to the frontend.
+      const result = await this.authService.validateUser(user);
+      
+      // Generate a short-lived "handoffToken" (1-minute expiry)
+      const handoffToken = await this.authService.generateHandoffToken(result.data.id);
 
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
-      // Fastify Redirect Syntax
-      return res.status(302).redirect(frontendUrl);
+      // Redirect user to the frontend with the handoff token
+      return res.status(302).redirect(`${frontendUrl}/api/auth/oauth-callback?token=${handoffToken}`);
     } catch (error) {
       console.error('Google OAuth Callback Error:', error);
       return res.status(500).send({
@@ -80,5 +61,14 @@ export class OAuthController {
         error: error.message,
       });
     }
+  }
+
+  // =========================
+  // 3️⃣ Exchange Handoff Token for Real Tokens
+  // =========================
+  @Throttle({ default: { ttl: 60000, limit: 10 } })
+  @Post('google/exchange')
+  async googleExchange(@Body('token') token: string) {
+    return this.authService.exchangeHandoffToken(token);
   }
 }
