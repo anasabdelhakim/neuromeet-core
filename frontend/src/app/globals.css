@@ -38,8 +38,8 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --color-custom-gray: oklch(0.22 0.01 265);
-  --color-custom-gray-hover: oklch(0.3 0.01 265);
+  --color-custom-gray: oklch(0.24 0.01 265);
+  --color-custom-gray-hover: oklch(0.32 0.01 265);
 
   /* Brand Colors */
   --color-brand-cyan: var(--brand-cyan);
@@ -76,7 +76,6 @@
   --transition-duration-normal: var(--duration-normal);
   --transition-duration-slow: var(--duration-slow);
 
-
   /* Z-Index Semantic Layering */
   --z-index-dropdown: var(--z-dropdown);
   --z-index-sticky: var(--z-sticky);
@@ -102,7 +101,6 @@
   --color-status-success-border: var(--status-success-border);
   --color-status-success-hover: var(--status-success-hover);
 
-
   --color-primary-soft-subtle: var(--primary-soft-subtle);
   --color-primary-soft-muted: var(--primary-soft-muted);
   --color-primary-hover: var(--primary-hover);
@@ -120,8 +118,7 @@
   --color-brand-purple-soft-subtle: var(--brand-purple-soft-subtle);
   --color-brand-purple-soft-muted: var(--brand-purple-soft-muted);
 
-
-
+  /* Action Card Colors */
   --color-action-new-input: var(--action-new-input);
   --color-action-join-input: var(--action-join-input);
   --color-action-schedule-input: var(--action-schedule-input);
@@ -131,9 +128,7 @@
   --color-dialog-bg-join: var(--dialog-bg-join);
   --color-dialog-bg-schedule: var(--dialog-bg-schedule);
   --color-dialog-bg-yellow: var(--dialog-bg-yellow);
-  
-  --color-action-yellow-soft-subtle: var(--action-yellow-soft-subtle);
-  --color-action-yellow-soft-muted: var(--action-yellow-soft-muted);
+
 
   /* Shadows (Mapped cleanly) */
   --shadow-action-new-deep: var(--val-shadow-action-new-deep);
@@ -159,8 +154,7 @@
   --color-black-soft-muted: var(--black-soft-muted);
   --color-black-soft-deep: var(--black-soft-deep);
 
-  /* Static Gradients (Background Images ONLY to avoid duplication) */
-  /* Main Scene Gradients */
+  /* Static Gradients */
   --background-image-brand-gradient: var(--brand-gradient);
   --background-image-logo-gradient: var(--logo-gradient);
   
@@ -187,11 +181,11 @@
   --background-image-btn-schedule-gradient: var(--btn-schedule-gradient);
   --background-image-btn-yellow-gradient: var(--btn-yellow-gradient);
   
-  /* Dashboard & Badges Backgrounds */
+  /* Dashboard Backgrounds */
   --background-image-dashboard-spots-radial: var(--dashboard-spots-radial);
   --background-image-dashboard-vignette-radial: var(--dashboard-vignette-radial);
 
-  /* Animation Mappings (mapped to Tailwind utility animate-[name]) */
+  /* Animation Mappings */
   --animate-gradient-shift: gradient-shift 10s ease infinite;
   --animate-orb-float-before: orb-float 9s ease-in-out infinite;
   --animate-orb-float-after: orb-float 11s ease-in-out infinite;
@@ -200,7 +194,7 @@
   --animate-card-entrance: slide-in-bottom-4 var(--duration-slow) var(--ease-smooth) both;
   --animate-alert-entrance: slide-in-top-2 var(--duration-normal) var(--ease-standard) both;
 
-  /* Keyframes (Defined securely in @theme inline for native v4 support) */
+  /* Keyframes */
   @keyframes fade-in {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -247,103 +241,110 @@
 
 /* ─── Design Tokens ───────────────────────────────────────────────────────── */
 :root {
+  /* Shadcn Core - Lifted L axis slightly for a brighter, less oppressive UI */
+  --background: oklch(0.12 0.012 265);
+  --foreground: oklch(0.98 0.008 265);
+  --card: oklch(0.17 0.016 265);
+  --card-foreground: oklch(0.98 0.008 265);
+  --popover: oklch(0.17 0.016 265);
+  --popover-foreground: oklch(0.98 0.008 265);
+  
+  /* Primary Exact Math Conversions - Brightened (+0.05 L, +0.01 C) */
+  --primary: oklch(0.561 0.086 230.5);
+  --primary-light: oklch(0.719 0.092 227.8);
+  --primary-foreground: oklch(0.98 0.014 200);
+  
+  --secondary: oklch(0.22 0.018 265);
+  --secondary-foreground: oklch(0.98 0.008 265);
+  --muted: oklch(0.20 0.014 265);
+  --muted-foreground: oklch(0.65 0.01 265);
+  --accent: oklch(0.24 0.03 230);
+  --accent-foreground: oklch(0.98 0.008 265);
+  --destructive: oklch(0.70 0.23 25);
+  --border: oklch(1 0 271 / 15.6%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.55 0.08 230);
+  --radius: 0.75rem;
+
+  /* Brand Colors Exact Math Conversions - Brightened */
+  --brand-cyan: oklch(0.817 0.151 230.1); 
+  --brand-cyan-soft: oklch(0.28 0.05 240);
+  --brand-cyan-hover: oklch(0.65 0.12 240);
+  --brand-purple: oklch(0.578 0.156 295.5); 
+  --brand-purple-soft: oklch(0.28 0.05 290);
+  --brand-purple-hover: oklch(0.65 0.12 290);
+
+  /* Status Semantic Colors - Brightened */
+  --status-warning: oklch(0.89 0.19 75);
+  --status-live: oklch(0.78 0.20 20);
+  --status-success: oklch(0.77 0.19 145);
+
+  /* Action Card Accent Colors Exact Math Conversions - Brightened */
+  --action-new: oklch(0.775 0.136 42.5); 
+  --action-new-dark: oklch(0.668 0.165 35.5); 
+  
+  --action-join: oklch(0.688 0.157 253.9); 
+  --action-join-dark: oklch(0.623 0.175 258.8); 
+  
+  --action-schedule: oklch(0.695 0.193 306.4); 
+  --action-schedule-dark: oklch(0.595 0.196 303.4); 
+  
+  --action-yellow: oklch(0.885 0.154 87.8); 
+  --action-yellow-dark: oklch(0.821 0.160 86.4); 
+  
+  --notif-schedule: oklch(0.70 0.21 290);
+
   /* Brand and UI Static Gradients */
   --brand-gradient: linear-gradient(to right, var(--brand-cyan), var(--brand-purple));
-  --logo-gradient: linear-gradient(to right, var(--brand-cyan), var(--brand-purple), #ffffff);
+  --logo-gradient: linear-gradient(to right, var(--brand-cyan), var(--brand-purple), oklch(1 0 0));
 
   --auth-scene-gradient: linear-gradient(
     135deg,
-    oklch(0.08 0.025 260) 0%,
-    oklch(0.10 0.02  240) 40%,
-    oklch(0.12 0.03  290) 100%
+    oklch(0.12 0.025 260) 0%,
+    oklch(0.14 0.02  240) 40%,
+    oklch(0.16 0.03  290) 100%
   );
-  --auth-scene-before-radial: radial-gradient(
-    circle,
-    var(--brand-cyan-soft) 0%,
-    transparent 70%
-  );
-  --auth-scene-after-radial: radial-gradient(
-    circle,
-    var(--brand-purple-soft) 0%,
-    transparent 70%
-  );
+  --auth-scene-before-radial: radial-gradient(circle, var(--brand-cyan-soft) 0%, transparent 70%);
+  --auth-scene-after-radial: radial-gradient(circle, var(--brand-purple-soft) 0%, transparent 70%);
 
-  --action-new-gradient: linear-gradient(135deg, rgba(255,143,113,0.3) 0%, rgba(255,143,113,0.9) 40%, rgba(225,90,70,0.9) 100%);
-  --action-join-gradient: linear-gradient(135deg, rgba(75,137,255,0.3) 0%, rgba(75,137,255,0.9) 40%, rgba(50,108,255,0.9) 100%);
-  --action-schedule-gradient: linear-gradient(135deg, rgba(188,97,244,0.3) 0%, rgba(188,97,244,0.9) 40%, rgba(140,68,212,0.9) 100%);
-  --action-yellow-gradient: linear-gradient(135deg, rgba(255,202,65,0.3) 0%, rgba(255,202,65,0.9) 40%, rgba(229,175,37,0.9) 100%);
+  /* Action Card Background Gradients (Dynamic using color-mix for leak protection) */
+  --action-new-gradient: linear-gradient(135deg, color-mix(in oklch, var(--action-new) 30%, transparent) 0%, color-mix(in oklch, var(--action-new) 90%, transparent) 40%, color-mix(in oklch, var(--action-new-dark) 90%, transparent) 100%);
+  --action-join-gradient: linear-gradient(135deg, color-mix(in oklch, var(--action-join) 30%, transparent) 0%, color-mix(in oklch, var(--action-join) 90%, transparent) 40%, color-mix(in oklch, var(--action-join-dark) 90%, transparent) 100%);
+  --action-schedule-gradient: linear-gradient(135deg, color-mix(in oklch, var(--action-schedule) 30%, transparent) 0%, color-mix(in oklch, var(--action-schedule) 90%, transparent) 40%, color-mix(in oklch, var(--action-schedule-dark) 90%, transparent) 100%);
+  --action-yellow-gradient: linear-gradient(135deg, color-mix(in oklch, var(--action-yellow) 30%, transparent) 0%, color-mix(in oklch, var(--action-yellow) 90%, transparent) 40%, color-mix(in oklch, var(--action-yellow-dark) 90%, transparent) 100%);
 
-  --icon-new-gradient: linear-gradient(315deg, rgba(255,143,113,0.2) 0%, rgba(255,143,113,0.9) 40%, rgba(225,90,70,0.9) 100%);
-  --icon-join-gradient: linear-gradient(315deg, rgba(75,137,255,0.2) 0%, rgba(75,137,255,0.9) 40%, rgba(50,108,255,0.9) 100%);
-  --icon-schedule-gradient: linear-gradient(315deg, rgba(188,97,244,0.2) 0%, rgba(188,97,244,0.9) 40%, rgba(140,68,212,0.9) 100%);
-  --icon-yellow-gradient: linear-gradient(315deg, rgba(255,202,65,0.2) 0%, rgba(255,202,65,0.9) 40%, rgba(229,175,37,0.9) 100%);
+  /* Icon Gradients */
+  --icon-new-gradient: linear-gradient(315deg, color-mix(in oklch, var(--action-new) 20%, transparent) 0%, color-mix(in oklch, var(--action-new) 90%, transparent) 40%, color-mix(in oklch, var(--action-new-dark) 90%, transparent) 100%);
+  --icon-join-gradient: linear-gradient(315deg, color-mix(in oklch, var(--action-join) 20%, transparent) 0%, color-mix(in oklch, var(--action-join) 90%, transparent) 40%, color-mix(in oklch, var(--action-join-dark) 90%, transparent) 100%);
+  --icon-schedule-gradient: linear-gradient(315deg, color-mix(in oklch, var(--action-schedule) 20%, transparent) 0%, color-mix(in oklch, var(--action-schedule) 90%, transparent) 40%, color-mix(in oklch, var(--action-schedule-dark) 90%, transparent) 100%);
+  --icon-yellow-gradient: linear-gradient(315deg, color-mix(in oklch, var(--action-yellow) 20%, transparent) 0%, color-mix(in oklch, var(--action-yellow) 90%, transparent) 40%, color-mix(in oklch, var(--action-yellow-dark) 90%, transparent) 100%);
 
-  --btn-new-gradient: linear-gradient(135deg, rgba(255,143,113,1) 0%, rgba(225,90,70,1) 100%);
-  --btn-join-gradient: linear-gradient(135deg, rgba(75,137,255,1) 0%, rgba(50,108,255,1) 100%);
-  --btn-schedule-gradient: linear-gradient(135deg, rgba(188,97,244,1) 0%, rgba(140,68,212,1) 100%);
-  --btn-yellow-gradient: linear-gradient(135deg, rgba(255,202,65,1) 0%, rgba(229,175,37,1) 100%);
+  /* Button Gradients */
+  --btn-new-gradient: linear-gradient(135deg, var(--action-new) 0%, var(--action-new-dark) 100%);
+  --btn-join-gradient: linear-gradient(135deg, var(--action-join) 0%, var(--action-join-dark) 100%);
+  --btn-schedule-gradient: linear-gradient(135deg, var(--action-schedule) 0%, var(--action-schedule-dark) 100%);
+  --btn-yellow-gradient: linear-gradient(135deg, var(--action-yellow) 0%, var(--action-yellow-dark) 100%);
 
-  --dashboard-spots-radial: radial-gradient(circle at 0% 0%, rgba(26, 118, 141, 0.4) 0%, transparent 50%),
-    radial-gradient(circle at 100% 100%, rgba(126, 87, 194, 0.4) 0%, transparent 50%),
-    radial-gradient(circle at 100% 0%, rgba(0, 210, 255, 0.3) 0%, transparent 40%),
-    radial-gradient(circle at 0% 100%, rgba(30, 58, 138, 0.4) 0%, transparent 40%);
-  --dashboard-vignette-radial: radial-gradient(circle, transparent 30%, oklch(0.08 0.012 265) 100%);
-
-  /* Shadcn Core */
-  --background: oklch(0.1 0.012 265);
-  --foreground: oklch(0.96 0.008 265);
-  --card: oklch(0.15 0.016 265);
-  --card-foreground: oklch(0.96 0.008 265);
-  --popover: oklch(0.15 0.016 265);
-  --popover-foreground: oklch(0.96 0.008 265);
-  --primary: #1a768d;
-  --primary-light: #34a9b6;
-  --primary-foreground: oklch(0.97 0.014 200);
-  --secondary: oklch(0.2 0.018 265);
-  --secondary-foreground: oklch(0.96 0.008 265);
-  --muted: oklch(0.18 0.014 265);
-  --muted-foreground: oklch(0.6 0.01 265);
-  --accent: oklch(0.2 0.03 230);
-  --accent-foreground: oklch(0.96 0.008 265);
-  --destructive: oklch(0.65 0.22 25);
-  --border: oklch(100% 0.00011 271.152 / 0.156);
-  --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.5 0.08 230);
-  --radius: 0.75rem;
-
-  /* Brand Colors */
-  --brand-cyan: #00d2ff;
-  --brand-cyan-soft: oklch(0.25 0.04 240);
-  --brand-cyan-hover: oklch(0.6 0.1 240);
-  --brand-purple: #7e57c2;
-  --brand-purple-soft: oklch(0.25 0.04 290);
-  --brand-purple-hover: oklch(0.6 0.1 290);
-
-  /* Status Semantic Colors */
-  --status-warning: oklch(0.85 0.18 75);
-  --status-live: oklch(0.73 0.19 20);
-  --status-success: oklch(0.72 0.18 145);
-
-  /* Action Card Accent Colors */
-  --action-new: #FF8F71;
-  --action-join: #4B89FF;
-  --action-schedule: #BC61F4;
-  --action-yellow: #FFCA41;
-  --notif-schedule: oklch(0.65 0.20 290);
+  /* Dashboard Backgrounds */
+  --dashboard-spots-radial: 
+    radial-gradient(circle at 0% 0%, color-mix(in oklch, var(--primary) 40%, transparent) 0%, transparent 50%),
+    radial-gradient(circle at 100% 100%, color-mix(in oklch, var(--brand-purple) 40%, transparent) 0%, transparent 50%),
+    radial-gradient(circle at 100% 0%, color-mix(in oklch, var(--brand-cyan) 30%, transparent) 0%, transparent 40%),
+    radial-gradient(circle at 0% 100%, oklch(0.35 0.12 261 / 40%) 0%, transparent 40%);
+  --dashboard-vignette-radial: radial-gradient(circle, transparent 30%, oklch(0.12 0.012 265) 100%);
 
   /* Scrollbar Theme Variables */
-  --scrollbar-thumb: oklch(0.3 0.04 240);
-  --scrollbar-track: oklch(0.12 0.01 265);
-  --card-footer-bg: oklch(0.18 0.014 265 / 50%);
+  --scrollbar-thumb: oklch(0.35 0.04 240);
+  --scrollbar-track: oklch(0.15 0.01 265);
+  --card-footer-bg: oklch(0.20 0.014 265 / 50%);
 
   /* Custom Glow Shadow */
-  --val-shadow-glow-cyan: 0 8px 32px oklch(0.4 0.1 240 / 40%);
+  --val-shadow-glow-cyan: 0 8px 32px oklch(0.45 0.12 240 / 40%);
 
-  /* Timing & Motion Tokens (Smoothed & Slowed Down) */
+  /* Timing & Motion Tokens */
   --duration-fast: 200ms;
   --duration-normal: 400ms;
   --duration-slow: 700ms;
-
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-bouncy: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   --ease-smooth: cubic-bezier(0.25, 1, 0.5, 1);
@@ -355,84 +356,74 @@
   --z-modal: 300;
   --z-toast: 400;
 
-  /* Solid State and Utility Variants - Used for Badges, Text, and Backgrounds */
-  --destructive-soft: oklch(0.65 0.22 25 / 10%); /* Used for Recording Available badge */
-  --destructive-soft-hover: oklch(0.65 0.22 25 / 20%);
-  --destructive-hover: oklch(0.65 0.22 25 / 15%);
-  --destructive-hover-strong: oklch(0.65 0.22 25 / 30%);
+  /* Explicit State Semantic Colors */
+  --destructive-soft: oklch(0.70 0.23 25 / 10%); 
+  --destructive-soft-hover: oklch(0.70 0.23 25 / 20%);
+  --destructive-hover: oklch(0.70 0.23 25 / 15%);
+  --destructive-hover-strong: oklch(0.70 0.23 25 / 30%);
 
-  /* Status Colors - Used for Meeting Badges (Completed, Live, etc.) */
-  --status-warning-soft: oklch(0.85 0.18 75 / 20%);
-  --status-warning-border: oklch(0.85 0.18 75 / 30%);
-  --status-warning-hover: oklch(0.85 0.18 75 / 30%);
+  --status-warning-soft: oklch(0.89 0.19 75 / 20%);
+  --status-warning-border: oklch(0.89 0.19 75 / 30%);
+  --status-warning-hover: oklch(0.89 0.19 75 / 30%);
 
-  --status-live-soft: oklch(0.73 0.19 20 / 20%);
-  --status-live-border: oklch(0.73 0.19 20 / 30%);
-  --status-live-hover: oklch(0.73 0.19 20 / 30%);
+  --status-live-soft: oklch(0.78 0.20 20 / 20%);
+  --status-live-border: oklch(0.78 0.20 20 / 30%);
+  --status-live-hover: oklch(0.78 0.20 20 / 30%);
 
-  --status-success-soft: oklch(0.72 0.18 145 / 10%);
-  --status-success-border: oklch(0.72 0.18 145 / 20%);
-  --status-success-hover: oklch(0.72 0.18 145 / 20%);
+  --status-success-soft: oklch(0.77 0.19 145 / 10%);
+  --status-success-border: oklch(0.77 0.19 145 / 20%);
+  --status-success-hover: oklch(0.77 0.19 145 / 20%);
+
+  --primary-soft-subtle: oklch(0.45 0.1 240 / 10%); 
+  --primary-soft-muted: oklch(0.45 0.1 240 / 20%); 
+  --primary-hover: oklch(0.45 0.1 240 / 80%);
+
+  --muted-hover: oklch(0.20 0.014 265 / 40%);
+  --muted-foreground-soft: oklch(0.65 0.01 265 / 20%); 
+  --muted-foreground-mid: oklch(0.65 0.01 265 / 60%);
+
+  --brand-cyan-soft-subtle: oklch(0.75 0.12 195 / 10%);
+  --brand-purple-soft-subtle: oklch(0.60 0.15 290 / 10%);
+  --brand-cyan-soft-muted: oklch(0.75 0.12 195 / 20%);
+  --brand-purple-soft-muted: oklch(0.60 0.15 290 / 20%);
 
 
-  /* Primary Soft Colors - Used for Selection Backgrounds and Accents */
-  --primary-soft-subtle: oklch(0.4 0.1 240 / 10%); /* Used for Topbar hover states */
-  --primary-soft-muted: oklch(0.4 0.1 240 / 20%); /* Used for Card hover states */
-  --primary-hover: oklch(0.4 0.1 240 / 80%);
+  /* Input Focus Rings */
+  --action-new-input: color-mix(in oklch, var(--action-new) 50%, transparent);
+  --action-join-input: color-mix(in oklch, var(--action-join) 50%, transparent);
+  --action-schedule-input: color-mix(in oklch, var(--action-schedule) 50%, transparent);
+  --action-yellow-input: color-mix(in oklch, var(--action-yellow) 80%, transparent);
 
-  /* Muted Text Colors - Used for secondary text */
-  --muted-hover: oklch(0.18 0.014 265 / 40%);
-  --muted-foreground-soft: oklch(0.6 0.01 265 / 20%); /* Used for Topbar descriptions */
-  --muted-foreground-mid: oklch(0.6 0.01 265 / 60%);
+  /* Subtle Card Shadows */
+  --val-shadow-action-new-subtle: 0 4px 6px -1px color-mix(in oklch, var(--action-new) 10%, transparent);
+  --val-shadow-action-join-subtle: 0 4px 6px -1px color-mix(in oklch, var(--action-join) 10%, transparent);
+  --val-shadow-action-schedule-subtle: 0 4px 6px -1px color-mix(in oklch, var(--action-schedule) 10%, transparent);
+  --val-shadow-action-yellow-subtle: 0 4px 6px -1px color-mix(in oklch, var(--action-yellow) 10%, transparent);
 
-  /* Brand Colors - Used for Quick Action Cards and Icons */
-  --brand-cyan-soft-subtle: oklch(0.7 0.12 195 / 10%);
-  --brand-purple-soft-subtle: oklch(0.55 0.15 290 / 10%);
-  --brand-cyan-soft-muted: oklch(0.7 0.12 195 / 20%);
-  --brand-purple-soft-muted: oklch(0.55 0.15 290 / 20%);
-
-  /* Action Card Colors */
-  --action-yellow-soft: rgba(255, 202, 65, 0.2);
-  --action-yellow-soft-subtle: rgba(255, 202, 65, 0.1);
-  --action-yellow-soft-muted: rgba(255, 202, 65, 0.2);
-
-  /* Input Focus Rings - Used for text inputs in QuickActions */
-  --action-new-input: rgba(255, 143, 113, 0.5);
-  --action-join-input: rgba(75, 137, 255, 0.5);
-  --action-schedule-input: rgba(188, 97, 244, 0.5);
-  --action-yellow-input: rgba(255, 202, 65, 0.8);
-
-  /* Subtle Card Shadows - Used for Quick Action Cards hover glow */
-  --val-shadow-action-new-subtle: 0 4px 6px -1px rgba(255, 143, 113, 0.1);
-  --val-shadow-action-join-subtle: 0 4px 6px -1px rgba(75, 137, 255, 0.1);
-  --val-shadow-action-schedule-subtle: 0 4px 6px -1px rgba(188, 97, 244, 0.1);
-  --val-shadow-action-yellow-subtle: 0 4px 6px -1px rgba(255, 202, 65, 0.1);
-
-  /* Deep Card Shadows - Used for Dialog and Action Card shadows */
-  --val-shadow-action-new-deep: 0 20px 25px -5px rgba(255, 143, 113, 0.4), 0 8px 10px -6px rgba(255, 143, 113, 0.4);
-  --val-shadow-action-new-muted: 0 25px 50px -12px rgba(255, 143, 113, 0.15);
-  --val-shadow-action-join-deep: 0 20px 25px -5px rgba(75, 137, 255, 0.4), 0 8px 10px -6px rgba(75, 137, 255, 0.4);
-  --val-shadow-action-join-muted: 0 25px 50px -12px rgba(75, 137, 255, 0.15);
-  --val-shadow-action-schedule-deep: 0 20px 25px -5px rgba(188, 97, 244, 0.4), 0 8px 10px -6px rgba(188, 97, 244, 0.4);
-  --val-shadow-action-schedule-muted: 0 25px 50px -12px rgba(188, 97, 244, 0.15);
-  --val-shadow-action-yellow-deep: 0 20px 25px -5px rgba(255, 202, 65, 0.4), 0 8px 10px -6px rgba(255, 202, 65, 0.4);
-  --val-shadow-action-yellow-muted: 0 25px 50px -12px rgba(255, 202, 65, 0.15);
+  /* Deep Card Shadows */
+  --val-shadow-action-new-deep: 0 20px 25px -5px color-mix(in oklch, var(--action-new) 40%, transparent), 0 8px 10px -6px color-mix(in oklch, var(--action-new) 40%, transparent);
+  --val-shadow-action-new-muted: 0 25px 50px -12px color-mix(in oklch, var(--action-new) 15%, transparent);
+  --val-shadow-action-join-deep: 0 20px 25px -5px color-mix(in oklch, var(--action-join) 40%, transparent), 0 8px 10px -6px color-mix(in oklch, var(--action-join) 40%, transparent);
+  --val-shadow-action-join-muted: 0 25px 50px -12px color-mix(in oklch, var(--action-join) 15%, transparent);
+  --val-shadow-action-schedule-deep: 0 20px 25px -5px color-mix(in oklch, var(--action-schedule) 40%, transparent), 0 8px 10px -6px color-mix(in oklch, var(--action-schedule) 40%, transparent);
+  --val-shadow-action-schedule-muted: 0 25px 50px -12px color-mix(in oklch, var(--action-schedule) 15%, transparent);
+  --val-shadow-action-yellow-deep: 0 20px 25px -5px color-mix(in oklch, var(--action-yellow) 40%, transparent), 0 8px 10px -6px color-mix(in oklch, var(--action-yellow) 40%, transparent);
+  --val-shadow-action-yellow-muted: 0 25px 50px -12px color-mix(in oklch, var(--action-yellow) 15%, transparent);
 
   /* Dialog Backgrounds */
-  --dialog-bg-new: rgba(25, 10, 5, 0.95);
-  --dialog-bg-join: rgba(5, 10, 25, 0.95);
-  --dialog-bg-schedule: rgba(15, 5, 25, 0.95);
-  --dialog-bg-yellow: rgba(25, 20, 5, 0.95);
+  --dialog-bg-new: oklch(0.148 0.015 37.1 / 95%);
+  --dialog-bg-join: oklch(0.158 0.023 268.4 / 95%);
+  --dialog-bg-schedule: oklch(0.155 0.025 315.6 / 95%);
+  --dialog-bg-yellow: oklch(0.179 0.019 86.6 / 95%);
 
-  /* Black Opacities - Used for Overlays, Modals, and Backdrops */
-  --black-soft-subtle: rgba(0, 0, 0, 0.1);
-  --black-soft-muted: rgba(0, 0, 0, 0.4);
-  --black-soft-deep: rgba(0, 0, 0, 0.6);
+  /* Black & White Opacities */
+  --black-soft-subtle: oklch(0 0 0 / 10%);
+  --black-soft-muted: oklch(0 0 0 / 40%);
+  --black-soft-deep: oklch(0 0 0 / 60%);
 
-  /* White Opacities - Used for Hero Clock Text and Skeleton Backgrounds */
-  --white-soft-subtle: rgba(255, 255, 255, 0.05); /* Used for faint text */
-  --white-soft-muted: rgba(255, 255, 255, 0.1); /* Used for skeleton loaders */
-  --white-soft-deep: rgba(255, 255, 255, 0.5); /* Used for date displays */
+  --white-soft-subtle: oklch(1 0 0 / 5%);
+  --white-soft-muted: oklch(1 0 0 / 10%);
+  --white-soft-deep: oklch(1 0 0 / 50%); 
 }
 
 /* ─── Base Layer ──────────────────────────────────────────────────────────── */
