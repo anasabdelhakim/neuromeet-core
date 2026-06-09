@@ -8,9 +8,9 @@ export const Cards = [
     desc: "Start an instant live session",
     cta: "Start Now",
     href: "/livekit",
-    gradFrom: "from-brand-cyan-soft-20",
-    iconBg: "bg-brand-cyan-soft-15 text-brand-cyan",
-    glow: "hover:shadow hover:shadow-brand-cyan-soft-20",
+    gradFrom: "from-brand-cyan-soft-muted",
+    iconBg: "bg-brand-cyan-soft-subtle text-brand-cyan",
+    glow: "hover:shadow hover:shadow-brand-cyan-soft-muted",
   },
   {
     id: "join",
@@ -19,9 +19,9 @@ export const Cards = [
     desc: "Enter a room code or link",
     cta: "Join",
     hasInput: true,
-    gradFrom: "from-brand-purple-soft-20",
-    iconBg: "bg-brand-purple-soft-15 text-brand-purple",
-    glow: "hover:shadow-brand-purple-soft-20",
+    gradFrom: "from-brand-purple-soft-muted",
+    iconBg: "bg-brand-purple-soft-subtle text-brand-purple",
+    glow: "hover:shadow-brand-purple-soft-muted",
   },
   {
     id: "schedule",
@@ -29,9 +29,9 @@ export const Cards = [
     title: "Schedule",
     desc: "Plan your next lecture",
     cta: "Plan Now",
-    gradFrom: "from-primary-soft-20",
-    iconBg: "bg-primary-soft-mid text-primary-light",
-    glow: "hover:shadow-primary-soft-20",
+    gradFrom: "from-primary-soft-muted",
+    iconBg: "bg-primary-soft-muted text-primary-light",
+    glow: "hover:shadow-primary-soft-muted",
   },
 ] as const;
 

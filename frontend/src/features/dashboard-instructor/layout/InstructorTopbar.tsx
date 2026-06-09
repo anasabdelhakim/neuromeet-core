@@ -59,12 +59,12 @@ function NotificationItem({
       </div>
     ),
     schedule: (
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-notif-schedule-soft text-notif-schedule">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
         <Bell className="h-4 w-4" />
       </div>
     ),
     system: (
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-soft-subtle text-primary">
         <Search className="h-4 w-4" />
       </div>
     ),
@@ -77,7 +77,7 @@ function NotificationItem({
       onClick={onRead}
       className={cn(
         "relative flex cursor-pointer gap-3 px-4 py-3 transition-colors hover:bg-muted-hover",
-        !data.read && "bg-primary-soft-extra",
+        !data.read && "bg-primary-soft-subtle",
       )}
     >
       {!data.read && (
@@ -147,7 +147,7 @@ function NotificationDropdown({
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger
         className={cn(
-          "relative flex h-12 w-12 cursor-pointer items-center justify-center rounded-md bg-transparent p-0 text-muted-foreground outline-none transition-all hover:bg-custom-gray hover:text-foreground",
+          "relative flex h-12 w-12 cursor-pointer items-center justify-center rounded-medium bg-transparent p-0 text-muted-foreground outline-none transition-all hover:bg-custom-gray hover:text-foreground",
           isOpen && "bg-custom-gray text-foreground",
         )}
       >
@@ -162,7 +162,7 @@ function NotificationDropdown({
       <PopoverContent
         align="end"
         sideOffset={12}
-        className="z-modal w-96 overflow-hidden rounded-xl border-border bg-card p-0 shadow-lg"
+        className="z-modal w-96 overflow-hidden rounded-soft border-border bg-card p-0 shadow-lg"
       >
         <span className="absolute -top-1.5 right-4.5 z-20 h-3 w-3 rotate-45 border-l border-t border-border bg-card"></span>
 

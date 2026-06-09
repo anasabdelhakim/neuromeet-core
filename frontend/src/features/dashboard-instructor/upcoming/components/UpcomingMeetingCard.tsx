@@ -26,7 +26,7 @@ export  function UpcomingMeetingCard({
         "w-full p-5 flex flex-col gap-4 transition-all duration-normal ease-standard transform-gpu hover:border-primary-hover",
         isArrived || isStartingSoon
           ? "border backdrop-blur-md shadow-lg shadow-black-20"
-          : "bg-black-soft-20 border border-border shadow-none opacity-85 hover:opacity-100",
+          : "bg-black-soft-subtle border border-border shadow-none opacity-85 hover:opacity-100",
       )}
     >
       <div className="flex items-center justify-between w-full">

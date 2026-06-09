@@ -15,7 +15,7 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
   );
 
   return (
-    <Card className="w-full rounded-lg p-5 flex flex-col gap-4 border transition-all duration-normal ease-standard transform-gpu hover:border-primary-hover">
+    <Card className="w-full rounded-soft p-5 flex flex-col gap-4 border transition-all duration-normal ease-standard transform-gpu hover:border-primary-hover">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full">
         {/* Left Side: Content */}
         <div className="flex flex-col gap-1.5 min-w-0">
@@ -39,7 +39,7 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
               <span>{meeting.dateTime}</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="text-xs text-muted-foreground-soft-30">•</span>
+              <span className="text-xs text-muted-foreground-muted">•</span>
               <span>{meeting.duration} Mins Duration</span>
             </div>
           </CardDescription>
@@ -51,12 +51,12 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
             <AvatarChain />
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" className="border rounded-sm">
+            <Button variant="outline" className="border rounded-medium">
               <BarChart3 size={18} className="text-primary-light" />
               <span>Report</span>
             </Button>
             {meeting.hasRecording && (
-              <Button className="border rounded-sm">
+              <Button className="border rounded-medium">
                 <Play size={18} fill="currentColor" />
                 <span>Play</span>
               </Button>

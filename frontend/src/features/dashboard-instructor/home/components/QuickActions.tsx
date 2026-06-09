@@ -78,7 +78,7 @@ export function QuickActions() {
               )}
             >
               <CardHeader>
-                <div className={cn("w-fit p-3 rounded-xl", iconGradientClass)}>
+                <div className={cn("w-fit p-3 rounded-soft", iconGradientClass)}>
                   <Icon className="h-6 w-6" />
                 </div>
                 <CardTitle className="text-xl font-bold mt-3">
@@ -99,14 +99,14 @@ export function QuickActions() {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent
           className={cn(
-            "sm:max-w-md backdrop-blur-2xl border p-6 rounded-2xl",
+            "sm:max-w-md backdrop-blur-2xl border p-6 !rounded-soft",
             activeDialogClass,
           )}
         >
           <DialogHeader className="mb-2">
             <div
               className={cn(
-                "w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-inner",
+                "w-12 h-12 rounded-soft flex items-center justify-center mb-4 shadow-inner",
                 activeIconGradientClass,
               )}
             >
@@ -124,17 +124,17 @@ export function QuickActions() {
             {activeCard.id === "new" && (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-foreground-soft-80">
+                  <Label className="text-sm font-medium text-foreground/80">
                     Session Name
                   </Label>
                   <Input
                     placeholder="e.g. Ad-hoc Q&A"
-                    className="bg-black-soft-40 focus-visible:ring-action-new-soft-50 focus-visible:border-action-new transition-all duration-fast ease-standard h-12 px-4 rounded-xl"
+                    className="bg-black-soft-muted focus-visible:ring-action-new-input focus-visible:border-action-new transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
                   />
                 </div>
                 <Button
                   className={cn(
-                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-lg transition-all duration-normal ease-standard rounded-xl hover:scale-[1.02] border  hover:brightness-110",
+                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-lg transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border hover:brightness-110",
                     activeButtonClass,
                   )}
                 >
@@ -145,17 +145,17 @@ export function QuickActions() {
             {activeCard.id === "join" && (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-foreground-soft-80">
+                  <Label className="text-sm font-medium text-foreground/80">
                     Room Code or Link
                   </Label>
                   <Input
                     placeholder="Enter 6-digit code or URL..."
-                    className="bg-black-soft-40 focus-visible:ring-action-join-soft-50 focus-visible:border-action-join transition-all duration-fast ease-standard h-12 px-4 rounded-xl"
+                    className="bg-black-soft-muted focus-visible:ring-action-join-input focus-visible:border-action-join transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
                   />
                 </div>
                 <Button
                   className={cn(
-                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-lg transition-all duration-normal ease-standard rounded-xl hover:scale-[1.02] border hover:brightness-110",
+                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-lg transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border hover:brightness-110",
                     activeButtonClass,
                   )}
                 >
@@ -166,22 +166,22 @@ export function QuickActions() {
             {activeCard.id === "schedule" && (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-foreground-soft-80">
+                  <Label className="text-sm font-medium text-foreground/80">
                     Lecture Topic
                   </Label>
                   <Input
                     placeholder="e.g. Advanced AI Architecture"
-                    className="bg-black-soft-40  focus-visible:ring-action-schedule-soft-50 focus-visible:border-action-schedule transition-all duration-fast ease-standard h-12 px-4 rounded-xl"
+                    className="bg-black-soft-muted  focus-visible:ring-action-schedule-input focus-visible:border-action-schedule transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-foreground-soft-80">
+                  <Label className="text-sm font-medium text-foreground/80">
                     Date & Time
                   </Label>
                   <Popover>
                     <PopoverTrigger
                       className={cn(
-                        "w-full mb-2 border-2 flex items-center justify-start bg-black-soft-40  text-left font-normal h-12 px-4 rounded-xl hover:bg-black-soft-60 hover:text-white transition-all duration-fast ease-standard focus-visible:ring-action-schedule-soft-50 focus-visible:border-action-schedule outline-none",
+                        "w-full mb-2 border-2 flex items-center justify-start bg-black-soft-muted  text-left font-normal h-12 px-4 rounded-soft hover:bg-black-soft-deep hover:text-white transition-all duration-fast ease-standard focus-visible:ring-action-schedule-input focus-visible:border-action-schedule outline-none",
                         !date && "text-muted-foreground",
                       )}
                     >
@@ -192,7 +192,7 @@ export function QuickActions() {
                       className="w-auto p-0 border-none bg-transparent shadow-none"
                       align="start"
                     >
-                      <Card className="mx-auto w-fit bg-card backdrop-blur-3xl  text-white shadow-xl rounded-xl overflow-hidden">
+                      <Card className="mx-auto w-fit bg-card backdrop-blur-3xl  text-white shadow-xl rounded-soft overflow-hidden">
                         <CardContent className="p-0">
                           <Calendar
                             mode="single"
@@ -202,7 +202,7 @@ export function QuickActions() {
                             className="p-3"
                           />
                         </CardContent>
-                        <CardFooter className="border-t border-border bg-black-soft-40 p-4">
+                        <CardFooter className="border-t border-border bg-black-soft-muted p-4">
                           <FieldGroup className="w-full gap-4">
                             <Field className="space-y-1">
                               <FieldLabel
@@ -211,7 +211,7 @@ export function QuickActions() {
                               >
                                 Start Time
                               </FieldLabel>
-                              <InputGroup className="bg-black-soft-40  rounded-lg">
+                              <InputGroup className="bg-black-soft-muted  rounded-soft">
                                 <InputGroupInput
                                   id="time-from"
                                   type="time"
@@ -231,7 +231,7 @@ export function QuickActions() {
                               >
                                 End Time
                               </FieldLabel>
-                              <InputGroup className="bg-black-soft-40  rounded-lg">
+                              <InputGroup className="bg-black-soft-muted  rounded-soft">
                                 <InputGroupInput
                                   id="time-to"
                                   type="time"
@@ -252,7 +252,7 @@ export function QuickActions() {
                 </div>
                 <Button
                   className={cn(
-                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-lg transition-all duration-normal ease-standard rounded-xl hover:scale-[1.02] border  hover:brightness-110",
+                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-lg transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border  hover:brightness-110",
                     activeButtonClass,
                   )}
                 >
@@ -263,17 +263,17 @@ export function QuickActions() {
             {activeCard.id === "recordings" && (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-foreground-soft-80">
+                  <Label className="text-sm font-medium text-foreground/80">
                     Search Keyword
                   </Label>
                   <Input
                     placeholder="Search by topic, date, or tag..."
-                    className="bg-black-soft-40  focus-visible:ring-action-recordings-soft-50 focus-visible:border-action-recordings transition-all duration-fast ease-standard h-12 px-4 rounded-xl"
+                    className="bg-black-soft-muted focus-visible:ring-action-yellow-input focus-visible:border-action-yellow transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
                   />
                 </div>
                 <Button
                   className={cn(
-                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-lg transition-all duration-normal ease-standard rounded-xl hover:scale-[1.02] border  hover:brightness-110",
+                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-lg transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border  hover:brightness-110",
                     activeButtonClass,
                   )}
                 >

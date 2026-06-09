@@ -13,16 +13,6 @@
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
 
-  /* Sidebar */
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-
   /* Charts */
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
@@ -77,22 +67,15 @@
   --color-card-footer-bg: var(--card-footer-bg);
 
   /* Radius Scale */
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-soft: var(--radius);
+  --radius-medium: calc(var(--radius) * 0.8);
+  --radius-hard: calc(var(--radius) * 0.6);
 
   /* Timing & Motion Tokens */
   --transition-duration-fast: var(--duration-fast);
   --transition-duration-normal: var(--duration-normal);
   --transition-duration-slow: var(--duration-slow);
 
-  --transition-timing-function-standard: var(--ease-standard);
-  --transition-timing-function-bouncy: var(--ease-bouncy);
-  --transition-timing-function-smooth: var(--ease-smooth); /* Added for buttery smooth entrances */
 
   /* Z-Index Semantic Layering */
   --z-index-dropdown: var(--z-dropdown);
@@ -119,102 +102,92 @@
   --color-status-success-border: var(--status-success-border);
   --color-status-success-hover: var(--status-success-hover);
 
-  --color-notif-schedule-soft: var(--notif-schedule-soft);
 
-  --color-primary-soft-extra: var(--primary-soft-extra);
-  --color-primary-soft: var(--primary-soft);
-  --color-primary-soft-mid: var(--primary-soft-mid);
-  --color-primary-soft-high: var(--primary-soft-high);
+  --color-primary-soft-subtle: var(--primary-soft-subtle);
+  --color-primary-soft-muted: var(--primary-soft-muted);
   --color-primary-hover: var(--primary-hover);
-  --color-primary-ring-soft: var(--primary-ring-soft);
 
   --color-muted-hover: var(--muted-hover);
   --color-muted-foreground-soft: var(--muted-foreground-soft);
   --color-muted-foreground-mid: var(--muted-foreground-mid);
-  --color-muted-foreground-soft-30: var(--muted-foreground-soft-30);
-  --color-muted-foreground-soft-90: var(--muted-foreground-soft-90);
 
-  --color-brand-cyan-soft-15: var(--brand-cyan-soft-15);
-  --color-brand-cyan-soft-20: var(--brand-cyan-soft-20);
-  --color-brand-purple-soft-15: var(--brand-purple-soft-15);
-  --color-brand-purple-soft-20: var(--brand-purple-soft-20);
-  --color-primary-soft-20: var(--primary-soft-20);
+  --color-white-soft-subtle: var(--white-soft-subtle);
+  --color-white-soft-muted: var(--white-soft-muted);
+  --color-white-soft-deep: var(--white-soft-deep);
 
-  /* Card Accents & Soft Colors */
-  --color-action-join-soft: var(--action-join-soft);
-  --color-action-schedule-soft: var(--action-schedule-soft);
-  --color-action-recordings-soft: var(--action-recordings-soft);
+  --color-brand-cyan-soft-subtle: var(--brand-cyan-soft-subtle);
+  --color-brand-cyan-soft-muted: var(--brand-cyan-soft-muted);
+  --color-brand-purple-soft-subtle: var(--brand-purple-soft-subtle);
+  --color-brand-purple-soft-muted: var(--brand-purple-soft-muted);
 
-  --color-action-new-soft-10: var(--action-new-soft-10);
-  --color-action-join-soft-10: var(--action-join-soft-10);
-  --color-action-schedule-soft-10: var(--action-schedule-soft-10);
-  --color-action-recordings-soft-10: var(--action-recordings-soft-10);
 
-  --color-action-new-soft-50: var(--action-new-soft-50);
-  --color-action-join-soft-50: var(--action-join-soft-50);
-  --color-action-schedule-soft-50: var(--action-schedule-soft-50);
-  --color-action-recordings-soft-50: var(--action-recordings-soft-50);
+
+  --color-action-new-input: var(--action-new-input);
+  --color-action-join-input: var(--action-join-input);
+  --color-action-schedule-input: var(--action-schedule-input);
+  --color-action-yellow-input: var(--action-yellow-input);
 
   --color-dialog-bg-new: var(--dialog-bg-new);
   --color-dialog-bg-join: var(--dialog-bg-join);
   --color-dialog-bg-schedule: var(--dialog-bg-schedule);
-  --color-dialog-bg-recordings: var(--dialog-bg-recordings);
-
-  --color-foreground-soft-80: var(--foreground-soft-80);
+  --color-dialog-bg-yellow: var(--dialog-bg-yellow);
+  
+  --color-action-yellow-soft-subtle: var(--action-yellow-soft-subtle);
+  --color-action-yellow-soft-muted: var(--action-yellow-soft-muted);
 
   /* Shadows (Mapped cleanly) */
-  --shadow-action-new-40: var(--val-shadow-action-new-40);
-  --shadow-action-new-15: var(--val-shadow-action-new-15);
-  --shadow-action-new-10: var(--val-shadow-action-new-10);
+  --shadow-action-new-deep: var(--val-shadow-action-new-deep);
+  --shadow-action-new-muted: var(--val-shadow-action-new-muted);
+  --shadow-action-new-subtle: var(--val-shadow-action-new-subtle);
   
-  --shadow-action-join-40: var(--val-shadow-action-join-40);
-  --shadow-action-join-15: var(--val-shadow-action-join-15);
-  --shadow-action-join-10: var(--val-shadow-action-join-10);
+  --shadow-action-join-deep: var(--val-shadow-action-join-deep);
+  --shadow-action-join-muted: var(--val-shadow-action-join-muted);
+  --shadow-action-join-subtle: var(--val-shadow-action-join-subtle);
   
-  --shadow-action-schedule-40: var(--val-shadow-action-schedule-40);
-  --shadow-action-schedule-15: var(--val-shadow-action-schedule-15);
-  --shadow-action-schedule-10: var(--val-shadow-action-schedule-10);
+  --shadow-action-schedule-deep: var(--val-shadow-action-schedule-deep);
+  --shadow-action-schedule-muted: var(--val-shadow-action-schedule-muted);
+  --shadow-action-schedule-subtle: var(--val-shadow-action-schedule-subtle);
   
-  --shadow-action-recordings-40: var(--val-shadow-action-recordings-40);
-  --shadow-action-recordings-15: var(--val-shadow-action-recordings-15);
-  --shadow-action-recordings-10: var(--val-shadow-action-recordings-10);
+  --shadow-action-yellow-deep: var(--val-shadow-action-yellow-deep);
+  --shadow-action-yellow-muted: var(--val-shadow-action-yellow-muted);
+  --shadow-action-yellow-subtle: var(--val-shadow-action-yellow-subtle);
 
-  --shadow-black-20: var(--val-shadow-black-20);
+  /* ─── Glow Shadows ────────────────────────────────────────────────────── */
   --shadow-glow-cyan: var(--val-shadow-glow-cyan);
 
-  /* Borders & Inputs */
-  --color-border-soft: var(--border-soft);
-  --color-border-soft-30: var(--border-soft-30);
-  --color-border-soft-40: var(--border-soft-40);
-  --color-input-soft: var(--input-soft);
-  --color-sidebar-foreground-soft: var(--sidebar-foreground-soft);
-
-  --color-black-soft-10: var(--black-soft-10);
-  --color-black-soft-20: var(--black-soft-20);
-  --color-black-soft-40: var(--black-soft-40);
-  --color-black-soft-50: var(--black-soft-50);
-  --color-black-soft-60: var(--black-soft-60);
-  --color-black-soft-80: var(--black-soft-80);
+  --color-black-soft-subtle: var(--black-soft-subtle);
+  --color-black-soft-muted: var(--black-soft-muted);
+  --color-black-soft-deep: var(--black-soft-deep);
 
   /* Static Gradients (Background Images ONLY to avoid duplication) */
+  /* Main Scene Gradients */
   --background-image-brand-gradient: var(--brand-gradient);
   --background-image-logo-gradient: var(--logo-gradient);
+  
+  /* Auth Backgrounds */
   --background-image-auth-scene-gradient: var(--auth-scene-gradient);
   --background-image-auth-scene-before-radial: var(--auth-scene-before-radial);
   --background-image-auth-scene-after-radial: var(--auth-scene-after-radial);
+  
+  /* Action Card Background Gradients */
   --background-image-action-new-gradient: var(--action-new-gradient);
   --background-image-action-join-gradient: var(--action-join-gradient);
   --background-image-action-schedule-gradient: var(--action-schedule-gradient);
-  --background-image-action-recordings-gradient: var(--action-recordings-gradient);
+  --background-image-action-yellow-gradient: var(--action-yellow-gradient);
+  
+  /* Icon Gradients */
   --background-image-icon-new-gradient: var(--icon-new-gradient);
   --background-image-icon-join-gradient: var(--icon-join-gradient);
   --background-image-icon-schedule-gradient: var(--icon-schedule-gradient);
-  --background-image-icon-recordings-gradient: var(--icon-recordings-gradient);
+  --background-image-icon-yellow-gradient: var(--icon-yellow-gradient);
+  
+  /* Button Gradients */
   --background-image-btn-new-gradient: var(--btn-new-gradient);
   --background-image-btn-join-gradient: var(--btn-join-gradient);
   --background-image-btn-schedule-gradient: var(--btn-schedule-gradient);
-  --background-image-btn-recordings-gradient: var(--btn-recordings-gradient);
-  --background-image-upcoming-badge: var(--upcoming-badge-gradient);
+  --background-image-btn-yellow-gradient: var(--btn-yellow-gradient);
+  
+  /* Dashboard & Badges Backgrounds */
   --background-image-dashboard-spots-radial: var(--dashboard-spots-radial);
   --background-image-dashboard-vignette-radial: var(--dashboard-vignette-radial);
 
@@ -225,6 +198,7 @@
   --animate-fade-in-standard: fade-in var(--duration-normal) var(--ease-standard) both;
   --animate-page-entrance: slide-in-bottom-6 var(--duration-slow) var(--ease-smooth) both;
   --animate-card-entrance: slide-in-bottom-4 var(--duration-slow) var(--ease-smooth) both;
+  --animate-alert-entrance: slide-in-top-2 var(--duration-normal) var(--ease-standard) both;
 
   /* Keyframes (Defined securely in @theme inline for native v4 support) */
   @keyframes fade-in {
@@ -237,6 +211,10 @@
   }
   @keyframes slide-in-bottom-4 {
     from { transform: translateY(1rem); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes slide-in-top-2 {
+    from { transform: translateY(-0.5rem); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
   }
   @keyframes gradient-shift {
@@ -293,27 +271,23 @@
   --action-new-gradient: linear-gradient(135deg, rgba(255,143,113,0.3) 0%, rgba(255,143,113,0.9) 40%, rgba(225,90,70,0.9) 100%);
   --action-join-gradient: linear-gradient(135deg, rgba(75,137,255,0.3) 0%, rgba(75,137,255,0.9) 40%, rgba(50,108,255,0.9) 100%);
   --action-schedule-gradient: linear-gradient(135deg, rgba(188,97,244,0.3) 0%, rgba(188,97,244,0.9) 40%, rgba(140,68,212,0.9) 100%);
-  --action-recordings-gradient: linear-gradient(135deg, rgba(255,202,65,0.3) 0%, rgba(255,202,65,0.9) 40%, rgba(229,175,37,0.9) 100%);
+  --action-yellow-gradient: linear-gradient(135deg, rgba(255,202,65,0.3) 0%, rgba(255,202,65,0.9) 40%, rgba(229,175,37,0.9) 100%);
 
   --icon-new-gradient: linear-gradient(315deg, rgba(255,143,113,0.2) 0%, rgba(255,143,113,0.9) 40%, rgba(225,90,70,0.9) 100%);
   --icon-join-gradient: linear-gradient(315deg, rgba(75,137,255,0.2) 0%, rgba(75,137,255,0.9) 40%, rgba(50,108,255,0.9) 100%);
   --icon-schedule-gradient: linear-gradient(315deg, rgba(188,97,244,0.2) 0%, rgba(188,97,244,0.9) 40%, rgba(140,68,212,0.9) 100%);
-  --icon-recordings-gradient: linear-gradient(315deg, rgba(255,202,65,0.2) 0%, rgba(255,202,65,0.9) 40%, rgba(229,175,37,0.9) 100%);
+  --icon-yellow-gradient: linear-gradient(315deg, rgba(255,202,65,0.2) 0%, rgba(255,202,65,0.9) 40%, rgba(229,175,37,0.9) 100%);
 
   --btn-new-gradient: linear-gradient(135deg, rgba(255,143,113,1) 0%, rgba(225,90,70,1) 100%);
   --btn-join-gradient: linear-gradient(135deg, rgba(75,137,255,1) 0%, rgba(50,108,255,1) 100%);
   --btn-schedule-gradient: linear-gradient(135deg, rgba(188,97,244,1) 0%, rgba(140,68,212,1) 100%);
-  --btn-recordings-gradient: linear-gradient(135deg, rgba(255,202,65,1) 0%, rgba(229,175,37,1) 100%);
-
-  --upcoming-badge-gradient: linear-gradient(135deg, var(--brand-cyan-soft-15), var(--brand-purple-soft-15));
+  --btn-yellow-gradient: linear-gradient(135deg, rgba(255,202,65,1) 0%, rgba(229,175,37,1) 100%);
 
   --dashboard-spots-radial: radial-gradient(circle at 0% 0%, rgba(26, 118, 141, 0.4) 0%, transparent 50%),
     radial-gradient(circle at 100% 100%, rgba(126, 87, 194, 0.4) 0%, transparent 50%),
     radial-gradient(circle at 100% 0%, rgba(0, 210, 255, 0.3) 0%, transparent 40%),
     radial-gradient(circle at 0% 100%, rgba(30, 58, 138, 0.4) 0%, transparent 40%);
   --dashboard-vignette-radial: radial-gradient(circle, transparent 30%, oklch(0.08 0.012 265) 100%);
-
-  --primary-ring-soft: oklch(0.2 0.04 240 / 20%);
 
   /* Shadcn Core */
   --background: oklch(0.1 0.012 265);
@@ -337,16 +311,6 @@
   --ring: oklch(0.5 0.08 230);
   --radius: 0.75rem;
 
-  /* Sidebar */
-  --sidebar: oklch(0.13 0.014 265);
-  --sidebar-foreground: oklch(0.96 0.008 265);
-  --sidebar-primary: #1a768d;
-  --sidebar-primary-foreground: oklch(0.97 0.014 200);
-  --sidebar-accent: oklch(0.18 0.018 265);
-  --sidebar-accent-foreground: oklch(0.96 0.008 265);
-  --sidebar-border: oklch(1 0 0 / 8%);
-  --sidebar-ring: oklch(0.5 0.08 230);
-
   /* Brand Colors */
   --brand-cyan: #00d2ff;
   --brand-cyan-soft: oklch(0.25 0.04 240);
@@ -364,13 +328,12 @@
   --action-new: #FF8F71;
   --action-join: #4B89FF;
   --action-schedule: #BC61F4;
-  --action-recordings: #FFCA41;
+  --action-yellow: #FFCA41;
   --notif-schedule: oklch(0.65 0.20 290);
 
   /* Scrollbar Theme Variables */
   --scrollbar-thumb: oklch(0.3 0.04 240);
   --scrollbar-track: oklch(0.12 0.01 265);
-
   --card-footer-bg: oklch(0.18 0.014 265 / 50%);
 
   /* Custom Glow Shadow */
@@ -392,16 +355,13 @@
   --z-modal: 300;
   --z-toast: 400;
 
-  /* Glassmorphism */
-  --glass-blur: blur(12px);
-  --glass-border: oklch(1 0 0 / 10%);
-
-  /* Solid State and Utility Variants */
-  --destructive-soft: oklch(0.65 0.22 25 / 10%);
+  /* Solid State and Utility Variants - Used for Badges, Text, and Backgrounds */
+  --destructive-soft: oklch(0.65 0.22 25 / 10%); /* Used for Recording Available badge */
   --destructive-soft-hover: oklch(0.65 0.22 25 / 20%);
   --destructive-hover: oklch(0.65 0.22 25 / 15%);
   --destructive-hover-strong: oklch(0.65 0.22 25 / 30%);
 
+  /* Status Colors - Used for Meeting Badges (Completed, Live, etc.) */
   --status-warning-soft: oklch(0.85 0.18 75 / 20%);
   --status-warning-border: oklch(0.85 0.18 75 / 30%);
   --status-warning-hover: oklch(0.85 0.18 75 / 30%);
@@ -414,78 +374,65 @@
   --status-success-border: oklch(0.72 0.18 145 / 20%);
   --status-success-hover: oklch(0.72 0.18 145 / 20%);
 
-  --notif-schedule-soft: oklch(0.65 0.20 290 / 10%);
 
-  --primary-soft-extra: oklch(0.4 0.1 240 / 5%);
-  --primary-soft: oklch(0.4 0.1 240 / 10%);
-  --primary-soft-mid: oklch(0.4 0.1 240 / 15%);
-  --primary-soft-high: oklch(0.4 0.1 240 / 20%);
+  /* Primary Soft Colors - Used for Selection Backgrounds and Accents */
+  --primary-soft-subtle: oklch(0.4 0.1 240 / 10%); /* Used for Topbar hover states */
+  --primary-soft-muted: oklch(0.4 0.1 240 / 20%); /* Used for Card hover states */
   --primary-hover: oklch(0.4 0.1 240 / 80%);
 
+  /* Muted Text Colors - Used for secondary text */
   --muted-hover: oklch(0.18 0.014 265 / 40%);
-  --muted-foreground-soft: oklch(0.6 0.01 265 / 20%);
+  --muted-foreground-soft: oklch(0.6 0.01 265 / 20%); /* Used for Topbar descriptions */
   --muted-foreground-mid: oklch(0.6 0.01 265 / 60%);
-  --muted-foreground-soft-30: oklch(0.6 0.01 265 / 30%);
-  --muted-foreground-soft-90: oklch(0.6 0.01 265 / 90%);
 
-  --brand-cyan-soft-15: oklch(0.7 0.12 195 / 15%);
-  --brand-purple-soft-15: oklch(0.55 0.15 290 / 15%);
-  --brand-cyan-soft-20: oklch(0.25 0.04 240 / 20%);
-  --brand-purple-soft-20: oklch(0.25 0.04 290 / 20%);
-  --primary-soft-20: oklch(0.4 0.1 240 / 20%);
+  /* Brand Colors - Used for Quick Action Cards and Icons */
+  --brand-cyan-soft-subtle: oklch(0.7 0.12 195 / 10%);
+  --brand-purple-soft-subtle: oklch(0.55 0.15 290 / 10%);
+  --brand-cyan-soft-muted: oklch(0.7 0.12 195 / 20%);
+  --brand-purple-soft-muted: oklch(0.55 0.15 290 / 20%);
 
-  --foreground-soft-80: oklch(0.96 0.008 265 / 80%);
+  /* Action Card Colors */
+  --action-yellow-soft: rgba(255, 202, 65, 0.2);
+  --action-yellow-soft-subtle: rgba(255, 202, 65, 0.1);
+  --action-yellow-soft-muted: rgba(255, 202, 65, 0.2);
 
-  /* Action Card Colors & Shadows */
-  --action-join-soft: rgba(75, 137, 255, 0.2);
-  --action-schedule-soft: rgba(188, 97, 244, 0.2);
-  --action-recordings-soft: rgba(255, 202, 65, 0.2);
+  /* Input Focus Rings - Used for text inputs in QuickActions */
+  --action-new-input: rgba(255, 143, 113, 0.5);
+  --action-join-input: rgba(75, 137, 255, 0.5);
+  --action-schedule-input: rgba(188, 97, 244, 0.5);
+  --action-yellow-input: rgba(255, 202, 65, 0.8);
 
-  --action-new-soft-50: rgba(255, 143, 113, 0.5);
-  --action-join-soft-50: rgba(75, 137, 255, 0.5);
-  --action-schedule-soft-50: rgba(188, 97, 244, 0.5);
+  /* Subtle Card Shadows - Used for Quick Action Cards hover glow */
+  --val-shadow-action-new-subtle: 0 4px 6px -1px rgba(255, 143, 113, 0.1);
+  --val-shadow-action-join-subtle: 0 4px 6px -1px rgba(75, 137, 255, 0.1);
+  --val-shadow-action-schedule-subtle: 0 4px 6px -1px rgba(188, 97, 244, 0.1);
+  --val-shadow-action-yellow-subtle: 0 4px 6px -1px rgba(255, 202, 65, 0.1);
 
-  --val-shadow-action-new-10: 0 4px 6px -1px rgba(255, 143, 113, 0.1);
-  --action-new-soft-10: rgba(255, 143, 113, 0.1);
+  /* Deep Card Shadows - Used for Dialog and Action Card shadows */
+  --val-shadow-action-new-deep: 0 20px 25px -5px rgba(255, 143, 113, 0.4), 0 8px 10px -6px rgba(255, 143, 113, 0.4);
+  --val-shadow-action-new-muted: 0 25px 50px -12px rgba(255, 143, 113, 0.15);
+  --val-shadow-action-join-deep: 0 20px 25px -5px rgba(75, 137, 255, 0.4), 0 8px 10px -6px rgba(75, 137, 255, 0.4);
+  --val-shadow-action-join-muted: 0 25px 50px -12px rgba(75, 137, 255, 0.15);
+  --val-shadow-action-schedule-deep: 0 20px 25px -5px rgba(188, 97, 244, 0.4), 0 8px 10px -6px rgba(188, 97, 244, 0.4);
+  --val-shadow-action-schedule-muted: 0 25px 50px -12px rgba(188, 97, 244, 0.15);
+  --val-shadow-action-yellow-deep: 0 20px 25px -5px rgba(255, 202, 65, 0.4), 0 8px 10px -6px rgba(255, 202, 65, 0.4);
+  --val-shadow-action-yellow-muted: 0 25px 50px -12px rgba(255, 202, 65, 0.15);
 
-  --val-shadow-action-join-10: 0 4px 6px -1px rgba(75, 137, 255, 0.1);
-  --action-join-soft-10: rgba(75, 137, 255, 0.1);
-
-  --val-shadow-action-schedule-10: 0 4px 6px -1px rgba(188, 97, 244, 0.1);
-  --action-schedule-soft-10: rgba(188, 97, 244, 0.1);
-
-  --val-shadow-action-recordings-10: 0 4px 6px -1px rgba(255, 202, 65, 0.1);
-  --action-recordings-soft-10: rgba(255, 202, 65, 0.1);
-  --action-recordings-soft-50: rgba(255, 202, 65, 0.5);
-
-  --val-shadow-action-new-40: 0 20px 25px -5px rgba(255, 143, 113, 0.4), 0 8px 10px -6px rgba(255, 143, 113, 0.4);
-  --val-shadow-action-new-15: 0 25px 50px -12px rgba(255, 143, 113, 0.15);
-  --val-shadow-action-join-40: 0 20px 25px -5px rgba(75, 137, 255, 0.4), 0 8px 10px -6px rgba(75, 137, 255, 0.4);
-  --val-shadow-action-join-15: 0 25px 50px -12px rgba(75, 137, 255, 0.15);
-  --val-shadow-action-schedule-40: 0 20px 25px -5px rgba(188, 97, 244, 0.4), 0 8px 10px -6px rgba(188, 97, 244, 0.4);
-  --val-shadow-action-schedule-15: 0 25px 50px -12px rgba(188, 97, 244, 0.15);
-  --val-shadow-action-recordings-40: 0 20px 25px -5px rgba(255, 202, 65, 0.4), 0 8px 10px -6px rgba(255, 202, 65, 0.4);
-  --val-shadow-action-recordings-15: 0 25px 50px -12px rgba(255, 202, 65, 0.15);
-
+  /* Dialog Backgrounds */
   --dialog-bg-new: rgba(25, 10, 5, 0.95);
   --dialog-bg-join: rgba(5, 10, 25, 0.95);
   --dialog-bg-schedule: rgba(15, 5, 25, 0.95);
-  --dialog-bg-recordings: rgba(25, 20, 5, 0.95);
+  --dialog-bg-yellow: rgba(25, 20, 5, 0.95);
 
-  --border-soft: oklch(100% 0.00011 271.152 / 5%);
-  --border-soft-30: oklch(100% 0.00011 271.152 / 10%);
-  --border-soft-40: oklch(100% 0.00011 271.152 / 12%);
+  /* Black Opacities - Used for Overlays, Modals, and Backdrops */
+  --black-soft-subtle: rgba(0, 0, 0, 0.1);
+  --black-soft-muted: rgba(0, 0, 0, 0.4);
+  --black-soft-deep: rgba(0, 0, 0, 0.6);
 
-  --input-soft: oklch(1 0 0 / 10%);
-  --sidebar-foreground-soft: oklch(0.96 0.008 265 / 60%);
-
-  --black-soft-10: rgba(0, 0, 0, 0.1);
-  --black-soft-20: rgba(0, 0, 0, 0.2);
-  --black-soft-40: rgba(0, 0, 0, 0.4);
-  --black-soft-50: rgba(0, 0, 0, 0.5);
-  --black-soft-60: rgba(0, 0, 0, 0.6);
-  --black-soft-80: rgba(0, 0, 0, 0.8);
-  --val-shadow-black-20: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+  /* White Opacities - Used for Hero Clock Text and Skeleton Backgrounds */
+  --white-soft-subtle: rgba(255, 255, 255, 0.05); /* Used for faint text */
+  --white-soft-muted: rgba(255, 255, 255, 0.1); /* Used for skeleton loaders */
+  --white-soft-deep: rgba(255, 255, 255, 0.5); /* Used for date displays */
 }
 
 /* ─── Base Layer ──────────────────────────────────────────────────────────── */
@@ -521,7 +468,7 @@
 ::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
   border-radius: 4px;
-  border: 1px solid var(--border-soft);
+  border: 1px solid var(--border);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -529,42 +476,8 @@
 }
 
 @layer components {
-  /* ── Auth Background Scene ── */
-  .bg-auth-scene {
-    @apply relative overflow-hidden;
-    background-image: var(--auth-scene-gradient);
-    animation: var(--animate-gradient-shift);
-    background-size: 300% 300%;
-  }
-
-  .bg-auth-scene::before,
-  .bg-auth-scene::after {
-    content: "";
-    @apply absolute rounded-full pointer-events-none;
-    filter: blur(90px);
-  }
-
-  .bg-auth-scene::before {
-    width: 480px;
-    height: 480px;
-    top: -120px;
-    left: -100px;
-    background-image: var(--auth-scene-before-radial);
-    animation: var(--animate-orb-float-before);
-  }
-
-  .bg-auth-scene::after {
-    width: 400px;
-    height: 400px;
-    bottom: -80px;
-    right: -80px;
-    background-image: var(--auth-scene-after-radial);
-    animation: var(--animate-orb-float-after);
-    animation-delay: -4s;
-  }
-
   /* ── Popover Backdrop Overlay ── */
   .bg-overlay {
-    @apply fixed inset-0 z-overlay bg-gradient-to-b from-transparent via-black-soft-60 to-black-soft-50 animate-fade-in-standard;
+    @apply fixed inset-0 z-overlay bg-gradient-to-b from-transparent via-black-soft-deep to-black-soft-muted animate-fade-in-standard;
   }
 }

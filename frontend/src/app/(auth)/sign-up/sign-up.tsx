@@ -66,15 +66,15 @@ export function SignUpForm() {
         <form action={action} className="space-y-4">
           {/* SERVER ERROR */}
           {state.errorMessage?.server && (
-            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-              <p className="text-destructive text-sm text-center bg-destructive/10 rounded-md py-2 px-3">
+            <div className="animate-alert-entrance">
+              <p className="text-destructive text-sm text-center bg-destructive-soft rounded-medium py-2 px-3">
                 {state.errorMessage.server[0]}
               </p>
             </div>
           )}
 
           {/* USERNAME */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100 fill-mode-both">
+          <div className="animate-card-entrance delay-100">
             <Field>
               <FieldLabel htmlFor="username">Username</FieldLabel>
               <Input
@@ -101,7 +101,7 @@ export function SignUpForm() {
           </div>
 
           {/* EMAIL */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200 fill-mode-both">
+          <div className="animate-card-entrance delay-200">
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
               <Input
@@ -127,7 +127,7 @@ export function SignUpForm() {
           </div>
 
           {/* PASSWORD */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300 fill-mode-both">
+          <div className="animate-card-entrance delay-300">
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
 
@@ -163,7 +163,7 @@ export function SignUpForm() {
           </div>
 
           {/* CONFIRM PASSWORD */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-400 fill-mode-both">
+          <div className="animate-card-entrance delay-400">
             <Field>
               <FieldLabel htmlFor="confirmPassword">
                 Confirm Password
@@ -191,7 +191,7 @@ export function SignUpForm() {
           </div>
 
           {/* SUBMIT */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-[500ms] fill-mode-both pt-2">
+          <div className="animate-card-entrance delay-500 pt-2">
             <Button
               type="submit"
               disabled={pending}

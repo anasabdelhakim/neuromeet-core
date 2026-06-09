@@ -38,7 +38,7 @@ export function TodaysMeetings() {
                 "w-full p-5 flex flex-col gap-4 transition-all duration-normal ease-standard transform-gpu hover:border-primary-hover",
                 isLive || isStartingSoon
                   ? "border backdrop-blur-md shadow-lg shadow-black-20"
-                  : "bg-black-soft-20 border shadow-none opacity-80 hover:opacity-100"
+                  : "bg-black-soft-subtle border shadow-none opacity-80 hover:opacity-100"
               )}
             >
               <div className="flex items-center justify-between w-full">
@@ -48,7 +48,7 @@ export function TodaysMeetings() {
                       {meeting.title}
                     </CardTitle>
                   </div>
-                  <CardDescription className="text-sm font-medium text-white/50 flex flex-wrap items-center gap-2 mt-1">
+                  <CardDescription className="text-sm font-medium text-white-soft-deep flex flex-wrap items-center gap-2 mt-1">
                     <span>{meeting.time}</span>
                     {isStartingSoon && (
                       <Badge className="bg-status-warning-soft text-status-warning border border-status-warning-border hover:bg-status-warning-hover uppercase tracking-wider font-bold text-[10px]">

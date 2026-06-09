@@ -92,22 +92,22 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
 
           {/* SERVER ERROR */}
           {(state.errorMessage?.server || resendError) && (
-            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-              <p className="text-destructive text-sm text-center bg-destructive/10 rounded-md py-2 px-3">
+            <div className="animate-alert-entrance">
+              <p className="text-destructive text-sm text-center bg-destructive/10 rounded-medium py-2 px-3">
                 {state.errorMessage?.server?.[0] || resendError}
               </p>
             </div>
           )}
 
           {/* INFO */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-75 fill-mode-both">
+          <div className="animate-card-entrance delay-75">
             <p className="text-sm text-muted-foreground text-center">
               Enter the 6-digit verification code sent to your email
             </p>
           </div>
 
           {/* OTP FIELD */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100 fill-mode-both">
+          <div className="animate-card-entrance delay-100">
             <Field>
               <FieldLabel htmlFor="otp">Verification code</FieldLabel>
               <Input
@@ -135,7 +135,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
           </div>
 
           {/* VERIFY BUTTON */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200 fill-mode-both pt-2">
+          <div className="animate-card-entrance delay-200 pt-2">
             <Button
               type="submit"
               disabled={pending}
@@ -156,7 +156,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
           </div>
 
           {/* RESEND & TIMER */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300 fill-mode-both text-center">
+          <div className="animate-card-entrance delay-300 text-center">
             <Button
               type="button"
               variant="link"

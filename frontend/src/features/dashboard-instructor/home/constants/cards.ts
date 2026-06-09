@@ -8,9 +8,9 @@ export const Cards = [
     desc: "Start an instant live session",
     cta: "Start Now",
     href: "/livekit",
-    gradFrom: "from-[#00d2ff]/20",
-    iconBg: "bg-[#00d2ff]/15 text-[#00d2ff]",
-    glow: "hover:shadow hover:shadow-[#00d2ff]/10",
+    gradFrom: "from-brand-cyan-soft-muted",
+    iconBg: "bg-brand-cyan-soft-subtle text-brand-cyan",
+    glow: "hover:shadow hover:shadow-brand-cyan-soft-muted",
   },
   {
     id: "join",
@@ -19,9 +19,9 @@ export const Cards = [
     desc: "Enter a room code or link",
     cta: "Join",
     hasInput: true,
-    gradFrom: "from-purple-600/20",
-    iconBg: "bg-purple-600/15 text-purple-400",
-    glow: "hover:shadow-purple-500/10",
+    gradFrom: "from-brand-purple-soft-muted",
+    iconBg: "bg-brand-purple-soft-subtle text-brand-purple",
+    glow: "hover:shadow-brand-purple-soft-muted",
   },
   {
     id: "schedule",
@@ -29,9 +29,9 @@ export const Cards = [
     title: "Schedule",
     desc: "Plan your next lecture",
     cta: "Plan Now",
-    gradFrom: "from-primary/20",
-    iconBg: "bg-primary/15 text-[#38bcd8]",
-    glow: "hover:shadow-primary/10",
+    gradFrom: "from-primary-soft-muted",
+    iconBg: "bg-primary-soft-muted text-primary-light",
+    glow: "hover:shadow-primary-soft-muted",
   },
   {
     id: "recordings",
@@ -39,9 +39,9 @@ export const Cards = [
     title: "Recordings",
     desc: "Access your saved lectures",
     cta: "Search",
-    gradFrom: "from-[#ffca41]/20",
-    iconBg: "bg-[#ffca41]/15 text-[#ffca41]",
-    glow: "hover:shadow hover:shadow-[#ffca41]/10",
+    gradFrom: "from-action-yellow-soft-muted",
+    iconBg: "bg-action-yellow-soft-subtle text-action-yellow",
+    glow: "hover:shadow hover:shadow-action-yellow-soft-subtle",
   },
 ] as const;
 
@@ -49,36 +49,36 @@ export const gradientMap: Record<string, string> = {
   new: "bg-action-new-gradient",
   join: "bg-action-join-gradient",
   schedule: "bg-action-schedule-gradient",
-  recordings: "bg-action-recordings-gradient",
+  recordings: "bg-action-yellow-gradient",
 };
 
 export const iconGradientMap: Record<string, string> = {
   new: "bg-icon-new-gradient",
   join: "bg-icon-join-gradient",
   schedule: "bg-icon-schedule-gradient",
-  recordings: "bg-icon-recordings-gradient",
+  recordings: "bg-icon-yellow-gradient",
 };
 
 export const shadowMap: Record<string, string> = {
-  new: "shadow-none hover:shadow-action-new-40",
-  join: "shadow-none hover:shadow-action-join-40",
-  schedule: "shadow-none hover:shadow-action-schedule-40",
-  recordings: "shadow-none hover:shadow-action-recordings-40",
+  new: "shadow-none hover:shadow-action-new-deep",
+  join: "shadow-none hover:shadow-action-join-deep",
+  schedule: "shadow-none hover:shadow-action-schedule-deep",
+  recordings: "shadow-none hover:shadow-action-yellow-deep",
 };
 
 export const buttonGradientMap: Record<string, string> = {
   new: "bg-btn-new-gradient",
   join: "bg-btn-join-gradient",
   schedule: "bg-btn-schedule-gradient",
-  recordings: "bg-btn-recordings-gradient",
+  recordings: "bg-btn-yellow-gradient",
 };
 
 export const dialogBgMap: Record<string, string> = {
-  new: "bg-dialog-bg-new border-action-new-soft-50 shadow-2xl shadow-action-new-15",
-  join: "bg-dialog-bg-join border-action-join-soft shadow-2xl shadow-action-join-15",
+  new: "bg-dialog-bg-new border-action-new-input shadow-2xl shadow-action-new-muted",
+  join: "bg-dialog-bg-join border-action-join-input shadow-2xl shadow-action-join-muted",
   schedule:
-    "bg-dialog-bg-schedule border-action-schedule-soft shadow-2xl shadow-action-schedule-15",
+    "bg-dialog-bg-schedule border-action-schedule-input shadow-2xl shadow-action-schedule-muted",
   recordings:
-    "bg-dialog-bg-recordings border-action-recordings-soft shadow-2xl shadow-action-recordings-15",
+    "bg-dialog-bg-yellow border-action-yellow-input shadow-2xl shadow-action-yellow-muted",
 };
 
