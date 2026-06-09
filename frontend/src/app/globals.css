@@ -261,7 +261,7 @@
   --accent: oklch(0.24 0.03 230);
   --accent-foreground: oklch(0.98 0.008 265);
   --destructive: oklch(0.70 0.23 25);
-  --border: oklch(1 0 271 / 15.6%);
+  --border: oklch(100% 0.00011 271.152 / 0.142);
   --input: oklch(1 0 0 / 12%);
   --ring: oklch(0.55 0.08 230);
   --radius: 0.75rem;
@@ -411,10 +411,10 @@
   --val-shadow-action-yellow-muted: 0 25px 50px -12px color-mix(in oklch, var(--action-yellow) 15%, transparent);
 
   /* Dialog Backgrounds */
-  --dialog-bg-new: oklch(0.148 0.015 37.1 / 95%);
-  --dialog-bg-join: oklch(0.158 0.023 268.4 / 95%);
-  --dialog-bg-schedule: oklch(0.155 0.025 315.6 / 95%);
-  --dialog-bg-yellow: oklch(0.179 0.019 86.6 / 95%);
+  --dialog-bg-new: oklch(21.928% 0.03081 33.164 / 0.95);
+  --dialog-bg-join: oklch(19.138% 0.03548 270.372 / 0.95);
+  --dialog-bg-schedule: oklch(20% 0.03962 316.178 / 0.95);
+  --dialog-bg-yellow: oklch(27.78% 0.03415 93.247 / 0.95);
 
   /* Black & White Opacities */
   --black-soft-subtle: oklch(0 0 0 / 10%);

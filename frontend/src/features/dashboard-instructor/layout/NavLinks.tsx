@@ -41,8 +41,9 @@ export function SidebarNavLinks() {
 
             <TooltipContent
               side="right"
+              sideOffset={7}
               className={cn(
-                "block lg:hidden",
+                "block lg:hidden ",
                 active && "pointer-events-none hidden",
               )}
             >
