@@ -85,29 +85,29 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
   }, []);
 
   return (
-    <Card className="card-glass transition-all duration-300 hover:shadow-xl border-border/50 rounded-2xl">
+    <Card variant="gradient">
       <CardContent>
         <form action={action} className="space-y-4">
           <input type="hidden" name="flow" value={flow} />
 
           {/* SERVER ERROR */}
           {(state.errorMessage?.server || resendError) && (
-            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-              <p className="text-destructive text-sm text-center bg-destructive/10 rounded-md py-2 px-3">
+            <div className="animate-alert-entrance">
+              <p className="text-destructive text-sm text-center bg-destructive/10 rounded-medium py-2 px-3">
                 {state.errorMessage?.server?.[0] || resendError}
               </p>
             </div>
           )}
 
           {/* INFO */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-75 fill-mode-both">
+          <div className="animate-card-entrance delay-75">
             <p className="text-sm text-muted-foreground text-center">
               Enter the 6-digit verification code sent to your email
             </p>
           </div>
 
           {/* OTP FIELD */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100 fill-mode-both">
+          <div className="animate-card-entrance delay-100">
             <Field>
               <FieldLabel htmlFor="otp">Verification code</FieldLabel>
               <Input
@@ -135,11 +135,11 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
           </div>
 
           {/* VERIFY BUTTON */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200 fill-mode-both pt-2">
+          <div className="animate-card-entrance delay-200 pt-2">
             <Button
               type="submit"
               disabled={pending}
-              className="shadow-lg shadow-primary/30 w-full py-5"
+              className="w-full py-5"
               onMouseDown={(e) => {
                 e.preventDefault();
               }}
@@ -156,7 +156,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
           </div>
 
           {/* RESEND & TIMER */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300 fill-mode-both text-center">
+          <div className="animate-card-entrance delay-300 text-center">
             <Button
               type="button"
               variant="link"

@@ -15,7 +15,7 @@ export function InstructorGroups() {
         <CardTitle className="text-lg font-bold">Groups</CardTitle>
         <Link
           href="/dashboard-instructor/groups"
-          className="text-xs font-semibold text-cyan-400 hover:text-primary flex items-center transition-colors uppercase tracking-wider"
+          className="text-xs font-semibold text-primary-light hover:text-primary flex items-center transition-colors uppercase tracking-wider"
         >
           View all <ChevronRight className="w-3 h-3 ml-0.5" />
         </Link>

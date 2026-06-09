@@ -72,13 +72,13 @@ export function QuickActions() {
                 setIsOpen(true);
               }}
               className={cn(
-                "flex flex-col cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] h-full transform-gpu will-change-transform",
+                "flex flex-col cursor-pointer transition-all duration-normal ease-standard hover:scale-[1.02] active:scale-[0.98] h-full transform-gpu will-change-transform",
                 gradientClass,
                 shadowClass,
               )}
             >
               <CardHeader>
-                <div className={cn("w-fit p-3 rounded-xl", iconGradientClass)}>
+                <div className={cn("w-fit p-3 rounded-soft", iconGradientClass)}>
                   <Icon className="h-6 w-6" />
                 </div>
                 <CardTitle className="text-xl font-bold mt-3">
@@ -99,14 +99,14 @@ export function QuickActions() {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent
           className={cn(
-            "sm:max-w-md backdrop-blur-2xl border p-6 rounded-2xl",
+            "sm:max-w-md backdrop-blur-2xl border p-6 !rounded-soft",
             activeDialogClass,
           )}
         >
           <DialogHeader className="mb-2">
             <div
               className={cn(
-                "w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-inner",
+                "w-12 h-12 rounded-soft flex items-center justify-center mb-4 shadow-inner",
                 activeIconGradientClass,
               )}
             >
@@ -129,12 +129,12 @@ export function QuickActions() {
                   </Label>
                   <Input
                     placeholder="e.g. Ad-hoc Q&A"
-                    className="bg-black/40 focus-visible:ring-[#FF8F71]/50 focus-visible:border-[#FF8F71] transition-all h-12 px-4 rounded-xl"
+                    className="bg-black-soft-muted focus-visible:ring-action-new-input focus-visible:border-action-new transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
                   />
                 </div>
                 <Button
                   className={cn(
-                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-lg transition-all rounded-xl hover:scale-[1.02] border  hover:brightness-110",
+                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-lg transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border hover:brightness-110",
                     activeButtonClass,
                   )}
                 >
@@ -150,12 +150,12 @@ export function QuickActions() {
                   </Label>
                   <Input
                     placeholder="Enter 6-digit code or URL..."
-                    className="bg-black/40 focus-visible:ring-[#4B89FF]/50 focus-visible:border-[#4B89FF] transition-all h-12 px-4 rounded-xl"
+                    className="bg-black-soft-muted focus-visible:ring-action-join-input focus-visible:border-action-join transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
                   />
                 </div>
                 <Button
                   className={cn(
-                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-lg transition-all rounded-xl hover:scale-[1.02] border hover:brightness-110",
+                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-lg transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border hover:brightness-110",
                     activeButtonClass,
                   )}
                 >
@@ -171,7 +171,7 @@ export function QuickActions() {
                   </Label>
                   <Input
                     placeholder="e.g. Advanced AI Architecture"
-                    className="bg-black/40  focus-visible:ring-[#BC61F4]/50 focus-visible:border-[#BC61F4] transition-all h-12 px-4 rounded-xl"
+                    className="bg-black-soft-muted  focus-visible:ring-action-schedule-input focus-visible:border-action-schedule transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
                   />
                 </div>
                 <div className="space-y-2">
@@ -181,8 +181,8 @@ export function QuickActions() {
                   <Popover>
                     <PopoverTrigger
                       className={cn(
-                        "w-full mb-2 border-2 flex items-center justify-start bg-black/40  text-left font-normal h-12 px-4 rounded-xl hover:bg-black/60 hover:text-white transition-all focus-visible:ring-[#BC61F4]/50 focus-visible:border-[#BC61F4] outline-none",
-                        !date && "text-slate-500",
+                        "w-full mb-2 border-2 flex items-center justify-start bg-black-soft-muted  text-left font-normal h-12 px-4 rounded-soft hover:bg-black-soft-deep hover:text-white transition-all duration-fast ease-standard focus-visible:ring-action-schedule-input focus-visible:border-action-schedule outline-none",
+                        !date && "text-muted-foreground",
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
@@ -192,7 +192,7 @@ export function QuickActions() {
                       className="w-auto p-0 border-none bg-transparent shadow-none"
                       align="start"
                     >
-                      <Card className="mx-auto w-fit bg-card/90 backdrop-blur-3xl  text-white shadow-xl rounded-xl overflow-hidden">
+                      <Card className="mx-auto w-fit bg-card backdrop-blur-3xl  text-white shadow-xl rounded-soft overflow-hidden">
                         <CardContent className="p-0">
                           <Calendar
                             mode="single"
@@ -202,16 +202,16 @@ export function QuickActions() {
                             className="p-3"
                           />
                         </CardContent>
-                        <CardFooter className="border-t  bg-black/40 p-4">
+                        <CardFooter className="border-t border-border bg-black-soft-muted p-4">
                           <FieldGroup className="w-full gap-4">
                             <Field className="space-y-1">
                               <FieldLabel
                                 htmlFor="time-from"
-                                className="text-xs text-slate-400"
+                                className="text-xs text-muted-foreground"
                               >
                                 Start Time
                               </FieldLabel>
-                              <InputGroup className="bg-black/40  rounded-lg">
+                              <InputGroup className="bg-black-soft-muted  rounded-soft">
                                 <InputGroupInput
                                   id="time-from"
                                   type="time"
@@ -220,18 +220,18 @@ export function QuickActions() {
                                   className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none text-white h-9 [color-scheme:dark]"
                                 />
                                 <InputGroupAddon>
-                                  <Clock2Icon className="text-slate-400 h-4 w-4" />
+                                  <Clock2Icon className="text-muted-foreground h-4 w-4" />
                                 </InputGroupAddon>
                               </InputGroup>
                             </Field>
                             <Field className="space-y-1">
                               <FieldLabel
                                 htmlFor="time-to"
-                                className="text-xs text-slate-400"
+                                className="text-xs text-muted-foreground"
                               >
                                 End Time
                               </FieldLabel>
-                              <InputGroup className="bg-black/40  rounded-lg">
+                              <InputGroup className="bg-black-soft-muted  rounded-soft">
                                 <InputGroupInput
                                   id="time-to"
                                   type="time"
@@ -240,7 +240,7 @@ export function QuickActions() {
                                   className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none text-white h-9 [color-scheme:dark]"
                                 />
                                 <InputGroupAddon>
-                                  <Clock2Icon className="text-slate-400 h-4 w-4" />
+                                  <Clock2Icon className="text-muted-foreground h-4 w-4" />
                                 </InputGroupAddon>
                               </InputGroup>
                             </Field>
@@ -252,7 +252,7 @@ export function QuickActions() {
                 </div>
                 <Button
                   className={cn(
-                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-lg transition-all rounded-xl hover:scale-[1.02] border  hover:brightness-110",
+                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-lg transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border  hover:brightness-110",
                     activeButtonClass,
                   )}
                 >
@@ -268,12 +268,12 @@ export function QuickActions() {
                   </Label>
                   <Input
                     placeholder="Search by topic, date, or tag..."
-                    className="bg-black/40  focus-visible:ring-[#FFCA41]/50 focus-visible:border-[#FFCA41] transition-all h-12 px-4 rounded-xl"
+                    className="bg-black-soft-muted focus-visible:ring-action-yellow-input focus-visible:border-action-yellow transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
                   />
                 </div>
                 <Button
                   className={cn(
-                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-lg transition-all rounded-xl hover:scale-[1.02] border  hover:brightness-110",
+                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-lg transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border  hover:brightness-110",
                     activeButtonClass,
                   )}
                 >

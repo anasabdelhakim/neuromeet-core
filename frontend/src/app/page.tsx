@@ -11,7 +11,7 @@ export default function ClarityConnectPage() {
         priority
         className="object-cover -z-10"
       />
-      <header className="w-full max-w-8xl mx-auto py-4 px-6 md:px-12 lg:px-24 flex items-center justify-between z-10 relative">
+      <header className="w-full max-w-8xl mx-auto py-4 px-6 md:px-12 lg:px-24 flex items-center justify-between z-10 relative sticky top-0 ">
         <Logo />
         <Avtar />
       </header>

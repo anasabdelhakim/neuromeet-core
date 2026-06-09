@@ -32,7 +32,10 @@ function PopoverContent({
         alignOffset={alignOffset}
         side={side}
         sideOffset={sideOffset}
-        className="isolate z-50"
+        className={cn(
+          "isolate z-50",
+          className?.split(" ").find((c) => c.startsWith("z-"))
+        )}
       >
         <PopoverPrimitive.Popup
           data-slot="popover-content"

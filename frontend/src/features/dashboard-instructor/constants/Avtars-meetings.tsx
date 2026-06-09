@@ -51,7 +51,7 @@ export const AvatarChain = ({ avatars = Avatars, max = 4 }) => {
               className="object-cover"
             />
           ) : (
-            <span className="text-[10px] font-bold text-white uppercase">
+            <span className="text-xs font-bold text-white uppercase">
               {avatar.initials}
             </span>
           )}
@@ -59,7 +59,7 @@ export const AvatarChain = ({ avatars = Avatars, max = 4 }) => {
       ))}
       {avatars.length > max && (
         <div
-          className="relative w-8 h-8 rounded-full border-2 border-background bg-cyan-900/80 flex items-center justify-center text-[11px] font-bold text-cyan-300 -ml-3 shadow-sm backdrop-blur-sm"
+          className="relative w-8 h-8 rounded-full border-2 border-background bg-primary-soft-muted flex items-center justify-center text-[11px] font-bold text-primary-light -ml-3 shadow-sm backdrop-blur-sm"
           style={{ zIndex: 0 }}
         >
           +{avatars.length - max}

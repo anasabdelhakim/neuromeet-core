@@ -56,20 +56,20 @@ export default function ResetPasswordForm() {
     };
 
   return (
-    <Card className="card-glass transition-all duration-300 hover:shadow-xl border-border/50 rounded-2xl">
+    <Card variant="gradient">
       <CardContent>
         <form action={action} className="space-y-4">
           {/* SERVER ERROR */}
           {state.errorMessage?.server && (
-            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-              <p className="text-destructive text-sm text-center bg-destructive/10 rounded-md py-2 px-3">
+            <div className="animate-alert-entrance">
+              <p className="text-destructive text-sm text-center bg-destructive/10 rounded-medium py-2 px-3">
                 {state.errorMessage.server[0]}
               </p>
             </div>
           )}
 
           {/* PASSWORD FIELD */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100 fill-mode-both">
+          <div className="animate-card-entrance delay-100">
             <Field>
               <FieldLabel htmlFor="password">New Password</FieldLabel>
 
@@ -105,7 +105,7 @@ export default function ResetPasswordForm() {
           </div>
 
           {/* CONFIRM PASSWORD */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200 fill-mode-both">
+          <div className="animate-card-entrance delay-200">
             <Field>
               <FieldLabel htmlFor="confirmPassword">
                 Confirm Password
@@ -135,11 +135,11 @@ export default function ResetPasswordForm() {
           </div>
 
           {/* SUBMIT */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300 fill-mode-both pt-2">
+          <div className="animate-card-entrance delay-300 pt-2">
             <Button
               type="submit"
               disabled={pending}
-              className="shadow-lg shadow-primary/30 w-full py-5"
+              className="w-full py-5"
             >
               {pending ? (
                 <span className="flex items-center gap-2">

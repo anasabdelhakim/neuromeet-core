@@ -23,16 +23,16 @@ export function SidebarNavLinks() {
               <Link
                 href={href}
                 prefetch={true}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-md transition-all duration-200 ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-soft text-md transition-all duration-normal ease-standard ${
                   active
-                    ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                    : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                 }`}
               >
                 <Icon
                   className={cn(
                     "h-6 w-6 shrink-0",
-                    active ? "text-sidebar-primary-foreground" : "",
+                    active ? "text-primary-foreground" : "",
                   )}
                 />
                 <span className="max-lg:hidden">{label}</span>

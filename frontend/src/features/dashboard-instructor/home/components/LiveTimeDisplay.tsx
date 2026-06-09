@@ -27,7 +27,7 @@ export async function ServerTimeDisplay() {
       <h1 className="text-6xl font-black tracking-tighter text-white drop-shadow-sm md:text-7xl">
         {formatTime(now)}
       </h1>
-      <p className="mt-2 text-lg font-medium text-white/50 md:text-xl">
+      <p className="mt-2 text-lg font-medium text-white-soft-deep md:text-xl">
         {formatDate(now)}
       </p>
     </>

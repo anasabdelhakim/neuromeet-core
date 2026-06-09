@@ -1,3 +1,4 @@
+import { TooltipProvider } from "@/src/components/ui/tooltip";
 import { InstructorSidebar } from "@/src/features/dashboard-instructor/layout/InstructorSidebar";
 import { InstructorTopbar } from "@/src/features/dashboard-instructor/layout/InstructorTopbar";
 import { DashboardBackground } from "@/src/features/dashboard-instructor/wrappers/DashboardBackground";
@@ -14,14 +15,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <TooltipProvider>
     <DashboardBackground>
       <div className="flex min-h-screen w-full relative text-foreground">
         <div className="sticky top-0 h-screen shrink-0 z-40">
           <InstructorSidebar />
         </div>
-
         <div className="flex-1 flex flex-col min-w-0">
-          <div className="sticky top-0 z-30 bg-black/10 backdrop-blur-md border-b">
+          <div className="sticky top-0 z-30 bg-black-soft-subtle backdrop-blur-md border-b">
             <InstructorTopbar />
           </div>
 
@@ -34,5 +35,6 @@ export default function RootLayout({
         </div>
       </div>
     </DashboardBackground>
+    </TooltipProvider>
   );
 }
