@@ -129,7 +129,7 @@
   --color-dialog-bg-schedule: var(--dialog-bg-schedule);
   --color-dialog-bg-yellow: var(--dialog-bg-yellow);
 
-
+  --color-background-header-sm: var(--background-header-sm);
   /* Shadows (Mapped cleanly) */
   --shadow-action-new-deep: var(--val-shadow-action-new-deep);
   --shadow-action-new-muted: var(--val-shadow-action-new-muted);
@@ -424,6 +424,8 @@
   --white-soft-subtle: oklch(1 0 0 / 5%);
   --white-soft-muted: oklch(1 0 0 / 10%);
   --white-soft-deep: oklch(1 0 0 / 50%); 
+
+  --background-header-sm: #0c1230;
 }
 
 /* ─── Base Layer ──────────────────────────────────────────────────────────── */

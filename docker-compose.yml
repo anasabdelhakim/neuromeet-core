@@ -8,10 +8,10 @@ services:
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: rootpassword
+      POSTGRES_PASSWORD: "##anas4263Anas"
       POSTGRES_DB: neuromeet_db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       # 👇 التعديل هنا: شيلنا /data عشان Postgres 18 بيطلب المسار الرئيسي
       - pgdata:/var/lib/postgresql

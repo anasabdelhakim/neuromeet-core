@@ -22,7 +22,10 @@ import {
 } from "@/src/components/ui/field";
 
 export default function ForgetPasswordPreview() {
-  const form = useForm<z.infer<typeof forgetPasswordSchema>>({
+  const {
+    register,
+    formState: { isSubmitted, errors, touchedFields },
+  } = useForm<z.infer<typeof forgetPasswordSchema>>({
     resolver: zodResolver(forgetPasswordSchema),
     defaultValues: { email: "" },
     mode: "onTouched",
@@ -34,11 +37,10 @@ export default function ForgetPasswordPreview() {
     { success: false, errorMessage: {} },
   );
 
-  const { isSubmitted, errors, touchedFields } = form.formState;
   const showEmailError = !!errors.email && (isSubmitted || touchedFields.email);
 
   // 2. ADDED: Extract register so we can safely wrap it
-  const { onBlur: emailOnBlur, ...emailRest } = form.register("email");
+  const { onBlur: emailOnBlur, ...emailRest } = register("email");
 
   return (
     <Card variant="gradient">
@@ -76,7 +78,7 @@ export default function ForgetPasswordPreview() {
               />
               <FieldError>
                 {(showEmailError
-                  ? form.formState.errors?.email?.message
+                  ? errors?.email?.message
                   : null) || state.errorMessage.email?.[0]}
               </FieldError>
               <FieldDescription>
