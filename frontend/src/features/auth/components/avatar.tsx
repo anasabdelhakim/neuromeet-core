@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react"; // Added useState
+import { createPortal } from "react-dom";
 import { LogOut, User, Settings } from "lucide-react";
 
 // import { LogoutAccount } from "@/src/features/auth/actions/login";
@@ -67,14 +68,15 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
 
   return (
     <>
-      {isOpen && (
-        <div className="absolute inset-0 z-10 animate-in fade-in duration-200 h-screen  overflow-hidden bg-gradient-to-b from-transparent via-black/60  to-black/50" />
+      {isOpen && typeof document !== "undefined" && createPortal(
+        <div className="bg-overlay" />,
+        document.body
       )}
 
       <Popover open={isOpen} onOpenChange={setIsOpen} modal={true}>
         <PopoverTrigger
           className={cn(
-            "h-10 w-10 p-0 rounded-full bg-transparent border-none cursor-pointer hover:opacity-80 transition-opacity outline-none",
+            "h-10 w-10 p-0 rounded-full bg-transparent border-none cursor-pointer hover:opacity-80 transition-opacity duration-fast ease-standard outline-none",
             isOpen
               ? "ring-2 ring-primary ring-offset-2 ring-offset-background"
               : "",
@@ -95,7 +97,7 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
         <PopoverContent
           align="end"
           sideOffset={16}
-          className="w-64  z-50 relative overflow-visible shadow-lg border-border"
+          className="w-64  z-modal relative overflow-visible shadow-lg border-border"
         >
           {/* Custom Arrow with matching border and background */}
           <span className="absolute w-3 h-3 bg-card border-t border-l border-border rotate-45 -top-1.5 right-3.5 z-20"></span>
@@ -140,7 +142,7 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
 
             <Button
               variant="ghost"
-              className="justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/7 h-9 text-sm"
+              className="justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive-hover h-9 text-sm"
               disabled={isPending}
               // onClick={() => startTransition(() => LogoutAccount())}
             >

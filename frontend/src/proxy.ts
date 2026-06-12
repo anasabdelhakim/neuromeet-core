@@ -1,91 +1,80 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// SECURITY: Decode the JWT payload at the Edge.
-function decodeJwtPayload(token: string): { role?: string } | null {
+// دالة فك التوكن بشكل سريع وآمن على الـ Edge بدون مكتبات خارجية
+function decodeJwtPayload(token: string): { role?: string; exp?: number } | null {
   try {
     const parts = token.split(".");
     if (parts.length !== 3) return null;
-    const payload = JSON.parse(atob(parts[1]));
+
+    let base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const pad = base64.length % 4;
+    if (pad) base64 += "=".repeat(4 - pad);
+
+    const payload = JSON.parse(atob(base64));
     return payload;
-  } catch {
+  } catch (error) {
     return null;
   }
 }
 
 export default function proxy(request: NextRequest) {
-  const token = request.cookies.get("access_token")?.value;
+  const accessToken = request.cookies.get("access_token")?.value;
+  const refreshToken = request.cookies.get("refresh_token")?.value;
   const { pathname } = request.nextUrl;
 
-  // ---------- Route Classifications ----------
-  const authRoutes = [
-    "/sign-in",
-    "/sign-up",
-    "/forget-password",
-    "/verify-email",
-    "/reset-password",
-  ];
+  // فك التوكن لمعرفة الـ Role والـ Expiration
+  const payload = accessToken ? decodeJwtPayload(accessToken) : null;
+  const role = payload?.role; 
+  
+  // التوكن يعتبر صالحاً إذا تم فكه ولم تنتهِ صلاحيته بعد
+  const isAccessValid = !!payload && payload.exp ? payload.exp * 1000 > Date.now() : false;
+  
+  // اليوزر يعتبر متصل (Authenticated) إذا كان معاه أكسس توكن شغال، أو لسه معاه ريفريش توكن نقدر نعتمد عليه
+  const isAuthenticated = isAccessValid || !!refreshToken;
 
+  // ---------- تصنيف المسارات ----------
+  const authRoutes = ["/sign-in", "/sign-up", "/forget-password", "/verify-email", "/reset-password"];
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
   const isInstructorRoute = pathname.startsWith("/dashboard-instructor");
   const isStudentRoute = pathname.startsWith("/dashboard-student");
   const isProtectedRoute = isInstructorRoute || isStudentRoute;
 
-  // ---------- Decode Role ----------
-  const payload = token ? decodeJwtPayload(token) : null;
-  const role = payload?.role; // 'INSTRUCTOR' | 'STUDENT' | undefined
-
-  // Helper function to dynamically route based on role
   const getCorrectDashboard = (userRole?: string) => {
     if (userRole === "INSTRUCTOR") return "/dashboard-instructor";
     if (userRole === "STUDENT") return "/dashboard-student";
-    return "/sign-in"; // Fallback: If they have a weird/missing role, force them to log in again
+    return "/sign-in";
   };
 
-  // =================================================================
-  // RULE 1: Logged-in users visiting auth pages → redirect to THEIR dashboard
-  // =================================================================
-  if (isAuthRoute && token) {
-    return NextResponse.redirect(
-      new URL(getCorrectDashboard(role), request.url),
-    );
+  // 1. لو اليوزر متصل وبيحاول يروح لصفحات الـ Auth (زي Sign In) رجعه على الداشبورد بتاعته
+  if (isAuthRoute && isAuthenticated) {
+    return NextResponse.redirect(new URL(getCorrectDashboard(role), request.url));
   }
 
-  // =================================================================
-  // RULE 2: Unauthenticated users visiting ANY protected page → sign in
-  // =================================================================
-  if (isProtectedRoute && !token) {
-    return NextResponse.redirect(new URL("/sign-in", request.url));
+  // 2. لو اليوزر مش متصل تماماً (معندوش لا أكسس ولا ريفريش) وبيحاول يدخل صفحات محمية
+  if (isProtectedRoute && !isAuthenticated) {
+    const response = NextResponse.redirect(new URL("/sign-in", request.url));
+    // تنظيف أي كوكيز تالفة متبقية
+    if (request.cookies.has("access_token")) response.cookies.delete("access_token");
+    if (request.cookies.has("refresh_token")) response.cookies.delete("refresh_token");
+    return response;
   }
 
-  // =================================================================
-  // RULE 3: Strict Role-Based Access Control (The Bouncer)
-  // Prevent Students from entering Instructor routes, and vice versa.
-  // =================================================================
-  if (isInstructorRoute && role !== "INSTRUCTOR") {
-    // They are trying to sneak into the instructor area. Send them to their actual home.
-    return NextResponse.redirect(
-      new URL(getCorrectDashboard(role), request.url),
-    );
+  // 3. الحماية الصارمة للأدوار (RBAC) - فقط لو الأكسس توكن لسه شغال ومعاه Role مختلف
+  if (isAccessValid) {
+    if (isInstructorRoute && role !== "INSTRUCTOR") {
+      return NextResponse.redirect(new URL(getCorrectDashboard(role), request.url));
+    }
+    if (isStudentRoute && role !== "STUDENT") {
+      return NextResponse.redirect(new URL(getCorrectDashboard(role), request.url));
+    }
   }
 
-  if (isStudentRoute && role !== "STUDENT") {
-    // They are trying to sneak into the student area. Send them to their actual home.
-    return NextResponse.redirect(
-      new URL(getCorrectDashboard(role), request.url),
-    );
+  // 4. توجيه الـ Root "/" للداشبورد الصحيحة لو مسجل دخول
+  if (pathname === "/" && isAuthenticated) {
+    return NextResponse.redirect(new URL(getCorrectDashboard(role), request.url));
   }
 
-  // =================================================================
-  // RULE 4: Root path "/" — redirect logged-in users to THEIR dashboard
-  // =================================================================
-  if (pathname === "/" && token) {
-    return NextResponse.redirect(
-      new URL(getCorrectDashboard(role), request.url),
-    );
-  }
-
-  // Let all other requests (like public marketing pages) pass through normally
   return NextResponse.next();
 }
 

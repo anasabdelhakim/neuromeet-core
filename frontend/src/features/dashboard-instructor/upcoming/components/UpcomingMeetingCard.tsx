@@ -21,13 +21,12 @@ export  function UpcomingMeetingCard({
   );
   return (
     <Card
+      variant={isArrived ? "glass" : (isStartingSoon ? "gradient" : "default")}
       className={cn(
-        "w-full rounded-lg p-5 flex flex-col gap-4 transition-all duration-300 transform-gpu hover:border-primary/50",
-        isArrived
-          ? "card-glass border backdrop-blur-md shadow-lg shadow-black/20"
-          : isStartingSoon
-            ? "bg-card-gradient border backdrop-blur-md shadow-lg shadow-black/20"
-            : "bg-card/25 border border-border shadow-none opacity-85 hover:opacity-100",
+        "w-full p-5 flex flex-col gap-4 transition-all duration-normal ease-standard transform-gpu hover:border-primary-hover",
+        isArrived || isStartingSoon
+          ? "border backdrop-blur-md shadow-lg shadow-black-20"
+          : "bg-black-soft-subtle border border-border shadow-none opacity-85 hover:opacity-100",
       )}
     >
       <div className="flex items-center justify-between w-full">
@@ -44,14 +43,14 @@ export  function UpcomingMeetingCard({
               <span>{meeting.dateTime.replace("T", " ")}</span>
             </div>
             {isStartingSoon && (
-              <Badge className="bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30 uppercase tracking-wider font-bold text-[10px]">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+              <Badge className="bg-status-warning-soft text-status-warning border border-status-warning-border hover:bg-status-warning-hover uppercase tracking-wider font-bold text-[10px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-status-warning animate-pulse"></span>
                 Soon
               </Badge>
             )}
             {isArrived && (
-              <Badge className="bg-rose-500/20 text-rose-300 border border-rose-500/30 hover:bg-rose-500/30 uppercase tracking-wider font-bold text-[10px]">
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
+              <Badge className="bg-status-live-soft text-status-live border border-status-live-border hover:bg-status-live-hover uppercase tracking-wider font-bold text-[10px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-status-live animate-pulse"></span>
                 Live
               </Badge>
             )}

@@ -110,10 +110,10 @@ export async function signInAction(
         : "/dashboard-instructor";
     redirect(redirectPath);
   } catch (err) {
-    if ((err as any)?.name === "ApiError") {
+    if (err instanceof ApiError) {
       return {
         success: false,
-        errorMessage: { server: [(err as Error).message] },
+        errorMessage: { server: [err.message] },
       };
     }
     throw err; // re-throw redirect errors (Next.js uses throw internally for redirect)
@@ -161,11 +161,11 @@ export async function signUpAction(
     await setOtpSentAt();
 
     redirect("/verify-email?flow=signup");
-  } catch (err) {
-    if ((err as any)?.name === "ApiError") {
+  } catch (err:any) {
+    if (err instanceof ApiError) {
       return {
         success: false,
-        errorMessage: { server: [(err as Error).message] },
+        errorMessage: { server: [err.message] },
       };
     }
     throw err;
@@ -203,11 +203,11 @@ export async function forgotPasswordAction(
     await setOtpSentAt();
 
     redirect("/verify-email?flow=reset");
-  } catch (err) {
-    if ((err as any)?.name === "ApiError") {
+  } catch (err:any) {
+    if (err instanceof ApiError) {
       return {
         success: false,
-        errorMessage: { server: [(err as Error).message] },
+        errorMessage: { server: [err.message] },
       };
     }
     throw err;
@@ -283,11 +283,11 @@ export async function verifyCodeAction(
 
       redirect("/reset-password");
     }
-  } catch (err) {
-    if ((err as any)?.name === "ApiError") {
+  } catch (err:any) {
+    if (err instanceof ApiError) {
       return {
         success: false,
-        errorMessage: { server: [(err as Error).message] },
+        errorMessage: { server: [err.message] },
       };
     }
     throw err;
@@ -331,18 +331,18 @@ export async function resendCodeAction(
     await setOtpSentAt();
 
     return { success: true, errorMessage: {}, secondsRemaining: 120 };
-  } catch (err) {
+  } catch (err:any) {
     console.error("resendCodeAction error:", err);
-    if ((err as any)?.name === "ApiError") {
+    if (err instanceof ApiError) {
       return {
         success: false,
-        errorMessage: { server: [(err as Error).message] },
+        errorMessage: { server: [err.message] },
       };
     }
     return {
       success: false,
       errorMessage: {
-        server: [(err as Error)?.message || "Failed to resend code"],
+        server: [err.message],
       },
     };
   }
@@ -406,11 +406,11 @@ export async function changePasswordAction(
     await clearResetData();
 
     redirect("/sign-in");
-  } catch (err) {
-    if ((err as any)?.name === "ApiError") {
+  } catch (err:any) {
+    if (err instanceof ApiError) {
       return {
         success: false,
-        errorMessage: { server: [(err as Error).message] },
+        errorMessage: { server: [err.message] },
       };
     }
     throw err;

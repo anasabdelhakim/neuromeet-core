@@ -8,7 +8,6 @@ import {
 import fastifyMultipart from '@fastify/multipart';
 import { Transport } from '@nestjs/microservices';
 import fastifyCookie from '@fastify/cookie';
-import fastifySession from '@fastify/session';
 import helmet from '@fastify/helmet';
 import { ValidationPipe } from '@nestjs/common';
 
@@ -96,18 +95,6 @@ async function bootstrap() {
   });
 
   await app.register(fastifyCookie as any);
-
-  await app.register(fastifySession as any, {
-    secret:
-      process.env.SESSION_SECRET ||
-      'a-fallback-32-char-secret-key-that-is-long-enough',
-    cookie: {
-      path: '/',
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-    },
-  });
 
   // ── 6. Redis microservice ─────────────────────────────────────────────────
   (app as any).connectMicroservice({

@@ -17,7 +17,7 @@ function UpcomingMeetingsSkeleton() {
       {[1, 2, 3].map((id) => (
         <div
           key={id}
-          className="w-full h-[140px] bg-custom-gray border border-border/50 animate-pulse rounded-lg p-5"
+          className="w-full h-[140px] bg-custom-gray border border-border/50 animate-pulse rounded-soft p-5"
         />
       ))}
     </div>

@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   # 1. PostgreSQL Database
   postgres:
@@ -8,10 +6,10 @@ services:
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: rootpassword
+      POSTGRES_PASSWORD: "##anas4263Anas"
       POSTGRES_DB: neuromeet_db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       # 👇 التعديل هنا: شيلنا /data عشان Postgres 18 بيطلب المسار الرئيسي
       - pgdata:/var/lib/postgresql
@@ -25,6 +23,35 @@ services:
       - "6379:6379"
     volumes:
       - redisdata:/data
+
+  # 3. NeuroMeet AI Bot Worker
+  # Runs the Python livekit-agents bot + FastAPI dispatch server.
+  # The bot joins LiveKit rooms as a hidden participant via WebRTC —
+  # NestJS never processes video blobs.
+  ai-worker:
+    build: ./ai_bot
+    container_name: neuromeet-ai-worker
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      # Mount your trained model checkpoint here
+      - ./models:/models:ro
+    env_file:
+      - ./backend/.env
+    environment:
+      - MODEL_PATH=/models/best_model.pth
+    # ── GPU (uncomment when running on a CUDA-capable host) ────────────────
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    depends_on:
+      - postgres
+      - redis
 
 volumes:
   pgdata:

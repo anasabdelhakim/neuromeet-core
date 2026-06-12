@@ -15,7 +15,7 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
   );
 
   return (
-    <Card className="w-full rounded-lg p-5 flex flex-col gap-4 border transition-all duration-300 transform-gpu hover:border-primary/50">
+    <Card className="w-full rounded-soft p-5 flex flex-col gap-4 border transition-all duration-normal ease-standard transform-gpu hover:border-primary-hover">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full">
         {/* Left Side: Content */}
         <div className="flex flex-col gap-1.5 min-w-0">
@@ -23,12 +23,12 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
             <CardTitle className="text-lg font-bold text-foreground truncate">
               {meeting.title}
             </CardTitle>
-            <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 uppercase tracking-wider font-bold text-[10px] py-0.5 px-2 flex items-center gap-1">
+            <Badge className="bg-status-success-soft text-status-success border border-status-success-border hover:bg-status-success-hover uppercase tracking-wider font-bold text-[10px] py-0.5 px-2 flex items-center gap-1">
               <CheckCircle2 size={10} />
               Completed
             </Badge>
             {meeting.hasRecording && (
-              <Badge className="bg-destructive/10 text-destructive border border-destructive/20 uppercase tracking-wider font-bold text-[10px] py-0.5 px-2">
+              <Badge className="bg-destructive-soft text-destructive border border-destructive-soft-hover uppercase tracking-wider font-bold text-[10px] py-0.5 px-2">
                 Recording Available
               </Badge>
             )}
@@ -39,7 +39,7 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
               <span>{meeting.dateTime}</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="text-xs text-muted-foreground/30">•</span>
+              <span className="text-xs text-muted-foreground-muted">•</span>
               <span>{meeting.duration} Mins Duration</span>
             </div>
           </CardDescription>
@@ -51,12 +51,12 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
             <AvatarChain />
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" className="border rounded-sm">
+            <Button variant="outline" className="border rounded-medium">
               <BarChart3 size={18} className="text-primary-light" />
               <span>Report</span>
             </Button>
             {meeting.hasRecording && (
-              <Button className="border rounded-sm">
+              <Button className="border rounded-medium">
                 <Play size={18} fill="currentColor" />
                 <span>Play</span>
               </Button>
@@ -69,14 +69,14 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
       <div className="flex flex-col gap-2 mt-1">
         <div className="flex justify-between items-center text-xs font-semibold">
           <span className="text-muted-foreground">Attendance Rate</span>
-          <span className="text-emerald-400">
+          <span className="text-status-success">
             {meeting.attendeesCount}/{meeting.totalStudents} (
             {attendancePercentage}%) attended
           </span>
         </div>
         <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-primary to-primary-light rounded-full transition-all duration-500"
+            className="h-full bg-gradient-to-r from-primary to-primary-light rounded-full transition-all duration-slow ease-standard"
             style={{ width: `${attendancePercentage}%` }}
           />
         </div>

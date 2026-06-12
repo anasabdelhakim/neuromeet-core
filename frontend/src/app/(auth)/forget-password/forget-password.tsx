@@ -22,7 +22,10 @@ import {
 } from "@/src/components/ui/field";
 
 export default function ForgetPasswordPreview() {
-  const form = useForm<z.infer<typeof forgetPasswordSchema>>({
+  const {
+    register,
+    formState: { isSubmitted, errors, touchedFields },
+  } = useForm<z.infer<typeof forgetPasswordSchema>>({
     resolver: zodResolver(forgetPasswordSchema),
     defaultValues: { email: "" },
     mode: "onTouched",
@@ -34,27 +37,26 @@ export default function ForgetPasswordPreview() {
     { success: false, errorMessage: {} },
   );
 
-  const { isSubmitted, errors, touchedFields } = form.formState;
   const showEmailError = !!errors.email && (isSubmitted || touchedFields.email);
 
   // 2. ADDED: Extract register so we can safely wrap it
-  const { onBlur: emailOnBlur, ...emailRest } = form.register("email");
+  const { onBlur: emailOnBlur, ...emailRest } = register("email");
 
   return (
-    <Card className="card-glass transition-all duration-300 hover:shadow-xl border-border/50 rounded-2xl">
+    <Card variant="gradient">
       <CardContent>
         <form action={action} className="space-y-4">
           {/* SERVER ERROR */}
           {state.errorMessage?.server && (
-            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-              <p className="text-destructive text-sm text-center bg-destructive/10 rounded-md py-2 px-3">
+            <div className="animate-alert-entrance">
+              <p className="text-destructive text-sm text-center bg-destructive/10 rounded-medium py-2 px-3">
                 {state.errorMessage.server[0]}
               </p>
             </div>
           )}
 
           {/* EMAIL FIELD */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100 fill-mode-both">
+          <div className="animate-card-entrance delay-100">
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
               <Input
@@ -76,7 +78,7 @@ export default function ForgetPasswordPreview() {
               />
               <FieldError>
                 {(showEmailError
-                  ? form.formState.errors?.email?.message
+                  ? errors?.email?.message
                   : null) || state.errorMessage.email?.[0]}
               </FieldError>
               <FieldDescription>
@@ -86,11 +88,11 @@ export default function ForgetPasswordPreview() {
           </div>
 
           {/* SUBMIT BUTTON */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200 fill-mode-both pt-2">
+          <div className="animate-card-entrance delay-200 pt-2">
             <Button
               type="submit"
               disabled={pending}
-              className="shadow-lg shadow-primary/30 w-full py-5"
+              className="w-full py-5"
             >
               {pending ? (
                 <span className="flex items-center gap-2">

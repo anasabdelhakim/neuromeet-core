@@ -37,7 +37,7 @@ export function PasswordStrengthUI({
           {[25, 50, 75, 100].map((limit, idx) => (
             <div
               key={limit}
-              className="h-1.5 flex-1 rounded-full transition-all duration-500 ease-out"
+              className="h-1.5 flex-1 rounded-full transition-all duration-normal ease-out"
               style={{
                 backgroundColor:
                   passwordStrength >= limit
@@ -48,7 +48,7 @@ export function PasswordStrengthUI({
           ))}
         </div>
         <span
-          className="text-xs font-medium w-14 text-right transition-colors duration-300"
+          className="text-xs font-medium w-14 text-right transition-colors duration-normal"
           style={{
             color:
               passwordStrength > 0
@@ -76,7 +76,7 @@ export function PasswordStrengthUI({
           <p
             key={rule.message}
             className={cn(
-              "flex items-center gap-2 text-xs transition-colors duration-300",
+              "flex items-center gap-2 text-xs transition-colors duration-normal",
               rule.passed
                 ? "text-green-600 dark:text-green-500"
                 : error
@@ -87,7 +87,7 @@ export function PasswordStrengthUI({
             {rule.passed ? (
               <Check
                 size={14}
-                className="animate-in zoom-in spin-in-12 duration-300 text-green-600 dark:text-green-500"
+                className="animate-in zoom-in spin-in-12 duration-normal text-green-600 dark:text-green-500"
               />
             ) : (
               <Circle size={14} className="opacity-50" />

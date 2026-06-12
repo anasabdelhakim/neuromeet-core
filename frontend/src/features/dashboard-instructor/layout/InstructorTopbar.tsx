@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bell, Search } from "lucide-react";
@@ -18,6 +19,7 @@ import {
   PopoverTrigger,
 } from "@/src/components/ui/popover";
 import { Badge } from "@/src/components/ui/badge";
+import { Button } from "@/src/components/ui/button";
 
 // --- TYPES & DATA ---
 interface NotificationData {
@@ -52,17 +54,17 @@ function NotificationItem({
   // 1. Replaced switch statement with a clean mapping object
   const IconMap: Record<string, React.ReactNode> = {
     join: (
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-xs font-semibold text-emerald-400">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-status-success-soft text-xs font-semibold text-status-success">
         SJ
       </div>
     ),
     schedule: (
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-violet-500/10 text-violet-400">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
         <Bell className="h-4 w-4" />
       </div>
     ),
     system: (
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-soft-subtle text-primary">
         <Search className="h-4 w-4" />
       </div>
     ),
@@ -74,8 +76,8 @@ function NotificationItem({
     <div
       onClick={onRead}
       className={cn(
-        "relative flex cursor-pointer gap-3 px-4 py-3 transition-colors hover:bg-muted/40",
-        !data.read && "bg-primary/5",
+        "relative flex cursor-pointer gap-3 px-4 py-3 transition-colors hover:bg-muted-hover",
+        !data.read && "bg-primary-soft-subtle",
       )}
     >
       {!data.read && (
@@ -98,7 +100,7 @@ function NotificationItem({
             {data.time}
           </span>
         </div>
-        <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground/90">
+        <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground-soft-90">
           {data.description}
         </p>
       </div>
@@ -145,13 +147,13 @@ function NotificationDropdown({
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger
         className={cn(
-          "relative flex h-12 w-12 cursor-pointer items-center justify-center rounded-md bg-transparent p-0 text-muted-foreground outline-none transition-all hover:bg-custom-gray hover:text-foreground",
+          "relative flex h-12 w-12 cursor-pointer items-center justify-center rounded-medium bg-transparent p-0 text-muted-foreground outline-none transition-all hover:bg-custom-gray hover:text-foreground",
           isOpen && "bg-custom-gray text-foreground",
         )}
       >
         <Bell className="h-7 w-7" />
         {unreadCount > 0 && (
-          <span className="absolute right-0 top-0 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-primary-foreground">
+          <span className="absolute right-0 top-0 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-destructive text-xs font-bold text-primary-foreground">
             {unreadCount}
           </span>
         )}
@@ -160,7 +162,7 @@ function NotificationDropdown({
       <PopoverContent
         align="end"
         sideOffset={12}
-        className="z-50 w-96 overflow-hidden rounded-xl border-border bg-card p-0 shadow-lg"
+        className="z-modal w-96 overflow-hidden rounded-soft border-border bg-card p-0 shadow-lg"
       >
         <span className="absolute -top-1.5 right-4.5 z-20 h-3 w-3 rotate-45 border-l border-t border-border bg-card"></span>
 
@@ -171,19 +173,21 @@ function NotificationDropdown({
               Notifications
             </h3>
             {unreadCount > 0 && (
-              <Badge className="h-5 rounded-full bg-red-500 px-1.5 text-xs">
+              <Badge className="h-5 rounded-full bg-destructive px-1.5 text-xs">
                 {unreadCount}
               </Badge>
             )}
           </div>
           {unreadCount > 0 && (
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={handleMarkAllRead}
-              className="flex cursor-pointer items-center gap-1 rounded-md border border-border px-2 py-1 text-xs font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+              className="gap-1 border border-border text-primary hover:bg-primary hover:text-primary-foreground"
             >
               <Bell className="h-3.5 w-3.5" />
               Mark all read
-            </button>
+            </Button>
           )}
         </div>
 
@@ -218,7 +222,7 @@ function NotificationDropdown({
         <div className="border-t border-border bg-card p-2">
           <Link
             href="/dashboard-instructor/settings"
-            className="block py-1.5 text-center text-xs font-semibold text-primary transition-colors hover:text-primary/80"
+            className="block py-1.5 text-center text-xs font-semibold text-primary transition-colors hover:text-primary-hover"
             onClick={() => setIsOpen(false)}
           >
             View all notifications
@@ -237,11 +241,12 @@ export function InstructorTopbar() {
 
   return (
     <>
-      {isNotificationsOpen && (
-        <div className="absolute inset-0 z-10 h-screen animate-in fade-in duration-200 overflow-hidden bg-gradient-to-b from-transparent via-black/60 to-black/50" />
+      {isNotificationsOpen && typeof document !== "undefined" && createPortal(
+        <div className="bg-overlay" />,
+        document.body
       )}
 
-      <header className="z-50 flex items-center justify-between gap-4 bg-transparent px-8 py-4 transition-all">
+      <header className="z-sticky flex items-center justify-between gap-4 bg-transparent px-8 py-4 transition-all duration-normal ease-standard">
         <h1 className="text-2xl font-semibold">{title}</h1>
 
         <InputGroup className="w-md max-w-md flex-1 py-5">

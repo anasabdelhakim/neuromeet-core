@@ -19,7 +19,12 @@ import { signInAction } from "@/src/features/auth/actions/auth-actions";
 import type { ActionResult } from "@/src/features/auth/actions/auth-actions";
 
 export function LoginForm() {
-  const form = useForm<z.infer<typeof loginFormSchema>>({
+  const {
+    register,
+    control,
+    setFocus,
+    formState: { errors },
+  } = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: { email: "", password: "" },
     mode: "onTouched",
@@ -33,37 +38,35 @@ export function LoginForm() {
 
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  const { errors } = form.formState;
-
   // ✅ Extract onBlur from RHF register so we can control when it fires
-  const { onBlur: emailOnBlur, ...emailRest } = form.register("email");
-  const { onBlur: passwordOnBlur, ...passwordRest } = form.register("password");
+  const { onBlur: emailOnBlur, ...emailRest } = register("email");
+  const { onBlur: passwordOnBlur, ...passwordRest } = register("password");
 
   const handleFocusNext =
     (focusNext: "email" | "password") =>
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        form.setFocus(focusNext);
+        setFocus(focusNext);
       }
     };
 
   return (
-    <Card className="card-glass transition-all duration-300 hover:shadow-xl border-border/50 rounded-2xl">
+    <Card variant="gradient">
       <AuthTabs activeTab="sign-in" />
       <CardContent>
         <form action={action} className="space-y-4">
           {/* SERVER ERROR */}
           {state.errorMessage?.server && (
-            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-              <p className="text-destructive text-sm text-center bg-destructive/10 rounded-md py-2 px-3">
+            <div className="animate-alert-entrance">
+              <p className="text-destructive text-sm text-center bg-destructive/10 rounded-medium py-2 px-3">
                 {state.errorMessage.server[0]}
               </p>
             </div>
           )}
 
 
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100 fill-mode-both">
+          <div className="animate-card-entrance delay-100">
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
               <Input
@@ -89,12 +92,12 @@ export function LoginForm() {
             </Field>
           </div>
 
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200 fill-mode-both">
+          <div className="animate-card-entrance delay-200">
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
               <PasswordInput
                 // ✅ Cast control as any to satisfy PasswordInput's generic boundaries
-                control={form.control as any}
+                control={control as any}
                 pending={pending || isGoogleLoading}
                 registerProps={{
                   ...passwordRest,
@@ -124,11 +127,11 @@ export function LoginForm() {
           </div>
 
           {/* MAIN SUBMIT BUTTON */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300 fill-mode-both pt-2">
+          <div className="animate-card-entrance delay-300 pt-2">
             <Button
               type="submit"
               disabled={pending || isGoogleLoading}
-              className="shadow-lg shadow-primary/30 w-full py-5"
+              className="w-full py-5"
             >
               {pending ? (
                 <span className="flex items-center gap-2">
@@ -142,7 +145,7 @@ export function LoginForm() {
           </div>
 
           {/* DIVIDER & SOCIAL LOGINS */}
-          <div className="relative my-6 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-[400ms] fill-mode-both">
+          <div className="relative my-6 animate-card-entrance delay-400">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-border" />
             </div>
@@ -153,7 +156,7 @@ export function LoginForm() {
             </div>
           </div>
 
-          <div className="space-y-3 flex gap-2 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-[500ms] fill-mode-both">
+          <div className="space-y-3 flex gap-2 animate-card-entrance delay-500">
             <Button
               className="flex-1 py-5 border-border flex items-center justify-center hover:bg-background bg-muted transition-all group"
               nativeButton={false}

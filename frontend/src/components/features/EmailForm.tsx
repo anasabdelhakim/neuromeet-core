@@ -14,12 +14,12 @@ export function EmailForm() {
         type="email"
         placeholder="Enter your email"
         name="email"
-        className="w-full bg-custom-gray/50 hover:bg-custom-gray/80 focus:bg-custom-gray border border-border rounded-lg px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-all focus:ring-2 focus:ring-primary shadow-inner"
+        className="w-full bg-custom-gray/50 hover:bg-custom-gray/80 focus:bg-custom-gray border border-border rounded-soft px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-all focus:ring-2 focus:ring-primary shadow-inner"
       />
       <button
         type="submit"
         disabled={pending}
-        className="w-full bg-custom-gray hover:bg-custom-gray-hover text-foreground font-semibold px-5 py-2.5 rounded-lg border border-white/5 transition-all cursor-pointer hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-custom-gray hover:bg-custom-gray-hover text-foreground font-semibold px-5 py-2.5 rounded-soft border border-white/5 transition-all cursor-pointer hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {pending ? "Checking..." : "Check your email"}
       </button>

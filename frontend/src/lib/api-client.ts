@@ -1,8 +1,7 @@
 import 'server-only';
+import { cookies } from 'next/headers';
+import { setAuthCookies, clearAuthCookies } from './auth-cookies';
 
-// SECURITY: Using 'server-only' package ensures this file can NEVER be imported
-// into client components. This protects our backend URL and any secret tokens
-// from being exposed in the browser's JavaScript bundle.
 export const BASE_URL = process.env.NESTJS_URL || 'http://localhost:4000/api/v1';
 
 export class ApiError extends Error {
@@ -14,71 +13,97 @@ export class ApiError extends Error {
   }
 }
 
-// Shared response parser
+async function handleTokenRefresh(): Promise<string | null> {
+  try {
+    const cookieStore = await cookies();
+    const refreshToken = cookieStore.get('refresh_token')?.value;
+
+    if (!refreshToken) return null;
+
+    const res = await fetch(`${BASE_URL}/auth/refresh-token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken }),
+    });
+
+    if (!res.ok) {
+      await clearAuthCookies();
+      return null;
+    }
+
+    const data = await res.json();
+    await setAuthCookies(data.access_token, data.refresh_token || refreshToken);
+    return data.access_token;
+  } catch (error) {
+    return null;
+  }
+}
+
+async function request<T>(
+  endpoint: string,
+  method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
+  body?: Record<string, unknown>,
+  isRetry = false,
+  customFetchOptions: RequestInit = {} 
+): Promise<T> {
+  const cookieStore = await cookies();
+  let accessToken = cookieStore.get('access_token')?.value;
+
+  const headers = new Headers(customFetchOptions.headers);
+  
+  if (accessToken) headers.set('Authorization', `Bearer ${accessToken}`);
+  if (body) headers.set('Content-Type', 'application/json');
+
+  const fetchConfig: RequestInit = {
+    ...customFetchOptions,
+    method,
+    headers,
+  };
+
+  if (body) fetchConfig.body = JSON.stringify(body);
+
+  const res = await fetch(`${BASE_URL}${endpoint}`, fetchConfig);
+
+  if (res.status === 401 && !isRetry) {
+    const refreshedToken = await handleTokenRefresh();
+    if (refreshedToken) {
+      const retryHeaders = new Headers(headers);
+      retryHeaders.set('Authorization', `Bearer ${refreshedToken}`);
+      
+      const retryRes = await fetch(`${BASE_URL}${endpoint}`, { 
+        ...fetchConfig, 
+        headers: retryHeaders 
+      });
+      return handleResponse<T>(retryRes);
+    }
+  }
+
+  return handleResponse<T>(res);
+}
+
 async function handleResponse<T>(res: Response): Promise<T> {
   const data = await res.json();
-
   if (!res.ok) {
     const msg = Array.isArray(data.message) ? data.message[0] : data.message;
     throw new ApiError(msg || 'Something went wrong', res.status);
   }
-
   return data as T;
 }
 
-// ---------- POST ----------
-export async function apiPost<T>(
-  endpoint: string,
-  body: Record<string, unknown>,
-  token?: string,
-): Promise<T> {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+// ---------- EXPOSED METHODS ----------
 
-  const res = await fetch(`${BASE_URL}${endpoint}`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(body),
-  });
-
-  return handleResponse<T>(res);
+export async function apiGet<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  return request<T>(endpoint, 'GET', undefined, false, options);
 }
 
-// ---------- GET ----------
-export async function apiGet<T>(
-  endpoint: string,
-  token?: string,
-): Promise<T> {
-  const headers: Record<string, string> = {};
-  if (token) headers['Authorization'] = `Bearer ${token}`;
-
-  const res = await fetch(`${BASE_URL}${endpoint}`, {
-    method: 'GET',
-    headers,
-    cache: 'no-store',
-  });
-
-  return handleResponse<T>(res);
+export async function apiPost<T>(endpoint: string, body: Record<string, unknown>): Promise<T> {
+  return request<T>(endpoint, 'POST', body);
 }
 
-// ---------- PATCH ----------
-export async function apiPatch<T>(
-  endpoint: string,
-  body: Record<string, unknown>,
-  token?: string,
-): Promise<T> {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+export async function apiPatch<T>(endpoint: string, body: Record<string, unknown>): Promise<T> {
+  return request<T>(endpoint, 'PATCH', body);
+}
 
-  const res = await fetch(`${BASE_URL}${endpoint}`, {
-    method: 'PATCH',
-    headers,
-    body: JSON.stringify(body),
-  });
-
-  return handleResponse<T>(res);
+export async function apiDelete<T>(endpoint: string): Promise<T> {
+  return request<T>(endpoint, 'DELETE');
 }

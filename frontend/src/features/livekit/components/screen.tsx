@@ -5,8 +5,15 @@ import {
   RoomAudioRenderer,
 } from "@livekit/components-react";
 import "@livekit/components-styles";
+import { EngagementDashboard } from "./EngagementDashboard";
 
-export default function MeetingPage({ token }: { token: string }) {
+interface MeetingPageProps {
+  token: string;
+  /** Pass true for the instructor view to show the engagement side-panel */
+  isInstructor?: boolean;
+}
+
+export default function MeetingPage({ token, isInstructor = false }: MeetingPageProps) {
   return (
     <LiveKitRoom
       video={true}
@@ -17,11 +24,21 @@ export default function MeetingPage({ token }: { token: string }) {
       style={{ height: "100vh" }}
       connect={true}
     >
-      {/* المكون ده بيرسم شبكة الكاميرات وشريط الأدوات بالكامل أوتوماتيك */}
-      <VideoConference />
+      <div className="flex h-screen overflow-hidden">
+        {/* Main video grid — takes remaining width */}
+        <div className="flex-1 min-w-0">
+          <VideoConference />
+          <RoomAudioRenderer />
+        </div>
 
-      {/* المكون ده عشان تسمع أصوات الناس التانية */}
-      <RoomAudioRenderer />
+        {/* Instructor-only engagement side-panel */}
+        {isInstructor && (
+          <aside className="w-72 flex-shrink-0 border-l border-white/10
+                            bg-[hsl(222,20%,6%)] overflow-y-auto p-3">
+            <EngagementDashboard />
+          </aside>
+        )}
+      </div>
     </LiveKitRoom>
   );
 }

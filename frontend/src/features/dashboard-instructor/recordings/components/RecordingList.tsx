@@ -25,8 +25,8 @@ export const RecordingsList = () => {
 
 export function RecordingCard({ recording }: { recording: Recording }) {
   return (
-    <Card className="bg-card-gradient rounded-lg py-0 cursor-pointer hover:scale-103 transition-all duration-300 group">
-      <div className="aspect-video overflow-hidden rounded-t-lg relative">
+    <Card variant="gradient" className="py-0 cursor-pointer hover:scale-103 transition-all duration-normal ease-standard group">
+      <div className="aspect-video overflow-hidden rounded-t-soft relative">
         <Image
           src={recording.image}
           alt={recording.title}
@@ -34,11 +34,11 @@ export function RecordingCard({ recording }: { recording: Recording }) {
           height={225}
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="absolute inset-0 bg-black-soft-muted flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-normal ease-standard">
           <Play className="text-white w-10 h-10 fill-white" />
         </div>
 
-        <Badge className="absolute z-20 top-2 left-2 flex items-center gap-1 bg-custom-gray border-border shadow-lg">
+        <Badge className="absolute z-20 top-1 left-2 flex items-center gap-1 bg-custom-gray border-border shadow-lg">
           {/* Animated Recording Dot */}
           <span className="relative flex h-2 w-2 mr-0.5 ">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive"></span>
@@ -46,7 +46,7 @@ export function RecordingCard({ recording }: { recording: Recording }) {
           </span>
           <span>Record</span>
         </Badge>
-        <Badge className="absolute z-20 bottom-2 right-2 flex items-center gap-1 bg-custom-gray border-border shadow-lg rounded-sm tracking-wider">
+        <Badge className="absolute z-20 bottom-1 right-2 flex items-center gap-1 bg-custom-gray border-border shadow-lg rounded-hard tracking-wider">
           <Clock size={12} />
           <span>{recording.duration}min</span>
         </Badge>
@@ -60,7 +60,7 @@ export function RecordingCard({ recording }: { recording: Recording }) {
             <TooltipButton
               label="Delete recording"
               variant="destructive"
-              className="rounded-sm"
+              className="rounded-hard"
             >
               <Trash2Icon size={18} />
             </TooltipButton>
@@ -68,7 +68,7 @@ export function RecordingCard({ recording }: { recording: Recording }) {
             <TooltipButton
               label="Download"
               variant="outline"
-              className="rounded-sm"
+              className="rounded-hard"
             >
               <Download size={18} />
             </TooltipButton>
@@ -76,13 +76,13 @@ export function RecordingCard({ recording }: { recording: Recording }) {
             <TooltipButton
               label="Share"
               variant="outline"
-              className="rounded-sm"
+              className="rounded-hard"
             >
               <ShareIcon size={18} />
             </TooltipButton>
           </div>
 
-          <TooltipButton label="Play recording" className="rounded-sm gap-2">
+          <TooltipButton label="Play recording" className="rounded-medium gap-2">
             <Play size={18} />
             Play
           </TooltipButton>
