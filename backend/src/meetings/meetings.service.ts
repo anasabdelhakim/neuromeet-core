@@ -2,478 +2,254 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
-  ConflictException,
   BadRequestException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/database/database.service';
-import {
-  CreateMeetingDto,
-  UpdateMeetingDto,
-  JoinMeetingDto,
-  UpdateParticipantDto,
-  AddMaterialDto,
-} from './dto/meeting.dto';
+import { PrismaService } from '../database/database.service';
+import { CreateMeetingDto } from './dto/create-meeting.dto';
+import { UpdateMeetingDto } from './dto/update-meeting.dto';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class MeetingsService {
   constructor(private prisma: PrismaService) {}
 
+  private generateRoomCode(): string {
+    return randomBytes(5).toString('hex').toLowerCase(); // 10 chars
+  }
+
   // =========================
-  // MEETINGS — CRUD
+  // CREATE / SCHEDULE
   // =========================
 
-  async createMeeting(hostId: string, dto: CreateMeetingDto) {
+  async createInstantMeeting(instructorId: string, dto: CreateMeetingDto) {
+    let roomCode = this.generateRoomCode();
+    let collision = true;
+    while (collision) {
+      const existing = await this.prisma.meeting.findUnique({ where: { roomCode } });
+      if (existing) roomCode = this.generateRoomCode();
+      else collision = false;
+    }
+
     const meeting = await this.prisma.meeting.create({
       data: {
-        hostId,
-        title: dto.title,
+        title: dto.title || 'Instant Meeting',
         description: dto.description,
-        platform: dto.platform as any,
-        scheduledAt: dto.scheduledAt ? new Date(dto.scheduledAt) : undefined,
-        durationMinutes: dto.durationMinutes,
-        status: 'SCHEDULED',
-      },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        platform: true,
-        status: true,
-        scheduledAt: true,
-        durationMinutes: true,
-        createdAt: true,
-        host: {
-          select: { id: true, name: true, email: true },
-        },
+        scheduledAt: new Date(),
+        duration: dto.duration || 60,
+        status: 'LIVE',
+        isInstant: true,
+        isGroupLocked: dto.isGroupLocked ?? false,
+        roomCode,
+        instructorId,
+        groupId: dto.groupId,
       },
     });
 
     return { status: 'success', data: meeting };
   }
 
-  async getAllMeetings(userId: string) {
-    // Returns meetings the user hosts OR participates in
+  async scheduleMeeting(instructorId: string, dto: CreateMeetingDto) {
+    if (!dto.scheduledAt) {
+      throw new BadRequestException('scheduledAt is required for scheduled meetings.');
+    }
+
+    let roomCode = this.generateRoomCode();
+    let collision = true;
+    while (collision) {
+      const existing = await this.prisma.meeting.findUnique({ where: { roomCode } });
+      if (existing) roomCode = this.generateRoomCode();
+      else collision = false;
+    }
+
+    const scheduledDate = new Date(dto.scheduledAt);
+    
+    const meeting = await this.prisma.meeting.create({
+      data: {
+        title: dto.title,
+        description: dto.description,
+        scheduledAt: scheduledDate,
+        timezone: dto.timezone || 'UTC',
+        duration: dto.duration || 60,
+        status: 'SCHEDULED',
+        isInstant: false,
+        isGroupLocked: dto.isGroupLocked ?? false,
+        roomCode,
+        instructorId,
+        groupId: dto.groupId,
+      },
+    });
+
+    // TODO: Enqueue BullMQ `notification-delay` job to fire 30 min before `scheduledDate`
+    // Example: await this.notificationQueue.add('send-reminder', { meetingId: meeting.id }, { delay: scheduledDate.getTime() - Date.now() - 30 * 60 * 1000 });
+
+    return { status: 'success', data: meeting };
+  }
+
+  // =========================
+  // GET MEETINGS (INSTRUCTOR)
+  // =========================
+
+  async getUpcomingMeetings(instructorId: string, cursor?: string) {
     const meetings = await this.prisma.meeting.findMany({
       where: {
-        OR: [
-          { hostId: userId },
-          { participants: { some: { userId } } },
-        ],
+        instructorId,
+        status: { in: ['SCHEDULED', 'LIVE'] },
       },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        status: true,
-        platform: true,
-        scheduledAt: true,
-        durationMinutes: true,
-        startedAt: true,
-        endedAt: true,
-        createdAt: true,
-        host: { select: { id: true, name: true, email: true } },
-        _count: { select: { participants: true, materials: true } },
+      take: 20,
+      skip: cursor ? 1 : 0,
+      cursor: cursor ? { id: cursor } : undefined,
+      orderBy: { scheduledAt: 'asc' },
+      include: { group: { select: { name: true } } },
+    });
+
+    return { status: 'success', data: meetings, nextCursor: meetings.length === 20 ? meetings[19].id : null };
+  }
+
+  async getPreviousMeetings(instructorId: string, cursor?: string) {
+    const meetings = await this.prisma.meeting.findMany({
+      where: {
+        instructorId,
+        status: { in: ['ENDED', 'CANCELLED'] },
       },
-      orderBy: { createdAt: 'desc' },
+      take: 20,
+      skip: cursor ? 1 : 0,
+      cursor: cursor ? { id: cursor } : undefined,
+      orderBy: { scheduledAt: 'desc' },
+      include: { group: { select: { name: true } } },
+    });
+
+    return { status: 'success', data: meetings, nextCursor: meetings.length === 20 ? meetings[19].id : null };
+  }
+
+  async getTodayMeetings(instructorId: string) {
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
+
+    const meetings = await this.prisma.meeting.findMany({
+      where: {
+        instructorId,
+        scheduledAt: { gte: startOfToday, lte: endOfToday },
+        status: { not: 'CANCELLED' },
+      },
+      orderBy: { scheduledAt: 'asc' },
+      include: { group: { select: { name: true } } },
     });
 
     return { status: 'success', data: meetings };
   }
 
-  async getMeetingById(meetingId: string, userId: string) {
-    const meeting = await this.prisma.meeting.findUnique({
-      where: { id: meetingId },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        status: true,
-        platform: true,
-        livekitRoomName: true,
-        livekitRoomSid: true,
-        joinToken: true,
-        scheduledAt: true,
-        durationMinutes: true,
-        startedAt: true,
-        endedAt: true,
-        createdAt: true,
-        host: { select: { id: true, name: true, email: true } },
-        participants: {
-          select: {
-            id: true,
-            role: true,
-            consentGiven: true,
-            joinedAt: true,
-            leftAt: true,
-            secondsPresent: true,
-            avgEngagementScore: true,
-            adhdFlagged: true,
-            user: { select: { id: true, name: true, email: true } },
-          },
-        },
-        materials: {
-          select: {
-            id: true,
-            fileName: true,
-            driveViewUrl: true,
-            mimeType: true,
-            sizeBytes: true,
-            uploadedAt: true,
-            uploader: { select: { id: true, name: true } },
-          },
-        },
-      },
-    });
+  // =========================
+  // EDIT & CANCEL
+  // =========================
 
-    if (!meeting) throw new NotFoundException('Meeting not found');
-
-    // Only host or participant can see meeting details
-    const isHost = meeting.host.id === userId;
-    const isParticipant = meeting.participants.some((p) => p.user.id === userId);
-    if (!isHost && !isParticipant) {
-      throw new ForbiddenException('You are not part of this meeting');
-    }
-
-    return { status: 'success', data: meeting };
-  }
-
-  async updateMeeting(meetingId: string, hostId: string, dto: UpdateMeetingDto) {
-    const meeting = await this.prisma.meeting.findUnique({
-      where: { id: meetingId },
-      select: { id: true, hostId: true },
-    });
-
-    if (!meeting) throw new NotFoundException('Meeting not found');
-    if (meeting.hostId !== hostId) {
-      throw new ForbiddenException('Only the host can update this meeting');
-    }
+  async updateMeeting(id: string, instructorId: string, dto: UpdateMeetingDto) {
+    const meeting = await this.prisma.meeting.findUnique({ where: { id } });
+    if (!meeting) throw new NotFoundException('Meeting not found.');
+    if (meeting.instructorId !== instructorId) throw new ForbiddenException('Only the instructor can edit this meeting.');
+    if (meeting.status !== 'SCHEDULED') throw new BadRequestException('Only SCHEDULED meetings can be edited.');
 
     const updated = await this.prisma.meeting.update({
-      where: { id: meetingId },
+      where: { id },
       data: {
-        ...(dto.title && { title: dto.title }),
-        ...(dto.description !== undefined && { description: dto.description }),
-        ...(dto.status && { status: dto.status as any }),
-        ...(dto.platform && { platform: dto.platform as any }),
-        ...(dto.scheduledAt && { scheduledAt: new Date(dto.scheduledAt) }),
-        ...(dto.durationMinutes && { durationMinutes: dto.durationMinutes }),
-        ...(dto.livekitRoomName && { livekitRoomName: dto.livekitRoomName }),
-        ...(dto.livekitRoomSid && { livekitRoomSid: dto.livekitRoomSid }),
-        ...(dto.joinToken && { joinToken: dto.joinToken }),
-        // Auto-set timestamps based on status changes
-        ...(dto.status === 'LIVE' && { startedAt: new Date() }),
-        ...(dto.status === 'ENDED' && { endedAt: new Date() }),
-      },
-      select: {
-        id: true,
-        title: true,
-        status: true,
-        platform: true,
-        scheduledAt: true,
-        durationMinutes: true,
-        startedAt: true,
-        endedAt: true,
+        title: dto.title,
+        description: dto.description,
+        scheduledAt: dto.scheduledAt ? new Date(dto.scheduledAt) : undefined,
+        timezone: dto.timezone,
+        duration: dto.duration,
       },
     });
 
     return { status: 'success', data: updated };
   }
 
-  async deleteMeeting(meetingId: string, hostId: string) {
-    const meeting = await this.prisma.meeting.findUnique({
-      where: { id: meetingId },
-      select: { id: true, hostId: true },
+  async cancelMeeting(id: string, instructorId: string) {
+    const meeting = await this.prisma.meeting.findUnique({ where: { id } });
+    if (!meeting) throw new NotFoundException('Meeting not found.');
+    if (meeting.instructorId !== instructorId) throw new ForbiddenException('Only the instructor can cancel this meeting.');
+
+    // TODO: Cancel delayed notification job in BullMQ
+
+    const cancelled = await this.prisma.meeting.update({
+      where: { id },
+      data: { status: 'CANCELLED' },
     });
 
-    if (!meeting) throw new NotFoundException('Meeting not found');
-    if (meeting.hostId !== hostId) {
-      throw new ForbiddenException('Only the host can delete this meeting');
-    }
-
-    await this.prisma.meeting.delete({ where: { id: meetingId } });
-
-    return { status: 'success', message: 'Meeting deleted successfully' };
+    return { status: 'success', message: 'Meeting cancelled.', data: cancelled };
   }
 
   // =========================
-  // PARTICIPANTS
+  // JOIN & STUDENT QUERIES
   // =========================
 
-  async joinMeeting(meetingId: string, userId: string, dto: JoinMeetingDto) {
+  async joinMeetingByCode(code: string, userId: string, role: string) {
     const meeting = await this.prisma.meeting.findUnique({
-      where: { id: meetingId },
-      select: { id: true, status: true, hostId: true },
+      where: { roomCode: code },
+      include: { group: true },
     });
 
-    if (!meeting) throw new NotFoundException('Meeting not found');
-
-    if (meeting.status === 'ENDED' || meeting.status === 'CANCELLED') {
-      throw new BadRequestException('This meeting is no longer active');
+    if (!meeting) throw new NotFoundException('Invalid meeting code.');
+    if (meeting.status === 'CANCELLED' || meeting.status === 'ENDED') {
+      throw new BadRequestException('This meeting is no longer active.');
     }
 
-    // Check if already in the meeting
-    const existing = await this.prisma.meetingParticipant.findUnique({
-      where: { meetingId_userId: { meetingId, userId } },
-    });
-
-    if (existing) {
-      throw new ConflictException('You have already joined this meeting');
+    if (meeting.isGroupLocked && meeting.groupId && role === 'STUDENT') {
+      const enrollment = await this.prisma.enrollment.findUnique({
+        where: { studentId_groupId: { studentId: userId, groupId: meeting.groupId } },
+      });
+      if (!enrollment) {
+        throw new ForbiddenException('You must be a member of the group to join this meeting.');
+      }
     }
 
-    const role = meeting.hostId === userId ? 'HOST' : 'PARTICIPANT';
-
-    const participant = await this.prisma.meetingParticipant.create({
-      data: {
-        meetingId,
-        userId,
-        role: role as any,
-        consentGiven: dto.consentGiven ?? false,
-        joinedAt: new Date(),
-      },
-      select: {
-        id: true,
-        role: true,
-        consentGiven: true,
-        joinedAt: true,
-        user: { select: { id: true, name: true, email: true } },
-      },
-    });
-
-    return { status: 'success', data: participant };
+    // Usually, here you'd generate a LiveKit token and return it.
+    // For now, we return success so the frontend knows the code is valid.
+    return { status: 'success', data: { meetingId: meeting.id, title: meeting.title } };
   }
 
-  async leaveMeeting(meetingId: string, userId: string) {
-    const participant = await this.prisma.meetingParticipant.findUnique({
-      where: { meetingId_userId: { meetingId, userId } },
+  async getStudentUpcomingMeetings(studentId: string) {
+    const enrollments = await this.prisma.enrollment.findMany({
+      where: { studentId },
+      select: { groupId: true },
+    });
+    const groupIds = enrollments.map(e => e.groupId);
+
+    const meetings = await this.prisma.meeting.findMany({
+      where: {
+        groupId: { in: groupIds },
+        status: { in: ['SCHEDULED', 'LIVE'] },
+      },
+      orderBy: { scheduledAt: 'asc' },
+      include: { instructor: { select: { name: true, avatarUrl: true } }, group: { select: { name: true } } },
     });
 
-    if (!participant) {
-      throw new NotFoundException('You are not a participant of this meeting');
-    }
-
-    const leftAt = new Date();
-    const secondsPresent = participant.joinedAt
-      ? Math.floor((leftAt.getTime() - participant.joinedAt.getTime()) / 1000)
-      : 0;
-
-    const updated = await this.prisma.meetingParticipant.update({
-      where: { meetingId_userId: { meetingId, userId } },
-      data: {
-        leftAt,
-        secondsPresent: participant.secondsPresent + secondsPresent,
-      },
-      select: {
-        id: true,
-        leftAt: true,
-        secondsPresent: true,
-      },
-    });
-
-    return { status: 'success', data: updated };
+    return { status: 'success', data: meetings };
   }
 
-  async getMeetingParticipants(meetingId: string, userId: string) {
-    const meeting = await this.prisma.meeting.findUnique({
-      where: { id: meetingId },
-      select: {
-        id: true,
-        hostId: true,
-        participants: { select: { userId: true } },
+  async getStudentTodayMeetings(studentId: string) {
+    const enrollments = await this.prisma.enrollment.findMany({
+      where: { studentId },
+      select: { groupId: true },
+    });
+    const groupIds = enrollments.map(e => e.groupId);
+
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
+
+    const meetings = await this.prisma.meeting.findMany({
+      where: {
+        groupId: { in: groupIds },
+        scheduledAt: { gte: startOfToday, lte: endOfToday },
+        status: { not: 'CANCELLED' },
       },
+      orderBy: { scheduledAt: 'asc' },
+      include: { instructor: { select: { name: true, avatarUrl: true } }, group: { select: { name: true } } },
     });
 
-    if (!meeting) throw new NotFoundException('Meeting not found');
-
-    const isHost = meeting.hostId === userId;
-    const isParticipant = meeting.participants.some((p) => p.userId === userId);
-
-    if (!isHost && !isParticipant) {
-      throw new ForbiddenException('You are not part of this meeting');
-    }
-
-    const participants = await this.prisma.meetingParticipant.findMany({
-      where: { meetingId },
-      select: {
-        id: true,
-        role: true,
-        consentGiven: true,
-        joinedAt: true,
-        leftAt: true,
-        secondsPresent: true,
-        avgEngagementScore: true,
-        adhdFlagged: true,
-        user: { select: { id: true, name: true, email: true } },
-      },
-      orderBy: { joinedAt: 'asc' },
-    });
-
-    return { status: 'success', data: participants };
-  }
-
-  async updateParticipant(
-    meetingId: string,
-    participantId: string,
-    hostId: string,
-    dto: UpdateParticipantDto,
-  ) {
-    const meeting = await this.prisma.meeting.findUnique({
-      where: { id: meetingId },
-      select: { id: true, hostId: true },
-    });
-
-    if (!meeting) throw new NotFoundException('Meeting not found');
-    if (meeting.hostId !== hostId) {
-      throw new ForbiddenException(
-        'Only the host can update participant metrics',
-      );
-    }
-
-    const updated = await this.prisma.meetingParticipant.update({
-      where: { id: participantId },
-      data: {
-        ...(dto.secondsPresent !== undefined && {
-          secondsPresent: dto.secondsPresent,
-        }),
-        ...(dto.avgEngagementScore !== undefined && {
-          avgEngagementScore: dto.avgEngagementScore,
-        }),
-        ...(dto.adhdFlagged !== undefined && { adhdFlagged: dto.adhdFlagged }),
-      },
-      select: {
-        id: true,
-        secondsPresent: true,
-        avgEngagementScore: true,
-        adhdFlagged: true,
-      },
-    });
-
-    return { status: 'success', data: updated };
-  }
-
-  // =========================
-  // MATERIALS
-  // =========================
-
-  async addMaterial(
-    meetingId: string,
-    uploadedBy: string,
-    dto: AddMaterialDto,
-  ) {
-    const meeting = await this.prisma.meeting.findUnique({
-      where: { id: meetingId },
-      select: {
-        id: true,
-        hostId: true,
-        participants: { select: { userId: true } },
-      },
-    });
-
-    if (!meeting) throw new NotFoundException('Meeting not found');
-
-    const isHost = meeting.hostId === uploadedBy;
-    const isParticipant = meeting.participants.some(
-      (p) => p.userId === uploadedBy,
-    );
-
-    if (!isHost && !isParticipant) {
-      throw new ForbiddenException(
-        'Only meeting members can upload materials',
-      );
-    }
-
-    const material = await this.prisma.meetingMaterial.create({
-      data: {
-        meetingId,
-        uploadedBy,
-        fileName: dto.fileName,
-        driveFileId: dto.driveFileId,
-        driveViewUrl: dto.driveViewUrl,
-        mimeType: dto.mimeType,
-        sizeBytes: dto.sizeBytes,
-      },
-      select: {
-        id: true,
-        fileName: true,
-        driveFileId: true,
-        driveViewUrl: true,
-        mimeType: true,
-        sizeBytes: true,
-        uploadedAt: true,
-        uploader: { select: { id: true, name: true } },
-      },
-    });
-
-    return { status: 'success', data: material };
-  }
-
-  async getMeetingMaterials(meetingId: string, userId: string) {
-    const meeting = await this.prisma.meeting.findUnique({
-      where: { id: meetingId },
-      select: {
-        id: true,
-        hostId: true,
-        participants: { select: { userId: true } },
-      },
-    });
-
-    if (!meeting) throw new NotFoundException('Meeting not found');
-
-    const isHost = meeting.hostId === userId;
-    const isParticipant = meeting.participants.some((p) => p.userId === userId);
-
-    if (!isHost && !isParticipant) {
-      throw new ForbiddenException('You are not part of this meeting');
-    }
-
-    const materials = await this.prisma.meetingMaterial.findMany({
-      where: { meetingId },
-      select: {
-        id: true,
-        fileName: true,
-        driveFileId: true,
-        driveViewUrl: true,
-        mimeType: true,
-        sizeBytes: true,
-        uploadedAt: true,
-        uploader: { select: { id: true, name: true } },
-      },
-      orderBy: { uploadedAt: 'desc' },
-    });
-
-    return { status: 'success', data: materials };
-  }
-
-  async deleteMaterial(
-    meetingId: string,
-    materialId: string,
-    userId: string,
-  ) {
-    const material = await this.prisma.meetingMaterial.findUnique({
-      where: { id: materialId },
-      select: {
-        id: true,
-        meetingId: true,
-        uploadedBy: true,
-        meeting: { select: { hostId: true } },
-      },
-    });
-
-    if (!material) throw new NotFoundException('Material not found');
-    if (material.meetingId !== meetingId) {
-      throw new BadRequestException('Material does not belong to this meeting');
-    }
-
-    const isHost = material.meeting.hostId === userId;
-    const isOwner = material.uploadedBy === userId;
-
-    if (!isHost && !isOwner) {
-      throw new ForbiddenException(
-        'Only the uploader or the host can delete this material',
-      );
-    }
-
-    await this.prisma.meetingMaterial.delete({ where: { id: materialId } });
-
-    return { status: 'success', message: 'Material deleted successfully' };
+    return { status: 'success', data: meetings };
   }
 }

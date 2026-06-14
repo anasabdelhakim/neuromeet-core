@@ -54,7 +54,7 @@ export class AuthService {
         name: signUpDto.name,
         email: signUpDto.email,
         password: hashedPassword,
-        role: 'USER',
+        role: 'STUDENT',
         verificationCode: code,
         otpPurpose: 'SIGN_UP',
         otpExpire, // RESTORED
@@ -187,8 +187,15 @@ export class AuthService {
         verificationCode: null,
         otpPurpose: null,
         otpExpire: null, // RESTORED: Clear expiry after consumption
-        refreshToken: hashedRefreshToken,
       },
+    });
+
+    await this.prisma.session.create({
+      data: {
+        userId: user.id,
+        refreshToken: hashedRefreshToken,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+      }
     });
 
     return {
@@ -295,9 +302,23 @@ export class AuthService {
       refreshToken,
       AUTH_CONSTANTS.BCRYPT_SALT_ROUNDS,
     );
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: { refreshToken: hashedRefreshToken },
+    const activeSessions = await this.prisma.session.count({ where: { userId: user.id } });
+    if (activeSessions >= 3) {
+      const oldestSession = await this.prisma.session.findFirst({
+        where: { userId: user.id },
+        orderBy: { createdAt: 'asc' },
+      });
+      if (oldestSession) {
+        await this.prisma.session.delete({ where: { id: oldestSession.id } });
+      }
+    }
+
+    await this.prisma.session.create({
+      data: {
+        userId: user.id,
+        refreshToken: hashedRefreshToken,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      }
     });
 
     const {
@@ -502,7 +523,6 @@ export class AuthService {
           phone: true,
           dateOfBirth: true,
           active: true,
-          refreshToken: true,
           created_at: true,
           updated_at: true,
         },
@@ -511,7 +531,11 @@ export class AuthService {
       if (!user) throw new NotFoundException('User not found');
 
       // RESTORED: Hard abort if the user is already logged out (null token)
-      if (!user.refreshToken) {
+      const session = await this.prisma.session.findFirst({
+        where: { userId: decoded.id },
+      });
+
+      if (!session || !session.refreshToken) {
         throw new UnauthorizedException(
           'Session has been revoked. Please sign in again.',
         );
@@ -519,13 +543,12 @@ export class AuthService {
 
       const isValid = await bcrypt.compare(
         incomingRefreshToken,
-        user.refreshToken,
+        session.refreshToken,
       );
 
       if (!isValid) {
-        await this.prisma.user.update({
-          where: { id: user.id },
-          data: { refreshToken: null },
+        await this.prisma.session.deleteMany({
+          where: { userId: user.id },
         });
         throw new UnauthorizedException(
           'Token reuse detected — all sessions revoked',
@@ -555,12 +578,12 @@ export class AuthService {
         newRefreshToken,
         AUTH_CONSTANTS.BCRYPT_SALT_ROUNDS,
       );
-      await this.prisma.user.update({
-        where: { id: user.id },
-        data: { refreshToken: hashedNewRefresh },
+      await this.prisma.session.update({
+        where: { id: session.id },
+        data: { refreshToken: hashedNewRefresh, lastUsedAt: new Date() },
       });
 
-      const { refreshToken: _, ...userData } = user;
+      const { sessions, ...userData } = user as any;
 
       return {
         status: 'success',
@@ -577,9 +600,10 @@ export class AuthService {
   // LOGOUT
   // =========================
   async logout(userId: string) {
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: { refreshToken: null },
+    // Note: If you have a sessionId, you should delete that specific session.
+    // For now, we clear all sessions or just return success if client handles it.
+    await this.prisma.session.deleteMany({
+      where: { userId },
     });
 
     return {

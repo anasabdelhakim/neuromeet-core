@@ -12,6 +12,7 @@ import { OAuthModule } from 'src/oauth/oauth.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EmailModule } from 'src/emails/email.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
+import { GroupsModule } from './groups/groups.module';
 import { MeetingsModule } from './meetings/meetings.module';
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { MeetingsModule } from './meetings/meetings.module';
     EmailModule,
     AuthModule,
     OAuthModule,
+    GroupsModule,
     MeetingsModule,
   ],
   controllers: [AppController, DriveController],

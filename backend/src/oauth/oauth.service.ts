@@ -81,9 +81,12 @@ export class OAuthService {
         AUTH_CONSTANTS.BCRYPT_SALT_ROUNDS,
       );
 
-      await this.prisma.user.update({
-        where: { id: newUser.id },
-        data: { refreshToken: hashedRefreshToken },
+      await this.prisma.session.create({
+        data: {
+          userId: newUser.id,
+          refreshToken: hashedRefreshToken,
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        }
       });
 
       return {
@@ -121,9 +124,23 @@ export class OAuthService {
       AUTH_CONSTANTS.BCRYPT_SALT_ROUNDS,
     );
 
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: { refreshToken: hashedRefreshToken },
+    const activeSessions = await this.prisma.session.count({ where: { userId: user.id } });
+    if (activeSessions >= 3) {
+      const oldestSession = await this.prisma.session.findFirst({
+        where: { userId: user.id },
+        orderBy: { createdAt: 'asc' },
+      });
+      if (oldestSession) {
+        await this.prisma.session.delete({ where: { id: oldestSession.id } });
+      }
+    }
+
+    await this.prisma.session.create({
+      data: {
+        userId: user.id,
+        refreshToken: hashedRefreshToken,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      }
     });
 
     const { password: _, ...safeUser } = user;
