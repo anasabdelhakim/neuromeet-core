@@ -428,3 +428,82 @@ export async function signOutAction(): Promise<void> {
   await clearAuthCookies();
   redirect("/sign-in");
 }
+
+// =========================
+// UPDATE USER PROFILE
+// =========================
+export type ProfileSettingsState = {
+  success: boolean;
+  errorMessage?: {
+    avatar?: string[];
+    server?: string[];
+  };
+};
+
+export async function updateUserProfile(
+  _prevState: ProfileSettingsState | null,
+  formData: FormData
+): Promise<ProfileSettingsState> {
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token")?.value;
+
+  if (!accessToken) {
+    return {
+      success: false,
+      errorMessage: { server: ["Unauthorized. Please sign in again."] },
+    };
+  }
+
+  const avatarFile = formData.get("avatar") as File | null;
+  if (!avatarFile || avatarFile.size === 0) {
+    return {
+      success: false,
+      errorMessage: { avatar: ["Please select a profile photo to upload."] },
+    };
+  }
+
+  if (avatarFile.size > 5 * 1024 * 1024) {
+    return {
+      success: false,
+      errorMessage: { avatar: ["File size exceeds 5MB limit."] },
+    };
+  }
+
+  let redirectPath = "/";
+
+  try {
+    const { BASE_URL } = await import("@/src/lib/api-client");
+    
+    // We send a multipart request using FormData containing the file
+    const uploadData = new FormData();
+    uploadData.append("avatar", avatarFile);
+
+    const res = await fetch(`${BASE_URL}/userMe/avatar`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: uploadData,
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({ message: "Failed to upload avatar" }));
+      return {
+        success: false,
+        errorMessage: { server: [errorData.message || "Failed to upload avatar"] },
+      };
+    }
+
+    const resData = await res.json();
+    const role = resData.user?.role;
+    redirectPath = role === "STUDENT" ? "/dashboard-student" : "/dashboard-instructor";
+  } catch (err: any) {
+    return {
+      success: false,
+      errorMessage: { server: [err.message || "Something went wrong"] },
+    };
+  }
+
+  redirect(redirectPath);
+}

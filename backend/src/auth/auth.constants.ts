@@ -28,6 +28,6 @@ export const AUTH_CONSTANTS = {
   /** Handoff token lifetime for OAuth exchange (1 minute) */
   OAUTH_HANDOFF_TOKEN_EXPIRY: '1m',
 
-  /** bcrypt cost factor — 12 is the recommended minimum for production */
-  BCRYPT_SALT_ROUNDS: 12,
+  /** @deprecated — Bun.password uses argon2id by default (no manual cost config needed) */
+  // BCRYPT_SALT_ROUNDS: 12,
 } as const;

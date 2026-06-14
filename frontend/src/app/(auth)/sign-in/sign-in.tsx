@@ -118,6 +118,7 @@ export function LoginForm() {
             </Field>
             <div className="flex justify-end w-full">
               <Link
+                disabled={pending || isGoogleLoading}
                 href="/forget-password"
                 className="inline-block text-right text-sm text-muted-foreground underline-offset-4 hover:underline hover:text-primary transition-colors mt-2"
               >

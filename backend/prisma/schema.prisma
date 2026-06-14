@@ -69,6 +69,8 @@ model Meeting {
 
   @@index([hostId])
   @@index([status])
+  @@index([scheduledAt])
+  @@index([status, hostId])
 }
 
 model MeetingParticipant {

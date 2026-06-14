@@ -32,11 +32,18 @@ async function bootstrap() {
   // ── 1. Fastify adapter with body limit ────────────────────────────────────
   // bodyLimit must be set here on the adapter, NOT on individual routes,
   // because Fastify reads the limit before routing.
+  const isProduction = process.env.NODE_ENV === 'production';
+
   const fastifyAdapter = new FastifyAdapter({
     bodyLimit: MAX_BODY_BYTES,
     // Keep-alive helps long-running recording streams stay connected
     keepAliveTimeout: 620_000, // 620 seconds (10 min + buffer)
     connectionTimeout: 0, // no connection timeout for streaming routes
+    // Structured pino logging — zero overhead at 'warn', catches crashes
+    logger: {
+      level: isProduction ? 'warn' : 'info',
+    },
+    disableRequestLogging: isProduction, // Skip per-request logs in prod
   });
 
   // ── 2. Multipart (for material uploads, profile pics, etc.) ──────────────
@@ -102,6 +109,7 @@ async function bootstrap() {
     options: {
       host: process.env.REDIS_HOST || 'localhost',
       port: Number(process.env.REDIS_PORT) || 6379,
+      password: process.env.REDIS_PASSWORD || undefined,
     },
   });
 

@@ -6,6 +6,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/database/database.service';
+import { CacheService } from 'src/utils/cache.service';
 import {
   CreateMeetingDto,
   UpdateMeetingDto,
@@ -14,9 +15,19 @@ import {
   AddMaterialDto,
 } from './dto/meeting.dto';
 
+// ── Cache TTLs (seconds) ──────────────────────────────────────────────────────
+const CACHE_TTL = {
+  MEETING_LIST: 30,
+  MEETING_DETAIL: 60,
+  PARTICIPANTS: 15,
+} as const;
+
 @Injectable()
 export class MeetingsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private cache: CacheService,
+  ) {}
 
   // =========================
   // MEETINGS — CRUD
@@ -48,10 +59,18 @@ export class MeetingsService {
       },
     });
 
+    // Invalidate the host's meeting list cache
+    await this.cache.del(`meetings:user:${hostId}`);
+
     return { status: 'success', data: meeting };
   }
 
   async getAllMeetings(userId: string) {
+    // ── Cache hit ──
+    const cacheKey = `meetings:user:${userId}`;
+    const cached = await this.cache.get(cacheKey);
+    if (cached) return { status: 'success', data: cached };
+
     // Returns meetings the user hosts OR participates in
     const meetings = await this.prisma.meeting.findMany({
       where: {
@@ -77,10 +96,25 @@ export class MeetingsService {
       orderBy: { createdAt: 'desc' },
     });
 
+    await this.cache.set(cacheKey, meetings, CACHE_TTL.MEETING_LIST);
     return { status: 'success', data: meetings };
   }
 
   async getMeetingById(meetingId: string, userId: string) {
+    // ── Cache hit ──
+    const cacheKey = `meeting:${meetingId}`;
+    const cached = await this.cache.get<any>(cacheKey);
+
+    // Even on cache hit we must enforce authorization
+    if (cached) {
+      const isHost = cached.host.id === userId;
+      const isParticipant = cached.participants.some((p: any) => p.user.id === userId);
+      if (!isHost && !isParticipant) {
+        throw new ForbiddenException('You are not part of this meeting');
+      }
+      return { status: 'success', data: cached };
+    }
+
     const meeting = await this.prisma.meeting.findUnique({
       where: { id: meetingId },
       select: {
@@ -134,6 +168,7 @@ export class MeetingsService {
       throw new ForbiddenException('You are not part of this meeting');
     }
 
+    await this.cache.set(cacheKey, meeting, CACHE_TTL.MEETING_DETAIL);
     return { status: 'success', data: meeting };
   }
 
@@ -176,6 +211,13 @@ export class MeetingsService {
       },
     });
 
+    // Invalidate meeting + host list caches
+    await Promise.all([
+      this.cache.del(`meeting:${meetingId}`),
+      this.cache.del(`meetings:user:${hostId}`),
+      this.cache.del(`participants:${meetingId}`),
+    ]);
+
     return { status: 'success', data: updated };
   }
 
@@ -191,6 +233,13 @@ export class MeetingsService {
     }
 
     await this.prisma.meeting.delete({ where: { id: meetingId } });
+
+    // Invalidate all caches related to this meeting
+    await Promise.all([
+      this.cache.del(`meeting:${meetingId}`),
+      this.cache.del(`meetings:user:${hostId}`),
+      this.cache.del(`participants:${meetingId}`),
+    ]);
 
     return { status: 'success', message: 'Meeting deleted successfully' };
   }
@@ -239,6 +288,13 @@ export class MeetingsService {
       },
     });
 
+    // Invalidate participant + meeting caches
+    await Promise.all([
+      this.cache.del(`participants:${meetingId}`),
+      this.cache.del(`meeting:${meetingId}`),
+      this.cache.del(`meetings:user:${userId}`),
+    ]);
+
     return { status: 'success', data: participant };
   }
 
@@ -269,6 +325,13 @@ export class MeetingsService {
       },
     });
 
+    // Invalidate participant + meeting caches
+    await Promise.all([
+      this.cache.del(`participants:${meetingId}`),
+      this.cache.del(`meeting:${meetingId}`),
+      this.cache.del(`meetings:user:${userId}`),
+    ]);
+
     return { status: 'success', data: updated };
   }
 
@@ -291,6 +354,11 @@ export class MeetingsService {
       throw new ForbiddenException('You are not part of this meeting');
     }
 
+    // ── Cache hit ──
+    const cacheKey = `participants:${meetingId}`;
+    const cached = await this.cache.get(cacheKey);
+    if (cached) return { status: 'success', data: cached };
+
     const participants = await this.prisma.meetingParticipant.findMany({
       where: { meetingId },
       select: {
@@ -307,6 +375,7 @@ export class MeetingsService {
       orderBy: { joinedAt: 'asc' },
     });
 
+    await this.cache.set(cacheKey, participants, CACHE_TTL.PARTICIPANTS);
     return { status: 'success', data: participants };
   }
 
@@ -346,6 +415,9 @@ export class MeetingsService {
         adhdFlagged: true,
       },
     });
+
+    // Invalidate participant cache after metric update
+    await this.cache.del(`participants:${meetingId}`);
 
     return { status: 'success', data: updated };
   }

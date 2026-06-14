@@ -9,11 +9,20 @@ from typing import Dict
 import cv2
 import numpy as np
 import torch
+import onnxruntime as ort
 from livekit import agents, rtc
 from livekit.agents import JobContext, WorkerOptions, cli
 
 # model.py must be in the same directory — provides EngagementModel + val_transform
 from model import EngagementModel, val_transform
+
+def numpy_val_transform(frame: np.ndarray) -> np.ndarray:
+    """Pure numpy version of val_transform for ONNX inference."""
+    img = frame.astype(np.float32) / 255.0
+    mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
+    std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+    img = (img - mean) / std
+    return np.transpose(img, (2, 0, 1)) # HWC to CHW
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("engagement-bot")
@@ -32,24 +41,35 @@ MAX_CONCURRENT = 10          # Semaphore cap — prevents GPU OOM on large class
 _model: EngagementModel = None
 
 
-def get_model() -> EngagementModel:
-    """Load the model once per worker process and cache it."""
+def get_model():
+    """Load the model once per worker process and cache it. Supports PyTorch & ONNX."""
     global _model
     if _model is None:
-        # Prevent OpenMP deadlocks on CPU in Docker by limiting threads
-        if DEVICE.type == "cpu":
-            torch.set_num_threads(1)
-            
         model_path = os.environ.get("MODEL_PATH", "/models/best_model.pth")
-        _model = EngagementModel(freeze_cnn=False)
-        try:
-            ckpt = torch.load(model_path, map_location=DEVICE)
-            _model.load_state_dict(ckpt["model_state"])
-            logger.info(f"[bot] Custom model weights loaded from {model_path} on {DEVICE}")
-        except FileNotFoundError:
-            logger.warning(f"⚠️ [bot] WARNING: '{model_path}' not found! Running with randomly initialized weights for testing purposes. ⚠️")
+        
+        if model_path.endswith(".onnx"):
+            logger.info(f"[bot] Loading ONNX model from {model_path}...")
+            providers = ['CUDAExecutionProvider', 'CPUExecutionProvider'] if DEVICE.type == "cuda" else ['CPUExecutionProvider']
+            try:
+                _model = ort.InferenceSession(model_path, providers=providers)
+                logger.info(f"[bot] ONNX model loaded with providers: {_model.get_providers()}")
+            except Exception as e:
+                logger.error(f"[bot] Failed to load ONNX model: {e}")
+                raise
+        else:
+            # Prevent OpenMP deadlocks on CPU in Docker by limiting threads
+            if DEVICE.type == "cpu":
+                torch.set_num_threads(1)
+            
+            _model = EngagementModel(freeze_cnn=False)
+            try:
+                ckpt = torch.load(model_path, map_location=DEVICE)
+                _model.load_state_dict(ckpt["model_state"])
+                logger.info(f"[bot] PyTorch model loaded from {model_path} on {DEVICE}")
+            except FileNotFoundError:
+                logger.warning(f"⚠️ [bot] WARNING: '{model_path}' not found! Running with randomly initialized weights for testing. ⚠️")
 
-        _model.to(DEVICE).eval()
+            _model.to(DEVICE).eval()
     return _model
 
 
@@ -69,45 +89,65 @@ class ParticipantBuffer:
 def run_inference_sync(frames: list) -> dict:
     """
     Single-clip inference. Runs in a thread pool executor to avoid
-    blocking the asyncio event loop.
-
-    Input:  list of SEQ_LEN numpy arrays, shape (224, 224, 3), dtype uint8
-    Output: { engagement_score, is_disengaged, label }
+    blocking the asyncio event loop. Supports both PyTorch and ONNX.
     """
     model = get_model()
-    tensors = [val_transform(f) for f in frames]
-    clip = torch.stack(tensors).unsqueeze(0).to(DEVICE)  # (1, 16, 3, 224, 224)
+    
+    if isinstance(model, ort.InferenceSession):
+        # ── ONNX Inference ──
+        # frames are already 224x224 RGB uint8 numpy arrays
+        tensors = [numpy_val_transform(f) for f in frames]
+        clip = np.stack(tensors)[np.newaxis, ...]  # (1, 16, 3, 224, 224)
+        
+        ort_inputs = {model.get_inputs()[0].name: clip.astype(np.float32)}
+        logits = model.run(None, ort_inputs)[0]
+        # Sigmoid using numpy
+        prob = 1.0 / (1.0 + np.exp(-logits[0]))
+    else:
+        # ── PyTorch Inference ──
+        tensors = [val_transform(f) for f in frames]
+        clip = torch.stack(tensors).unsqueeze(0).to(DEVICE)  # (1, 16, 3, 224, 224)
 
-    with torch.no_grad():
-        logit = model(clip)
-        prob = torch.sigmoid(logit).item()
+        with torch.no_grad():
+            logit = model(clip)
+            prob = torch.sigmoid(logit).item()
 
     return {
-        "engagement_score": round(prob, 4),
-        "is_disengaged": prob < DISENGAGEMENT_THRESHOLD,
-        "label": "engaged" if prob >= DISENGAGEMENT_THRESHOLD else "disengaged",
+        "engagement_score": round(float(prob), 4),
+        "is_disengaged": float(prob) < DISENGAGEMENT_THRESHOLD,
+        "label": "engaged" if float(prob) >= DISENGAGEMENT_THRESHOLD else "disengaged",
     }
 
 
 def run_batch_inference(frame_lists: list) -> list:
     """
-    Batched inference — processes multiple participants in a single GPU forward
-    pass. More VRAM-efficient than sequential single-clip calls.
-
-    Input:  list of frame lists, each of length SEQ_LEN
-    Output: list of result dicts (same order as input)
+    Batched inference — processes multiple participants in a single forward pass.
     """
     model = get_model()
-    clips = []
-    for frames in frame_lists:
-        tensors = [val_transform(f) for f in frames]
-        clips.append(torch.stack(tensors))
+    
+    if isinstance(model, ort.InferenceSession):
+        # ── ONNX Batch Inference ──
+        clips = []
+        for frames in frame_lists:
+            tensors = [numpy_val_transform(f) for f in frames]
+            clips.append(np.stack(tensors))
+            
+        batch = np.stack(clips).astype(np.float32) # (B, 16, 3, 224, 224)
+        ort_inputs = {model.get_inputs()[0].name: batch}
+        logits = model.run(None, ort_inputs)[0]
+        probs = 1.0 / (1.0 + np.exp(-logits))
+    else:
+        # ── PyTorch Batch Inference ──
+        clips = []
+        for frames in frame_lists:
+            tensors = [val_transform(f) for f in frames]
+            clips.append(torch.stack(tensors))
 
-    batch = torch.stack(clips).to(DEVICE)  # (B, 16, 3, 224, 224)
+        batch = torch.stack(clips).to(DEVICE)  # (B, 16, 3, 224, 224)
 
-    with torch.no_grad():
-        logits = model(batch)              # (B,)
-        probs = torch.sigmoid(logits).cpu().numpy()
+        with torch.no_grad():
+            logits = model(batch)              # (B,)
+            probs = torch.sigmoid(logits).cpu().numpy()
 
     return [
         {

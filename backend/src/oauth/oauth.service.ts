@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
+// Bun.password is a built-in global — no import needed.
 import { randomBytes } from 'crypto';
 import { AUTH_CONSTANTS } from 'src/auth/auth.constants'; // Make sure this path is correct
 import { PrismaService } from 'src/database/database.service'; // Make sure this path is correct
@@ -34,10 +34,7 @@ export class OAuthService {
 
     // ================= SIGN UP =================
     if (!user) {
-      const password = await bcrypt.hash(
-        generateRandomPassword(),
-        AUTH_CONSTANTS.BCRYPT_SALT_ROUNDS,
-      );
+      const password = await Bun.password.hash(generateRandomPassword());
 
       const newUser = await this.prisma.user.create({
         data: {
@@ -76,10 +73,7 @@ export class OAuthService {
         ),
       ]);
 
-      const hashedRefreshToken = await bcrypt.hash(
-        refresh_token,
-        AUTH_CONSTANTS.BCRYPT_SALT_ROUNDS,
-      );
+      const hashedRefreshToken = await Bun.password.hash(refresh_token);
 
       await this.prisma.user.update({
         where: { id: newUser.id },
@@ -116,10 +110,7 @@ export class OAuthService {
       ),
     ]);
 
-    const hashedRefreshToken = await bcrypt.hash(
-      refresh_token,
-      AUTH_CONSTANTS.BCRYPT_SALT_ROUNDS,
-    );
+    const hashedRefreshToken = await Bun.password.hash(refresh_token);
 
     await this.prisma.user.update({
       where: { id: user.id },
@@ -187,10 +178,7 @@ export class OAuthService {
         ),
       ]);
 
-      const hashedRefreshToken = await bcrypt.hash(
-        refresh_token,
-        AUTH_CONSTANTS.BCRYPT_SALT_ROUNDS,
-      );
+      const hashedRefreshToken = await Bun.password.hash(refresh_token);
 
       await this.prisma.user.update({
         where: { id: user.id },

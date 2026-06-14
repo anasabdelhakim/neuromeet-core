@@ -16,7 +16,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # ── Environment (override in docker-compose or K8s secrets) ──────────────────
-ENV MODEL_PATH=/models/best_model.pth
+ENV MODEL_PATH=/models/engagement.onnx
 ENV LIVEKIT_URL=wss://your-livekit-server
 ENV LIVEKIT_API_KEY=devkey
 ENV LIVEKIT_API_SECRET=secret
