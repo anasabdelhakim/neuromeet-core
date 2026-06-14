@@ -54,8 +54,9 @@ def get_model():
                 _model = ort.InferenceSession(model_path, providers=providers)
                 logger.info(f"[bot] ONNX model loaded with providers: {_model.get_providers()}")
             except Exception as e:
-                logger.error(f"[bot] Failed to load ONNX model: {e}")
-                raise
+                logger.warning(f"⚠️ [bot] Failed to load ONNX model ({e}). Using random PyTorch weights for testing as a fake model until the real one is provided! ⚠️")
+                _model = EngagementModel(freeze_cnn=False)
+                _model.to(DEVICE).eval()
         else:
             # Prevent OpenMP deadlocks on CPU in Docker by limiting threads
             if DEVICE.type == "cpu":

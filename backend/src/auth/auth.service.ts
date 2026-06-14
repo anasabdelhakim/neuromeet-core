@@ -56,7 +56,7 @@ export class AuthService {
         name: signUpDto.name,
         email: signUpDto.email,
         password: hashedPassword,
-        role: 'USER',
+        role: 'INSTRUCTOR', // Fixed: Ensure manual signup matches Google OAuth behavior
         verificationCode: code,
         otpPurpose: 'SIGN_UP',
         otpExpire, // RESTORED
@@ -193,6 +193,7 @@ export class AuthService {
     return {
       status: 'success',
       message: 'Code verified successfully',
+      data: user,
       access_token: accessToken,
       refresh_token: refreshToken,
     };

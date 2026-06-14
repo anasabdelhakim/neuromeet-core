@@ -395,26 +395,26 @@
   --action-yellow-input: color-mix(in oklch, var(--action-yellow) 80%, transparent);
 
   /* Subtle Card Shadows */
-  --val-shadow-action-new-subtle: 0 4px 6px -1px color-mix(in oklch, var(--action-new) 10%, transparent);
-  --val-shadow-action-join-subtle: 0 4px 6px -1px color-mix(in oklch, var(--action-join) 10%, transparent);
-  --val-shadow-action-schedule-subtle: 0 4px 6px -1px color-mix(in oklch, var(--action-schedule) 10%, transparent);
-  --val-shadow-action-yellow-subtle: 0 4px 6px -1px color-mix(in oklch, var(--action-yellow) 10%, transparent);
+  --val-shadow-action-new-subtle: 0 4px 10px -1px color-mix(in oklch, var(--action-new) 30%, transparent);
+  --val-shadow-action-join-subtle: 0 4px 10px -1px color-mix(in oklch, var(--action-join) 30%, transparent);
+  --val-shadow-action-schedule-subtle: 0 4px 10px -1px color-mix(in oklch, var(--action-schedule) 30%, transparent);
+  --val-shadow-action-yellow-subtle: 0 4px 10px -1px color-mix(in oklch, var(--action-yellow) 30%, transparent);
 
-  /* Deep Card Shadows */
-  --val-shadow-action-new-deep: 0 20px 25px -5px color-mix(in oklch, var(--action-new) 40%, transparent), 0 8px 10px -6px color-mix(in oklch, var(--action-new) 40%, transparent);
-  --val-shadow-action-new-muted: 0 25px 50px -12px color-mix(in oklch, var(--action-new) 15%, transparent);
-  --val-shadow-action-join-deep: 0 20px 25px -5px color-mix(in oklch, var(--action-join) 40%, transparent), 0 8px 10px -6px color-mix(in oklch, var(--action-join) 40%, transparent);
-  --val-shadow-action-join-muted: 0 25px 50px -12px color-mix(in oklch, var(--action-join) 15%, transparent);
-  --val-shadow-action-schedule-deep: 0 20px 25px -5px color-mix(in oklch, var(--action-schedule) 40%, transparent), 0 8px 10px -6px color-mix(in oklch, var(--action-schedule) 40%, transparent);
-  --val-shadow-action-schedule-muted: 0 25px 50px -12px color-mix(in oklch, var(--action-schedule) 15%, transparent);
-  --val-shadow-action-yellow-deep: 0 20px 25px -5px color-mix(in oklch, var(--action-yellow) 40%, transparent), 0 8px 10px -6px color-mix(in oklch, var(--action-yellow) 40%, transparent);
-  --val-shadow-action-yellow-muted: 0 25px 50px -12px color-mix(in oklch, var(--action-yellow) 15%, transparent);
+  /* Deep Card Shadows (Used by Cards on Hover, and Modals/Dialogs) */
+  --val-shadow-action-new-deep: 0 12px 24px -4px color-mix(in oklch, var(--action-new) 50%, transparent), 0 8px 16px -4px color-mix(in oklch, var(--action-new) 50%, transparent);
+  --val-shadow-action-new-muted: 0 25px 50px -12px color-mix(in oklch, var(--action-new) 40%, transparent);
+  --val-shadow-action-join-deep: 0 12px 24px -4px color-mix(in oklch, var(--action-join) 50%, transparent), 0 8px 16px -4px color-mix(in oklch, var(--action-join) 50%, transparent);
+  --val-shadow-action-join-muted: 0 25px 50px -12px color-mix(in oklch, var(--action-join) 40%, transparent);
+  --val-shadow-action-schedule-deep: 0 12px 24px -4px color-mix(in oklch, var(--action-schedule) 50%, transparent), 0 8px 16px -4px color-mix(in oklch, var(--action-schedule) 50%, transparent);
+  --val-shadow-action-schedule-muted: 0 25px 50px -12px color-mix(in oklch, var(--action-schedule) 40%, transparent);
+  --val-shadow-action-yellow-deep: 0 12px 24px -4px color-mix(in oklch, var(--action-yellow) 50%, transparent), 0 8px 16px -4px color-mix(in oklch, var(--action-yellow) 50%, transparent);
+  --val-shadow-action-yellow-muted: 0 25px 50px -12px color-mix(in oklch, var(--action-yellow) 40%, transparent);
 
   /* Dialog Backgrounds */
   --dialog-bg-new: oklch(21.928% 0.03081 33.164 / 0.95);
   --dialog-bg-join: oklch(19.138% 0.03548 270.372 / 0.95);
-  --dialog-bg-schedule: oklch(20% 0.03962 316.178 / 0.95);
-  --dialog-bg-yellow: oklch(27.78% 0.03415 93.247 / 0.95);
+  --dialog-bg-schedule: oklch(18.464% 0.04491 311.261 / 0.95);
+  --dialog-bg-yellow: oklch(24.721% 0.02967 96.517 / 0.95);
 
   /* Black & White Opacities */
   --black-soft-subtle: oklch(0 0 0 / 10%);

@@ -258,6 +258,8 @@ export async function verifyCodeAction(
 
       if (res.access_token && res.refresh_token) {
         await setAuthCookies(res.access_token, res.refresh_token);
+        // CLEANUP: Remove the temporary OTP cookies after successful verification
+        await clearResetData();
       }
 
       // 🔥 THE FIX: Dynamically determine the route based on the backend response
