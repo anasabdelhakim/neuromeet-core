@@ -19,7 +19,12 @@ import { signInAction } from "@/src/features/auth/actions/auth-actions";
 import type { ActionResult } from "@/src/features/auth/actions/auth-actions";
 
 export function LoginForm() {
-  const form = useForm<z.infer<typeof loginFormSchema>>({
+  const {
+    register,
+    control,
+    setFocus,
+    formState: { errors },
+  } = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: { email: "", password: "" },
     mode: "onTouched",
@@ -33,18 +38,16 @@ export function LoginForm() {
 
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  const { errors } = form.formState;
-
   // ✅ Extract onBlur from RHF register so we can control when it fires
-  const { onBlur: emailOnBlur, ...emailRest } = form.register("email");
-  const { onBlur: passwordOnBlur, ...passwordRest } = form.register("password");
+  const { onBlur: emailOnBlur, ...emailRest } = register("email");
+  const { onBlur: passwordOnBlur, ...passwordRest } = register("password");
 
   const handleFocusNext =
     (focusNext: "email" | "password") =>
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        form.setFocus(focusNext);
+        setFocus(focusNext);
       }
     };
 
@@ -94,7 +97,7 @@ export function LoginForm() {
               <FieldLabel htmlFor="password">Password</FieldLabel>
               <PasswordInput
                 // ✅ Cast control as any to satisfy PasswordInput's generic boundaries
-                control={form.control as any}
+                control={control as any}
                 pending={pending || isGoogleLoading}
                 registerProps={{
                   ...passwordRest,

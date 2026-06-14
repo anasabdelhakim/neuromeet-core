@@ -60,10 +60,10 @@ export const iconGradientMap: Record<string, string> = {
 };
 
 export const shadowMap: Record<string, string> = {
-  new: "shadow-none hover:shadow-action-new-deep",
-  join: "shadow-none hover:shadow-action-join-deep",
-  schedule: "shadow-none hover:shadow-action-schedule-deep",
-  recordings: "shadow-none hover:shadow-action-yellow-deep",
+  new: "shadow-action-new-subtle hover:shadow-action-new-deep",
+  join: "shadow-action-join-subtle hover:shadow-action-join-deep",
+  schedule: "shadow-action-schedule-subtle hover:shadow-action-schedule-deep",
+  recordings: "shadow-action-yellow-subtle hover:shadow-action-yellow-deep",
 };
 
 export const buttonGradientMap: Record<string, string> = {
@@ -74,11 +74,11 @@ export const buttonGradientMap: Record<string, string> = {
 };
 
 export const dialogBgMap: Record<string, string> = {
-  new: "bg-dialog-bg-new border-action-new-input shadow-2xl shadow-action-new-muted",
-  join: "bg-dialog-bg-join border-action-join-input shadow-2xl shadow-action-join-muted",
+  new: "bg-dialog-bg-new border-action-new-input shadow-action-new-muted",
+  join: "bg-dialog-bg-join border-action-join-input shadow-action-join-muted",
   schedule:
-    "bg-dialog-bg-schedule border-action-schedule-input shadow-2xl shadow-action-schedule-muted",
+    "bg-dialog-bg-schedule border-action-schedule-input shadow-action-schedule-muted",
   recordings:
-    "bg-dialog-bg-yellow border-action-yellow-input shadow-2xl shadow-action-yellow-muted",
+    "bg-dialog-bg-yellow border-action-yellow-input shadow-action-yellow-muted",
 };
 

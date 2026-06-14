@@ -14,7 +14,9 @@ import {
 } from './dto/auth-dto';
 
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
+// Bun.password is a built-in global — no import needed.
+// Uses argon2id by default (OWASP recommended), runs in worker thread (non-blocking).
+// Auto-detects algorithm on verify, so existing bcrypt hashes still work.
 import { EmailService } from '../emails/email.service';
 import { PrismaService } from '../database/database.service';
 import { AUTH_CONSTANTS } from './auth.constants'; // RESTORED: Centralized configs
@@ -42,7 +44,7 @@ export class AuthService {
 
     // PERF: Run password hashing and OTP generation in parallel.
     const [hashedPassword, code] = await Promise.all([
-      bcrypt.hash(signUpDto.password, AUTH_CONSTANTS.BCRYPT_SALT_ROUNDS),
+      Bun.password.hash(signUpDto.password),
       Promise.resolve(randomInt(0, 1000000).toString().padStart(6, '0')),
     ]);
 
@@ -54,7 +56,7 @@ export class AuthService {
         name: signUpDto.name,
         email: signUpDto.email,
         password: hashedPassword,
-        role: 'STUDENT',
+        role: 'INSTRUCTOR', // Fixed: Ensure manual signup matches Google OAuth behavior
         verificationCode: code,
         otpPurpose: 'SIGN_UP',
         otpExpire, // RESTORED
@@ -176,10 +178,7 @@ export class AuthService {
       },
     );
 
-    const hashedRefreshToken = await bcrypt.hash(
-      refreshToken,
-      AUTH_CONSTANTS.BCRYPT_SALT_ROUNDS,
-    );
+    const hashedRefreshToken = await Bun.password.hash(refreshToken);
 
     await this.prisma.user.update({
       where: { email: data.email },
@@ -194,6 +193,7 @@ export class AuthService {
     return {
       status: 'success',
       message: 'Code verified successfully',
+      data: user,
       access_token: accessToken,
       refresh_token: refreshToken,
     };
@@ -232,7 +232,7 @@ export class AuthService {
       );
     }
 
-    const isPasswordValid = await bcrypt.compare(
+    const isPasswordValid = await Bun.password.verify(
       signInDto.password,
       user.password,
     );
@@ -291,10 +291,7 @@ export class AuthService {
       },
     );
 
-    const hashedRefreshToken = await bcrypt.hash(
-      refreshToken,
-      AUTH_CONSTANTS.BCRYPT_SALT_ROUNDS,
-    );
+    const hashedRefreshToken = await Bun.password.hash(refreshToken);
     await this.prisma.user.update({
       where: { id: user.id },
       data: { refreshToken: hashedRefreshToken },
@@ -339,7 +336,7 @@ export class AuthService {
       where: { email: dto.email },
       data: {
         verificationCode: code,
-        otpPurpose: 'RESET_PASSWOED', // Keeping your schema's spelling
+        otpPurpose: 'RESET_PASSWORD',
         otpExpire, // RESTORED
       },
     });
@@ -371,7 +368,7 @@ export class AuthService {
 
     if (!user) throw new NotFoundException('User not found');
 
-    if (user.otpPurpose !== 'RESET_PASSWOED') {
+    if (user.otpPurpose !== 'RESET_PASSWORD') {
       throw new UnauthorizedException(
         'This code was not issued for password reset',
       );
@@ -453,10 +450,7 @@ export class AuthService {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(
-      dto.password,
-      AUTH_CONSTANTS.BCRYPT_SALT_ROUNDS,
-    );
+    const hashedPassword = await Bun.password.hash(dto.password);
 
     await this.prisma.user.update({
       where: { email: dto.email },
@@ -517,7 +511,7 @@ export class AuthService {
         );
       }
 
-      const isValid = await bcrypt.compare(
+      const isValid = await Bun.password.verify(
         incomingRefreshToken,
         user.refreshToken,
       );
@@ -551,10 +545,7 @@ export class AuthService {
         },
       );
 
-      const hashedNewRefresh = await bcrypt.hash(
-        newRefreshToken,
-        AUTH_CONSTANTS.BCRYPT_SALT_ROUNDS,
-      );
+      const hashedNewRefresh = await Bun.password.hash(newRefreshToken);
       await this.prisma.user.update({
         where: { id: user.id },
         data: { refreshToken: hashedNewRefresh },

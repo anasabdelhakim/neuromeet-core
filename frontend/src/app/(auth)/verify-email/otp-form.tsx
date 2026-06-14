@@ -27,7 +27,10 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
   const searchParams = useSearchParams();
   const flow = searchParams.get("flow") || "reset";
 
-  const form = useForm<z.infer<typeof otpFormSchema>>({
+  const {
+    register,
+    formState: { isSubmitted, errors, touchedFields },
+  } = useForm<z.infer<typeof otpFormSchema>>({
     resolver: zodResolver(otpFormSchema),
     defaultValues: { otp: "" },
     mode: "onTouched",
@@ -39,10 +42,9 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
     { success: false, errorMessage: {} },
   );
 
-  const { isSubmitted, errors, touchedFields } = form.formState;
   const showOtpError = !!errors.otp && (isSubmitted || touchedFields.otp);
 
-  const { onBlur: otpOnBlur, ...otpRest } = form.register("otp");
+  const { onBlur: otpOnBlur, ...otpRest } = register("otp");
 
   // SECURITY: Timer state is seeded from a server-computed value (HTTP-only cookie).
   // The client only counts down from whatever the server told it — no localStorage,

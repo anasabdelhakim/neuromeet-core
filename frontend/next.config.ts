@@ -8,7 +8,16 @@ const nextConfig: NextConfig = {
   experimental: {
     turbopackFileSystemCacheForDev: true,
     turbopackFileSystemCacheForBuild: true,
+    optimizePackageImports: [
+      'lucide-react',
+      'date-fns',
+      '@livekit/components-react',
+    ],
+  },
+  images: {
+    formats: ['image/avif', 'image/webp'],
   },
 };
 
 export default nextConfig;
+

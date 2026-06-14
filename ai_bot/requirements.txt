@@ -1,0 +1,22 @@
+# Core LiveKit agents
+livekit>=0.11.0
+livekit-agents>=0.8.0
+
+# PyTorch — use the CUDA wheel matching your driver
+# For CPU-only testing: pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Computer vision
+opencv-python-headless>=4.8.0
+numpy<2.0.0
+
+# Dispatch server
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+pydantic>=2.0.0
+
+# High-performance inference
+onnx>=1.15.0
+onnxruntime>=1.17.0
+# For GPU, you would use onnxruntime-gpu instead of onnxruntime
