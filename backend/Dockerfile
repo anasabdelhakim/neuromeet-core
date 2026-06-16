@@ -32,6 +32,6 @@ COPY --from=builder /app/lib/prisma/_generated ./lib/prisma/_generated
 COPY --from=builder /app/lib/prisma/_migrations ./lib/prisma/_migrations
 
 ENV NODE_ENV=production
-EXPOSE 4000
+EXPOSE 7860
 
 CMD ["sh", "-c", "bunx prisma migrate deploy && bun dist/main.js"]

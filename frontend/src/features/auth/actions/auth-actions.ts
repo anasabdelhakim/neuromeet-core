@@ -511,10 +511,12 @@ export async function skipProfileCompletion() {
   }
 }
 
+import { cache } from 'react';
+
 // =========================
 // GET USER PROFILE
 // =========================
-export async function getUserProfile() {
+export const getUserProfile = cache(async () => {
   const { accessToken } = await getAuthCookies();
 
   if (!accessToken) {
@@ -527,5 +529,5 @@ export async function getUserProfile() {
   } catch (err) {
     return null;
   }
-}
+});
 

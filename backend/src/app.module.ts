@@ -11,9 +11,10 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { OAuthModule } from 'src/oauth/oauth.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EmailModule } from 'src/emails/email.module';
-import { RedisModule } from '@nestjs-modules/ioredis';
+
 import { MeetingsModule } from './meetings/meetings.module';
 import { UserModule } from './user/user.module';
+import { CacheModule } from './utils/cache.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -23,14 +24,7 @@ import { UserModule } from './user/user.module';
         limit: 10,
       },
     ]),
-    RedisModule.forRoot({
-      type: 'single',
-      options: {
-        host: process.env.REDIS_HOST || 'localhost',
-        port: Number(process.env.REDIS_PORT) || 6379,
-        password: process.env.REDIS_PASSWORD || undefined,
-      },
-    }),
+    // RedisModule temporarily disabled to use lightning-fast in-memory cache
     ScheduleModule.forRoot(),
     PrismaModule,
     LivekitModule,
@@ -39,6 +33,7 @@ import { UserModule } from './user/user.module';
     OAuthModule,
     MeetingsModule,
     UserModule,
+    CacheModule,
   ],
   controllers: [AppController, DriveController],
   providers: [AppService, DriveService],

@@ -87,8 +87,9 @@ export class LiveKitBotService {
       );
       this.logger.log(`Bot dispatched to room: ${roomId}`);
     } catch (err) {
-      this.logger.error(`Failed to dispatch bot to room ${roomId}`, err);
-      throw err;
+      this.logger.warn(`⚠️ AI Worker is offline or unreachable (${workerUrl}). Meeting will start WITHOUT the AI bot.`);
+      // We do NOT throw the error here! 
+      // Throwing would crash the meeting creation. We just want to proceed without the bot.
     }
   }
 

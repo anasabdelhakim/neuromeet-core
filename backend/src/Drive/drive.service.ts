@@ -1,9 +1,8 @@
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { google, drive_v3 } from 'googleapis';
 import { Readable } from 'stream';
-import { InjectRedis } from '@nestjs-modules/ioredis';
-import type Redis from 'ioredis';
 import * as https from 'https';
+import { CacheService } from '../utils/cache.service';
 
 // ─── HTTPS Keep-Alive Pool ────────────────────────────────────────────────────
 // Reuses TCP connections to googleapis.com across all chunk PUT requests.
@@ -23,7 +22,7 @@ const httpsAgent = new https.Agent({
 // It cuts the number of HTTP round-trips by 5x compared to 10MB.
 const CHUNK_SIZE_BYTES = 30 * 1024 * 1024; // 50 MB
 
-// Publish progress to Redis at most once per 10 MB to keep the hot path lean.
+// Publish progress to cache at most once per 10 MB to keep the hot path lean.
 const PROGRESS_INTERVAL_BYTES = 10 * 1024 * 1024; // 10 MB
 
 // Retry config for transient Drive errors (503, 429, network blips).
@@ -70,7 +69,7 @@ export class DriveService implements OnModuleInit {
   private _cachedToken: string | null = null;
   private _tokenExpiresAt = 0;
 
-  constructor(@InjectRedis() private readonly redis: Redis) {}
+  constructor(private readonly cacheService: CacheService) {}
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -166,7 +165,7 @@ export class DriveService implements OnModuleInit {
       `✅ Upload complete: ${fmt(result.totalBytes)} in ${Math.round(durationMs / 1000)}s @ ${speedMBps} MB/s`,
     );
 
-    // Fire-and-forget — don't block the return on Redis
+    // Fire-and-forget — don't block the return on Cache
     this._publishProgress({
       meetingId,
       bytesUploaded: result.totalBytes,
@@ -249,7 +248,7 @@ export class DriveService implements OnModuleInit {
   //   • Cache OAuth token (saves ~300ms per upload)
   //   • Accumulate data with `for await` (native backpressure, zero copy)
   //   • Use pre-sized Buffer.concat (skip Node's internal size-scan loop)
-  //   • Pipeline Redis setex+publish (1 round-trip instead of 2)
+  //   • Pipeline Cache set (1 round-trip instead of 2)
 
   private async _pipeStream(
     meetingId: string,
@@ -466,14 +465,13 @@ export class DriveService implements OnModuleInit {
     });
   }
 
-  // ── Private: Redis progress publisher ────────────────────────────────────
-  // Pipelines setex + publish into 1 TCP round-trip (was 2 serial calls).
+  // ── Private: Cache progress publisher ────────────────────────────────────
 
   private async _publishProgress(progress: UploadProgress): Promise<void> {
     const key = `recording:progress:${progress.meetingId}`;
     const channel = `recording:events:${progress.meetingId}`;
-    const payload = JSON.stringify(progress);
-    await this.redis.pipeline().setex(key, 3600, payload).publish(channel, payload).exec();
+    await this.cacheService.set(key, progress, 3600);
+    this.cacheService.events.emit(channel, JSON.stringify(progress));
   }
 
   // ── Public: Drive connection test ─────────────────────────────────────────

@@ -103,7 +103,8 @@ async function bootstrap() {
 
   await app.register(fastifyCookie as any);
 
-  // ── 6. Redis microservice ─────────────────────────────────────────────────
+  // ── 6. Redis microservice (Disabled for In-Memory setup) ────────────────
+  /*
   (app as any).connectMicroservice({
     transport: Transport.REDIS,
     options: {
@@ -112,8 +113,8 @@ async function bootstrap() {
       password: process.env.REDIS_PASSWORD || undefined,
     },
   });
-
   await app.startAllMicroservices();
+  */
 
   // ── 7. CORS ───────────────────────────────────────────────────────────────
   app.enableCors({

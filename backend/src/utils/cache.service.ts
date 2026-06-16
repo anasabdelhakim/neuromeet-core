@@ -1,32 +1,32 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectRedis } from '@nestjs-modules/ioredis';
-import Redis from 'ioredis';
+import { EventEmitter } from 'events';
 
-/**
- * CacheService
- *
- * Thin wrapper around Redis for cache-aside pattern.
- * Used by MeetingsService to cache hot query paths.
- *
- * Key patterns:
- *   meetings:user:{userId}        → user's meeting list (TTL 30s)
- *   meeting:{meetingId}           → single meeting detail (TTL 60s)
- *   participants:{meetingId}      → participant list (TTL 15s)
- */
+interface CacheEntry<T> {
+  value: T;
+  expiresAt: number;
+}
+
 @Injectable()
 export class CacheService {
   private readonly logger = new Logger(CacheService.name);
-
-  constructor(@InjectRedis() private readonly redis: Redis) {}
+  private cache = new Map<string, CacheEntry<unknown>>();
+  public readonly events = new EventEmitter();
 
   /**
-   * Get a cached value. Returns null on miss or error.
+   * Get a cached value. Returns null on miss or expiration.
    */
   async get<T>(key: string): Promise<T | null> {
     try {
-      const data = await this.redis.get(key);
-      if (!data) return null;
-      return JSON.parse(data) as T;
+      const entry = this.cache.get(key);
+      if (!entry) return null;
+
+      // Check if expired
+      if (Date.now() > entry.expiresAt) {
+        this.cache.delete(key);
+        return null;
+      }
+
+      return entry.value as T;
     } catch (err) {
       this.logger.warn(`Cache GET error for key "${key}": ${err}`);
       return null;
@@ -38,18 +38,19 @@ export class CacheService {
    */
   async set(key: string, value: unknown, ttlSeconds: number): Promise<void> {
     try {
-      await this.redis.set(key, JSON.stringify(value), 'EX', ttlSeconds);
+      const expiresAt = Date.now() + ttlSeconds * 1000;
+      this.cache.set(key, { value, expiresAt });
     } catch (err) {
       this.logger.warn(`Cache SET error for key "${key}": ${err}`);
     }
   }
 
   /**
-   * Delete a specific key (used after mutations).
+   * Delete a specific key.
    */
   async del(key: string): Promise<void> {
     try {
-      await this.redis.del(key);
+      this.cache.delete(key);
     } catch (err) {
       this.logger.warn(`Cache DEL error for key "${key}": ${err}`);
     }
@@ -57,24 +58,17 @@ export class CacheService {
 
   /**
    * Invalidate all keys matching a pattern.
-   * Uses SCAN (non-blocking) instead of KEYS (blocking).
    */
   async invalidatePattern(pattern: string): Promise<void> {
     try {
-      let cursor = '0';
-      do {
-        const [nextCursor, keys] = await this.redis.scan(
-          cursor,
-          'MATCH',
-          pattern,
-          'COUNT',
-          100,
-        );
-        cursor = nextCursor;
-        if (keys.length > 0) {
-          await this.redis.del(...keys);
+      // Convert redis match pattern (e.g. 'meetings:*') to a regex
+      const regexPattern = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
+      
+      for (const key of this.cache.keys()) {
+        if (regexPattern.test(key)) {
+          this.cache.delete(key);
         }
-      } while (cursor !== '0');
+      }
     } catch (err) {
       this.logger.warn(`Cache invalidatePattern error for "${pattern}": ${err}`);
     }

@@ -12,8 +12,7 @@ import {
 } from '@nestjs/common';
 import { type FastifyRequest, type FastifyReply } from 'fastify';
 import { DriveService } from './drive.service';
-import { InjectRedis } from '@nestjs-modules/ioredis';
-import type Redis from 'ioredis';
+import { CacheService } from '../utils/cache.service';
 
 @Controller('drive')
 export class DriveController {
@@ -21,7 +20,7 @@ export class DriveController {
 
   constructor(
     private readonly driveService: DriveService,
-    @InjectRedis() private readonly redis: Redis,
+    private readonly cacheService: CacheService,
   ) {}
 
   // ── GET /api/v1/drive/test ───────────────────────────────────────────────
@@ -77,7 +76,7 @@ export class DriveController {
   //   1. LiveKit Egress POSTs raw video bytes here (no multipart, no JSON)
   //   2. We read the raw Fastify request as a Node.js stream
   //   3. DriveService pipes it in 10 MB chunks to Google Drive
-  //   4. Progress is published to Redis → SSE → instructor dashboard
+  //   4. Progress is published to Cache → SSE → instructor dashboard
   //   5. When stream ends, we return the Drive file metadata
   //
   // Why raw stream and not multipart?
@@ -119,7 +118,7 @@ export class DriveController {
     // or req.body because those would buffer everything into RAM.
     const rawStream = req.raw as NodeJS.ReadableStream;
 
-    // Optional: store the Drive upload URL in Redis for crash recovery
+    // Optional: store the Drive upload URL in Cache for crash recovery
     // If the NestJS server crashes mid-upload, you can call
     // driveService.getResumeOffset(storedUrl) and resume from there.
     const uploadSessionKey = `recording:session:${meetingId}`;
@@ -134,8 +133,8 @@ export class DriveController {
         contentType.split(';')[0].trim(), // strip charset if present
       );
 
-      // Clean up Redis session key
-      await this.redis.del(uploadSessionKey);
+      // Clean up Cache session key
+      await this.cacheService.del(uploadSessionKey);
 
       this.logger.log(
         `✅ Recording stream complete for meeting ${meetingId}: ` +
@@ -173,8 +172,8 @@ export class DriveController {
         error.message,
       );
 
-      // Publish error to Redis so frontend knows the upload failed
-      await this.redis.publish(
+      // Publish error to Cache so frontend knows the upload failed
+      this.cacheService.events.emit(
         `recording:events:${meetingId}`,
         JSON.stringify({
           meetingId,
@@ -198,7 +197,7 @@ export class DriveController {
   //
   // How it works:
   //   1. Client opens this endpoint — connection stays open
-  //   2. We subscribe to Redis channel recording:events:{meetingId}
+  //   2. We subscribe to Cache events for recording:events:{meetingId}
   //   3. Every time DriveService publishes progress, we forward it as SSE
   //   4. When status=complete or status=error, we close the connection
   //
@@ -226,20 +225,15 @@ export class DriveController {
     });
 
     // Send any existing progress immediately on connect (catch-up)
-    const existing = await this.redis.get(progressKey);
+    const existing = await this.cacheService.get(progressKey);
     if (existing) {
-      reply.raw.write(`data: ${existing}\n\n`);
+      reply.raw.write(`data: ${JSON.stringify(existing)}\n\n`);
     } else {
       // Let the client know we're connected and waiting
       reply.raw.write(
         `data: ${JSON.stringify({ meetingId, status: 'waiting', message: 'Waiting for recording stream...' })}\n\n`,
       );
     }
-
-    // Subscribe to the Redis channel for this meeting's progress
-    // We need a SEPARATE Redis client for subscribe (ioredis limitation)
-    const subscriber = this.redis.duplicate();
-    await subscriber.subscribe(channel);
 
     let isConnectionAlive = true;
 
@@ -250,7 +244,7 @@ export class DriveController {
       }
     }, 25_000);
 
-    subscriber.on('message', (_channel: string, message: string) => {
+    const onMessage = (message: string) => {
       if (!isConnectionAlive) return;
 
       reply.raw.write(`data: ${message}\n\n`);
@@ -264,15 +258,17 @@ export class DriveController {
       } catch {
         // not JSON — ignore
       }
-    });
+    };
+
+    // Subscribe to the EventEmitter channel
+    this.cacheService.events.on(channel, onMessage);
 
     // Cleanup function — called on client disconnect or upload complete
     const cleanup = () => {
       if (!isConnectionAlive) return;
       isConnectionAlive = false;
       clearInterval(keepAlive);
-      subscriber.unsubscribe(channel).catch(() => {});
-      subscriber.quit().catch(() => {});
+      this.cacheService.events.removeListener(channel, onMessage);
       if (!reply.raw.writableEnded) {
         reply.raw.end();
       }
@@ -288,7 +284,7 @@ export class DriveController {
   @Get('recording/status/:meetingId')
   async recordingStatus(@Param('meetingId') meetingId: string) {
     const key = `recording:progress:${meetingId}`;
-    const data = await this.redis.get(key);
+    const data = await this.cacheService.get(key);
 
     if (!data) {
       return {
@@ -298,6 +294,6 @@ export class DriveController {
       };
     }
 
-    return JSON.parse(data);
+    return data;
   }
 }
