@@ -1,0 +1,94 @@
+services:
+  # 1. PostgreSQL Database
+  postgres:
+    image: postgres:alpine # أحدث إصدار (Postgres 18)
+    container_name: neuromeet-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "##anas4263Anas"
+      POSTGRES_DB: neuromeet_db
+    ports:
+      - "5433:5432"
+    volumes:
+      # 👇 التعديل هنا: شيلنا /data عشان Postgres 18 بيطلب المسار الرئيسي
+      - pgdata:/var/lib/postgresql
+    command: >
+      postgres
+      -c shared_buffers=256MB
+      -c effective_cache_size=512MB
+      -c work_mem=8MB
+      -c maintenance_work_mem=128MB
+      -c max_connections=100
+      -c random_page_cost=1.1
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. Redis In-Memory Cache
+  redis:
+    image: redis:alpine
+    container_name: neuromeet-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # 3. NeuroMeet Backend (Bun + NestJS + Fastify)
+  backend:
+    build: ./backend
+    container_name: neuromeet-backend
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # 4. NeuroMeet AI Bot Worker
+  # Runs the Python livekit-agents bot + FastAPI dispatch server.
+  # The bot joins LiveKit rooms as a hidden participant via WebRTC —
+  # NestJS never processes video blobs.
+  ai-worker:
+    build: ./ai_bot
+    container_name: neuromeet-ai-worker
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      # Mount your trained model checkpoint here
+      - ./ai_bot/models:/models:ro
+    env_file:
+      - ./backend/.env
+    environment:
+      - MODEL_PATH=/models/best_model.pth
+      - REDIS_HOST=redis
+    # ── GPU (uncomment when running on a CUDA-capable host) ────────────────
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  redisdata:
+
