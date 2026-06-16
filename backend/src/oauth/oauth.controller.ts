@@ -40,7 +40,7 @@ export class OAuthController {
       userId: userObj.profile.id,
       email: userObj.profile.emails[0].value,
       name: userObj.profile.displayName,
-      photo: userObj.profile.photos[0].value,
+      photo: userObj.profile.picture || userObj.profile.photos?.[0]?.value || userObj.profile._json?.picture || '',
     };
 
     try {

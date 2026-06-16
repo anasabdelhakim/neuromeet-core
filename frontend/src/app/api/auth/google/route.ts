@@ -1,7 +1,6 @@
 // SECURITY: This is a server-side Next.js Route Handler.
 // It acts as a proxy to initiate the Google OAuth flow.
 import { NextResponse } from "next/server";
-
 export async function GET() {
   const nestjsUrl = process.env.NESTJS_URL;
 

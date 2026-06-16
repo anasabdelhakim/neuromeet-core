@@ -237,6 +237,10 @@ export function NotificationDropdown() {
 
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger
+          onClick={(e) => {
+            e.preventDefault();
+            setIsOpen((prev) => !prev);
+          }}
           className={cn(
             "relative flex h-12 w-12 cursor-pointer items-center justify-center rounded-medium bg-transparent p-0 text-muted-foreground outline-none transition-all hover:bg-custom-gray hover:text-foreground",
             isOpen && "bg-custom-gray text-foreground",

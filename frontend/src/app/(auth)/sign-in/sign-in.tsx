@@ -11,6 +11,7 @@ import { z } from "zod";
 import { Loader } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { cn } from "@/src/lib/utils";
 
 import { loginFormSchema } from "@/src/validations/zod";
 import { AuthTabs } from "@/src/features/auth/components/authTabs";
@@ -165,11 +166,13 @@ export function LoginForm() {
 
           <div className="space-y-3 flex gap-2 animate-card-entrance delay-500">
             <Button
-              className="flex-1 py-5 border-border flex items-center justify-center hover:bg-background bg-muted transition-all group"
+              className={cn(
+                "flex-1 py-5 border-border flex items-center justify-center hover:bg-background bg-muted transition-all group",
+                (pending || isGoogleLoading) && "pointer-events-none opacity-50 cursor-not-allowed"
+              )}
               nativeButton={false}
               render={<a href="/api/auth/google" />}
               variant="outline"
-              disabled={pending || isGoogleLoading}
               onClick={() => setIsGoogleLoading(true)}
             >
               {isGoogleLoading ? (

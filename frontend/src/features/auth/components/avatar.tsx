@@ -73,6 +73,10 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
 
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger
+          onClick={(e) => {
+            e.preventDefault();
+            setIsOpen((prev) => !prev);
+          }}
           className={cn(
             "h-10 w-10 p-0 rounded-full bg-transparent border-none cursor-pointer hover:opacity-80 transition-opacity duration-fast ease-standard outline-none",
             isOpen
@@ -85,6 +89,7 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
               src={avatarSrc}
               alt={displayName}
               className="object-cover"
+              referrerPolicy="no-referrer"
             />
             <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
               {initials}
@@ -103,7 +108,7 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
           {/* User Info */}
           <div className="flex items-center gap-3 mb-1">
             <Avatar className="h-12 w-12">
-              <AvatarImage src={avatarSrc} alt={displayName} />
+              <AvatarImage src={avatarSrc} alt={displayName} referrerPolicy="no-referrer" />
               <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
                 {initials}
               </AvatarFallback>

@@ -6,8 +6,9 @@ import {
 } from "@/src/components/ui/input-group";
 import { TopbarTitle } from "./TopbarTitle";
 import { NotificationDropdown } from "./NotificationDropdown";
+import UserProfile from "@/src/app/(auth)/user-profile/profile";
 
-export function InstructorTopbar({ userProfileNode }: { userProfileNode: React.ReactNode }) {
+export function InstructorTopbar() {
   return (
     <header className="z-sticky flex items-center justify-between gap-4 bg-transparent px-8 py-4 transition-all duration-normal ease-standard">
       <TopbarTitle />
@@ -21,7 +22,7 @@ export function InstructorTopbar({ userProfileNode }: { userProfileNode: React.R
 
       <div className="flex items-center gap-6">
         <NotificationDropdown />
-        {userProfileNode}
+        <UserProfile />
       </div>
     </header>
   );

@@ -42,6 +42,7 @@ export class OAuthService {
           name: userData.name,
           password,
           role: 'INSTRUCTOR', // ✅ Fixed: Matches your Prisma schema Enum
+          avatarUrl: userData.photo, // ✅ Save Google profile picture
         },
         select: {
           id: true,
@@ -90,6 +91,12 @@ export class OAuthService {
     }
 
     // ================= SIGN IN =================
+    // Update their avatar URL in case they changed it on Google
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { avatarUrl: userData.photo },
+    });
+
     const payload = {
       id: user.id,
       email: user.email,
