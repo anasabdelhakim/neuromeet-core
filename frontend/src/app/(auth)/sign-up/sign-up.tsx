@@ -73,7 +73,7 @@ export function SignUpForm() {
         <form action={handleAction} className="space-y-4">
           {/* SERVER ERROR */}
           {state.errorMessage?.server && (
-            <div className="animate-alert-entrance">
+            <div>
               <p className="text-destructive text-sm text-center bg-destructive-soft rounded-medium py-2 px-3">
                 {state.errorMessage.server[0]}
               </p>
@@ -81,9 +81,9 @@ export function SignUpForm() {
           )}
 
           {/* USERNAME */}
-          <div className="animate-card-entrance delay-100">
+          <div>
             <Field>
-              <FieldLabel htmlFor="username">Username</FieldLabel>
+              <FieldLabel htmlFor="name">Name</FieldLabel>
               <Input
                 id="username"
                 type="text"
@@ -108,7 +108,7 @@ export function SignUpForm() {
           </div>
 
           {/* EMAIL */}
-          <div className="animate-card-entrance delay-200">
+          <div>
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
               <Input
@@ -134,7 +134,7 @@ export function SignUpForm() {
           </div>
 
           {/* PASSWORD */}
-          <div className="animate-card-entrance delay-300">
+          <div>
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
 
@@ -170,7 +170,7 @@ export function SignUpForm() {
           </div>
 
           {/* CONFIRM PASSWORD */}
-          <div className="animate-card-entrance delay-400">
+          <div>
             <Field>
               <FieldLabel htmlFor="confirmPassword">
                 Confirm Password
@@ -197,8 +197,8 @@ export function SignUpForm() {
             </Field>
           </div>
 
-          {/* SUBMIT */}
-          <div className="animate-card-entrance delay-500 pt-2">
+          {/* SUBMIT BUTTON */}
+          <div className="pt-2">
             <Button
               type="submit"
               disabled={pending}

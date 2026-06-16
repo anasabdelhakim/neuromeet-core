@@ -195,8 +195,8 @@
   --animate-orb-float-before: orb-float 9s ease-in-out infinite;
   --animate-orb-float-after: orb-float 11s ease-in-out infinite;
   --animate-fade-in-standard: fade-in var(--duration-normal) var(--ease-standard) both;
-  --animate-page-entrance: slide-in-bottom-6 var(--duration-slow) var(--ease-smooth) both;
-  --animate-card-entrance: slide-in-bottom-4 var(--duration-slow) var(--ease-smooth) both;
+  --animate-page-entrance: none; /* slide-in-bottom-6 var(--duration-slow) var(--ease-smooth) both; */
+  --animate-card-entrance: none; /* slide-in-bottom-4 var(--duration-slow) var(--ease-smooth) both; */
   --animate-alert-entrance: slide-in-top-2 var(--duration-normal) var(--ease-standard) both;
 
   /* Keyframes */

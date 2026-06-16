@@ -121,14 +121,14 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
           )}
 
           {/* INFO */}
-          <div className="animate-card-entrance delay-75">
+          <div>
             <p className="text-sm text-muted-foreground text-center">
               Enter the 6-digit verification code sent to your email
             </p>
           </div>
 
           {/* OTP FIELD */}
-          <div className="animate-card-entrance delay-100">
+          <div>
             <Field>
               <FieldLabel htmlFor="otp">Verification code</FieldLabel>
               <Input
@@ -156,7 +156,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
           </div>
 
           {/* VERIFY BUTTON */}
-          <div className="animate-card-entrance delay-200 pt-2">
+          <div className="pt-2">
             <Button
               type="submit"
               disabled={pending}
@@ -177,7 +177,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
           </div>
 
           {/* RESEND & TIMER */}
-          <div className="animate-card-entrance delay-300 text-center">
+          <div className="text-center">
             <Button
               type="button"
               variant="link"

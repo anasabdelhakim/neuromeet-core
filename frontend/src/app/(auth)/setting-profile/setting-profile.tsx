@@ -29,7 +29,7 @@ export default function ProfileCompletionForm({ initialAvatarUrl }: { initialAva
       <CardContent className="pt-6">
         <form action={action} className="space-y-4">
           {/* AVATAR UPLOAD */}
-          <div className="animate-card-entrance delay-100">
+          <div>
             <AvatarUploadControl
               error={state.errorMessage?.avatar?.[0]}
               disabled={pending || isSkipping}
@@ -39,13 +39,13 @@ export default function ProfileCompletionForm({ initialAvatarUrl }: { initialAva
 
           {/* SERVER ERROR */}
           {state.errorMessage?.server && (
-            <div className="animate-card-entrance delay-150 p-3 rounded-card bg-destructive-soft border border-destructive/20 text-destructive text-sm text-center">
+            <div className="p-3 rounded-card bg-destructive-soft border border-destructive/20 text-destructive text-sm text-center">
               {state.errorMessage.server[0]}
             </div>
           )}
 
           {/* ACTION BUTTONS */}
-          <div className="animate-card-entrance delay-200 pt-2 space-y-4">
+          <div className="pt-2 space-y-4">
             <Button
               type="submit"
               className="w-full py-5"

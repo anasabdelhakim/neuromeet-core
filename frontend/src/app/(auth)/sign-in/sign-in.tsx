@@ -74,7 +74,7 @@ export function LoginForm() {
           )}
 
 
-          <div className="animate-card-entrance delay-100">
+          <div>
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
               <Input
@@ -100,7 +100,7 @@ export function LoginForm() {
             </Field>
           </div>
 
-          <div className="animate-card-entrance delay-200">
+          <div>
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
               <PasswordInput
@@ -135,7 +135,7 @@ export function LoginForm() {
           </div>
 
           {/* MAIN SUBMIT BUTTON */}
-          <div className="animate-card-entrance delay-300 pt-2">
+          <div className="pt-2">
             <Button
               type="submit"
               disabled={pending || isGoogleLoading}
@@ -153,7 +153,7 @@ export function LoginForm() {
           </div>
 
           {/* DIVIDER & SOCIAL LOGINS */}
-          <div className="relative my-6 animate-card-entrance delay-400">
+          <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-border" />
             </div>
@@ -164,7 +164,7 @@ export function LoginForm() {
             </div>
           </div>
 
-          <div className="space-y-3 flex gap-2 animate-card-entrance delay-500">
+          <div className="space-y-3 flex gap-2">
             <Button
               className={cn(
                 "flex-1 py-5 border-border flex items-center justify-center hover:bg-background bg-muted transition-all group",

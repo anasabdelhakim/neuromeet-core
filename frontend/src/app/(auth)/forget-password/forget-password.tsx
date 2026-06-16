@@ -62,7 +62,7 @@ export default function ForgetPasswordPreview() {
           )}
 
           {/* EMAIL FIELD */}
-          <div className="animate-card-entrance delay-100">
+          <div>
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
               <Input
@@ -94,7 +94,7 @@ export default function ForgetPasswordPreview() {
           </div>
 
           {/* SUBMIT BUTTON */}
-          <div className="animate-card-entrance delay-200 pt-2">
+          <div className="pt-2">
             <Button
               type="submit"
               disabled={pending}

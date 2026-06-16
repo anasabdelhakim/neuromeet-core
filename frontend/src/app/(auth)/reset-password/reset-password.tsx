@@ -76,7 +76,7 @@ export default function ResetPasswordForm() {
           )}
 
           {/* PASSWORD FIELD */}
-          <div className="animate-card-entrance delay-100">
+          <div>
             <Field>
               <FieldLabel htmlFor="password">New Password</FieldLabel>
 
@@ -112,7 +112,7 @@ export default function ResetPasswordForm() {
           </div>
 
           {/* CONFIRM PASSWORD */}
-          <div className="animate-card-entrance delay-200">
+          <div>
             <Field>
               <FieldLabel htmlFor="confirmPassword">
                 Confirm Password
@@ -141,7 +141,7 @@ export default function ResetPasswordForm() {
           </div>
 
           {/* SUBMIT */}
-          <div className="animate-card-entrance delay-300 pt-2">
+          <div className="pt-2">
             <Button
               type="submit"
               disabled={pending}
