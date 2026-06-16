@@ -65,7 +65,7 @@ model Meeting {
   createdAt       DateTime        @default(now())
 
   // Relations
-  host         User                 @relation("MeetingHost", fields: [hostId], references: [id])
+  host         User                 @relation("MeetingHost", fields: [hostId], references: [id], onDelete: Cascade)
   participants MeetingParticipant[]
   materials    MeetingMaterial[]
 
@@ -89,7 +89,7 @@ model MeetingParticipant {
 
   // Relations
   meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id])
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([meetingId, userId])
   @@index([meetingId])
@@ -109,7 +109,7 @@ model MeetingMaterial {
 
   // Relations
   meeting  Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
-  uploader User    @relation(fields: [uploadedBy], references: [id])
+  uploader User    @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
 
   @@index([meetingId])
 }
