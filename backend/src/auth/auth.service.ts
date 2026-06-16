@@ -47,6 +47,7 @@ export class AuthService {
       Bun.password.hash(signUpDto.password),
       Promise.resolve(randomInt(0, 1000000).toString().padStart(6, '0')),
     ]);
+    const hashedCode = await Bun.password.hash(code);
 
     // RESTORED: Set otpExpire to prevent infinite brute-force windows
     const otpExpire = new Date(Date.now() + AUTH_CONSTANTS.OTP_EXPIRY_MS);
@@ -57,7 +58,7 @@ export class AuthService {
         email: signUpDto.email,
         password: hashedPassword,
         role: 'INSTRUCTOR', // Fixed: Ensure manual signup matches Google OAuth behavior
-        verificationCode: code,
+        verificationCode: hashedCode,
         otpPurpose: 'SIGN_UP',
         otpExpire, // RESTORED
       },
@@ -98,12 +99,13 @@ export class AuthService {
     }
 
     const code = randomInt(0, 1000000).toString().padStart(6, '0');
+    const hashedCode = await Bun.password.hash(code);
     const otpExpire = new Date(Date.now() + AUTH_CONSTANTS.OTP_EXPIRY_MS);
 
     await this.prisma.user.update({
       where: { email: dto.email },
       data: {
-        verificationCode: code,
+        verificationCode: hashedCode,
         otpPurpose: 'SIGN_UP',
         otpExpire,
       },
@@ -151,7 +153,8 @@ export class AuthService {
       );
     }
 
-    if (user.verificationCode !== data.code) {
+    const isCodeValid = await Bun.password.verify(data.code, user.verificationCode || '');
+    if (!isCodeValid) {
       throw new UnauthorizedException('Invalid verification code');
     }
 
@@ -330,13 +333,14 @@ export class AuthService {
     }
 
     const code = randomInt(0, 1000000).toString().padStart(6, '0');
+    const hashedCode = await Bun.password.hash(code);
     // RESTORED: Expiration timestamp for the reset OTP
     const otpExpire = new Date(Date.now() + AUTH_CONSTANTS.OTP_EXPIRY_MS);
 
     await this.prisma.user.update({
       where: { email: dto.email },
       data: {
-        verificationCode: code,
+        verificationCode: hashedCode,
         otpPurpose: 'RESET_PASSWORD',
         otpExpire, // RESTORED
       },
@@ -382,7 +386,8 @@ export class AuthService {
       );
     }
 
-    if (user.verificationCode !== data.code) {
+    const isCodeValid = await Bun.password.verify(data.code, user.verificationCode || '');
+    if (!isCodeValid) {
       throw new UnauthorizedException('Invalid verification code');
     }
 

@@ -14,7 +14,7 @@ export default function AuthWrapper({ title, description, children }: AuthWrappe
       
       {/* After radial */}
       <div className="absolute -bottom-[80px] -right-[80px] w-[400px] h-[400px] rounded-full pointer-events-none blur-[90px] bg-auth-scene-after-radial animate-orb-float-after [animation-delay:-4s]" />
-      <div className="flex w-full flex-col gap-5 items-center max-w-sm z-10 relative">
+      <div className="flex w-full flex-col gap-5 items-center max-w-sm z-10 relative animate-page-entrance">
         <h1 className="text-3xl font-bold tracking-tight bg-brand-gradient bg-clip-text text-transparent text-center">
           {title}
         </h1>

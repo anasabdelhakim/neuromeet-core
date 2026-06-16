@@ -22,8 +22,8 @@ export const AUTH_CONSTANTS = {
   /** OTP validity window in milliseconds (2 minutes, matches frontend timer) */
   OTP_EXPIRY_MS: 2 * 60 * 1000,
 
-  /** How long an unverified user is kept before cleanup deletes it (24 hours) */
-  UNVERIFIED_USER_MAX_AGE_MS: 24 * 60 * 60 * 1000,
+  /** How long an unverified user is kept before cleanup deletes it (1 hour) */
+  UNVERIFIED_USER_MAX_AGE_MS: 1 * 60 * 60 * 1000,
 
   /** Handoff token lifetime for OAuth exchange (1 minute) */
   OAUTH_HANDOFF_TOKEN_EXPIRY: '1m',
