@@ -173,7 +173,11 @@ export function LoginForm() {
               nativeButton={false}
               render={<a href="/api/auth/google" />}
               variant="outline"
-              onClick={() => setIsGoogleLoading(true)}
+              onClick={() => {
+                setIsGoogleLoading(true);
+                // Reset spinner after 3 seconds in case they click browser "Back"
+                setTimeout(() => setIsGoogleLoading(false), 3000);
+              }}
             >
               {isGoogleLoading ? (
                 <div className="flex items-center gap-2">
