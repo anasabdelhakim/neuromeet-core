@@ -20,6 +20,8 @@ export class UserService {
         dateOfBirth: true,
         active: true,
         created_at: true,
+        avatarUrl: true,
+        isProfileComplete: true,
       },
     });
 
@@ -50,8 +52,9 @@ export class UserService {
         name: true,
         email: true,
         role: true,
-        phone: true,
         active: true,
+        avatarUrl: true,
+        isProfileComplete: true,
       },
     });
 

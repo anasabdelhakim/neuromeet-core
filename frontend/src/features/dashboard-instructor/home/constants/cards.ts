@@ -41,7 +41,7 @@ export const Cards = [
     cta: "Search",
     gradFrom: "from-action-yellow-soft-muted",
     iconBg: "bg-action-yellow-soft-subtle text-action-yellow",
-    glow: "hover:shadow hover:shadow-action-yellow-soft-subtle",
+    glow: "hover:shadow hover:shadow-action-yellow-subtle",
   },
 ] as const;
 

@@ -5,7 +5,7 @@ export function InstructorSidebar() {
   return (
     <aside className="w-60 max-lg:w-20 shrink-0 flex flex-col border-r h-full overflow-y-auto px-4 py-8">
       {/* Logo */}
-      <div className="flex max-lg:mx-auto items-center gap-1 drop-shadow-md">
+      <div className="flex max-lg:mx-auto items-center gap-1 shadow-medium">
         <Image
           width={40}
           height={40}

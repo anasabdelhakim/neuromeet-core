@@ -23,6 +23,8 @@ export function LoginForm() {
     register,
     control,
     setFocus,
+    reset,
+    getValues,
     formState: { errors },
   } = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
@@ -37,6 +39,11 @@ export function LoginForm() {
   );
 
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+  const handleAction = (formData: FormData) => {
+    reset(getValues(), { keepValues: true });
+    action(formData);
+  };
 
   // ✅ Extract onBlur from RHF register so we can control when it fires
   const { onBlur: emailOnBlur, ...emailRest } = register("email");
@@ -55,11 +62,11 @@ export function LoginForm() {
     <Card variant="gradient">
       <AuthTabs activeTab="sign-in" />
       <CardContent>
-        <form action={action} className="space-y-4">
+        <form action={handleAction} className="space-y-4">
           {/* SERVER ERROR */}
           {state.errorMessage?.server && (
             <div className="animate-alert-entrance">
-              <p className="text-destructive text-sm text-center bg-destructive/10 rounded-medium py-2 px-3">
+              <p className="text-destructive text-sm text-center bg-destructive-soft rounded-medium py-2 px-3">
                 {state.errorMessage.server[0]}
               </p>
             </div>

@@ -23,12 +23,12 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
             <CardTitle className="text-lg font-bold text-foreground truncate">
               {meeting.title}
             </CardTitle>
-            <Badge className="bg-status-success-soft text-status-success border border-status-success-border hover:bg-status-success-hover uppercase tracking-wider font-bold text-[10px] py-0.5 px-2 flex items-center gap-1">
+            <Badge className="bg-status-success-soft text-status-success border border-status-success-border hover:bg-status-success-hover uppercase tracking-wider font-bold text-xs py-0.5 px-2 flex items-center gap-1">
               <CheckCircle2 size={10} />
               Completed
             </Badge>
             {meeting.hasRecording && (
-              <Badge className="bg-destructive-soft text-destructive border border-destructive-soft-hover uppercase tracking-wider font-bold text-[10px] py-0.5 px-2">
+              <Badge className="bg-destructive-soft text-destructive border border-destructive-soft-hover uppercase tracking-wider font-bold text-xs py-0.5 px-2">
                 Recording Available
               </Badge>
             )}

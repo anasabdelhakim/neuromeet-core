@@ -22,7 +22,7 @@ export function HeroClock() {
           <Suspense
             fallback={
               <>
-                <h1 className="text-6xl font-black tracking-tighter text-white-soft-muted drop-shadow-sm md:text-7xl animate-pulse">
+                <h1 className="text-6xl font-black tracking-tighter text-white-soft-muted shadow-soft md:text-7xl animate-pulse">
                   --:-- --
                 </h1>
                 <p className="mt-2 text-lg font-medium text-white-soft-subtle md:text-xl animate-pulse">

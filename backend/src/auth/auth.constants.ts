@@ -19,8 +19,8 @@ export const AUTH_CONSTANTS = {
   /** Reset-password token validity window in milliseconds (10 minutes) */
   RESET_TOKEN_EXPIRY_MS: 10 * 60 * 1000,
 
-  /** OTP validity window in milliseconds (15 minutes) */
-  OTP_EXPIRY_MS: 15 * 60 * 1000,
+  /** OTP validity window in milliseconds (2 minutes, matches frontend timer) */
+  OTP_EXPIRY_MS: 2 * 60 * 1000,
 
   /** How long an unverified user is kept before cleanup deletes it (24 hours) */
   UNVERIFIED_USER_MAX_AGE_MS: 24 * 60 * 60 * 1000,

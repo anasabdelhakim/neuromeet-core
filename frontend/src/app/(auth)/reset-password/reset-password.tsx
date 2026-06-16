@@ -27,6 +27,8 @@ export default function ResetPasswordForm() {
     register,
     control,
     setFocus,
+    reset,
+    getValues,
     formState: { errors },
   } = useForm<z.infer<typeof resetPasswordSchema>>({
     resolver: zodResolver(resetPasswordSchema),
@@ -43,6 +45,11 @@ export default function ResetPasswordForm() {
     { success: false, errorMessage: {} },
   );
 
+  const handleAction = (formData: FormData) => {
+    reset(getValues(), { keepValues: true });
+    action(formData);
+  };
+
   const { onBlur: passwordOnBlur, ...passwordRest } = register("password");
   const { onBlur: confirmPasswordOnBlur, ...confirmPasswordRest } = register("confirmPassword");
 
@@ -58,11 +65,11 @@ export default function ResetPasswordForm() {
   return (
     <Card variant="gradient">
       <CardContent>
-        <form action={action} className="space-y-4">
+        <form action={handleAction} className="space-y-4">
           {/* SERVER ERROR */}
           {state.errorMessage?.server && (
             <div className="animate-alert-entrance">
-              <p className="text-destructive text-sm text-center bg-destructive/10 rounded-medium py-2 px-3">
+              <p className="text-destructive text-sm text-center bg-destructive-soft rounded-medium py-2 px-3">
                 {state.errorMessage.server[0]}
               </p>
             </div>
@@ -115,7 +122,7 @@ export default function ResetPasswordForm() {
                 id="confirmPassword"
                 type="password"
                 placeholder="Confirm your password"
-                className="transition-all focus:ring-2 focus:ring-primary/20"
+                className="transition-all focus:ring-2 focus:ring-primary-soft-subtle"
                 disabled={pending}
                 required
                 {...confirmPasswordRest}
@@ -125,7 +132,6 @@ export default function ResetPasswordForm() {
                   }
                 }}
                 aria-invalid={!!errors.confirmPassword}
-                required
               />
               <FieldError>
                 {errors.confirmPassword?.message ||

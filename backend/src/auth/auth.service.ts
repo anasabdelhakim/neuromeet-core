@@ -216,6 +216,7 @@ export class AuthService {
         name: true,
         failedLoginAttempts: true,
         lockedUntil: true,
+        isProfileComplete: true,
       },
     });
 

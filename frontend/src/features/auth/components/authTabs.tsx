@@ -19,7 +19,7 @@ export function AuthTabs({ activeTab }: AuthTabsProps) {
             px-6 py-3 rounded-l-soft text-sm whitespace-nowrap 
             ${
               !isSignUp
-                ? "bg-primary text-primary-foreground font-bold shadow-sm"
+                ? "bg-primary text-primary-foreground font-bold shadow-soft"
                 : "text-muted-foreground font-semibold hover:text-foreground duration-fast"
             }
           `}
@@ -36,7 +36,7 @@ export function AuthTabs({ activeTab }: AuthTabsProps) {
             px-6 py-3 text-sm whitespace-nowrap 
             ${
               isSignUp
-                ? "bg-primary text-primary-foreground font-bold shadow-sm"
+                ? "bg-primary text-primary-foreground font-bold shadow-soft"
                 : "text-muted-foreground font-semibold hover:text-foreground duration-fast"
             }
           `}

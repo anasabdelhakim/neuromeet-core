@@ -65,10 +65,25 @@ def get_model():
             _model = EngagementModel(freeze_cnn=False)
             try:
                 ckpt = torch.load(model_path, map_location=DEVICE)
-                _model.load_state_dict(ckpt["model_state"])
-                logger.info(f"[bot] PyTorch model loaded from {model_path} on {DEVICE}")
+                
+                # Kaggle models could be saved as a raw state_dict or inside a dictionary
+                if isinstance(ckpt, dict) and "model_state" in ckpt:
+                    state_dict = ckpt["model_state"]
+                elif isinstance(ckpt, dict) and "state_dict" in ckpt:
+                    state_dict = ckpt["state_dict"]
+                else:
+                    state_dict = ckpt # Assume it's the raw state_dict
+                
+                _model.load_state_dict(state_dict)
+                logger.info(f"[bot] PyTorch model loaded successfully from {model_path} on {DEVICE} 🚀")
+                
             except FileNotFoundError:
                 logger.warning(f"⚠️ [bot] WARNING: '{model_path}' not found! Running with randomly initialized weights for testing. ⚠️")
+            except RuntimeError as e:
+                logger.error(f"❌ [bot] ERROR: Architecture mismatch between best_model.pth and model.py! Details: {e}")
+                logger.warning("Running with randomly initialized weights as a fallback.")
+            except Exception as e:
+                logger.error(f"❌ [bot] Unexpected error loading PyTorch model: {e}")
 
             _model.to(DEVICE).eval()
     return _model

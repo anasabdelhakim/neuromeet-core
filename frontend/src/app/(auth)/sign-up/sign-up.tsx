@@ -27,6 +27,8 @@ export function SignUpForm() {
     register,
     control,
     setFocus,
+    reset,
+    getValues,
     formState: { errors },
   } = useForm<z.infer<typeof SignUpFormSchema>>({
     resolver: zodResolver(SignUpFormSchema),
@@ -44,6 +46,11 @@ export function SignUpForm() {
     signUpAction,
     { success: false, errorMessage: {} },
   );
+
+  const handleAction = (formData: FormData) => {
+    reset(getValues(), { keepValues: true });
+    action(formData);
+  };
 
   const { onBlur: usernameOnBlur, ...usernameRest } = register("username");
   const { onBlur: emailOnBlur, ...emailRest } = register("email");
@@ -63,7 +70,7 @@ export function SignUpForm() {
     <Card variant="gradient">
       <AuthTabs activeTab="sign-up" />
       <CardContent>
-        <form action={action} className="space-y-4">
+        <form action={handleAction} className="space-y-4">
           {/* SERVER ERROR */}
           {state.errorMessage?.server && (
             <div className="animate-alert-entrance">
@@ -81,7 +88,7 @@ export function SignUpForm() {
                 id="username"
                 type="text"
                 placeholder="Enter your username"
-                className="transition-all focus:ring-2 focus:ring-primary/20"
+                className="transition-all focus:ring-2 focus:ring-primary-soft-subtle"
                 disabled={pending}
                 {...usernameRest}
                 onBlur={(e) => {
@@ -108,7 +115,7 @@ export function SignUpForm() {
                 id="email"
                 type="email"
                 placeholder="Enter your email"
-                className="transition-all focus:ring-2 focus:ring-primary/20"
+                className="transition-all focus:ring-2 focus:ring-primary-soft-subtle"
                 disabled={pending}
                 {...emailRest}
                 onBlur={(e) => {
@@ -172,7 +179,7 @@ export function SignUpForm() {
                 id="confirmPassword"
                 type="password"
                 placeholder="Confirm your password"
-                className="transition-all focus:ring-2 focus:ring-primary/20"
+                className="transition-all focus:ring-2 focus:ring-primary-soft-subtle"
                 disabled={pending}
                 {...confirmPasswordRest}
                 onBlur={(e) => {

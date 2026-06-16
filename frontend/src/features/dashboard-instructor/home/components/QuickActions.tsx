@@ -124,7 +124,7 @@ export function QuickActions() {
             {activeCard.id === "new" && (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-foreground/80">
+                  <Label className="text-sm font-medium text-muted-foreground-mid">
                     Session Name
                   </Label>
                   <Input
@@ -134,7 +134,7 @@ export function QuickActions() {
                 </div>
                 <Button
                   className={cn(
-                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-lg transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border hover:brightness-110",
+                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-hard transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border hover:brightness-110",
                     activeButtonClass,
                   )}
                 >
@@ -145,7 +145,7 @@ export function QuickActions() {
             {activeCard.id === "join" && (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-foreground/80">
+                  <Label className="text-sm font-medium text-muted-foreground-mid">
                     Room Code or Link
                   </Label>
                   <Input
@@ -155,7 +155,7 @@ export function QuickActions() {
                 </div>
                 <Button
                   className={cn(
-                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-lg transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border hover:brightness-110",
+                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-hard transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border hover:brightness-110",
                     activeButtonClass,
                   )}
                 >
@@ -166,7 +166,7 @@ export function QuickActions() {
             {activeCard.id === "schedule" && (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-foreground/80">
+                  <Label className="text-sm font-medium text-muted-foreground-mid">
                     Lecture Topic
                   </Label>
                   <Input
@@ -175,7 +175,7 @@ export function QuickActions() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-foreground/80">
+                  <Label className="text-sm font-medium text-muted-foreground-mid">
                     Date & Time
                   </Label>
                   <Popover>
@@ -192,7 +192,7 @@ export function QuickActions() {
                       className="w-auto p-0 border-none bg-transparent shadow-none"
                       align="start"
                     >
-                      <Card className="mx-auto w-fit bg-card backdrop-blur-3xl  text-white shadow-xl rounded-soft overflow-hidden">
+                      <Card className="mx-auto w-fit bg-card backdrop-blur-3xl  text-white shadow-hard rounded-soft overflow-hidden">
                         <CardContent className="p-0">
                           <Calendar
                             mode="single"
@@ -252,7 +252,7 @@ export function QuickActions() {
                 </div>
                 <Button
                   className={cn(
-                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-lg transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border  hover:brightness-110",
+                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-hard transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border  hover:brightness-110",
                     activeButtonClass,
                   )}
                 >
@@ -263,7 +263,7 @@ export function QuickActions() {
             {activeCard.id === "recordings" && (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium text-foreground/80">
+                  <Label className="text-sm font-medium text-muted-foreground-mid">
                     Search Keyword
                   </Label>
                   <Input
@@ -273,7 +273,7 @@ export function QuickActions() {
                 </div>
                 <Button
                   className={cn(
-                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-lg transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border  hover:brightness-110",
+                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-hard transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border  hover:brightness-110",
                     activeButtonClass,
                   )}
                 >

@@ -13,6 +13,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { EmailModule } from 'src/emails/email.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { MeetingsModule } from './meetings/meetings.module';
+import { UserModule } from './user/user.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -37,6 +38,7 @@ import { MeetingsModule } from './meetings/meetings.module';
     AuthModule,
     OAuthModule,
     MeetingsModule,
+    UserModule,
   ],
   controllers: [AppController, DriveController],
   providers: [AppService, DriveService],

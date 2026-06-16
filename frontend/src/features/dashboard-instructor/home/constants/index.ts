@@ -28,7 +28,7 @@ export const todayMeetings: Meeting[] = [
 ];
 
 export const instructorGroups: Group[] = [
-  { id: 1, name: "System Design Cohort", members: 45, color: "bg-[#00d2ff]" },
-  { id: 2, name: "Web Dev Bootcamp", members: 32, color: "bg-purple-500" },
-  { id: 3, name: "Advanced Algorithms", members: 28, color: "bg-orange-400" },
+  { id: 1, name: "System Design Cohort", members: 45, color: "bg-brand-cyan" },
+  { id: 2, name: "Web Dev Bootcamp", members: 32, color: "bg-brand-purple" },
+  { id: 3, name: "Advanced Algorithms", members: 28, color: "bg-status-live" },
 ];

@@ -2,6 +2,7 @@ import { TooltipProvider } from "@/src/components/ui/tooltip";
 import { InstructorSidebar } from "@/src/features/dashboard-instructor/layout/InstructorSidebar";
 import { InstructorTopbar } from "@/src/features/dashboard-instructor/layout/InstructorTopbar";
 import { DashboardBackground } from "@/src/features/dashboard-instructor/wrappers/DashboardBackground";
+import UserProfile from "@/src/app/(auth)/user-profile/profile";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -23,7 +24,7 @@ export default function RootLayout({
         </div>
         <div className="flex-1 flex flex-col min-w-0">
           <div className="sticky top-0 z-30 bg-black-soft-subtle backdrop-blur-md border-b">
-            <InstructorTopbar />
+            <InstructorTopbar userProfileNode={<UserProfile />} />
           </div>
 
           <main

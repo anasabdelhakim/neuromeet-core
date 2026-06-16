@@ -70,11 +70,11 @@ services:
       - "8080:8080"
     volumes:
       # Mount your trained model checkpoint here
-      - ./models:/models:ro
+      - ./ai_bot/models:/models:ro
     env_file:
       - ./backend/.env
     environment:
-      - MODEL_PATH=/models/engagement.onnx
+      - MODEL_PATH=/models/best_model.pth
       - REDIS_HOST=redis
     # ── GPU (uncomment when running on a CUDA-capable host) ────────────────
     # deploy:

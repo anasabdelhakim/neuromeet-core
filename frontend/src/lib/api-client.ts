@@ -42,7 +42,7 @@ async function handleTokenRefresh(): Promise<string | null> {
 async function request<T>(
   endpoint: string,
   method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
-  body?: Record<string, unknown>,
+  body?: Record<string, unknown> | FormData,
   isRetry = false,
   customFetchOptions: RequestInit = {} 
 ): Promise<T> {
@@ -52,7 +52,6 @@ async function request<T>(
   const headers = new Headers(customFetchOptions.headers);
   
   if (accessToken) headers.set('Authorization', `Bearer ${accessToken}`);
-  if (body) headers.set('Content-Type', 'application/json');
 
   const fetchConfig: RequestInit = {
     ...customFetchOptions,
@@ -60,7 +59,15 @@ async function request<T>(
     headers,
   };
 
-  if (body) fetchConfig.body = JSON.stringify(body);
+  if (body) {
+    if (body instanceof FormData) {
+      fetchConfig.body = body;
+      headers.delete('Content-Type'); 
+    } else {
+      headers.set('Content-Type', 'application/json');
+      fetchConfig.body = JSON.stringify(body);
+    }
+  }
 
   const res = await fetch(`${BASE_URL}${endpoint}`, fetchConfig);
 
@@ -96,11 +103,11 @@ export async function apiGet<T>(endpoint: string, options?: RequestInit): Promis
   return request<T>(endpoint, 'GET', undefined, false, options);
 }
 
-export async function apiPost<T>(endpoint: string, body: Record<string, unknown>): Promise<T> {
+export async function apiPost<T>(endpoint: string, body: Record<string, unknown> | FormData): Promise<T> {
   return request<T>(endpoint, 'POST', body);
 }
 
-export async function apiPatch<T>(endpoint: string, body: Record<string, unknown>): Promise<T> {
+export async function apiPatch<T>(endpoint: string, body: Record<string, unknown> | FormData): Promise<T> {
   return request<T>(endpoint, 'PATCH', body);
 }
 

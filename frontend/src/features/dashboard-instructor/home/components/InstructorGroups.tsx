@@ -29,7 +29,7 @@ export function InstructorGroups() {
           >
             <div className="flex items-center gap-3 min-w-0">
               <div
-                className={`w-2 h-2 rounded-full shadow-sm ${group.color}`}
+                className={`w-2 h-2 rounded-full shadow-soft ${group.color}`}
                 style={{ color: "inherit" }}
               />
               <span className="text-sm font-medium truncate pr-2">

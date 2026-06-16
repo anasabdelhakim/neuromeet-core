@@ -27,15 +27,15 @@ export function EngagementDashboard() {
     useEngagementData();
 
   return (
-    <div className="p-4 bg-[hsl(222,20%,8%)] rounded-panel text-white space-y-3 w-72">
+    <div className="p-4 bg-card rounded-panel text-white space-y-3 w-72">
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
-        <h3 className="font-bold text-sm text-[hsl(220,80%,75%)] tracking-wide uppercase">
+        <h3 className="font-bold text-sm text-brand-cyan tracking-wide uppercase">
           Live Engagement
         </h3>
         {disengagedCount > 0 && (
           <span
-            className="text-xs bg-red-900/60 border border-red-500/70 text-red-300
+            className="text-xs bg-destructive-soft border border-destructive text-destructive
                        px-2 py-0.5 rounded-full animate-pulse"
           >
             ⚠️ {disengagedCount} disengaged
@@ -53,12 +53,12 @@ export function EngagementDashboard() {
 
       {/* ── Per-student rows ── */}
       {scores.length === 0 ? (
-        <p className="text-gray-500 text-xs text-center py-8">
+        <p className="text-muted-foreground-mid text-xs text-center py-8">
           Waiting for AI bot data…
         </p>
       ) : (
         <div className="space-y-2 max-h-[28rem] overflow-y-auto pr-0.5
-                        scrollbar-thin scrollbar-thumb-white/10">
+                        scrollbar-thin scrollbar-thumb-border">
           {scores.map((s) => (
             <StudentScoreRow key={s.participantId} score={s} />
           ))}
@@ -80,15 +80,15 @@ function ClassAveragePill({
   const pct = Math.round(average * 100);
   const color =
     average < DISENGAGEMENT_THRESHOLD
-      ? 'text-red-400'
+      ? 'text-destructive'
       : average < 0.65
-        ? 'text-yellow-400'
-        : 'text-emerald-400';
+        ? 'text-status-warning'
+        : 'text-status-success';
 
   return (
-    <div className="flex items-center justify-between bg-white/5 border border-white/8
+    <div className="flex items-center justify-between bg-black-soft-muted border border-border
                     rounded-button px-3 py-2">
-      <span className="text-xs text-gray-400">
+      <span className="text-xs text-muted-foreground">
         Class avg · {total} student{total !== 1 ? 's' : ''}
       </span>
       <span className={`text-sm font-bold tabular-nums ${color}`}>{pct}%</span>
@@ -103,17 +103,17 @@ function StudentScoreRow({ score }: { score: ParticipantScore }) {
   const isAlert = score.isDisengaged;
 
   const barColor = isAlert
-    ? 'bg-red-500'
+    ? 'bg-destructive'
     : pct < 65
-      ? 'bg-yellow-500'
-      : 'bg-emerald-500';
+      ? 'bg-status-warning'
+      : 'bg-status-success';
 
   return (
     <div
-      className={`px-3 py-2 rounded-card border transition-all duration-500 ${
+      className={`px-3 py-2 rounded-card border transition-all duration-normal ${
         isAlert
-          ? 'border-red-500/50 bg-red-950/30 shadow-red-900/20 shadow-md'
-          : 'border-white/8 bg-white/4'
+          ? 'border-destructive-soft bg-destructive-soft shadow-medium'
+          : 'border-border bg-black-soft-subtle'
       }`}
     >
       {/* Name + score */}
@@ -126,7 +126,7 @@ function StudentScoreRow({ score }: { score: ParticipantScore }) {
         </span>
         <span
           className={`text-xs font-bold tabular-nums ${
-            isAlert ? 'text-red-400' : 'text-emerald-400'
+            isAlert ? 'text-destructive' : 'text-status-success'
           }`}
         >
           {pct}%
@@ -134,9 +134,9 @@ function StudentScoreRow({ score }: { score: ParticipantScore }) {
       </div>
 
       {/* Progress bar */}
-      <div className="w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
+      <div className="w-full bg-border rounded-full h-1.5 overflow-hidden">
         <div
-          className={`h-1.5 rounded-full transition-all duration-700 ${barColor}`}
+          className={`h-1.5 rounded-full transition-all duration-slow ${barColor}`}
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -147,10 +147,10 @@ function StudentScoreRow({ score }: { score: ParticipantScore }) {
           {score.history.map((v, i) => (
             <div
               key={i}
-              className={`flex-1 rounded-sm transition-all duration-500 ${
+              className={`flex-1 rounded-hard transition-all duration-normal ${
                 v < DISENGAGEMENT_THRESHOLD
-                  ? 'bg-red-500/50'
-                  : 'bg-emerald-500/40'
+                  ? 'bg-destructive-soft'
+                  : 'bg-status-success opacity-40'
               }`}
               style={{ height: `${Math.round(v * 100)}%` }}
             />

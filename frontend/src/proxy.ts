@@ -38,7 +38,9 @@ export default function proxy(request: NextRequest) {
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
   const isInstructorRoute = pathname.startsWith("/dashboard-instructor");
   const isStudentRoute = pathname.startsWith("/dashboard-student");
-  const isProtectedRoute = isInstructorRoute || isStudentRoute;
+  const isSettingProfileRoute = pathname.startsWith("/setting-profile");
+  
+  const isProtectedRoute = isInstructorRoute || isStudentRoute || isSettingProfileRoute;
 
   const getCorrectDashboard = (userRole?: string) => {
     if (userRole === "INSTRUCTOR") return "/dashboard-instructor";
@@ -47,8 +49,13 @@ export default function proxy(request: NextRequest) {
   };
 
   // 1. لو اليوزر متصل وبيحاول يروح لصفحات الـ Auth (زي Sign In) رجعه على الداشبورد بتاعته
+  // *تعديل لمنع الـ Loop*: لا توجهه إلا لو كان التوكن سليم وعارفين هو Role إيه
   if (isAuthRoute && isAuthenticated) {
-    return NextResponse.redirect(new URL(getCorrectDashboard(role), request.url));
+    if (isAccessValid && role) {
+      return NextResponse.redirect(new URL(getCorrectDashboard(role), request.url));
+    }
+    // لو معاه ريفريش توكن بس (بدون أكسس توكن أو Role)، خليه في صفحة الـ Sign-in 
+    // عشان الـ Client Side يقدر يعمل Refresh للتوكن أو يخليه يسجل دخول من جديد
   }
 
   // 2. لو اليوزر مش متصل تماماً (معندوش لا أكسس ولا ريفريش) وبيحاول يدخل صفحات محمية

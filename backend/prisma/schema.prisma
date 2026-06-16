@@ -22,6 +22,8 @@ model User {
   phone               String?
   dateOfBirth         DateTime?
   refreshToken        String?
+  avatarUrl           String?
+  isProfileComplete   Boolean     @default(false)
   resetpasswordToken  String?
   resetpasswordExpire DateTime?
   passwordChangedAt   DateTime?

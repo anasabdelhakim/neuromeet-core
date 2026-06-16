@@ -150,6 +150,11 @@
   /* ─── Glow Shadows ────────────────────────────────────────────────────── */
   --shadow-glow-cyan: var(--val-shadow-glow-cyan);
 
+  /* ─── Generic Shadows ─────────────────────────────────────────────────── */
+  --shadow-soft: var(--val-shadow-soft);
+  --shadow-medium: var(--val-shadow-medium);
+  --shadow-hard: var(--val-shadow-hard);
+
   --color-black-soft-subtle: var(--black-soft-subtle);
   --color-black-soft-muted: var(--black-soft-muted);
   --color-black-soft-deep: var(--black-soft-deep);
@@ -409,6 +414,11 @@
   --val-shadow-action-schedule-muted: 0 25px 50px -12px color-mix(in oklch, var(--action-schedule) 15%, transparent);
   --val-shadow-action-yellow-deep: 0 20px 25px -5px color-mix(in oklch, var(--action-yellow) 40%, transparent), 0 8px 10px -6px color-mix(in oklch, var(--action-yellow) 40%, transparent);
   --val-shadow-action-yellow-muted: 0 25px 50px -12px color-mix(in oklch, var(--action-yellow) 15%, transparent);
+
+  /* Generic UI Shadows */
+  --val-shadow-soft: 0 2px 5px 0 oklch(0 0 0 / 0.05), 0 1px 2px -1px oklch(0 0 0 / 0.1);
+  --val-shadow-medium: 0 10px 15px -3px oklch(0 0 0 / 0.1), 0 4px 6px -4px oklch(0 0 0 / 0.1);
+  --val-shadow-hard: 0 20px 25px -5px oklch(0 0 0 / 0.2), 0 8px 10px -6px oklch(0 0 0 / 0.1);
 
   /* Dialog Backgrounds */
   --dialog-bg-new: oklch(21.928% 0.03081 33.164 / 0.95);

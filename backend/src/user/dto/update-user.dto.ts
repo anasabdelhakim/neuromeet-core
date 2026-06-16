@@ -3,7 +3,7 @@ import {
   IsString,
   MinLength,
   MaxLength,
-  IsPhoneNumber,
+  IsBoolean,
 } from 'class-validator';
 
 // SECURITY: This DTO only exposes the fields that a user is allowed to update
@@ -18,7 +18,10 @@ export class UpdateUserDto {
   name?: string;
 
   @IsOptional()
-  @IsString({ message: 'phone must be a string' })
-  @IsPhoneNumber('EG', { message: 'phone number is not valid' })
-  phone?: string;
+  @IsString()
+  avatarUrl?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isProfileComplete?: boolean;
 }

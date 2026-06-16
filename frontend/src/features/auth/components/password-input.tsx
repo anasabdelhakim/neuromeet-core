@@ -55,7 +55,7 @@ export function PasswordInput({
           onClick={() => setSeePassword((p) => !p)}
           onMouseDown={(e) => e.preventDefault()}
           className={cn(
-            'flex justify-center items-center h-[95%] w-10 absolute right-0.25 rounded-r-medium top-1/2 -translate-y-1/2 transition-colors duration-fast ease-standard',
+            'flex justify-center items-center h-[97%] w-10 absolute right-0 rounded-r-hard top-1/2 -translate-y-1/2 transition-colors duration-fast ease-standard',
             errorMsg
               ? 'border-destructive bg-destructive-soft-hover text-destructive'
               : 'bg-primary text-foreground hover:text-foreground',

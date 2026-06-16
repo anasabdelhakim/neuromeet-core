@@ -9,9 +9,11 @@
 // requests to the Next.js domain.
 
 import { redirect } from "next/navigation";
-import { apiPost, ApiError } from "@/src/lib/api-client";
+import { apiPost, ApiError,apiGet,apiPatch } from "@/src/lib/api-client";
 import {
   setAuthCookies,
+  getAuthCookies,
+  clearAuthCookies,
   setResetEmail,
   getResetEmail,
   setResetToken,
@@ -27,6 +29,7 @@ import {
   otpFormSchema,
   resetPasswordSchema,
 } from "@/src/validations/zod";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 // ---------- Shared result type ----------
 export type ActionResult = {
@@ -42,6 +45,8 @@ interface AuthResponse {
     name: string;
     email: string;
     role: "INSTRUCTOR" | "STUDENT" | "ADMIN";
+    isProfileComplete?: boolean;
+    avatarUrl?: string;
   };
   access_token: string;
   refresh_token: string;
@@ -108,6 +113,7 @@ export async function signInAction(
       res.data.role === "STUDENT"
         ? "/dashboard-student"
         : "/dashboard-instructor";
+    
     redirect(redirectPath);
   } catch (err) {
     if (err instanceof ApiError) {
@@ -240,6 +246,8 @@ export async function verifyCodeAction(
     };
   }
 
+  let redirectPath = "/";
+
   try {
     const email = await getResetEmail();
     if (!email) {
@@ -250,7 +258,6 @@ export async function verifyCodeAction(
     }
 
     if (flow === "signup") {
-      // SECURITY: Sign-up flow — verify email and receive first-time JWT tokens.
       const res = await apiPost<VerifyCodeResponse>("/auth/signup-code", {
         email,
         code: parsed.data.otp,
@@ -258,22 +265,11 @@ export async function verifyCodeAction(
 
       if (res.access_token && res.refresh_token) {
         await setAuthCookies(res.access_token, res.refresh_token);
-        // CLEANUP: Remove the temporary OTP cookies after successful verification
         await clearResetData();
       }
 
-      // 🔥 THE FIX: Dynamically determine the route based on the backend response
-      // (Assuming your NestJS returns the user object with the role here)
-      const userRole = res.data?.role || "STUDENT"; // Fallback to student just in case
-      const redirectPath =
-        userRole === "INSTRUCTOR"
-          ? "/dashboard-instructor"
-          : "/dashboard-student";
-
-      redirect(redirectPath);
+      redirectPath = "/setting-profile";
     } else {
-      // SECURITY: Password reset flow — verify OTP and receive a one-time resetToken.
-      // The resetToken is stored in an HTTP-only cookie and required by /auth/change-password.
       const res = await apiPost<VerifyCodeResponse>("/auth/verify-code", {
         email,
         code: parsed.data.otp,
@@ -283,7 +279,7 @@ export async function verifyCodeAction(
         await setResetToken(res.resetToken);
       }
 
-      redirect("/reset-password");
+      redirectPath = "/reset-password";
     }
   } catch (err:any) {
     if (err instanceof ApiError) {
@@ -294,6 +290,8 @@ export async function verifyCodeAction(
     }
     throw err;
   }
+
+  redirect(redirectPath);
 }
 
 // =========================
@@ -426,7 +424,6 @@ export async function changePasswordAction(
 // Since cookies are HTTP-only, they can ONLY be cleared by the server — not by
 // client-side JavaScript. This is why sign-out must be a server action.
 export async function signOutAction(): Promise<void> {
-  const { clearAuthCookies } = await import("@/src/lib/auth-cookies");
   await clearAuthCookies();
   redirect("/sign-in");
 }
@@ -446,9 +443,7 @@ export async function updateUserProfile(
   _prevState: ProfileSettingsState | null,
   formData: FormData
 ): Promise<ProfileSettingsState> {
-  const { cookies } = await import("next/headers");
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token")?.value;
+  const { accessToken } = await getAuthCookies();
 
   if (!accessToken) {
     return {
@@ -472,40 +467,65 @@ export async function updateUserProfile(
     };
   }
 
-  let redirectPath = "/";
+  if (!avatarFile.type.startsWith("image/")) {
+    return {
+      success: false,
+      errorMessage: { avatar: ["Please upload a valid image file (JPG, PNG, WebP)."] },
+    };
+  }
 
   try {
-    const { BASE_URL } = await import("@/src/lib/api-client");
-    
-    // We send a multipart request using FormData containing the file
     const uploadData = new FormData();
     uploadData.append("avatar", avatarFile);
 
-    const res = await fetch(`${BASE_URL}/userMe/avatar`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: uploadData,
-    });
+    const resData = await apiPost<AuthResponse>('/userMe/avatar', uploadData);
 
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => ({ message: "Failed to upload avatar" }));
-      return {
-        success: false,
-        errorMessage: { server: [errorData.message || "Failed to upload avatar"] },
-      };
+    const role = resData.data?.role;
+    const redirectPath = role === "STUDENT" ? "/dashboard-student" : "/dashboard-instructor";
+    redirect(redirectPath);
+  } catch (err: any) {
+    if (isRedirectError(err)) {
+      throw err;
     }
 
-    const resData = await res.json();
-    const role = resData.user?.role;
-    redirectPath = role === "STUDENT" ? "/dashboard-student" : "/dashboard-instructor";
-  } catch (err: any) {
     return {
       success: false,
       errorMessage: { server: [err.message || "Something went wrong"] },
     };
   }
-
-  redirect(redirectPath);
 }
+
+export async function skipProfileCompletion() {
+  const { accessToken } = await getAuthCookies();
+
+  if (!accessToken) redirect("/sign-in");
+
+  try {
+    const res = await apiPatch<any>('/userMe', { isProfileComplete: true });
+    const role = res.data?.user?.role || res.data?.role;
+    const redirectPath = role === "STUDENT" ? "/dashboard-student" : "/dashboard-instructor";
+    redirect(redirectPath);
+  } catch (err) {
+    if (isRedirectError(err)) throw err;
+    redirect("/sign-in");
+  }
+}
+
+// =========================
+// GET USER PROFILE
+// =========================
+export async function getUserProfile() {
+  const { accessToken } = await getAuthCookies();
+
+  if (!accessToken) {
+    return null;
+  }
+
+  try {
+    const res = await apiGet<any>('/userMe');
+    return res?.data?.user || null;
+  } catch (err) {
+    return null;
+  }
+}
+

@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copy lockfile + manifest first for layer caching
 COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile
+RUN bun install
 
 # Copy the rest of the source
 COPY . .
@@ -16,7 +16,7 @@ RUN bunx prisma generate
 RUN bun run build
 
 # Prune dev dependencies for the production image
-RUN bun install --frozen-lockfile --production
+RUN bun install --production
 
 # ── Stage 2: Production Runtime ───────────────────────────────────────────────
 FROM oven/bun:1 AS runtime

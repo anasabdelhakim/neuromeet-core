@@ -38,7 +38,7 @@ export function RecordingCard({ recording }: { recording: Recording }) {
           <Play className="text-white w-10 h-10 fill-white" />
         </div>
 
-        <Badge className="absolute z-20 top-1 left-2 flex items-center gap-1 bg-custom-gray border-border shadow-lg">
+        <Badge className="absolute z-20 top-1 left-2 flex items-center gap-1 bg-custom-gray border-border shadow-hard">
           {/* Animated Recording Dot */}
           <span className="relative flex h-2 w-2 mr-0.5 ">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive"></span>
@@ -46,7 +46,7 @@ export function RecordingCard({ recording }: { recording: Recording }) {
           </span>
           <span>Record</span>
         </Badge>
-        <Badge className="absolute z-20 bottom-1 right-2 flex items-center gap-1 bg-custom-gray border-border shadow-lg rounded-hard tracking-wider">
+        <Badge className="absolute z-20 bottom-1 right-2 flex items-center gap-1 bg-custom-gray border-border shadow-hard rounded-hard tracking-wider">
           <Clock size={12} />
           <span>{recording.duration}min</span>
         </Badge>

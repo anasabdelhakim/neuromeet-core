@@ -7,17 +7,8 @@ import {
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { FastifyRequest } from 'fastify';
-import { Roles } from '../decorators/user.decorators';
 
-// =========================
-// JWT AUTHENTICATION & ROLE AUTHORIZATION GUARD
-// =========================
-// SECURITY: This guard provides the backend's second layer of defense
-// (the first is Next.js middleware). It:
-//   1. Extracts the JWT from the Authorization header
-//   2. Verifies the JWT signature using the server's secret
-//   3. Checks the user's role against the allowed roles for the endpoint
-// If any step fails, the request is rejected with 401 Unauthorized.
+
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(

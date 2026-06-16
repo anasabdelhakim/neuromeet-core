@@ -48,9 +48,9 @@ export const iconGradientMap: Record<string, string> = {
 };
 
 export const shadowMap: Record<string, string> = {
-  new: "shadow-none hover:shadow-action-new-40",
-  join: "shadow-none hover:shadow-action-join-40",
-  schedule: "shadow-none hover:shadow-action-schedule-40",
+  new: "shadow-none hover:shadow-action-new-deep",
+  join: "shadow-none hover:shadow-action-join-deep",
+  schedule: "shadow-none hover:shadow-action-schedule-deep",
 };
 
 export const buttonGradientMap: Record<string, string> = {
@@ -60,8 +60,8 @@ export const buttonGradientMap: Record<string, string> = {
 };
 
 export const dialogBgMap: Record<string, string> = {
-  new: "bg-dialog-bg-new border-destructive-soft-hover shadow-2xl shadow-action-new-15",
-  join: "bg-dialog-bg-join border-action-join-soft shadow-2xl shadow-action-join-15",
+  new: "bg-dialog-bg-new border-destructive-soft-hover shadow-hard shadow-action-new-muted",
+  join: "bg-dialog-bg-join border-action-join-soft shadow-hard shadow-action-join-muted",
   schedule:
-    "bg-dialog-bg-schedule border-action-schedule-soft shadow-2xl shadow-action-schedule-15",
+    "bg-dialog-bg-schedule border-action-schedule-soft shadow-hard shadow-action-schedule-muted",
 };

@@ -8,7 +8,7 @@ export const Logo = () => {
         alt="NeuroMeet Logo"
         width={500}
         height={500}
-        className="w-14 h-14 object-contain drop-shadow-sm"
+        className="w-14 h-14 object-contain shadow-soft"
       />
       <h1 className="text-4xl max-sm:hidden font-extrabold tracking-tight bg-logo-gradient bg-clip-text text-transparent">
         NeuroMeet

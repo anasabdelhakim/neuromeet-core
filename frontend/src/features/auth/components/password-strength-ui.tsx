@@ -3,7 +3,12 @@ import { useWatch, type Control, type FieldError } from "react-hook-form";
 import { cn } from "@/src/lib/utils";
 import { passwordRules } from "@/src/validations/passwordRules";
 
-const PASSWORD_COLORS = ["#FF4D4F", "#FAAD14", "#40A9FF", "#52C41A"];
+const PASSWORD_COLORS = [
+  "var(--destructive)",
+  "var(--status-warning)",
+  "var(--action-join)",
+  "var(--status-success)",
+];
 
 interface PasswordStrengthUIProps {
   control: Control<any>;
@@ -78,7 +83,7 @@ export function PasswordStrengthUI({
             className={cn(
               "flex items-center gap-2 text-xs transition-colors duration-normal",
               rule.passed
-                ? "text-green-600 dark:text-green-500"
+                ? "text-status-success"
                 : error
                   ? "text-destructive"
                   : "text-muted-foreground",
@@ -87,7 +92,7 @@ export function PasswordStrengthUI({
             {rule.passed ? (
               <Check
                 size={14}
-                className="animate-in zoom-in spin-in-12 duration-normal text-green-600 dark:text-green-500"
+                className="animate-in zoom-in spin-in-12 duration-normal text-status-success"
               />
             ) : (
               <Circle size={14} className="opacity-50" />

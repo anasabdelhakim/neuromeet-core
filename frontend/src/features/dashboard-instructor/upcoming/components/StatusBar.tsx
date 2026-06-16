@@ -37,7 +37,7 @@ export function StatusBar({
         }`}
       >
         <div className="absolute right-0.5 -top-7 flex flex-col items-center translate-x-1/2">
-          <span className="rounded-medium px-2 py-0.5 text-xs font-medium bg-custom-gray text-foreground border shadow-md whitespace-nowrap">
+          <span className="rounded-medium px-2 py-0.5 text-xs font-medium bg-custom-gray text-foreground border shadow-medium whitespace-nowrap">
             {timeLabel || (isArrived ? "Live" : "Starting Soon")}
           </span>
           <div className="h-1.5 w-1.5 -translate-y-[3.5px] rotate-45 bg-custom-gray border-r border-b"></div>

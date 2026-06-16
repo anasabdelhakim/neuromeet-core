@@ -25,7 +25,7 @@ export  function UpcomingMeetingCard({
       className={cn(
         "w-full p-5 flex flex-col gap-4 transition-all duration-normal ease-standard transform-gpu hover:border-primary-hover",
         isArrived || isStartingSoon
-          ? "border backdrop-blur-md shadow-lg shadow-black-20"
+          ? "border backdrop-blur-md shadow-hard shadow-black-20"
           : "bg-black-soft-subtle border border-border shadow-none opacity-85 hover:opacity-100",
       )}
     >
@@ -43,13 +43,13 @@ export  function UpcomingMeetingCard({
               <span>{meeting.dateTime.replace("T", " ")}</span>
             </div>
             {isStartingSoon && (
-              <Badge className="bg-status-warning-soft text-status-warning border border-status-warning-border hover:bg-status-warning-hover uppercase tracking-wider font-bold text-[10px]">
+              <Badge className="bg-status-warning-soft text-status-warning border border-status-warning-border hover:bg-status-warning-hover uppercase tracking-wider font-bold text-xs">
                 <span className="w-1.5 h-1.5 rounded-full bg-status-warning animate-pulse"></span>
                 Soon
               </Badge>
             )}
             {isArrived && (
-              <Badge className="bg-status-live-soft text-status-live border border-status-live-border hover:bg-status-live-hover uppercase tracking-wider font-bold text-[10px]">
+              <Badge className="bg-status-live-soft text-status-live border border-status-live-border hover:bg-status-live-hover uppercase tracking-wider font-bold text-xs">
                 <span className="w-1.5 h-1.5 rounded-full bg-status-live animate-pulse"></span>
                 Live
               </Badge>

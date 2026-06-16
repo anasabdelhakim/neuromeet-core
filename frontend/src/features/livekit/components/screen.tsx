@@ -33,8 +33,7 @@ export default function MeetingPage({ token, isInstructor = false }: MeetingPage
 
         {/* Instructor-only engagement side-panel */}
         {isInstructor && (
-          <aside className="w-72 flex-shrink-0 border-l border-white/10
-                            bg-[hsl(222,20%,6%)] overflow-y-auto p-3">
+          <aside className="w-72 flex-shrink-0 border-l border-border bg-card overflow-y-auto p-3">
             <EngagementDashboard />
           </aside>
         )}

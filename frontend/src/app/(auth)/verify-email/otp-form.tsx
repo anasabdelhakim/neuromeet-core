@@ -29,6 +29,8 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
 
   const {
     register,
+    reset,
+    getValues,
     formState: { isSubmitted, errors, touchedFields },
   } = useForm<z.infer<typeof otpFormSchema>>({
     resolver: zodResolver(otpFormSchema),
@@ -42,6 +44,11 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
     { success: false, errorMessage: {} },
   );
 
+  const handleAction = (formData: FormData) => {
+    reset(getValues(), { keepValues: true });
+    action(formData);
+  };
+
   const showOtpError = !!errors.otp && (isSubmitted || touchedFields.otp);
 
   const { onBlur: otpOnBlur, ...otpRest } = register("otp");
@@ -52,6 +59,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
   const [timeLeft, setTimeLeft] = useState(initialSecondsRemaining);
   const [resending, setResending] = useState(false);
   const [resendError, setResendError] = useState("");
+  const [resendSuccess, setResendSuccess] = useState("");
 
   // Countdown effect — purely cosmetic, the real enforcement is server-side
   useEffect(() => {
@@ -70,10 +78,12 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
   const handleResend = useCallback(async () => {
     setResending(true);
     setResendError("");
+    setResendSuccess("");
     try {
       const result = await resendCodeAction(flow);
       if (result.success) {
         setTimeLeft(result.secondsRemaining ?? 120);
+        setResendSuccess("A new verification code has been resent to your email.");
       } else {
         // If the server says "wait N seconds", sync the timer to that value
         if (result.secondsRemaining && result.secondsRemaining > 0) {
@@ -89,14 +99,23 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
   return (
     <Card variant="gradient">
       <CardContent>
-        <form action={action} className="space-y-4">
+        <form action={handleAction} className="space-y-4">
           <input type="hidden" name="flow" value={flow} />
 
           {/* SERVER ERROR */}
           {(state.errorMessage?.server || resendError) && (
             <div className="animate-alert-entrance">
-              <p className="text-destructive text-sm text-center bg-destructive/10 rounded-medium py-2 px-3">
+              <p className="text-destructive text-sm text-center bg-destructive-soft rounded-medium py-2 px-3">
                 {state.errorMessage?.server?.[0] || resendError}
+              </p>
+            </div>
+          )}
+
+          {/* SUCCESS MESSAGE */}
+          {resendSuccess && !(state.errorMessage?.server || resendError) && (
+            <div className="animate-alert-entrance">
+              <p className="text-status-success text-sm text-center bg-status-success-soft rounded-medium py-2 px-3">
+                {resendSuccess}
               </p>
             </div>
           )}
@@ -119,7 +138,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
                 required
                 maxLength={6}
                 placeholder="Enter OTP"
-                className="transition-all focus:ring-2 focus:ring-primary/20 text-center text-lg tracking-widest"
+                className="transition-all focus:ring-2 focus:ring-primary-soft-subtle text-center text-lg tracking-widest"
                 disabled={pending}
                 {...otpRest}
                 onBlur={(e) => {

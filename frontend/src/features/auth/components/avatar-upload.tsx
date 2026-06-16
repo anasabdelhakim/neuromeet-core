@@ -65,7 +65,7 @@ export function AvatarUploadControl({ error, disabled, initialUrl }: AvatarUploa
         onDrop={onDrop}
         onClick={triggerFileDialog}
         className={cn(
-          "group relative flex flex-col items-center justify-center cursor-pointer rounded-full p-1 transition-all duration-300",
+          "group relative flex flex-col items-center justify-center cursor-pointer rounded-full p-1.5 transition-all duration-normal",
           disabled && "opacity-50 cursor-not-allowed pointer-events-none"
         )}
       >
@@ -80,46 +80,47 @@ export function AvatarUploadControl({ error, disabled, initialUrl }: AvatarUploa
 
         {/* Drag Indicator Ring */}
         <div className={cn(
-          "absolute inset-0 rounded-full border-2 border-dashed transition-all duration-300",
-          isDragging ? "border-primary scale-110 opacity-100" : "border-transparent scale-100 opacity-0"
+          "absolute inset-0 rounded-full border-2 border-dashed transition-all duration-normal",
+          isDragging ? "border-primary scale-105 bg-primary-soft-subtle opacity-100" : "border-transparent scale-100 opacity-0",
+          "group-hover:border-primary/30 group-hover:scale-105"
         )} />
 
         <Avatar className={cn(
-          "h-32 w-32 border-4 border-background shadow-xl ring-2 transition-all duration-300",
-          error ? "ring-destructive" : isDragging ? "ring-primary" : "ring-muted",
+          "h-32 w-32 border-4  shadow-hard ring-2 ring-offset-2 ring-offset-background transition-all duration-normal ease-out group-hover:shadow-brand-cyan-soft",
+          error ? "ring-destructive" : isDragging ? "ring-primary" : "ring-border",
           "group-hover:ring-primary/50"
         )}>
           <AvatarImage src={preview || ""} className="object-cover" />
-          <AvatarFallback className="bg-muted flex flex-col items-center justify-center text-muted-foreground">
-            <User className="h-12 w-12 opacity-50" />
+          <AvatarFallback className="bg-gradient-to-br from-muted to-custom-gray flex flex-col items-center justify-center text-muted-foreground">
+            <User className="h-14 w-14 opacity-40" />
           </AvatarFallback>
         </Avatar>
 
-        {/* Overlays */}
-        <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 transition-opacity duration-300 flex items-center justify-center group-hover:opacity-100">
+        {/* Hover Overlay */}
+        <div className="absolute inset-1.5 rounded-full bg-black/40 backdrop-blur-sm opacity-0 transition-all duration-normal flex items-center justify-center group-hover:opacity-100 scale-95 group-hover:scale-100">
            {!isDragging &&
-             <ImagePlus className="h-8 w-8 text-white drop-shadow-md animate-bounce" />
+             <ImagePlus className="h-8 w-8 text-white drop-shadow-md transform transition-transform duration-normal group-hover:-translate-y-1" />
            }
         </div>
 
         {/* Edit Badge */}
         {!isDragging && (
-          <div className="absolute bottom-1 right-1 flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg ring-2 ring-background transition-transform duration-200 group-hover:scale-110">
+          <div className="absolute bottom-2 right-2 flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-brand-cyan to-brand-purple text-white shadow-hard ring-4 ring-background transition-transform duration-fast group-hover:scale-110 group-hover:rotate-12">
             <Camera className="h-4 w-4" />
           </div>
         )}
       </div>
 
-      <div className="text-center space-y-1">
+      <div className="text-center space-y-1.5">
         <button
           type="button"
           onClick={triggerFileDialog}
           disabled={disabled}
-          className="text-sm font-semibold text-primary hover:underline hover:text-primary/80 focus:outline-none disabled:opacity-50"
+          className="text-sm font-semibold bg-primary-soft-subtle text-primary hover:bg-primary-soft-muted px-4 py-1.5 rounded-full transition-colors focus:outline-none disabled:opacity-50"
         >
           {preview ? "Change Photo" : "Upload Photo"}
         </button>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-muted-foreground pt-1">
           Drag & drop or click to upload (max 5MB)
         </p>
         {error && <p className="text-xs text-destructive font-medium animate-in slide-in-from-top-1">{error}</p>}

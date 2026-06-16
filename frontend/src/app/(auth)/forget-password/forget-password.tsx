@@ -1,6 +1,5 @@
 "use client";
 
-// 1. ADDED: useState import
 import { useActionState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -24,6 +23,8 @@ import {
 export default function ForgetPasswordPreview() {
   const {
     register,
+    reset,
+    getValues,
     formState: { isSubmitted, errors, touchedFields },
   } = useForm<z.infer<typeof forgetPasswordSchema>>({
     resolver: zodResolver(forgetPasswordSchema),
@@ -37,6 +38,11 @@ export default function ForgetPasswordPreview() {
     { success: false, errorMessage: {} },
   );
 
+  const handleAction = (formData: FormData) => {
+    reset(getValues(), { keepValues: true });
+    action(formData);
+  };
+
   const showEmailError = !!errors.email && (isSubmitted || touchedFields.email);
 
   // 2. ADDED: Extract register so we can safely wrap it
@@ -45,11 +51,11 @@ export default function ForgetPasswordPreview() {
   return (
     <Card variant="gradient">
       <CardContent>
-        <form action={action} className="space-y-4">
+        <form action={handleAction} className="space-y-4">
           {/* SERVER ERROR */}
           {state.errorMessage?.server && (
             <div className="animate-alert-entrance">
-              <p className="text-destructive text-sm text-center bg-destructive/10 rounded-medium py-2 px-3">
+              <p className="text-destructive text-sm text-center bg-destructive-soft rounded-medium py-2 px-3">
                 {state.errorMessage.server[0]}
               </p>
             </div>
@@ -65,7 +71,7 @@ export default function ForgetPasswordPreview() {
                 autoFocus
                 placeholder="johndoe@mail.com"
                 autoComplete="email"
-                className="transition-all focus:ring-2 focus:ring-primary/20"
+                className="transition-all focus:ring-2 focus:ring-primary-soft-subtle"
                 disabled={pending}
                 {...emailRest}
                 required
