@@ -26,7 +26,7 @@ export const NeuroFeatures = () => {
   ];
 
   return (
-    <section className="w-full max-w-6xl mx-auto py-20 border-t border-border mt-10 max-sm:py-10 max-sm:mb-0">
+    <section className="w-full max-w-6xl mx-auto py-20 border-t border-border mt-10 max-sm:pt-10 max-sm:pb-8 max-sm:mb-0">
       
       {/* Section Header */}
       <div className="text-center mb-16 animate-page-entrance">

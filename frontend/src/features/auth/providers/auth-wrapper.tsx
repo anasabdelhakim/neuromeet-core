@@ -8,7 +8,7 @@ interface AuthWrapperProps {
 
 export default function AuthWrapper({ title, description, children }: AuthWrapperProps) {
   return (
-    <div className="relative overflow-hidden bg-auth-scene-gradient bg-[length:300%_300%] animate-gradient-shift flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+    <div className="relative overflow-hidden bg-auth-scene-gradient bg-[length:300%_300%] animate-gradient-shift flex flex-1 min-h-svh w-full items-center justify-center p-6 md:p-10">
       {/* Before radial */}
       <div className="absolute -top-32 -left-28 w-96 h-96 scale-[1.25] rounded-full pointer-events-none blur-3xl bg-auth-scene-before-radial animate-orb-float-before" />
       

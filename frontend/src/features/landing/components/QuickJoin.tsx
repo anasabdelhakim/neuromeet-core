@@ -48,11 +48,11 @@ export const QuickJoin = () => {
             />
             <Button
               type="submit"
-              className="bg-foreground text-background rounded-full px-6 py-5 font-semibold shrink-0 text-sm"
+              className="bg-foreground text-background rounded-full px-3 md:px-4 max-sm:px-3 py-5 font-semibold shrink-0 text-sm"
               disabled={!meetingCode.trim()}
             >
               <Video className="size-5" strokeWidth={2.5} />
-              Join Now
+              <span className="max-sm:hidden text-base">Join Now</span>
             </Button>
           </form>
           <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
