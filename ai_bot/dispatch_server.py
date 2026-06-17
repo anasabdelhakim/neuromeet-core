@@ -62,6 +62,8 @@ def dispatch(req: DispatchRequest):
         ],
         env=bot_env,
         cwd=os.path.dirname(os.path.abspath(__file__)),
+        stdout=sys.stdout,
+        stderr=sys.stderr,
     )
     active_bots[req.room_name] = proc
     return {"status": "dispatched", "room": req.room_name, "pid": proc.pid}

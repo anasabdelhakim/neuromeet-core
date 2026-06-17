@@ -44,5 +44,5 @@ export default async function Livekit(props: {
   const data = await res.json();
 
   // 3. Pass the fetched token to your component
-  return <MeetingPage token={data.token} isInstructor={isInstructor} />;
+  return <MeetingPage token={data.token} isInstructor={isInstructor} room={room} />;
 }
