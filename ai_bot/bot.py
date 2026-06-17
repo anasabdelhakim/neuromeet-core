@@ -58,10 +58,9 @@ def get_model():
                 _model = EngagementModel(freeze_cnn=False)
                 _model.to(DEVICE).eval()
         else:
-            # Prevent OpenMP deadlocks on CPU in Docker by limiting threads
-            if DEVICE.type == "cpu":
-                torch.set_num_threads(1)
-            
+            # We are running on CPU. Let PyTorch use all available threads
+            # to process the massive Vision Transformer quickly.
+            # (Removed set_num_threads(1) so it doesn't freeze the CPU)
             _model = EngagementModel(freeze_cnn=False)
             try:
                 ckpt = torch.load(model_path, map_location=DEVICE)
@@ -98,6 +97,7 @@ class ParticipantBuffer:
         self.frames: deque = deque(maxlen=SEQ_LEN)
         self.last_inference: float = 0.0
         self.active: bool = True
+        self.is_inferring: bool = False
 
 
 # ─── Synchronous Inference (runs in thread pool via run_in_executor) ──────────
@@ -224,8 +224,9 @@ async def consume_video_track(
             if (
                 len(buf.frames) == SEQ_LEN
                 and (now - buf.last_inference) >= INFERENCE_INTERVAL_S
+                and not buf.is_inferring
             ):
-                buf.last_inference = now
+                buf.is_inferring = True
                 await round_robin_queue.put(pid)
     except Exception as e:
         logger.error(f"[bot] Critical error in consume_video_track for {pid}: {e}", exc_info=True)
@@ -287,6 +288,9 @@ async def inference_worker(
             except Exception as e:
                 logger.error(f"Inference error for participant {pid}: {e}")
             finally:
+                if buf:
+                    buf.last_inference = time.monotonic()
+                    buf.is_inferring = False
                 round_robin_queue.task_done()
 
 

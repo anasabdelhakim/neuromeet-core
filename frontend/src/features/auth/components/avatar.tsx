@@ -31,8 +31,6 @@ interface AvatarSecProps {
   profile: ProfileData;
 }
 
-
-const DEFAULT_AVATAR_URL = "https://api.dicebear.com/7.x/initials/svg";
 function getInitials(name: string): string {
   return name
     .split(" ")
@@ -42,18 +40,11 @@ function getInitials(name: string): string {
     .slice(0, 2);
 }
 
-/**
- * Get avatar URL with proper fallback
- */
-function getAvatarSrc(profile: ProfileData): string {
+function getAvatarSrc(profile: ProfileData): string | undefined {
   if (profile?.avatarUrl && profile.avatarUrl.trim() !== "") {
     return profile.avatarUrl;
   }
-
-  const name = profile?.name || "User";
-  const initials = getInitials(name);
-  // Increased fontSize from 38 to 55 to make the letters bigger
-  return `${DEFAULT_AVATAR_URL}?seed=${encodeURIComponent(initials)}&backgroundColor=1a768d&fontSize=50`;
+  return undefined;
 }
 
 const AvatarSec = ({ profile }: AvatarSecProps) => {
@@ -91,7 +82,7 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
               className="object-cover"
               referrerPolicy="no-referrer"
             />
-            <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
+            <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-semibold flex items-center justify-center">
               {initials}
             </AvatarFallback>
           </Avatar>
@@ -109,7 +100,7 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
           <div className="flex items-center gap-3 mb-1">
             <Avatar className="h-12 w-12">
               <AvatarImage src={avatarSrc} alt={displayName} referrerPolicy="no-referrer" />
-              <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
+              <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-semibold flex items-center justify-center">
                 {initials}
               </AvatarFallback>
             </Avatar>
