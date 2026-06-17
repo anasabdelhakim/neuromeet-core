@@ -11,7 +11,7 @@ export default function OTPPage() {
   return (
     <AuthWrapper
       title="Check your inbox"
-      description="Enter the 6-digit code we sent to verify your identity"
+      description="Enter the 6-digit code sent to your email"
     >
       <Suspense
         fallback={
