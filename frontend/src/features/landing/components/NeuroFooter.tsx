@@ -18,7 +18,7 @@ export const NeuroFooter = () => {
               Terms of Service
             </Link>
           </div>
-          <p>© {new Date().getFullYear()} NeuroMeet Inc. All rights reserved.</p>
+          <p>© 2026 NeuroMeet Inc. All rights reserved.</p>
         </div>
 
         {/* Right: Social Accounts */}
