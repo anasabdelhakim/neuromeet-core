@@ -57,7 +57,7 @@ export function EngagementDashboard() {
           Waiting for AI bot data…
         </p>
       ) : (
-        <div className="space-y-2 max-h-[28rem] overflow-y-auto pr-0.5
+        <div className="space-y-2 max-h-112 overflow-y-auto pr-0.5
                         scrollbar-thin scrollbar-thumb-border">
           {scores.map((s) => (
             <StudentScoreRow key={s.participantId} score={s} />
@@ -118,7 +118,7 @@ function StudentScoreRow({ score }: { score: ParticipantScore }) {
     >
       {/* Name + score */}
       <div className="flex justify-between items-center mb-1.5">
-        <span className="text-xs font-medium truncate max-w-[130px]">
+        <span className="text-xs font-medium truncate max-w-32">
           {isAlert && (
             <span className="mr-1 animate-bounce inline-block">🔴</span>
           )}

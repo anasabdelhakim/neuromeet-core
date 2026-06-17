@@ -38,7 +38,7 @@ export function PasswordStrengthUI({
     <>
       {/* Strength Bar */}
       <div className="flex gap-2 items-center mt-2">
-        <div className="w-[95%] flex gap-1">
+        <div className="w-11/12 flex gap-1">
           {[25, 50, 75, 100].map((limit, idx) => (
             <div
               key={limit}

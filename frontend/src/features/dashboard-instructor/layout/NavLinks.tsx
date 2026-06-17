@@ -23,19 +23,19 @@ export function SidebarNavLinks() {
               <Link
                 href={href}
                 prefetch={true}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-soft text-md transition-all duration-normal ease-standard ${
+                className={`flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 px-2 md:px-3 py-0.5 md:py-2.5 rounded-soft text-[12px] sm:text-xs md:text-lg transition-all duration-normal ease-standard flex-1 md:flex-none ${
                   active
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                    ? "text-primary md:bg-primary md:text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground md:hover:bg-secondary"
                 }`}
               >
                 <Icon
                   className={cn(
                     "h-6 w-6 shrink-0",
-                    active ? "text-primary-foreground" : "",
+                    active ? "text-primary md:text-primary-foreground" : "",
                   )}
                 />
-                <span className="max-lg:hidden">{label}</span>
+                <span className="md:max-lg:hidden block text-center md:text-left w-full truncate leading-tight">{label}</span>
               </Link>
             </TooltipTrigger>
 
@@ -43,7 +43,7 @@ export function SidebarNavLinks() {
               side="right"
               sideOffset={7}
               className={cn(
-                "block lg:hidden ",
+                "hidden md:block lg:hidden",
                 active && "pointer-events-none hidden",
               )}
             >

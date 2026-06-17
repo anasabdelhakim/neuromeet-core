@@ -46,14 +46,14 @@ export function HeroClock() {
 
 export function HeroClockSkeleton() {
   return (
-    <Card variant="gradient" className="p-8 relative w-full h-[256px]">
+    <Card variant="gradient" className="p-8 relative w-full h-64">
       <CardContent className="flex flex-col justify-between gap-6 h-full">
         <div className="flex flex-col justify-start items-start relative z-10 gap-4">
-          <div className="h-[60px] md:h-[72px] w-[280px] md:w-[350px] bg-white-soft-muted animate-pulse rounded-soft" />
-          <div className="h-[28px] w-[180px] bg-white-soft-muted animate-pulse rounded-medium" />
+          <div className="h-16 w-72 md:w-80 bg-white-soft-muted animate-pulse rounded-soft" />
+          <div className="h-7 w-44 bg-white-soft-muted animate-pulse rounded-medium" />
         </div>
 
-        <div className="h-[52px] w-[300px] bg-white-soft-muted animate-pulse rounded-full mt-auto" />
+        <div className="h-12 w-72 bg-white-soft-muted animate-pulse rounded-full mt-auto" />
       </CardContent>
     </Card>
   );

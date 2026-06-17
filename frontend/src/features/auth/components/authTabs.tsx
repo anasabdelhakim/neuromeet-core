@@ -9,7 +9,7 @@ export function AuthTabs({ activeTab }: AuthTabsProps) {
   const isSignUp = activeTab === "sign-up";
 
   return (
-    <div className="pt-1 flex justify-center w-[90%] mx-auto">
+    <div className="pt-1 flex justify-center w-11/12 mx-auto">
       <div className="flex w-full bg-muted rounded-soft">
         {/* Sign In Link */}
         <Link

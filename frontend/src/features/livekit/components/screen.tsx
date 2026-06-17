@@ -29,9 +29,7 @@ export default function MeetingPage({ token, room, isInstructor = false }: Meeti
       }
     }
     
-  
-    router.push(isInstructor ? "/dashboard-instructor" : "/dashboard-student");
-    
+    router.replace(isInstructor ? "/dashboard-instructor/test-meeting" : "/dashboard-student");
   };
 
   return (

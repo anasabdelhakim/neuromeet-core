@@ -287,7 +287,7 @@ export function NotificationDropdown() {
           </div>
 
           {/* Notification List */}
-          <div className="max-h-[400px] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
+          <div className="max-h-96 overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
             {notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground">
                 <Bell className="h-8 w-8 opacity-30" />
