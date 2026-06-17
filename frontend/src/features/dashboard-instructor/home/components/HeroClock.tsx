@@ -6,7 +6,7 @@ import { ServerTimeDisplay } from "@/src/features/dashboard-instructor/home/comp
 
 export function HeroClock() {
   return (
-    <Card variant="gradient" className="py-6 px-4 relative overflow-hidden">
+    <Card variant="gradient" className="sm:py-6 sm:px-4 py-4 px-0 relative overflow-hidden">
       <div className="absolute inset-0 z-0">
         <Image
           src="/hero-background.webp"
@@ -17,7 +17,7 @@ export function HeroClock() {
           className="object-cover transform-gpu"
         />
       </div>
-      <CardContent className="flex flex-col justify-between gap-6 relative z-10">
+      <CardContent className="flex flex-col justify-between gap-6 max-sm:gap-3 relative z-10">
         <CardDescription className="flex flex-col justify-start items-start relative z-10 w-full">
           <Suspense
             fallback={
@@ -35,8 +35,14 @@ export function HeroClock() {
           </Suspense>
         </CardDescription>
 
-        <Badge className="backdrop-blur-xl border border-white-soft-muted bg-upcoming-badge p-4">
+        <Badge className="max-sm:hidden backdrop-blur-xl border border-white-soft-muted bg-upcoming-badge p-4">
           Upcoming: <span className="text-primary-light">11:00 AM</span> —
+          System Design Lecture
+        </Badge>
+                <Badge className="sm:hidden backdrop-blur-xl border border-white-soft-muted bg-upcoming-badge p-4">
+          Upcoming: <span className="text-primary-light">11:00 AM</span>
+        </Badge>
+        <Badge className="sm:hidden backdrop-blur-xl border border-white-soft-muted bg-upcoming-badge p-4">
           System Design Lecture
         </Badge>
       </CardContent>

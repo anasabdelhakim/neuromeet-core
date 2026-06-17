@@ -24,7 +24,7 @@ export const QuickJoin = () => {
   };
 
   return (
-    <section className="w-full max-w-2xl mx-auto mb-20">
+    <section className="w-full max-w-2xl mx-auto mb-20 max-sm:mb-4">
       <Card variant="gradient">
         <CardHeader className="text-center pb-4">
           <CardDescription className="font-medium text-lg text-muted-foreground mb-1">

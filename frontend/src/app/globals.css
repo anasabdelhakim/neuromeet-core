@@ -199,6 +199,7 @@
   --animate-card-entrance: slide-in-bottom-4 var(--duration-slow) var(--ease-smooth) both;
   --animate-alert-entrance: slide-in-top-2 var(--duration-normal) var(--ease-standard) both;
 
+  --background-image-header-gradient: var(--header-gradient);
   /* Keyframes */
   @keyframes fade-in {
     from { opacity: 0; }
@@ -435,7 +436,7 @@
   --white-soft-muted: oklch(1 0 0 / 10%);
   --white-soft-deep: oklch(1 0 0 / 50%); 
 
-  --background-header-sm: #0c1230;
+  --header-gradient: linear-gradient(to right, #11184c,#0a0f27);
 }
 
 /* ─── Base Layer ──────────────────────────────────────────────────────────── */

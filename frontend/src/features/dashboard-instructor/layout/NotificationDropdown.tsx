@@ -257,9 +257,9 @@ export function NotificationDropdown() {
         <PopoverContent
           align="end"
           sideOffset={12}
-          className="z-modal w-96 overflow-hidden rounded-soft border-border bg-card p-0 shadow-hard"
+          className="z-modal w-[97%]  sm:w-96 overflow-hidden rounded-soft border-border bg-card p-0 shadow-hard"
         >
-          <span className="absolute -top-1.5 right-4.5 z-20 h-3 w-3 rotate-45 border-l border-t border-border bg-card"></span>
+          <span className="sm:absolute hidden -top-1.5 right-4.5 z-20 h-3 w-3 rotate-45 border-l border-t border-border bg-card"></span>
 
           {/* Header */}
           <div className="relative z-30 flex items-center justify-between border-b border-border bg-card px-4 py-3">

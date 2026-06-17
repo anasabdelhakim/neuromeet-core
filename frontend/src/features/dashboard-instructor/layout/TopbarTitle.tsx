@@ -4,8 +4,8 @@ import { usePathname } from "next/navigation";
 
 const pageTitles: Record<string, string> = {
   "/dashboard-instructor": "Home",
-  "/dashboard-instructor/upcoming": "Upcoming Meetings",
-  "/dashboard-instructor/previous": "Previous Meetings",
+  "/dashboard-instructor/upcoming": "Upcoming",
+  "/dashboard-instructor/previous": "Previous",
   "/dashboard-instructor/recordings": "Recordings",
 };
 
