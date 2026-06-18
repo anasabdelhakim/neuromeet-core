@@ -88,7 +88,7 @@ export function MeetingActionsPopover({
         )}
         <Button
           variant="ghost"
-          className="w-full justify-start text-sm font-medium transition-all duration-fast text-status-error hover:text-destructive-foreground hover:bg-destructive hover:font-semibold"
+          className="w-full justify-start text-sm font-medium transition-all duration-fast text-destructive hover:text-destructive-foreground hover:bg-destructive-soft hover:font-semibold"
           onClick={handleDelete}
         >
           <Trash2 size={16} className="mr-2" />
