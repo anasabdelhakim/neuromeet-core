@@ -96,7 +96,7 @@ export function UpcomingMeetingCard({ meeting }: UpcomingMeetingCardProps) {
 
 </div>
 
-      <div className="sm:hidden w-full px-1 pt-1">
+      <div className="sm:hidden w-full px-1">
         <StatusBar
           duration={meeting.duration}
           isArrived={isArrived}

@@ -15,7 +15,7 @@ export function StatusBar({
   const markers = Array.from({ length: Math.max(0, numberOfMarkers) });
 
   return (
-    <div className="w-full h-2 bg-muted-foreground-soft rounded-full relative mt-8 max-sm:mt-5">
+    <div className="w-full h-2 bg-muted-foreground-soft rounded-full relative mt-8 max-sm:mt-7">
       {markers.map((_, i) => {
         const minuteMark = (i + 1) * 15;
         const leftPercentage = (minuteMark / duration) * 100;
