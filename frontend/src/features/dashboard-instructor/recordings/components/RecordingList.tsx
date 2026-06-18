@@ -13,21 +13,21 @@ import { TooltipButton } from "@/src/components/providers/TooltipButton";
 import { Button } from "@/src/components/ui/button";
 
 // Updated helper: size increased for mobile, TooltipButton active from 'sm' upwards
-const ActionButton = ({ label, children, variant = "outline", className, ...props }: any) => (
+const ActionButton = ({ label, children, variant = "outline", className }: any) => (
   <>
     {/* Mobile: Plain Button (Size h-10 w-10 for better touch target) */}
     <Button 
       variant={variant} 
       size="icon" 
       className={`sm:hidden h-10 w-10 rounded-hard ${className}`}
-      {...props}
+     
     >
       {children}
     </Button>
     
     {/* Desktop/Tablet: TooltipButton (Active from sm and up) */}
     <div className="hidden sm:block">
-      <TooltipButton label={label} variant={variant} className={`rounded-hard ${className}`} {...props}>
+      <TooltipButton label={label} variant={variant} className={`rounded-hard ${className}`}>
         {children}
       </TooltipButton>
     </div>
