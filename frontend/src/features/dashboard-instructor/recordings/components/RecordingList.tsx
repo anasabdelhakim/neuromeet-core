@@ -10,8 +10,29 @@ import {
 import { Clock, Download, Play, ShareIcon, Trash2Icon } from "lucide-react";
 import { Badge } from "@/src/components/ui/badge";
 import { TooltipButton } from "@/src/components/providers/TooltipButton";
+import { Button } from "@/src/components/ui/button";
 
-// Import your new Client Component (adjust the path if you placed it elsewhere)
+// Updated helper: size increased for mobile, TooltipButton active from 'sm' upwards
+const ActionButton = ({ label, children, variant = "outline", className, ...props }: any) => (
+  <>
+    {/* Mobile: Plain Button (Size h-10 w-10 for better touch target) */}
+    <Button 
+      variant={variant} 
+      size="icon" 
+      className={`sm:hidden h-10 w-10 rounded-hard ${className}`}
+      {...props}
+    >
+      {children}
+    </Button>
+    
+    {/* Desktop/Tablet: TooltipButton (Active from sm and up) */}
+    <div className="hidden sm:block">
+      <TooltipButton label={label} variant={variant} className={`rounded-hard ${className}`} {...props}>
+        {children}
+      </TooltipButton>
+    </div>
+  </>
+);
 
 export const RecordingsList = () => {
   return (
@@ -39,7 +60,6 @@ export function RecordingCard({ recording }: { recording: Recording }) {
         </div>
 
         <Badge className="absolute z-20 top-1 left-2 flex items-center gap-1 bg-custom-gray border-border shadow-hard">
-          {/* Animated Recording Dot */}
           <span className="relative flex h-2 w-2 mr-0.5 ">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-destructive"></span>
@@ -57,29 +77,17 @@ export function RecordingCard({ recording }: { recording: Recording }) {
 
         <div className="flex gap-2 mt-3 border-t border-border py-3 px-0 justify-between items-center w-full">
           <div className="flex gap-2">
-            <TooltipButton
-              label="Delete recording"
-              variant="destructive"
-              className="rounded-hard"
-            >
+            <ActionButton label="Delete recording" variant="destructive" className="rounded-hard">
               <Trash2Icon size={18} />
-            </TooltipButton>
+            </ActionButton>
 
-            <TooltipButton
-              label="Download"
-              variant="outline"
-              className="rounded-hard"
-            >
+            <ActionButton label="Download" variant="outline" className="rounded-hard">
               <Download size={18} />
-            </TooltipButton>
+            </ActionButton>
 
-            <TooltipButton
-              label="Share"
-              variant="outline"
-              className="rounded-hard"
-            >
+            <ActionButton label="Share" variant="outline" className="rounded-hard">
               <ShareIcon size={18} />
-            </TooltipButton>
+            </ActionButton>
           </div>
 
           <TooltipButton label="Play recording" className="rounded-medium gap-2">
