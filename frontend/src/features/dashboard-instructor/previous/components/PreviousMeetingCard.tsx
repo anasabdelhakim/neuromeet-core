@@ -5,7 +5,7 @@ import { PreviousMeeting } from "../types";
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
-import { cn } from "@/src/lib/utils";
+import { MeetingActionsPopover } from "../../constants/MeetingActionsPopover";
 
 interface PreviousMeetingCardProps {
   meeting: PreviousMeeting;
@@ -14,7 +14,7 @@ interface PreviousMeetingCardProps {
 export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
   // Assuming you will add avgEngagement to your PreviousMeeting type.
   // Using a fallback of 85 here just in case it's missing during your transition.
-  const engagementScore = meeting.avgEngagement || 85;
+  const engagementScore = 85;
 
   // Extracted Action Block for consistent mobile/desktop responsive rendering
   const ActionBlock = (
@@ -34,6 +34,7 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
           </Button>
         )}
       </div>
+
     </div>
   );
 
@@ -80,7 +81,8 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
       
       {/* Row 1: Content (Left) & Desktop Actions (Right) */}
       <div className="flex items-start sm:items-center justify-between w-full gap-4">
-        
+
+<div className="flex w-full justify-between">
         {/* Left Side: Meeting Info */}
         <div className="flex flex-col gap-1.5 flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
@@ -114,6 +116,12 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
         <div className="hidden sm:flex">
           {ActionBlock}
         </div>
+</div>
+              <MeetingActionsPopover
+        title={meeting.title}
+        dateTime={meeting.dateTime}
+        variant="previous"
+meetingId={meeting.id}      />
       </div>
 
       {/* Mobile Only: Engagement Bar (Rendered above buttons) */}

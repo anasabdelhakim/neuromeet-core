@@ -15,7 +15,7 @@ export const Avtar = () => {
           </Link>
 
           <Link href="/sign-up">
-            <Button variant="effect" className="px-8 py-5 max-sm:px-4 max-sm:py-4 max-sm:text-sm max-sm:rounded-hard  rounded-full font-bold">
+            <Button  className="px-8 py-5 max-sm:px-4 max-sm:py-4 max-sm:text-sm max-sm:rounded-hard  rounded-full font-bold">
               Register
             </Button>
           </Link>

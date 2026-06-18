@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const Hero = () => {
   return (
-    <section className="max-w-3xl mx-auto text-center mt-8 max-sm:mt-4 mb-16 max-sm:mb-12">
+    <section className="max-w-3xl mx-auto text-center mt-8 max-sm:mt-6 mb-16 max-sm:mb-12">
       <h1 className="text-foreground text-6xl max-sm:text-5xl font-extrabold tracking-tight mb-6 leading-tight text-background">
         Connect from anywhere <br className="hidden md:block" /> with crystal
         clarity.

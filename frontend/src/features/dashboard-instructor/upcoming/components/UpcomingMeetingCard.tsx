@@ -1,6 +1,3 @@
-// UpcomingMeetingCard.tsx
-// Notice: No "use client" here! This remains a highly performant Server Component.
-
 import { Card, CardDescription, CardTitle } from "@/src/components/ui/card";
 import { AvatarChain } from "@/src/features/dashboard-instructor/constants/Avtars-meetings";
 import { Badge } from "@/src/components/ui/badge";
@@ -10,7 +7,7 @@ import { UpcomingMeeting } from "../types";
 import { StatusBar } from "./StatusBar";
 import { cn } from "@/src/lib/utils";
 import { calculateMeetingStatus } from "../helper/time-calc";
-import { MeetingActionsPopover } from "./MeetingActionsPopover"; // Import the client component
+import { MeetingActionsPopover } from "../../constants/MeetingActionsPopover";
 
 interface UpcomingMeetingCardProps {
   meeting: UpcomingMeeting;
@@ -23,7 +20,6 @@ export function UpcomingMeetingCard({ meeting }: UpcomingMeetingCardProps) {
 
   const ActionBlock = (
     <div className="flex w-full sm:w-auto items-center gap-2 flex-shrink-0">
-      
       <div className="flex flex-1 sm:flex-initial gap-2">
         {!isArrived && (
           <Button variant="outline" className="flex-1 sm:w-auto border-border">
@@ -47,7 +43,6 @@ export function UpcomingMeetingCard({ meeting }: UpcomingMeetingCardProps) {
       {/* We inject our extracted Client Component here. 
         It handles its own interactivity while this parent component remains a Server Component.
       */}
-      <MeetingActionsPopover title={meeting.title} dateTime={meeting.dateTime} />
       
     </div>
   );
@@ -62,7 +57,9 @@ export function UpcomingMeetingCard({ meeting }: UpcomingMeetingCardProps) {
           : "bg-black-soft-subtle border border-border shadow-none opacity-85 hover:opacity-100"
       )}
     >
+      
       <div className="flex items-start sm:items-center justify-between w-full gap-4">
+        <div className="flex w-full justify-between">
         <div className="flex flex-col gap-1.5 flex-1 min-w-0">
           <div className="flex items-center gap-3">
             <CardTitle className="text-base sm:text-lg font-bold text-foreground truncate">
@@ -94,6 +91,10 @@ export function UpcomingMeetingCard({ meeting }: UpcomingMeetingCardProps) {
           {ActionBlock}
         </div>
       </div>
+      <MeetingActionsPopover title={meeting.title} dateTime={meeting.dateTime} meetingId={meeting.id} variant="active" />
+
+
+</div>
 
       <div className="sm:hidden w-full px-1 pt-1">
         <StatusBar

@@ -44,7 +44,7 @@ export function SidebarNavLinks() {
               sideOffset={7}
               className={cn(
                 "hidden md:block lg:hidden",
-                active && "pointer-events-none hidden",
+                active && "pointer-events-none md:hidden hidden",
               )}
             >
               {label}

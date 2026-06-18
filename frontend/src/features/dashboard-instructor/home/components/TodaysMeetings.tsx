@@ -7,6 +7,7 @@ import { ChevronRight, Play, NotebookPen } from "lucide-react";
 import { todayMeetings } from "../constants";
 import { StatusBar } from "../../upcoming/components/StatusBar";
 import { cn } from "@/src/lib/utils";
+import { MeetingActionsPopover } from "../../constants/MeetingActionsPopover";
 
 export function TodaysMeetings() {
   return (
@@ -85,7 +86,14 @@ export function TodaysMeetings() {
                 <div className="hidden sm:flex items-center gap-4 flex-shrink-0">
                   <AvatarChain />
                   {ActionButton}
+       
                 </div>
+                  <MeetingActionsPopover
+                    title={meeting.title}
+                    dateTime={meeting.time}
+                    variant="active"
+                    meetingId={meeting.id}
+                  />
               </div>
 
               {/* Mobile Only: Progress Bar (Rendered above the button) */}

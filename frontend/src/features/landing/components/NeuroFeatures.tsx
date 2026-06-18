@@ -43,35 +43,35 @@ export const NeuroFeatures = () => {
 
       {/* Feature Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
-  {features.map((feature, i) => (
-    <Card 
-      key={i} 
-      className="relative overflow-hidden bg-black-soft-subtle border-border/50 hover:border-primary/50 opacity-90 hover:opacity-100 hover:-translate-y-1.5 transition-all duration-normal ease-smooth transform-gpu flex flex-col p-4 sm:p-5 rounded-soft shadow-soft hover:shadow-glow-cyan group"
-    >
-      {/* Top edge glowing line */}
-      <div className="absolute inset-x-0 top-0 h-[1px] w-full bg-gradient-to-r from-transparent via-primary-light to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-normal ease-smooth" />
+{features.map((feature, i) => (
+  <button
+    key={i}
+    className="relative overflow-hidden bg-black-soft-subtle border border-border/50 hover:border-primary/50 focus:border-primary/50 opacity-90 hover:opacity-100 focus:opacity-100 hover:-translate-y-1.5 focus:-translate-y-1.5 transition-all duration-normal ease-smooth transform-gpu flex flex-col p-4 sm:p-5 rounded-soft shadow-soft hover:shadow-glow-cyan focus:shadow-glow-cyan group text-left w-full"
+  >
+    {/* Top edge glowing line - Add focus-within state */}
+    <div className="absolute inset-x-0 top-0 h-[1px] w-full bg-gradient-to-r from-transparent via-primary-light to-transparent opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-normal ease-smooth" />
 
-      {/* Inner ambient flare */}
-      <div className="absolute -inset-px bg-gradient-to-br from-primary-soft-subtle to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-normal pointer-events-none rounded-soft" />
+    {/* Inner ambient flare - Add focus-within state */}
+    <div className="absolute -inset-px bg-gradient-to-br from-primary-soft-subtle to-transparent opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-normal pointer-events-none rounded-soft" />
 
-      {/* Icon container */}
-      <div className="relative z-10 bg-white-soft-subtle border border-white/5 w-14 h-14 rounded-medium flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-white-soft-muted group-hover:border-white/10 group-hover:shadow-soft transition-all duration-normal ease-bouncy">
-        {feature.icon}
-      </div>
+    {/* Icon container */}
+    <div className="relative z-10 bg-white-soft-subtle border border-white/5 w-14 h-14 rounded-medium flex items-center justify-center mb-4 group-hover:scale-110 group-focus:scale-110 group-hover:bg-white-soft-muted group-focus:bg-white-soft-muted group-hover:border-white/10 group-focus:border-white/10 group-hover:shadow-soft group-focus:shadow-soft transition-all duration-normal ease-bouncy">
+      {feature.icon}
+    </div>
+    
+    <div className="relative z-10 p-0 flex flex-col flex-1">
+      {/* Title */}
+      <h3 className="text-lg sm:text-xl font-bold text-white mb-2 group-hover:text-primary-light group-focus:text-primary-light transition-colors duration-normal">
+        {feature.title}
+      </h3>
       
-      <CardContent className="relative z-10 p-0 flex flex-col flex-1">
-        {/* Title */}
-        <CardTitle className="text-lg sm:text-xl font-bold text-white mb-2 group-hover:text-primary-light transition-colors duration-normal">
-          {feature.title}
-        </CardTitle>
-        
-        {/* Description */}
-        <CardDescription className="text-muted-foreground-mid text-sm leading-relaxed mb-auto group-hover:text-muted-foreground transition-colors duration-normal">
-          {feature.description}
-        </CardDescription>
-      </CardContent>
-    </Card>
-  ))}
+      {/* Description */}
+      <p className="text-muted-foreground-mid text-sm leading-relaxed mb-auto group-hover:text-muted-foreground group-focus:text-muted-foreground transition-colors duration-normal">
+        {feature.description}
+      </p>
+    </div>
+  </button>
+))}
 </div>
     </section>
   );
