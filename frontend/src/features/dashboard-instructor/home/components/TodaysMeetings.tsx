@@ -61,11 +61,11 @@ export function TodaysMeetings() {
                 {/* Meeting Info: Always Visible */}
                 <div className="flex flex-col gap-1.5 flex-1 min-w-0">
                   <div className="flex items-center gap-3">
-                    <CardTitle className="text-base sm:text-lg font-bold text-white truncate">
+                    <CardTitle className="text-base sm:text-lg font-bold text-foreground max-sm:max-w-60 truncate">
                       {meeting.title}
                     </CardTitle>
                   </div>
-                  <CardDescription className="text-sm font-medium text-white-soft-deep flex flex-wrap items-center gap-2 mt-1">
+                  <CardDescription className="text-sm font-medium text-muted-foreground flex flex-wrap items-center gap-2 mt-1">
                     <span className="whitespace-nowrap">{meeting.time}</span>
                     {isStartingSoon && (
                       <Badge className="bg-status-warning-soft text-status-warning border border-status-warning-border hover:bg-status-warning-hover uppercase tracking-wider font-bold text-[10px] sm:text-xs">

@@ -62,7 +62,7 @@ export function UpcomingMeetingCard({ meeting }: UpcomingMeetingCardProps) {
         <div className="flex w-full justify-between">
         <div className="flex flex-col gap-1.5 flex-1 min-w-0">
           <div className="flex items-center gap-3">
-            <CardTitle className="text-base sm:text-lg font-bold text-foreground truncate">
+            <CardTitle className="text-base sm:text-lg font-bold max-sm:max-w-60 text-foreground truncate">
               {meeting.title}
             </CardTitle>
           </div>

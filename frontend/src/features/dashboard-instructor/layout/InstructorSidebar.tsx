@@ -19,7 +19,7 @@ export function InstructorSidebar() {
       </div>
 
       {/* Main nav */}
-      <nav className="flex flex-row md:flex-col gap-1 md:gap-3 mt-0 md:mt-8 flex-1 justify-around md:justify-start">
+      <nav className="flex flex-row md:flex-col  md:gap-3 mt-0 md:mt-8 flex-1 justify-between md:justify-start">
         <SidebarNavLinks />
       </nav>
     </aside>

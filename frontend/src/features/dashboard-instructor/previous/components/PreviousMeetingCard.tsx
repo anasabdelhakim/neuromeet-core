@@ -86,7 +86,7 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
         {/* Left Side: Meeting Info */}
         <div className="flex flex-col gap-1.5 flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <CardTitle className="text-base sm:text-lg font-bold text-foreground truncate">
+            <CardTitle className="text-base sm:text-lg font-bold max-w-80 max-sm:max-w-60 text-foreground truncate">
               {meeting.title}
             </CardTitle>
             <Badge className="bg-status-success-soft text-status-success border border-status-success-border hover:bg-status-success-hover uppercase tracking-wider font-bold text-[10px] sm:text-xs py-0.5 px-2 flex items-center gap-1">

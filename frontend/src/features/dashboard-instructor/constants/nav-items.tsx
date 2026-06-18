@@ -15,7 +15,7 @@ export const navItems = [
   },
   {
     icon: Sparkles,
-    label: "Test Meeting",
+    label: "Meeting",
     href: "/dashboard-instructor/test-meeting",
   },
 ];
