@@ -1,11 +1,11 @@
 import { Card, CardDescription, CardTitle } from "@/src/components/ui/card";
-import { AvatarChain } from "@/src/features/dashboard-instructor/constants/Avtars-meetings";
+import { AvatarChain } from "@/src/features/dashboard-instructor/constants/avatars";
 import { Clock, CheckCircle2, BarChart3, Play, Info } from "lucide-react";
 import { PreviousMeeting } from "../types";
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
-import { MeetingActionsPopover } from "../../constants/MeetingActionsPopover";
+import { MeetingActionsPopover } from "../../upcoming/components/MeetingActionsPopover";
 
 interface PreviousMeetingCardProps {
   meeting: PreviousMeeting;

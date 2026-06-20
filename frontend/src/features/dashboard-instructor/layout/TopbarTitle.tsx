@@ -7,6 +7,8 @@ const pageTitles: Record<string, string> = {
   "/dashboard-instructor/upcoming": "Upcoming",
   "/dashboard-instructor/previous": "Previous",
   "/dashboard-instructor/recordings": "Recordings",
+  "/dashboard-instructor/students": "Students",
+  "/dashboard-instructor/test-meeting": "Test Meeting",
 };
 
 export function TopbarTitle() {

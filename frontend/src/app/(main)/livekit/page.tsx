@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import Livekit from "./livekit";
-import { Loader2, Video } from "lucide-react";
+import { Loader, Video } from "lucide-react";
 
 function MeetingLoadingScreen() {
   return (
@@ -19,7 +19,7 @@ function MeetingLoadingScreen() {
         
         <h2 className="text-2xl font-bold text-white mb-3 tracking-tight">Initializing NeuroMeet AI...</h2>
         <div className="flex items-center gap-3 text-muted-foreground">
-          <Loader2 className="h-5 w-5 animate-spin text-brand-cyan" />
+          <Loader className="h-5 w-5 animate-spin text-brand-cyan" />
           <span className="text-sm font-medium">Connecting to secure video cluster</span>
         </div>
       </div>

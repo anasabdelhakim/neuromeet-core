@@ -1,5 +1,4 @@
 import { Card, CardDescription, CardTitle } from "@/src/components/ui/card";
-import { AvatarChain } from "@/src/features/dashboard-instructor/constants/Avtars-meetings";
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
 import { AlarmClock, Play, NotebookPen } from "lucide-react";
@@ -7,7 +6,8 @@ import { UpcomingMeeting } from "../types";
 import { StatusBar } from "./StatusBar";
 import { cn } from "@/src/lib/utils";
 import { calculateMeetingStatus } from "../helper/time-calc";
-import { MeetingActionsPopover } from "../../constants/MeetingActionsPopover";
+import { MeetingActionsPopover } from "./MeetingActionsPopover";
+import { AvatarChain } from "../../constants/avatars";
 
 interface UpcomingMeetingCardProps {
   meeting: UpcomingMeeting;

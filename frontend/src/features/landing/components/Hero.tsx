@@ -12,7 +12,7 @@ export const Hero = () => {
         Experience the future of video conferencing. Seamless, high-definition,
         and secure meetings for everyone, everywhere.
       </p>
-      <Link href="livekit">
+      <Link href="/sign-up">
         <Button
           variant="effect"
           size="lg"

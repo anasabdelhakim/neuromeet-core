@@ -14,9 +14,6 @@ import {
 } from './dto/auth-dto';
 
 import { JwtService } from '@nestjs/jwt';
-// Bun.password is a built-in global — no import needed.
-// Uses argon2id by default (OWASP recommended), runs in worker thread (non-blocking).
-// Auto-detects algorithm on verify, so existing bcrypt hashes still work.
 import { EmailService } from '../emails/email.service';
 import { PrismaService } from '../database/database.service';
 import { AUTH_CONSTANTS } from './auth.constants'; // RESTORED: Centralized configs
@@ -57,7 +54,7 @@ export class AuthService {
         name: signUpDto.name,
         email: signUpDto.email,
         password: hashedPassword,
-        role: 'INSTRUCTOR', // Fixed: Ensure manual signup matches Google OAuth behavior
+        role: 'STUDENT', // Fixed: Default to student, matching Prisma schema
         verificationCode: hashedCode,
         otpPurpose: 'SIGN_UP',
         otpExpire, // RESTORED

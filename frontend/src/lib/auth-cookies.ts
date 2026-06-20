@@ -35,8 +35,8 @@ export async function getAuthCookies() {
 
 export async function clearAuthCookies() {
   const cookieStore = await cookies();
-  cookieStore.delete('access_token');
-  cookieStore.delete('refresh_token');
+  cookieStore.delete({ name: 'access_token', path: '/' });
+  cookieStore.delete({ name: 'refresh_token', path: '/' });
 }
 
 // ---------- Reset Flow Cookies ----------

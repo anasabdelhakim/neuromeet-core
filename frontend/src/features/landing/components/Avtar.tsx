@@ -1,10 +1,39 @@
 import { Button } from "@/src/components/ui/button";
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { decodeJwtRole } from "@/src/lib/jwt";
+import { getUserProfile } from "@/src/features/auth/actions/auth-actions";
 
-export const Avtar = () => {
+export const Avtar = async () => {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token")?.value;
+  let role = null;
+  if (accessToken) {
+    role = decodeJwtRole(accessToken);
+  }
+
+  if (!role) {
+    const user = await getUserProfile();
+    role = user?.role;
+  }
+
+  const getDashboardUrl = () => {
+    if (role === "INSTRUCTOR") return "/dashboard-instructor";
+    if (role === "STUDENT") return "/dashboard-student";
+    if (role === "ADMIN") return "/dashboard-admin";
+    return "/sign-in";
+  };
+
   return (
-   
-        <div className="flex gap-4 max-sm:gap-2 items-center">
+    <div className="flex gap-4 max-sm:gap-2 items-center">
+      {role ? (
+        <Link href={getDashboardUrl()}>
+          <Button className="px-8 py-5 max-sm:px-4 max-sm:py-4 max-sm:text-sm max-sm:rounded-hard rounded-full font-bold">
+            Dashboard
+          </Button>
+        </Link>
+      ) : (
+        <>
           <Link href="/sign-in">
             <Button
               variant="ghost"
@@ -15,11 +44,12 @@ export const Avtar = () => {
           </Link>
 
           <Link href="/sign-up">
-            <Button  className="px-8 py-5 max-sm:px-4 max-sm:py-4 max-sm:text-sm max-sm:rounded-hard  rounded-full font-bold">
+            <Button className="px-8 py-5 max-sm:px-4 max-sm:py-4 max-sm:text-sm max-sm:rounded-hard rounded-full font-bold">
               Register
             </Button>
           </Link>
-        </div>
-  
+        </>
+      )}
+    </div>
   );
 };

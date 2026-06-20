@@ -21,7 +21,7 @@ import {
   UpdateParticipantDto,
 } from './dto/meeting.dto';
 
-const ALL_ROLES = ['USER', 'INSTRUCTOR', 'STUDENT', 'ADMIN'];
+const ALL_ROLES = ['INSTRUCTOR', 'STUDENT', 'ADMIN'];
 
 @Controller('meetings')
 @Roles(ALL_ROLES)

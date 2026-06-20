@@ -8,7 +8,7 @@ import {
   shadowMap,
   buttonGradientMap,
   dialogBgMap,
-} from "../constants/cards";
+} from "../constants/quick-actions";
 import {
   Card,
   CardContent,
@@ -57,7 +57,7 @@ export function QuickActions() {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-6">
         {Cards.map((card) => {
           const Icon = card.icon;
           const gradientClass = gradientMap[card.id] || "";
@@ -180,13 +180,13 @@ export function QuickActions() {
                   </Label>
                   <Popover>
                     <PopoverTrigger
-                      className={cn(
-                        "w-full mb-2 border-2 flex items-center justify-start bg-black-soft-muted  text-left font-normal h-12 px-4 rounded-soft hover:bg-black-soft-deep hover:text-white transition-all duration-fast ease-standard focus-visible:ring-action-schedule-input focus-visible:border-action-schedule outline-none",
-                        !date && "text-muted-foreground",
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {date ? format(date, "PPP") : <span>Pick a date</span>}
+                          className={cn(
+                            "w-full mb-2 border-2 flex items-center justify-start bg-black-soft-muted  text-left font-normal h-12 px-4 rounded-soft hover:bg-black-soft-deep hover:text-white transition-all duration-fast ease-standard focus-visible:ring-action-schedule-input focus-visible:border-action-schedule outline-none",
+                            !date && "text-muted-foreground",
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {date ? format(date, "PPP") : <span>Pick a date</span>}
                     </PopoverTrigger>
                     <PopoverContent
                       className="w-auto p-0 border-none bg-transparent shadow-none"
@@ -249,27 +249,6 @@ export function QuickActions() {
                       </Card>
                     </PopoverContent>
                   </Popover>
-                </div>
-                <Button
-                  className={cn(
-                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-hard transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border  hover:brightness-110",
-                    activeButtonClass,
-                  )}
-                >
-                  {activeCard.cta}
-                </Button>
-              </div>
-            )}
-            {activeCard.id === "recordings" && (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-muted-foreground-mid">
-                    Search Keyword
-                  </Label>
-                  <Input
-                    placeholder="Search by topic, date, or tag..."
-                    className="bg-black-soft-muted focus-visible:ring-action-yellow-input focus-visible:border-action-yellow transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
-                  />
                 </div>
                 <Button
                   className={cn(

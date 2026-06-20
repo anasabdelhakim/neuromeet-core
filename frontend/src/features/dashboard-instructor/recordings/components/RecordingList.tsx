@@ -46,7 +46,7 @@ export const RecordingsList = () => {
 
 export function RecordingCard({ recording }: { recording: Recording }) {
   return (
-    <Card variant="gradient" className="py-0 cursor-pointer hover:scale-103 transition-all duration-normal ease-standard group">
+    <Card variant="gradient" className="py-0 cursor-pointer hover:scale-[1.02] transition-transform duration-normal ease-standard group">
       <div className="aspect-video overflow-hidden rounded-t-soft relative">
         <Image
           src={recording.image}

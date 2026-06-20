@@ -3,18 +3,16 @@ import { Suspense } from "react";
 import AvatarSec from "@/src/features/auth/components/avatar";
 import { getUserProfile } from "@/src/features/auth/actions/auth-actions";
 
+import { redirect } from "next/navigation";
+
 async function UserProfileData() {
   const user = await getUserProfile();
 
-  // If user is null (e.g., token expired but middleware hasn't caught it yet, or network error),
-  // we fallback to a generic avatar instead of rendering login buttons inside the dashboard.
-  const profileToRender = user || {
-    name: "User",
-    email: "",
-    avatarUrl: null,
-  };
+  if (!user) {
+    redirect("/sign-in");
+  }
 
-  return <AvatarSec profile={profileToRender} />;
+  return <AvatarSec profile={user} />;
 }
 
 export default function UserProfile() {

@@ -100,7 +100,7 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
           <div className="flex items-center gap-3 mb-1">
             <Avatar className="h-12 w-12">
               <AvatarImage src={avatarSrc} alt={displayName} referrerPolicy="no-referrer" />
-              <AvatarFallback delayMs={600} className="bg-primary text-primary-foreground text-2xl font-semibold flex items-center justify-center">
+              <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-semibold flex items-center justify-center">
                 {initials}
               </AvatarFallback>
             </Avatar>

@@ -42,7 +42,6 @@ export function LoginForm() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const handleAction = (formData: FormData) => {
-    reset(getValues(), { keepValues: true });
     action(formData);
   };
 

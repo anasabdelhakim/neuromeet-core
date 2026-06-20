@@ -1,5 +1,5 @@
-const page = () => {
-  return <div>dashboard-student</div>;
-};
+import { StudentHome } from "@/src/features/dashboard-student/home/StudentHome";
 
-export default page;
+export default function StudentDashboardPage() {
+  return <StudentHome />;
+}

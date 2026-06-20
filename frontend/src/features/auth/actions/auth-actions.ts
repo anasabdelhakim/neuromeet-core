@@ -109,11 +109,18 @@ export async function signInAction(
     // This prevents XSS attacks from stealing tokens via document.cookie or JS access.
     await setAuthCookies(res.access_token, res.refresh_token);
 
-    const redirectPath =
-      res.data.role === "STUDENT"
-        ? "/dashboard-student"
-        : "/dashboard-instructor";
-    
+    let redirectPath: string;
+    switch (res.data.role) {
+      case "ADMIN":
+        redirectPath = "/dashboard-admin";
+        break;
+      case "STUDENT":
+        redirectPath = "/dashboard-student";
+        break;
+      default:
+        redirectPath = "/dashboard-instructor";
+    }
+
     redirect(redirectPath);
   } catch (err) {
     if (err instanceof ApiError) {
@@ -517,9 +524,9 @@ import { cache } from 'react';
 // GET USER PROFILE
 // =========================
 export const getUserProfile = cache(async () => {
-  const { accessToken } = await getAuthCookies();
+  const { accessToken, refreshToken } = await getAuthCookies();
 
-  if (!accessToken) {
+  if (!accessToken && !refreshToken) {
     return null;
   }
 

@@ -1,13 +1,13 @@
 import { Button } from "@/src/components/ui/button";
 import { Card, CardDescription, CardTitle } from "@/src/components/ui/card";
 import { Badge } from "@/src/components/ui/badge";
-import { AvatarChain } from "@/src/features/dashboard-instructor/constants/Avtars-meetings";
 import Link from "next/link";
 import { ChevronRight, Play, NotebookPen } from "lucide-react";
 import { todayMeetings } from "../constants";
 import { StatusBar } from "../../upcoming/components/StatusBar";
 import { cn } from "@/src/lib/utils";
-import { MeetingActionsPopover } from "../../constants/MeetingActionsPopover";
+import { MeetingActionsPopover } from "../../upcoming/components/MeetingActionsPopover";
+import { AvatarChain } from "../../constants/avatars";
 
 export function TodaysMeetings() {
   return (
@@ -35,7 +35,7 @@ export function TodaysMeetings() {
           const ActionButton = isLive ? (
             <Button variant="live" className="w-full sm:w-auto flex-shrink-0">
               <Play size={16} fill="currentColor" className="mr-2" />
-              Join Now
+              Start
             </Button>
           ) : (
             <Button variant="ghost" className="w-full sm:w-auto border-border flex-shrink-0">

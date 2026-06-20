@@ -48,7 +48,6 @@ export function SignUpForm() {
   );
 
   const handleAction = (formData: FormData) => {
-    reset(getValues(), { keepValues: true });
     action(formData);
   };
 

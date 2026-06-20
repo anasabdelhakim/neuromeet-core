@@ -1,6 +1,13 @@
-import { Home, CalendarDays, History, Video, Sparkles } from "lucide-react";
+import { Home, CalendarDays, History, Video, Sparkles, Users } from "lucide-react";
 
-export const navItems = [
+export type NavItem = {
+  icon: any;
+  label: string;
+  href: string;
+  hideOnMobile?: boolean;
+};
+
+export const navItems: NavItem[] = [
   { icon: Home, label: "Home", href: "/dashboard-instructor" },
   {
     icon: CalendarDays,
@@ -13,6 +20,8 @@ export const navItems = [
     label: "Recordings",
     href: "/dashboard-instructor/recordings",
   },
+  { icon: Users, label: "Students", href: "/dashboard-instructor/students" },
+  { icon: Users, label: "Groups", href: "/dashboard-instructor/groups", hideOnMobile: true },
   {
     icon: Sparkles,
     label: "Meeting",

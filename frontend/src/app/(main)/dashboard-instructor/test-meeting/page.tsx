@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { launchTestMeetingAction } from './actions';
 import { Button } from '@/src/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/src/components/ui/card';
-import { Video, Loader2, Sparkles, AlertCircle } from 'lucide-react';
+import { Video, Loader, Sparkles, AlertCircle } from 'lucide-react';
 
 export default function TestMeetingPage() {
   const [loading, setLoading] = useState(false);
@@ -74,12 +74,12 @@ export default function TestMeetingPage() {
               onClick={handleLaunch}
               disabled={loading}
               className="w-full h-14 bg-btn-new-gradient text-white font-bold text-base shadow-hard 
-                         transition-all duration-normal ease-standard rounded-soft hover:scale-[1.01] 
+                         transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] 
                          active:scale-[0.99] border border-border hover:brightness-110 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <Loader className="h-5 w-5 animate-spin" />
                   Spinning up AI agents...
                 </>
               ) : (
