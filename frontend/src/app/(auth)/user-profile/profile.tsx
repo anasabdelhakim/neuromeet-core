@@ -3,13 +3,11 @@ import { Suspense } from "react";
 import AvatarSec from "@/src/features/auth/components/avatar";
 import { getUserProfile } from "@/src/features/auth/actions/auth-actions";
 
-import { redirect } from "next/navigation";
-
 async function UserProfileData() {
   const user = await getUserProfile();
 
   if (!user) {
-    redirect("/sign-in");
+    return null;
   }
 
   return <AvatarSec profile={user} />;
