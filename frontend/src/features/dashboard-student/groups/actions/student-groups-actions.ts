@@ -8,9 +8,7 @@ import { apiPost, apiGet } from "@/src/lib/api-client";
 
 export async function getStudentGroupsAction() {
   try {
-    const res = await apiGet<{ status: string; data: any[] }>("/groups/my-groups", {
-      cache: "no-store",
-    });
+    const res = await apiGet<{ status: string; data: any[] }>("/groups/my-groups");
     return { success: true, data: res.data };
   } catch (error: any) {
     return {
@@ -22,9 +20,7 @@ export async function getStudentGroupsAction() {
 
 export async function getPendingInvitationsAction() {
   try {
-    const res = await apiGet<{ status: string; data: any[] }>("/groups/invitations/pending", {
-      cache: "no-store",
-    });
+    const res = await apiGet<{ status: string; data: any[] }>("/groups/invitations/pending");
     return { success: true, data: res.data };
   } catch (error: any) {
     return { success: false, error: error.message || "Failed to load invitations" };

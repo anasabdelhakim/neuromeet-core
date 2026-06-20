@@ -71,9 +71,7 @@ export async function deleteGroupAction(groupId: string) {
 
 export async function getGroupsAction() {
   try {
-    const res = await apiGet<{ status: string; data: Group[] }>("/groups", {
-      cache: "no-store",
-    });
+    const res = await apiGet<{ status: string; data: Group[] }>("/groups");
     return { success: true, data: res.data };
   } catch (error: any) {
     return { success: false, error: error.message || "Failed to fetch groups" };

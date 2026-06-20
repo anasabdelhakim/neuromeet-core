@@ -8,7 +8,7 @@ if exist deploy_temp rmdir /s /q deploy_temp
 
 echo 2. Copying backend folder to temporary directory...
 mkdir deploy_temp
-robocopy backend deploy_temp /E /NFL /NDL /XD node_modules dist >nul
+robocopy backend deploy_temp /E /NFL /NDL /XD node_modules dist _generated >nul
 
 echo 3. Initializing fresh Git repository (removing old history)...
 cd deploy_temp
