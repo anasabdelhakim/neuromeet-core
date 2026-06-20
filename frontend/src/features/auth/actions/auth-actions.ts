@@ -531,7 +531,7 @@ export const getUserProfile = cache(async () => {
   }
 
   try {
-    const res = await apiGet<any>('/userMe');
+    const res = await apiGet<any>('/userMe', { cache: 'force-cache' });
     return res?.data?.user || null;
   } catch (err) {
     return null;
