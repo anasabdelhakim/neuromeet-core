@@ -36,7 +36,7 @@ export const dummyStudentUpcomingMeetings: StudentUpcomingMeeting[] = [
     title: "Algorithms Problem Solving",
     course: "CS301",
     instructor: "Dr. Nour El-Din",
-    dateTime: new Date(Date.now() + 5 * 60000).toISOString(),
+    dateTime: "2025-06-20T15:00:00",
     duration: 90,
     status: "upcoming",
     meetingUrl: "/meeting/4",

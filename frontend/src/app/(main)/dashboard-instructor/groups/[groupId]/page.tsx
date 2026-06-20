@@ -9,6 +9,10 @@ type Props = {
   params: Promise<{ groupId: string }>;
 };
 
+export async function generateStaticParams() {
+  return [{ groupId: "dummy" }];
+}
+
 async function GroupDataLoader({ paramsPromise }: { paramsPromise: Promise<{ groupId: string }> }) {
   const resolvedParams = await paramsPromise;
   const groupId = resolvedParams.groupId;
