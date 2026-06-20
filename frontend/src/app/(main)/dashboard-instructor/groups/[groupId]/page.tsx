@@ -5,13 +5,14 @@ import { getAllStudents } from "@/src/features/dashboard-instructor/students/act
 import { GroupDetailsClient } from "@/src/features/dashboard-instructor/groups/components/GroupDetailsClient";
 import { Loader } from "lucide-react";
 
-export const dynamic = 'force-dynamic' as const;
-
 type Props = {
   params: Promise<{ groupId: string }>;
 };
 
-async function GroupDataLoader({ groupId }: { groupId: string }) {
+async function GroupDataLoader({ paramsPromise }: { paramsPromise: Promise<{ groupId: string }> }) {
+  const resolvedParams = await paramsPromise;
+  const groupId = resolvedParams.groupId;
+
   // Fetch all data for the page
   const [dashboardRes, studentsRes] = await Promise.all([
     getDashboardData(),
@@ -34,14 +35,11 @@ async function GroupDataLoader({ groupId }: { groupId: string }) {
   return <GroupDetailsClient group={group} allStudents={allStudents} />;
 }
 
-export default async function GroupDetailsPage({ params }: Props) {
-  const resolvedParams = await params;
-  const groupId = resolvedParams.groupId;
-
+export default function GroupDetailsPage({ params }: Props) {
   return (
     <div className="flex flex-col gap-6 animate-page-entrance">
       <Suspense fallback={<div className="flex justify-center items-center h-40"><Loader className="w-8 h-8 animate-spin text-primary" /></div>}>
-        <GroupDataLoader groupId={groupId} />
+        <GroupDataLoader paramsPromise={params} />
       </Suspense>
     </div>
   );
