@@ -5,6 +5,8 @@ import { getAllStudents } from "@/src/features/dashboard-instructor/students/act
 import { GroupDetailsClient } from "@/src/features/dashboard-instructor/groups/components/GroupDetailsClient";
 import { Loader } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 type Props = {
   params: Promise<{ groupId: string }>;
 };
