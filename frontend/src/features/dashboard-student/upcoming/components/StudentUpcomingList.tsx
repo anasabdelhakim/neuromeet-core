@@ -1,8 +1,10 @@
 import { StudentUpcomingCard } from "./StudentUpcomingCard";
 import { getStudentUpcomingMeetings } from "../actions/student-meeting-actions";
 import { CalendarX } from "lucide-react";
+import { connection } from "next/server";
 
 export async function StudentUpcomingList() {
+  await connection();
   const meetings = await getStudentUpcomingMeetings();
 
   if (meetings.length === 0) {

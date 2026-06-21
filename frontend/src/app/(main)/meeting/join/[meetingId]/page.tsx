@@ -1,11 +1,13 @@
 import { Video, Clock, XCircle } from "lucide-react";
 import { PasscodeForm } from "./PasscodeForm";
+import { connection } from "next/server";
 
 export default async function JoinMeetingPage({
   params,
 }: {
   params: Promise<{ meetingId: string }>;
 }) {
+  await connection();
   const { meetingId } = await params;
 
   return (

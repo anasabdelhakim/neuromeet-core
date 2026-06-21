@@ -6,6 +6,7 @@ import { DataCard } from "@/src/features/dashboard-shared/components/DataCard";
 import { CalendarDays, Clock, BookOpen, ChevronRight } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import Link from "next/link";
+import { connection } from "next/server";
 import { getStudentUpcomingMeetings } from "@/src/features/dashboard-student/upcoming/actions/student-meeting-actions";
 import { StudentUpcomingCard } from "@/src/features/dashboard-student/upcoming/components/StudentUpcomingCard";
 import { CalendarX } from "lucide-react";
@@ -91,6 +92,7 @@ export function StudentHome() {
 }
 
 async function StudentHomeUpcomingList() {
+  await connection();
   const allMeetings = await getStudentUpcomingMeetings();
   // Only show the 3 most immediate upcoming meetings on the dashboard home
   const meetings = allMeetings.slice(0, 3);
