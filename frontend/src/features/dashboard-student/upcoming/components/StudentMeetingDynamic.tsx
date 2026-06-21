@@ -4,6 +4,9 @@ import { Play, Info } from "lucide-react";
 import { StatusBar } from "@/src/features/dashboard-instructor/upcoming/components/StatusBar";
 import { calculateMeetingStatus } from "@/src/features/dashboard-instructor/upcoming/helper/time-calc";
 import { connection } from "next/server";
+import Link from "next/link";
+import { buttonVariants } from "@/src/components/ui/button";
+import { cn } from "@/src/lib/utils";
 
 export async function DynamicStudentMeetingBadge({ dateTime }: { dateTime: string }) {
   await connection();
@@ -30,24 +33,28 @@ export async function DynamicStudentMeetingBadge({ dateTime }: { dateTime: strin
   return null;
 }
 
-export async function DynamicStudentMeetingActions({ dateTime }: { dateTime: string }) {
+export async function DynamicStudentMeetingActions({ dateTime, meetingId }: { dateTime: string; meetingId: string }) {
   await connection();
   const { isArrived } = calculateMeetingStatus(dateTime);
 
-  if (isArrived) {
-    return (
-      <Button variant="live" className="w-full sm:w-auto flex-shrink-0">
-        <Play size={16} fill="currentColor" className="mr-2" />
-        Join Now
-      </Button>
-    );
-  }
-
   return (
-    <Button variant="ghost" className="w-full sm:w-auto border-border flex-shrink-0" disabled>
-      <Info size={18} className="mr-2" />
-      Not Started
-    </Button>
+    <div className="flex w-full sm:w-auto items-center gap-2 flex-shrink-0">
+      <div className="flex flex-1 sm:flex-initial gap-2">
+        {isArrived ? (
+          <Link
+            href={`/meeting/join/${meetingId}`}
+            className={cn(buttonVariants({ variant: "live" }), "flex-1 sm:w-auto")}
+          >
+            <Play size={16} fill="currentColor" className="mr-1" />
+            Join Now
+          </Link>
+        ) : (
+          <Button variant="outline" className="flex-1 sm:w-auto text-muted-foreground opacity-50 cursor-not-allowed" disabled>
+            Starting Soon
+          </Button>
+        )}
+      </div>
+    </div>
   );
 }
 

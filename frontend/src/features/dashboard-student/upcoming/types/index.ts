@@ -1,10 +1,10 @@
 export interface StudentUpcomingMeeting {
   id: string;
   title: string;
-  course: string;
-  instructor: string;
+  groupName: string;
+  date: string;
+  time: string;
   dateTime: string;
   duration: number;
   status: string;
-  meetingUrl?: string;
 }

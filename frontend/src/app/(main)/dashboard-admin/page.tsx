@@ -60,7 +60,7 @@ async function AdminStatsLoader() {
 export default function AdminHomePage() {
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 animate-page-entrance">
       {/* Hero — no upcoming badge for admin */}
       <Suspense fallback={<HeroClockSkeleton />}>
         <HeroClock showUpcoming={false} />

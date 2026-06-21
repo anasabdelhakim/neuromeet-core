@@ -1,4 +1,4 @@
-import { Home, CalendarDays, History, Video, Sparkles, Users } from "lucide-react";
+import { Home, CalendarDays, History, Video, Sparkles, Users, Component } from "lucide-react";
 
 export type NavItem = {
   icon: any;
@@ -21,7 +21,7 @@ export const navItems: NavItem[] = [
     href: "/dashboard-instructor/recordings",
   },
   { icon: Users, label: "Students", href: "/dashboard-instructor/students" },
-  { icon: Users, label: "Groups", href: "/dashboard-instructor/groups", hideOnMobile: true },
+  { icon: Component, label: "Groups", href: "/dashboard-instructor/groups", hideOnMobile: true },
   {
     icon: Sparkles,
     label: "Meeting",

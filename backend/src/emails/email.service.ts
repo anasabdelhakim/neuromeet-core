@@ -4,6 +4,7 @@ import { getWelcomeEmailHtml } from './templates/welcome-email.template';
 import { getVerificationEmailHtml } from './templates/verification-email';
 import { getPasswordResetConfirmationEmailHtml } from './templates/reset-password-email';
 import { getResetPasswordHtml } from './templates/verification-resetpassword';
+import { getMeetingInviteEmailHtml } from './templates/meeting-invite-email';
 
 @Injectable()
 export class EmailService {
@@ -127,4 +128,43 @@ export class EmailService {
   }
 
 
+  // =========================
+  // ✅ Meeting Invitation
+  // =========================
+  async sendMeetingInvitations(
+    students: { email: string; name: string }[],
+    meetingDetails: {
+      meetingTitle: string;
+      instructorName: string;
+      scheduledAt: string;
+      passcode: string;
+      joinUrl: string;
+    }
+  ) {
+    try {
+      const promises = students.map((student) => {
+        const htmlContent = getMeetingInviteEmailHtml({
+          studentName: student.name,
+          meetingTitle: meetingDetails.meetingTitle,
+          instructorName: meetingDetails.instructorName,
+          scheduledAt: meetingDetails.scheduledAt,
+          passcode: meetingDetails.passcode,
+          joinUrl: meetingDetails.joinUrl,
+        });
+
+        return this.resend.emails.send({
+          from: this.defaultFrom,
+          to: student.email,
+          subject: `Meeting Invitation: ${meetingDetails.meetingTitle}`,
+          html: htmlContent,
+        });
+      });
+
+      await Promise.all(promises);
+      this.logger.log(`✅ Sent ${students.length} meeting invitations`);
+    } catch (error) {
+      this.logger.error(`❌ Failed to send meeting invitations`, error);
+      throw new Error('Could not send meeting invitations');
+    }
+  }
 }

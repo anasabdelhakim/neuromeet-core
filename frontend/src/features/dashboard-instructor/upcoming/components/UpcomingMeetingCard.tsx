@@ -2,6 +2,7 @@ import { Card, CardDescription, CardTitle } from "@/src/components/ui/card";
 import { AlarmClock } from "lucide-react";
 import { UpcomingMeeting } from "../types";
 import { MeetingActionsPopover } from "./MeetingActionsPopover";
+import { calculateMeetingStatus } from "../helper/time-calc";
 import { AvatarChain } from "../../constants/avatars";
 import { Suspense } from "react";
 import { 
@@ -12,15 +13,17 @@ import {
 
 interface UpcomingMeetingCardProps {
   meeting: UpcomingMeeting;
+  groups: any[];
 }
 
-export function UpcomingMeetingCard({ meeting }: UpcomingMeetingCardProps) {
-  // Since this card is fully static, we default to a standard visual style
-  // The dynamic glows/borders are removed so the shell can be cached forever
+export function UpcomingMeetingCard({ meeting, groups }: UpcomingMeetingCardProps) {
+  const { isArrived, isStartingSoon } = calculateMeetingStatus(meeting.dateTime);
+  const variant = isArrived ? "glass" : isStartingSoon ? "gradient" : "default";
+
   return (
     <Card
-      variant="default"
-      className="w-full p-4 sm:p-5 flex flex-col gap-4 transition-all duration-normal ease-standard transform-gpu hover:border-primary-hover bg-black-soft-subtle border border-border opacity-85 hover:opacity-100"
+      variant={variant}
+      className="w-full rounded-soft p-4 sm:p-5 flex flex-col gap-4 border transition-all duration-normal ease-standard transform-gpu"
     >
       <div className="flex items-start sm:items-center justify-between w-full gap-4">
         <div className="flex w-full justify-between">
@@ -33,7 +36,9 @@ export function UpcomingMeetingCard({ meeting }: UpcomingMeetingCardProps) {
             <CardDescription className="text-sm font-medium text-muted-foreground flex flex-wrap items-center gap-2 mt-1">
               <div className="flex items-center gap-1.5 whitespace-nowrap">
                 <AlarmClock size={16} className="text-primary-light" />
-                <span>{meeting.dateTime.replace("T", " ")}</span>
+                <span>{meeting.date}</span>
+                <span className="opacity-50 mx-1">•</span>
+                <span className="whitespace-nowrap">{meeting.time}</span>
               </div>
               
               <Suspense fallback={<div className="w-12 h-5 bg-muted rounded animate-pulse" />}>
@@ -45,11 +50,11 @@ export function UpcomingMeetingCard({ meeting }: UpcomingMeetingCardProps) {
           <div className="hidden sm:flex items-center gap-4 flex-shrink-0">
             <AvatarChain />
             <Suspense fallback={<div className="w-24 h-10 bg-muted rounded animate-pulse" />}>
-              <DynamicMeetingActions dateTime={meeting.dateTime} />
+              <DynamicMeetingActions dateTime={meeting.dateTime} meetingId={meeting.id} />
             </Suspense>
           </div>
         </div>
-        <MeetingActionsPopover title={meeting.title} dateTime={meeting.dateTime} meetingId={meeting.id} variant="active" />
+        <MeetingActionsPopover title={meeting.title} dateTime={meeting.dateTime} meetingId={meeting.id} passcode={meeting.passcode} variant="active" groups={groups} />
       </div>
 
       <div className="sm:hidden w-full px-1">
@@ -60,7 +65,7 @@ export function UpcomingMeetingCard({ meeting }: UpcomingMeetingCardProps) {
 
       <div className="sm:hidden w-full pt-1">
         <Suspense fallback={<div className="w-full h-10 bg-muted rounded animate-pulse" />}>
-          <DynamicMeetingActions dateTime={meeting.dateTime} />
+          <DynamicMeetingActions dateTime={meeting.dateTime} meetingId={meeting.id} />
         </Suspense>
       </div>
 

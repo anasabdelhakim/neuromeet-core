@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useActionState, useEffect, useMemo } from "react";
+import { useFormStatus } from "react-dom";
+import { createMeetingAction } from "../actions/meeting-actions";
 import {
   Cards,
   gradientMap,
@@ -15,7 +17,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from "@/src/components/ui/card";
 import {
   Dialog,
@@ -28,11 +29,7 @@ import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { Button } from "@/src/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/src/components/ui/field";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/src/components/ui/input-group";
+
 import { Calendar } from "@/src/components/ui/calendar";
 import {
   Popover,
@@ -40,13 +37,29 @@ import {
   PopoverTrigger,
 } from "@/src/components/ui/popover";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Clock2Icon } from "lucide-react";
+import { Calendar as CalendarIcon, Clock2Icon, ChevronDownIcon } from "lucide-react";
 import { cn } from "@/src/lib/utils";
+
+function SubmitButton({ cta, btnClass }: { cta: string, btnClass: string }) {
+  const { pending } = useFormStatus();
+  return (
+    <Button
+      type="submit"
+      disabled={pending}
+      className={cn(
+        "w-full h-12 mt-2 text-white font-semibold text-base shadow-hard transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border hover:brightness-110",
+        btnClass,
+      )}
+    >
+      {pending ? "Please wait..." : cta}
+    </Button>
+  );
+}
 
 export function QuickActions() {
   const [activeCardId, setActiveCardId] = useState<string | null>("new");
   const [isOpen, setIsOpen] = useState(false);
-  const [date, setDate] = useState<Date>();
+
 
   const activeCard = Cards.find((c) => c.id === activeCardId) || Cards[0];
 
@@ -54,6 +67,25 @@ export function QuickActions() {
   const activeButtonClass = buttonGradientMap[activeCard.id] || "";
   const activeDialogClass = dialogBgMap[activeCard.id] || "";
   const ActiveIcon = activeCard.icon;
+
+  const [date, setDate] = useState<Date>();
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [timeFrom, setTimeFrom] = useState("");
+  const [state, action] = useActionState(createMeetingAction, { success: true, errorMessage: "" });
+
+  const scheduledAtIso = useMemo(() => {
+    if (!date || !timeFrom) return "";
+    const d = new Date(date);
+    const [hours, minutes] = timeFrom.split(":").map(Number);
+    d.setHours(hours, minutes, 0, 0);
+    return d.toISOString();
+  }, [date, timeFrom]);
+
+  useEffect(() => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 2); // Set default start time 2 mins in the future
+    setTimeFrom(`${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`);
+  }, []);
 
   return (
     <>
@@ -164,101 +196,77 @@ export function QuickActions() {
               </div>
             )}
             {activeCard.id === "schedule" && (
-              <div className="space-y-4">
+              <form action={action} className="space-y-4">
+                <input type="hidden" name="type" value="schedule" />
+                <input type="hidden" name="scheduledAtIso" value={scheduledAtIso} />
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-muted-foreground-mid">
                     Lecture Topic
                   </Label>
                   <Input
+                    name="title"
+                    required
                     placeholder="e.g. Advanced AI Architecture"
                     className="bg-black-soft-muted  focus-visible:ring-action-schedule-input focus-visible:border-action-schedule transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-muted-foreground-mid">
-                    Date & Time
-                  </Label>
-                  <Popover>
-                    <PopoverTrigger
+                <FieldGroup className="flex flex-row gap-4 w-full">
+                  <Field className="flex-1">
+                    <FieldLabel className="text-sm font-medium text-muted-foreground-mid">Date</FieldLabel>
+                    <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                      <PopoverTrigger render={
+                        <Button
+                          variant="outline"
                           className={cn(
-                            "w-full mb-2 border-2 flex items-center justify-start bg-black-soft-muted  text-left font-normal h-12 px-4 rounded-soft hover:bg-black-soft-deep hover:text-white transition-all duration-fast ease-standard focus-visible:ring-action-schedule-input focus-visible:border-action-schedule outline-none",
+                            "w-full justify-between font-normal bg-black-soft-muted h-12 border-none rounded-soft hover:bg-black-soft-deep hover:text-white transition-all duration-fast ease-standard focus-visible:ring-action-schedule-input outline-none",
                             !date && "text-muted-foreground",
                           )}
                         >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
                           {date ? format(date, "PPP") : <span>Pick a date</span>}
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto p-0 border-none bg-transparent shadow-none"
-                      align="start"
-                    >
-                      <Card className="mx-auto w-fit bg-card backdrop-blur-3xl  text-white shadow-hard rounded-soft overflow-hidden">
-                        <CardContent className="p-0">
-                          <Calendar
-                            mode="single"
-                            selected={date}
-                            onSelect={setDate}
-                            initialFocus
-                            className="p-3"
-                          />
-                        </CardContent>
-                        <CardFooter className="border-t border-border bg-black-soft-muted p-4">
-                          <FieldGroup className="w-full gap-4">
-                            <Field className="space-y-1">
-                              <FieldLabel
-                                htmlFor="time-from"
-                                className="text-xs text-muted-foreground"
-                              >
-                                Start Time
-                              </FieldLabel>
-                              <InputGroup className="bg-black-soft-muted  rounded-soft">
-                                <InputGroupInput
-                                  id="time-from"
-                                  type="time"
-                                  step="1"
-                                  defaultValue="10:30:00"
-                                  className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none text-white h-9 [color-scheme:dark]"
-                                />
-                                <InputGroupAddon>
-                                  <Clock2Icon className="text-muted-foreground h-4 w-4" />
-                                </InputGroupAddon>
-                              </InputGroup>
-                            </Field>
-                            <Field className="space-y-1">
-                              <FieldLabel
-                                htmlFor="time-to"
-                                className="text-xs text-muted-foreground"
-                              >
-                                End Time
-                              </FieldLabel>
-                              <InputGroup className="bg-black-soft-muted  rounded-soft">
-                                <InputGroupInput
-                                  id="time-to"
-                                  type="time"
-                                  step="1"
-                                  defaultValue="12:30:00"
-                                  className="appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none text-white h-9 [color-scheme:dark]"
-                                />
-                                <InputGroupAddon>
-                                  <Clock2Icon className="text-muted-foreground h-4 w-4" />
-                                </InputGroupAddon>
-                              </InputGroup>
-                            </Field>
-                          </FieldGroup>
-                        </CardFooter>
-                      </Card>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <Button
-                  className={cn(
-                    "w-full h-12 mt-2 text-white font-semibold text-base shadow-hard transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border  hover:brightness-110",
-                    activeButtonClass,
-                  )}
-                >
-                  {activeCard.cta}
-                </Button>
-              </div>
+                          <ChevronDownIcon className="h-4 w-4 opacity-50" />
+                        </Button>
+                      } />
+                      <PopoverContent
+                        className="w-auto p-0 border-none bg-transparent shadow-none"
+                        align="start"
+                      >
+                        <Card className="mx-auto w-fit bg-card backdrop-blur-3xl text-white shadow-hard rounded-soft overflow-hidden">
+                          <CardContent className="p-0">
+                            <Calendar
+                              mode="single"
+                              selected={date}
+                              onSelect={(d) => {
+                                setDate(d);
+                                setIsCalendarOpen(false);
+                              }}
+                              initialFocus
+                              className="p-3"
+                            />
+                          </CardContent>
+                        </Card>
+                      </PopoverContent>
+                    </Popover>
+                  </Field>
+                </FieldGroup>
+                <FieldGroup className="flex flex-row gap-4 w-full">
+                  <Field className="flex-1">
+                    <FieldLabel htmlFor="time-from" className="text-sm font-medium text-muted-foreground-mid">
+                      Start Time
+                    </FieldLabel>
+                    <Input
+                      type="time"
+                      id="time-from"
+                      name="timeFrom"
+                      value={timeFrom}
+                      onChange={(e) => setTimeFrom(e.target.value)}
+                      suppressHydrationWarning
+                      className="appearance-none bg-black-soft-muted h-12 border-none rounded-soft [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none focus-visible:ring-action-schedule-input text-white w-full px-4"
+                    />
+                  </Field>
+                </FieldGroup>
+                {state?.errorMessage && <p className="text-sm text-status-error">{state.errorMessage}</p>}
+                <SubmitButton cta={activeCard.cta} btnClass={activeButtonClass} />
+              </form>
             )}
           </div>
         </DialogContent>

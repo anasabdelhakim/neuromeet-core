@@ -13,30 +13,42 @@ export class ApiError extends Error {
   }
 }
 
+let refreshPromise: Promise<string | null> | null = null;
+
 async function handleTokenRefresh(): Promise<string | null> {
-  try {
-    const cookieStore = await cookies();
-    const refreshToken = cookieStore.get('refresh_token')?.value;
-
-    if (!refreshToken) return null;
-
-    const res = await fetch(`${BASE_URL}/auth/refresh-token`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken }),
-    });
-
-    if (!res.ok) {
-      await clearAuthCookies();
-      return null;
-    }
-
-    const data = await res.json();
-    await setAuthCookies(data.access_token, data.refresh_token || refreshToken);
-    return data.access_token;
-  } catch (error) {
-    return null;
+  if (refreshPromise) {
+    return refreshPromise;
   }
+
+  refreshPromise = (async () => {
+    try {
+      const cookieStore = await cookies();
+      const refreshToken = cookieStore.get('refresh_token')?.value;
+
+      if (!refreshToken) return null;
+
+      const res = await fetch(`${BASE_URL}/auth/refresh-token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken }),
+      });
+
+      if (!res.ok) {
+        await clearAuthCookies();
+        return null;
+      }
+
+      const data = await res.json();
+      await setAuthCookies(data.access_token, data.refresh_token || refreshToken);
+      return data.access_token;
+    } catch (error) {
+      return null;
+    } finally {
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
 }
 
 async function request<T>(

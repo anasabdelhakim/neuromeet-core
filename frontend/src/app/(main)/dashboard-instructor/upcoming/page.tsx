@@ -4,14 +4,6 @@ import { UpcomingMeetingsList } from "@/src/features/dashboard-instructor/upcomi
 const UpcomingMeetingsPage = () => {
   return (
     <div className="flex flex-col gap-6 animate-page-entrance">
-      {/* Static Header */}
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Upcoming Meetings</h2>
-        <p className="text-muted-foreground mt-1">
-          View and prepare for your scheduled sessions
-        </p>
-      </div>
-
       {/* Dynamic Content */}
       <Suspense fallback={<UpcomingMeetingsSkeleton />}>
         <UpcomingMeetingsList />

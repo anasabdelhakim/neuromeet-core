@@ -41,10 +41,10 @@ export class AuthService {
 
     // PERF: Run password hashing and OTP generation in parallel.
     const [hashedPassword, code] = await Promise.all([
-      Bun.password.hash(signUpDto.password),
+      (Bun.password as any).hash(signUpDto.password, { algorithm: 'bcrypt', cost: 10 }),
       Promise.resolve(randomInt(0, 1000000).toString().padStart(6, '0')),
     ]);
-    const hashedCode = await Bun.password.hash(code);
+    const hashedCode = await (Bun.password as any).hash(code, { algorithm: 'bcrypt', cost: 4 });
 
     // RESTORED: Set otpExpire to prevent infinite brute-force windows
     const otpExpire = new Date(Date.now() + AUTH_CONSTANTS.OTP_EXPIRY_MS);
@@ -96,7 +96,7 @@ export class AuthService {
     }
 
     const code = randomInt(0, 1000000).toString().padStart(6, '0');
-    const hashedCode = await Bun.password.hash(code);
+    const hashedCode = await (Bun.password as any).hash(code, { algorithm: 'bcrypt', cost: 4 });
     const otpExpire = new Date(Date.now() + AUTH_CONSTANTS.OTP_EXPIRY_MS);
 
     await this.prisma.user.update({
@@ -178,7 +178,7 @@ export class AuthService {
       },
     );
 
-    const hashedRefreshToken = await Bun.password.hash(refreshToken);
+    const hashedRefreshToken = await (Bun.password as any).hash(refreshToken, { algorithm: 'bcrypt', cost: 10 });
 
     await this.prisma.user.update({
       where: { email: data.email },
@@ -292,7 +292,7 @@ export class AuthService {
       },
     );
 
-    const hashedRefreshToken = await Bun.password.hash(refreshToken);
+    const hashedRefreshToken = await (Bun.password as any).hash(refreshToken, { algorithm: 'bcrypt', cost: 10 });
     await this.prisma.user.update({
       where: { id: user.id },
       data: { refreshToken: hashedRefreshToken },
@@ -330,7 +330,7 @@ export class AuthService {
     }
 
     const code = randomInt(0, 1000000).toString().padStart(6, '0');
-    const hashedCode = await Bun.password.hash(code);
+    const hashedCode = await (Bun.password as any).hash(code, { algorithm: 'bcrypt', cost: 4 });
     // RESTORED: Expiration timestamp for the reset OTP
     const otpExpire = new Date(Date.now() + AUTH_CONSTANTS.OTP_EXPIRY_MS);
 
@@ -453,7 +453,7 @@ export class AuthService {
       );
     }
 
-    const hashedPassword = await Bun.password.hash(dto.password);
+    const hashedPassword = await (Bun.password as any).hash(dto.password, { algorithm: 'bcrypt', cost: 10 });
 
     await this.prisma.user.update({
       where: { email: dto.email },
@@ -548,7 +548,7 @@ export class AuthService {
         },
       );
 
-      const hashedNewRefresh = await Bun.password.hash(newRefreshToken);
+      const hashedNewRefresh = await (Bun.password as any).hash(newRefreshToken, { algorithm: 'bcrypt', cost: 10 });
       await this.prisma.user.update({
         where: { id: user.id },
         data: { refreshToken: hashedNewRefresh },

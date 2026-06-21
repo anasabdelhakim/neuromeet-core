@@ -2,7 +2,7 @@ import { PreviousMeetingsList } from "@/src/features/dashboard-instructor/previo
 
 const PreviousMeetingsPage = () => {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 animate-page-entrance">
       <PreviousMeetingsList />
     </div>
   );

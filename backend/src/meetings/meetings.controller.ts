@@ -46,6 +46,31 @@ export class MeetingsController {
     return this.meetingsService.getAllMeetings(req.user.id);
   }
 
+  @Get('upcoming')
+  getUpcomingMeetings(@Req() req: any) {
+    return this.meetingsService.getUpcomingMeetings(req.user.id);
+  }
+
+  @Get('today')
+  getTodayMeetings(@Req() req: any) {
+    return this.meetingsService.getTodayMeetings(req.user.id);
+  }
+
+  @Get('previous')
+  getPreviousMeetings(@Req() req: any) {
+    return this.meetingsService.getPreviousMeetings(req.user.id);
+  }
+
+  @Get('student/upcoming')
+  getStudentUpcomingMeetings(@Req() req: any) {
+    return this.meetingsService.getStudentUpcomingMeetings(req.user.id);
+  }
+
+  @Get('student/previous')
+  getStudentPreviousMeetings(@Req() req: any) {
+    return this.meetingsService.getStudentPreviousMeetings(req.user.id);
+  }
+
   @Get(':id')
   getMeetingById(@Param('id') id: string, @Req() req: any) {
     return this.meetingsService.getMeetingById(id, req.user.id);
@@ -63,6 +88,25 @@ export class MeetingsController {
   @Delete(':id')
   deleteMeeting(@Param('id') id: string, @Req() req: any) {
     return this.meetingsService.deleteMeeting(id, req.user.id);
+  }
+
+  @Post(':id/end')
+  endMeeting(@Param('id') id: string, @Req() req: any) {
+    return this.meetingsService.endMeeting(id, req.user.id);
+  }
+
+  @Post(':id/start')
+  startMeeting(@Param('id') id: string, @Req() req: any) {
+    return this.meetingsService.startMeeting(id, req.user.id);
+  }
+
+  @Post(':id/share')
+  shareMeeting(
+    @Param('id') id: string,
+    @Req() req: any,
+    @Body('groupId') groupId: string,
+  ) {
+    return this.meetingsService.shareMeeting(id, req.user.id, groupId);
   }
 
   // =========================

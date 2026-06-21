@@ -35,6 +35,7 @@ import { updateGroupAction, deleteGroupAction } from "../actions/groups-actions"
 
 export function GroupCardActions({ group }: { group: Group }) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, startDelete] = useTransition();
 
   const updateActionWithId = updateGroupAction.bind(null, group.id);
@@ -50,13 +51,14 @@ export function GroupCardActions({ group }: { group: Group }) {
   const handleDelete = () => {
     startDelete(async () => {
       await deleteGroupAction(group.id);
+      setIsDeleteDialogOpen(false);
     });
   };
 
 
   return (
     <>
-      <AlertDialog>
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
@@ -70,11 +72,9 @@ export function GroupCardActions({ group }: { group: Group }) {
               <Edit2 className="w-4 h-4" /> Edit Group
             </DropdownMenuItem>
 
-            <AlertDialogTrigger render={
-              <DropdownMenuItem variant="destructive" className="w-full justify-start">
-                <Trash2 className="w-4 h-4 mr-2" /> Delete Group
-              </DropdownMenuItem>
-            } />
+            <DropdownMenuItem variant="destructive" onClick={() => setIsDeleteDialogOpen(true)}>
+              <Trash2 className="w-4 h-4 mr-2" /> Delete Group
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 

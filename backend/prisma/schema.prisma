@@ -186,6 +186,8 @@ model Meeting {
   roomCode        String?       @unique
   isInstant       Boolean       @default(false)
   isGroupLocked   Boolean       @default(false)
+  passcode        String?
+  emailSent       Boolean       @default(false)
   
   // Relations
   host         User                 @relation("MeetingHost", fields: [hostId], references: [id])

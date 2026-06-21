@@ -1,9 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-// Bun.password is a built-in global — no import needed.
 import { randomBytes } from 'crypto';
-import { AUTH_CONSTANTS } from 'src/auth/auth.constants'; // Make sure this path is correct
-import { PrismaService } from 'src/database/database.service'; // Make sure this path is correct
+// Bun.password is a built-in global in Bun environments
+import { AUTH_CONSTANTS } from 'src/auth/auth.constants'; 
+import { PrismaService } from 'src/database/database.service';
 
 type UserData = {
   userId: string;
@@ -12,145 +12,74 @@ type UserData = {
   photo: string;
 };
 
-// SECURITY: Generate a cryptographically secure random password for OAuth users.
 function generateRandomPassword(): string {
   return randomBytes(32).toString('base64');
 }
 
 @Injectable()
 export class OAuthService {
-  // ✅ Renamed to OAuthService to avoid DI collision
+  private readonly logger = new Logger(OAuthService.name);
+
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
   ) {}
 
+  // 1. ONLY finds or creates the user. NO JWTs generated here.
   async validateUser(userData: UserData): Promise<any> {
-    // PERF: Only select what we need
     const user = await this.prisma.user.findUnique({
       where: { email: userData.email },
       select: { id: true, email: true, name: true, role: true, password: true },
     });
 
-    // ================= SIGN UP =================
     if (!user) {
-      const password = await Bun.password.hash(generateRandomPassword());
+      const password = await (Bun.password as any).hash(generateRandomPassword(), {
+        algorithm: 'bcrypt',
+        cost: 4,
+      });
 
       const newUser = await this.prisma.user.create({
         data: {
           email: userData.email,
           name: userData.name,
           password,
-          role: 'STUDENT', // ✅ Fixed: Matches your Prisma schema default
-          avatarUrl: userData.photo, // ✅ Save Google profile picture
+          role: 'STUDENT', 
+          avatarUrl: userData.photo, 
         },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          role: true,
-          created_at: true, // ✅ Fixed: Matches your Prisma schema column
-        },
+        select: { id: true, email: true, name: true, role: true, created_at: true },
       });
 
-      const payload = {
-        id: newUser.id,
-        email: newUser.email,
-        role: newUser.role,
-      };
-
-      // PERF: Generate both tokens in parallel
-      const [token, refresh_token] = await Promise.all([
-        this.jwtService.signAsync(payload, {
-          secret: process.env.JWT_SECRET,
-          expiresIn: AUTH_CONSTANTS.ACCESS_TOKEN_EXPIRY,
-        }),
-        this.jwtService.signAsync(
-          { ...payload, countEx: AUTH_CONSTANTS.REFRESH_TOKEN_MAX_USES },
-          {
-            secret: process.env.JWT_REFRESH_SECRET,
-            expiresIn: AUTH_CONSTANTS.REFRESH_TOKEN_EXPIRY,
-          },
-        ),
-      ]);
-
-      const hashedRefreshToken = await Bun.password.hash(refresh_token);
-
-      await this.prisma.user.update({
-        where: { id: newUser.id },
-        data: { refreshToken: hashedRefreshToken },
-      });
-
-      return {
-        status: 200,
-        message: 'User created successfully',
-        data: newUser,
-        access_token: token,
-        refresh_token,
-      };
+      return { status: 200, message: 'User created successfully', data: newUser };
     }
 
-    // ================= SIGN IN =================
-    // Update their avatar URL in case they changed it on Google
-    await this.prisma.user.update({
+    // Fire-and-forget avatar update
+    this.prisma.user.update({
       where: { id: user.id },
       data: { avatarUrl: userData.photo },
-    });
-
-    const payload = {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    };
-
-    const [token, refresh_token] = await Promise.all([
-      this.jwtService.signAsync(payload, {
-        secret: process.env.JWT_SECRET,
-        expiresIn: AUTH_CONSTANTS.ACCESS_TOKEN_EXPIRY,
-      }),
-      this.jwtService.signAsync(
-        { ...payload, countEx: AUTH_CONSTANTS.REFRESH_TOKEN_MAX_USES },
-        {
-          secret: process.env.JWT_REFRESH_SECRET,
-          expiresIn: AUTH_CONSTANTS.REFRESH_TOKEN_EXPIRY,
-        },
-      ),
-    ]);
-
-    const hashedRefreshToken = await Bun.password.hash(refresh_token);
-
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: { refreshToken: hashedRefreshToken },
-    });
+    }).catch(err => this.logger.error(`Avatar update failed: ${err.message}`));
 
     const { password: _, ...safeUser } = user;
-
-    return {
-      status: 200,
-      message: 'User logged in successfully',
-      data: safeUser,
-      access_token: token,
-      refresh_token,
-    };
+    return { status: 200, message: 'User logged in successfully', data: safeUser };
   }
+
+  // 2. Generates the quick, temporary token for the URL redirect
   async generateHandoffToken(userId: string): Promise<string> {
     return this.jwtService.signAsync(
-      { id: userId, purpose: 'handoff' }, // SECURITY: Added purpose to prevent Token Confusion
+      { id: userId, purpose: 'handoff' }, 
       {
         secret: process.env.JWT_SECRET,
-        expiresIn: AUTH_CONSTANTS.OAUTH_HANDOFF_TOKEN_EXPIRY,
+        expiresIn: AUTH_CONSTANTS.OAUTH_HANDOFF_TOKEN_EXPIRY, // Should be ~1 minute
       },
     );
   }
 
+  // 3. The ONLY place where real tokens are generated
   async exchangeHandoffToken(handoffToken: string): Promise<any> {
     try {
       const payload = await this.jwtService.verifyAsync(handoffToken, {
         secret: process.env.JWT_SECRET,
       });
 
-      // SECURITY: Reject any token that wasn't specifically generated for handoff
       if (payload.purpose !== 'handoff') {
         throw new UnauthorizedException('Invalid token type');
       }
@@ -160,18 +89,11 @@ export class OAuthService {
         select: { id: true, email: true, name: true, role: true },
       });
 
-      if (!user) {
-        throw new UnauthorizedException('User not found');
-      }
+      if (!user) throw new UnauthorizedException('User not found');
 
-      // Generate the final access_token and refresh_token
-      const tokenPayload = {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      };
+      const tokenPayload = { id: user.id, email: user.email, role: user.role };
 
-      const [token, refresh_token] = await Promise.all([
+      const [access_token, refresh_token] = await Promise.all([
         this.jwtService.signAsync(tokenPayload, {
           secret: process.env.JWT_SECRET,
           expiresIn: AUTH_CONSTANTS.ACCESS_TOKEN_EXPIRY,
@@ -185,7 +107,10 @@ export class OAuthService {
         ),
       ]);
 
-      const hashedRefreshToken = await Bun.password.hash(refresh_token);
+      const hashedRefreshToken = await (Bun.password as any).hash(refresh_token, {
+        algorithm: 'bcrypt',
+        cost: 10,
+      });
 
       await this.prisma.user.update({
         where: { id: user.id },
@@ -196,7 +121,7 @@ export class OAuthService {
         status: 200,
         message: 'Tokens exchanged successfully',
         data: user,
-        access_token: token,
+        access_token,
         refresh_token,
       };
     } catch (error) {

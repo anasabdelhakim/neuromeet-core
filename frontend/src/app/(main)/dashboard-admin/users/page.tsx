@@ -9,9 +9,10 @@ async function AdminUsersLoader() {
 
 export default function AdminUsersPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex flex-col gap-4">
+    <div className="animate-page-entrance">
+      <Suspense
+        fallback={
+          <div className="flex flex-col gap-4">
           {[1, 2, 3, 4, 5].map((id) => (
             <div
               key={id}
@@ -22,6 +23,7 @@ export default function AdminUsersPage() {
       }
     >
       <AdminUsersLoader />
-    </Suspense>
+      </Suspense>
+    </div>
   );
 }

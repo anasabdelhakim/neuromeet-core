@@ -3,7 +3,7 @@ import { RecordingsList } from "@/src/features/dashboard-instructor/recordings/c
 
 export default function StudentRecordingsPage() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 animate-page-entrance">
       <Suspense
         fallback={
           <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-6">

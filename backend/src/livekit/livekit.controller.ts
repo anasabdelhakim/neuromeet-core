@@ -10,19 +10,24 @@ export class LivekitController {
   ) {}
 
   @Get('token')
-  async getToken(@Query('room') room: string, @Query('user') user: string) {
-    console.log(`\n\n[🔥 LIVEKIT CONTROLLER] Someone requested a token for room: ${room}`);
-    console.log(`[🔥 LIVEKIT CONTROLLER] Dispatching AI Bot now...\n\n`);
+  async getToken(
+    @Query('room') room: string, 
+    @Query('user') user: string,
+    @Query('role') role: string = 'STUDENT'
+  ) {
+    console.log(`\n\n[🔥 LIVEKIT CONTROLLER] Token requested for room: ${room} by ${user} (Role: ${role})`);
 
-    // 1. Dispatch the AI bot to the room in the background!
-    // We don't await this so it doesn't block the user from getting their token
-    this.liveKitBotService.dispatchBotToRoom(room).catch(err => {
-      console.warn('Failed to dispatch bot:', err);
-    });
+    // Only dispatch the AI bot if the instructor is starting the meeting
+    if (role === 'INSTRUCTOR') {
+      console.log(`[🔥 LIVEKIT CONTROLLER] Dispatching AI Bot for Instructor...\n\n`);
+      this.liveKitBotService.dispatchBotToRoom(room).catch(err => {
+        console.warn('Failed to dispatch bot:', err);
+      });
+    }
 
-    // 2. Return the token for the user
+    // Return the token with metadata
     return {
-      token: await this.livekitService.createToken(room, user),
+      token: await this.livekitService.createToken(room, user, role),
     };
   }
 }

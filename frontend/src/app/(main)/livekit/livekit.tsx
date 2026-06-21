@@ -21,20 +21,21 @@ export default async function Livekit(props: {
   searchParams: Promise<{ room?: string; user?: string }>;
 }) {
   const params = await props.searchParams;
-  // 1. Get room and user from URL, or use defaults
   const room = params?.room || "test-room";
-  const user = params?.user || `user-10`;
 
-  // Determine if current user is an instructor by decoding our JWT cookie
+  // Extract real user identity from the JWT cookie
   const { accessToken } = await getAuthCookies();
   const payload = accessToken ? parseJwt(accessToken) : null;
   const isInstructor = payload?.role === "INSTRUCTOR";
+  // Use the user's real name or email as their LiveKit identity
+  const user = params?.user || payload?.name || payload?.email || `user-${Date.now()}`;
 
-  // 2. Fetch the token from your NestJS backend
+  // Fetch the token from the NestJS backend
   const backendUrl = process.env.NESTJS_URL || "http://127.0.0.1:4000/api/v1";
+  const role = payload?.role || "STUDENT";
   const res = await fetch(
-    `${backendUrl}/livekit/token?room=${room}&user=${user}`,
-    { cache: "no-store" }, // Ensure we get a fresh token every time
+    `${backendUrl}/livekit/token?room=${room}&user=${encodeURIComponent(user)}&role=${role}`,
+    { cache: "no-store" },
   );
 
   if (!res.ok) {
@@ -43,6 +44,5 @@ export default async function Livekit(props: {
 
   const data = await res.json();
 
-  // 3. Pass the fetched token to your component
   return <MeetingPage token={data.token} isInstructor={isInstructor} room={room} />;
 }

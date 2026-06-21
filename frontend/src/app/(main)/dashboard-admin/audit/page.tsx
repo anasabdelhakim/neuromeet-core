@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardTitle } from "@/src/components/
 
 export default function AdminAuditPage() {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 animate-page-entrance">
       <Card variant="gradient" className="sm:py-6 sm:px-4 py-4 px-0 relative overflow-hidden">
         <CardContent className="relative z-10">
           <CardTitle className="text-2xl sm:text-3xl font-black tracking-tighter text-white-soft-muted">

@@ -2,12 +2,67 @@
 import { useRouter } from "next/navigation";
 import {
   LiveKitRoom,
-  VideoConference,
   RoomAudioRenderer,
+  GridLayout,
+  ParticipantTile,
+  ControlBar,
+  useTracks,
+  useTrackRefContext,
 } from "@livekit/components-react";
+import { Track } from "livekit-client";
 import "@livekit/components-styles";
 import { EngagementDashboard } from "./EngagementDashboard";
 import { endMeetingAction } from "@/src/app/(main)/livekit/actions";
+
+// --- CUSTOM TILE TO SHOW INSTRUCTOR BADGE ---
+function CustomParticipantTile() {
+  const trackRef = useTrackRefContext();
+  const participant = trackRef?.participant;
+  
+  let isInstructor = false;
+  try {
+    if (participant?.metadata) {
+      const meta = JSON.parse(participant.metadata);
+      isInstructor = meta.role === "INSTRUCTOR";
+    }
+  } catch (e) {
+    // ignore parse errors
+  }
+
+  return (
+    <ParticipantTile>
+      {isInstructor && (
+        <div className="absolute top-3 right-3 bg-primary text-white text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 z-[100] shadow-md border border-primary-light">
+          👑 Instructor
+        </div>
+      )}
+    </ParticipantTile>
+  );
+}
+
+// --- CUSTOM VIDEO CONFERENCE LAYOUT ---
+function CustomVideoConference() {
+  const tracks = useTracks(
+    [
+      { source: Track.Source.Camera, withPlaceholder: true },
+      { source: Track.Source.ScreenShare, withPlaceholder: false },
+    ],
+    { updateOnlyOn: [], onlySubscribed: false }
+  );
+
+  return (
+    <div className="flex flex-col h-full w-full bg-background relative">
+      <div className="flex-1 overflow-hidden p-2">
+        <GridLayout tracks={tracks} style={{ height: '100%' }}>
+          <CustomParticipantTile />
+        </GridLayout>
+      </div>
+      <div className="w-full flex-shrink-0">
+        <ControlBar />
+      </div>
+    </div>
+  );
+}
 
 interface MeetingPageProps {
   token: string;
@@ -46,7 +101,7 @@ export default function MeetingPage({ token, room, isInstructor = false }: Meeti
       <div className="flex h-screen overflow-hidden">
         {/* Main video grid — takes remaining width */}
         <div className="flex-1 min-w-0">
-          <VideoConference />
+          <CustomVideoConference />
           <RoomAudioRenderer />
         </div>
 

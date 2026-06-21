@@ -1,9 +1,11 @@
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
-import { Play, NotebookPen } from "lucide-react";
+import { Play } from "lucide-react";
 import { StatusBar } from "./StatusBar";
+import { StartMeetingButton } from "./StartMeetingButton";
 import { calculateMeetingStatus } from "../helper/time-calc";
 import { connection } from "next/server";
+import { startMeetingAction } from "../../home/actions/meeting-actions";
 
 export async function DynamicMeetingBadge({ dateTime }: { dateTime: string }) {
   await connection();
@@ -30,28 +32,22 @@ export async function DynamicMeetingBadge({ dateTime }: { dateTime: string }) {
   return null;
 }
 
-export async function DynamicMeetingActions({ dateTime }: { dateTime: string }) {
+export async function DynamicMeetingActions({ dateTime, meetingId }: { dateTime: string, meetingId: string }) {
   await connection();
   const { isArrived } = calculateMeetingStatus(dateTime);
+
+  const startAction = startMeetingAction.bind(null, meetingId);
 
   return (
     <div className="flex w-full sm:w-auto items-center gap-2 flex-shrink-0">
       <div className="flex flex-1 sm:flex-initial gap-2">
-        {!isArrived && (
-          <Button variant="outline" className="flex-1 sm:w-auto border-border">
-            <NotebookPen size={16} className="mr-2 hidden sm:inline-block" />
-            Prepare
-          </Button>
-        )}
-
         {isArrived ? (
-          <Button variant="live" className="flex-1 sm:w-auto">
-            <Play size={16} fill="currentColor" className="mr-2" />
-            Join Now
-          </Button>
+          <form action={startAction} className="flex-1 sm:w-auto">
+            <StartMeetingButton />
+          </form>
         ) : (
-          <Button variant="default" className="flex-1 sm:w-auto">
-            Start
+          <Button variant="outline" className="flex-1 sm:w-auto text-muted-foreground opacity-50 cursor-not-allowed">
+            Starting Soon
           </Button>
         )}
       </div>

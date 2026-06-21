@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import { Button } from "@/src/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/src/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,36 +20,59 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/src/components/ui/alert-dialog";
-import { MoreVertical, Copy, CheckSquare, Pencil, Trash2 } from "lucide-react";
+import { MoreVertical, Copy, CheckSquare, Pencil, Trash2, Share2 } from "lucide-react";
+import { ShareMeetingModal } from "./ShareMeetingModal";
 
-type PopoverVariant = "active" | "previous";
+type PopoverVariant = "active" | "history";
 
 interface MeetingActionsPopoverProps {
-  meetingId: string; // Pass the ID here
-  title: string;
-  dateTime: string;
+  title?: string;
+  dateTime?: string;
+  meetingId: string;
+  passcode?: string;
   variant?: PopoverVariant;
   onEdit?: () => void;
   onCopyInvitation?: () => void;
+  onShareToGroup?: () => void;
+  groups?: any[];
 }
 
 export function MeetingActionsPopover({
+  title = "Meeting",
+  dateTime,
   meetingId,
+  passcode,
   variant = "active",
   onEdit,
   onCopyInvitation,
+  onShareToGroup,
+  groups = [],
 }: MeetingActionsPopoverProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
   const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
     if (!open) {
-      setTimeout(() => setIsCopied(false), 300);
+      setTimeout(() => setIsCopied(false), 200);
     }
   };
 
-  const handleCopy = () => {
-      setIsCopied(true);
-      onCopyInvitation?.();
+  const handleCopy = async () => {
+      try {
+        const joinUrl = `${window.location.origin}/meeting/join/${meetingId}`;
+        const displayPasscode = passcode && passcode.startsWith("$argon2id") 
+          ? "[Hidden - Please re-share to reset]" 
+          : passcode || "Not generated yet";
+        const copyText = `Join my meeting: ${title}\nLink: ${joinUrl}\nPasscode: ${displayPasscode}`;
+        await navigator.clipboard.writeText(copyText);
+        setIsCopied(true);
+        onCopyInvitation?.();
+      } catch (err) {
+        console.error("Failed to copy link", err);
+      }
   };
 
   // Define the deletion logic here or call a Server Action
@@ -53,9 +82,9 @@ export function MeetingActionsPopover({
   };
 
   return (
-    <AlertDialog>
-      <Popover onOpenChange={handleOpenChange}>
-        <PopoverTrigger
+    <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <DropdownMenu onOpenChange={handleOpenChange}>
+        <DropdownMenuTrigger
           render={
             <Button
               variant="ghost"
@@ -67,48 +96,48 @@ export function MeetingActionsPopover({
           }
         />
 
-        <PopoverContent align="end" className="w-44 p-1">
+        <DropdownMenuContent align="end" className="w-48">
           {variant === "active" && (
             <>
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-sm font-medium transition-all duration-fast"
-                onClick={handleCopy}
-                disabled={isCopied}
-              >
+              <DropdownMenuItem onClick={handleCopy} disabled={isCopied}>
                 {isCopied ? (
                   <>
                     <CheckSquare size={16} className="mr-2 text-status-success" />
-                    <span className="text-status-success">Copied!</span>
+                    <span className="text-status-success">Link Copied!</span>
                   </>
                 ) : (
                   <>
-                    <Copy size={16} className="mr-2 text-white-soft-deep" />
-                    <span className="font-mono text-muted-foreground truncate">Code: {meetingId}</span>
+                    <Copy size={16} className="mr-2 text-muted-foreground" />
+                    <span>Copy Join Link</span>
                   </>
                 )}
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-sm font-medium transition-all duration-fast"
-                onClick={() => onEdit?.()}
-              >
-                <Pencil size={16} className="mr-2 text-white-soft-deep" />
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onEdit?.()}>
+                <Pencil size={16} className="mr-2 text-muted-foreground" />
                 Edit Meeting
-              </Button>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setIsShareModalOpen(true)}>
+                <Share2 size={16} className="mr-2 text-muted-foreground" />
+                Share to Group
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
             </>
           )}
-          <AlertDialogTrigger render={
-            <Button
-              variant="destructive"
-              className="w-full justify-start text-sm font-medium"
-            >
-              <Trash2 size={16} className="mr-2" />
-              Delete Meeting
-            </Button>
-          } />
-        </PopoverContent>
-      </Popover>
+          <DropdownMenuItem variant="destructive" onClick={() => setIsDeleteDialogOpen(true)}>
+            <Trash2 size={16} className="mr-2" />
+            Delete Meeting
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <ShareMeetingModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        meetingId={meetingId}
+        meetingTitle={title}
+        groups={groups}
+      />
 
       <AlertDialogContent>
         <AlertDialogHeader>

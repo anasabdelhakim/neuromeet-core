@@ -6,7 +6,7 @@ import { QuickActions } from "@/src/features/dashboard-instructor/home/component
 
 export default function InstructorDashboardPage() {
   return (
-    <>
+    <div className="flex flex-col gap-6 animate-page-entrance">
       {/* Top Section: Hero & Groups */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-3 h-full">
@@ -26,7 +26,7 @@ export default function InstructorDashboardPage() {
 
       {/* Today's Meetings Section */}
       <TodaysMeetings />
-    </>
+    </div>
   );
 }
 

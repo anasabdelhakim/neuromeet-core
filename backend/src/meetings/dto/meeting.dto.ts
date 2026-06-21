@@ -56,6 +56,9 @@ export class CreateMeetingDto {
   @IsInt()
   @IsPositive()
   durationMinutes?: number;
+
+  @IsString()
+  groupId: string;
 }
 
 // =========================
@@ -107,6 +110,9 @@ export class UpdateMeetingDto {
 // JOIN MEETING (consent)
 // =========================
 export class JoinMeetingDto {
+  @IsString()
+  passcode: string;
+
   @IsOptional()
   @IsBoolean()
   consentGiven?: boolean;

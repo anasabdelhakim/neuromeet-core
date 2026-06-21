@@ -3,19 +3,16 @@ import { StudentGroupsList, StudentGroupsListSkeleton } from "@/src/features/das
 
 import { HeroClock, HeroClockSkeleton } from "@/src/features/dashboard-shared/components/HeroClock";
 import { DataCard } from "@/src/features/dashboard-shared/components/DataCard";
-import { CalendarDays, Clock, BookOpen, ChevronRight, Play, Info } from "lucide-react";
-import { Button } from "@/src/components/ui/button";
-import { Card, CardTitle, CardDescription } from "@/src/components/ui/card";
-import { Badge } from "@/src/components/ui/badge";
-import { AvatarChain } from "@/src/features/dashboard-instructor/constants/avatars";
-import { StatusBar } from "@/src/features/dashboard-instructor/upcoming/components/StatusBar";
-import { todayMeetings } from "@/src/features/dashboard-instructor/home/constants";
+import { CalendarDays, Clock, BookOpen, ChevronRight } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import Link from "next/link";
+import { getStudentUpcomingMeetings } from "@/src/features/dashboard-student/upcoming/actions/student-meeting-actions";
+import { StudentUpcomingCard } from "@/src/features/dashboard-student/upcoming/components/StudentUpcomingCard";
+import { CalendarX } from "lucide-react";
 
 export function StudentHome() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-page-entrance">
       <Suspense fallback={<HeroClockSkeleton />}>
         <HeroClock />
       </Suspense>
@@ -61,96 +58,60 @@ export function StudentHome() {
           </Link>
         </div>
 
-        <div className="space-y-4">
-          {todayMeetings.map((meeting) => {
-            const isStartingSoon = meeting.status === "Starting Soon";
-            const isLive = meeting.status === "Live";
-
-            // Student specific actions
-            const ActionButton = isLive ? (
-              <Button variant="live" className="w-full sm:w-auto flex-shrink-0">
-                <Play size={16} fill="currentColor" className="mr-2" />
-                Join Now
-              </Button>
-            ) : (
-              <Button variant="ghost" className="w-full sm:w-auto border-border flex-shrink-0" disabled>
-                <Info size={18} className="mr-2" />
-                Not Started
-              </Button>
-            );
-
-            return (
-              <Card
-                key={meeting.id}
-                variant={isLive ? "glass" : isStartingSoon ? "gradient" : "default"}
-                className={cn(
-                  "w-full p-4 sm:p-5 flex flex-col gap-4 transition-all duration-normal ease-standard transform-gpu hover:border-primary-hover",
-                  isLive || isStartingSoon
-                    ? "border backdrop-blur-md shadow-hard shadow-black-20"
-                    : "bg-black-soft-subtle border shadow-none opacity-80 hover:opacity-100"
-                )}
-              >
-                {/* Row 1: Meeting Info (Left) & Desktop Actions (Right) */}
-                <div className="flex items-start sm:items-center justify-between w-full gap-4">
-                  
-                  {/* Meeting Info: Always Visible */}
-                  <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-                    <div className="flex items-center gap-3">
-                      <CardTitle className="text-base sm:text-lg font-bold text-foreground max-sm:max-w-60 truncate">
-                        {meeting.title}
-                      </CardTitle>
+        <Suspense
+          fallback={
+            <div className="flex flex-col gap-4">
+              {[1, 2].map((i) => (
+                <div
+                  key={i}
+                  className="w-full p-5 flex flex-col gap-5 border border-border bg-black-soft-subtle rounded-soft opacity-80"
+                >
+                  <div className="flex items-center justify-between w-full gap-4">
+                    <div className="flex flex-col gap-3 flex-1">
+                      <div className="h-6 w-1/2 sm:w-1/3 bg-white-soft-muted animate-pulse rounded-medium" />
+                      <div className="h-4 w-32 bg-white-soft-muted animate-pulse rounded-medium" />
                     </div>
-                    <CardDescription className="text-sm font-medium text-muted-foreground flex flex-wrap items-center gap-2 mt-1">
-                      <span className="whitespace-nowrap">{meeting.time}</span>
-                      {isStartingSoon && (
-                        <Badge className="bg-status-warning-soft text-status-warning border border-status-warning-border hover:bg-status-warning-hover uppercase tracking-wider font-bold text-[10px] sm:text-xs">
-                          <span className="w-1.5 h-1.5 rounded-full bg-status-warning animate-pulse mr-1.5"></span>
-                          Soon
-                        </Badge>
-                      )}
-                      {isLive && (
-                        <Badge className="bg-status-live-soft text-status-live border border-status-live-border hover:bg-status-live-hover uppercase tracking-wider font-bold text-[10px] sm:text-xs">
-                          <span className="w-1.5 h-1.5 rounded-full bg-status-live animate-pulse mr-1.5"></span>
-                          Live
-                        </Badge>
-                      )}
-                    </CardDescription>
+                    <div className="hidden sm:flex items-center gap-4 flex-shrink-0">
+                      <div className="h-10 w-24 bg-white-soft-muted animate-pulse rounded-soft" />
+                    </div>
                   </div>
-
-                  {/* Desktop Actions: Hidden on Mobile */}
-                  <div className="hidden sm:flex items-center gap-4 flex-shrink-0">
-                    <AvatarChain />
-                    {ActionButton}
+                  <div className="w-full mt-1">
+                    <div className="h-1.5 w-full bg-white-soft-muted/30 animate-pulse rounded-full" />
                   </div>
                 </div>
-
-                {/* Mobile Only: Progress Bar */}
-                <div className="sm:hidden px-1 w-full">
-                  <StatusBar
-                    duration={60}
-                    isArrived={isLive}
-                    timeLabel={isLive ? "Live" : isStartingSoon ? "Starting Soon" : "Later"}
-                  />
-                </div>
-
-                {/* Mobile Only: Action Button */}
-                <div className="sm:hidden w-full">
-                  {ActionButton}
-                </div>
-
-                {/* Desktop Only: Progress Bar */}
-                <div className="hidden sm:block px-1 -mt-1">
-                  <StatusBar
-                    duration={60}
-                    isArrived={isLive}
-                    timeLabel={isLive ? "Live" : isStartingSoon ? "Starting Soon" : "Later"}
-                  />
-                </div>
-              </Card>
-            );
-          })}
-        </div>
+              ))}
+            </div>
+          }
+        >
+          <StudentHomeUpcomingList />
+        </Suspense>
       </section>
+    </div>
+  );
+}
+
+async function StudentHomeUpcomingList() {
+  const allMeetings = await getStudentUpcomingMeetings();
+  // Only show the 3 most immediate upcoming meetings on the dashboard home
+  const meetings = allMeetings.slice(0, 3);
+
+  if (meetings.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 text-center border border-border bg-black-soft-subtle rounded-soft opacity-80">
+        <CalendarX size={40} className="text-muted-foreground mb-3 opacity-40" />
+        <p className="text-muted-foreground text-sm font-medium">No upcoming sessions today.</p>
+        <p className="text-muted-foreground text-xs mt-1 opacity-60">
+          Your instructor has not scheduled any meetings yet.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {meetings.map((meeting) => (
+        <StudentUpcomingCard key={meeting.id} meeting={meeting} />
+      ))}
     </div>
   );
 }

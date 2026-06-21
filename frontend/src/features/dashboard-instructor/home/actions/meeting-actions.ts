@@ -1,0 +1,166 @@
+"use server";
+
+import { apiPost, apiGet } from "@/src/lib/api-client";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { z } from "zod";
+import { format } from "date-fns";
+
+const createMeetingSchema = z.object({
+  title: z.string().min(1, "Lecture Topic is required.").min(3, "Lecture Topic must be at least 3 characters."),
+  type: z.string(),
+  scheduledAtIso: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (data.type === "schedule") {
+    if (!data.scheduledAtIso) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Date and Start time are required for scheduling." });
+    }
+  }
+});
+
+export async function startMeetingAction(meetingId: string) {
+  let roomName = "";
+  try {
+    const res = await apiPost<any>(`/meetings/${meetingId}/start`, {});
+    roomName = res.data?.livekitRoomName;
+  } catch (error: any) {
+    // If it fails, maybe log it or throw an error to be handled by an error boundary
+    console.error("Failed to start meeting:", error.message);
+    throw new Error(error.message || "Failed to start meeting");
+  }
+
+  if (roomName) {
+    // Redirect to the LiveKit meeting room page
+    redirect(`/livekit?room=${roomName}`);
+  }
+}
+
+export async function shareMeetingAction(meetingId: string, groupId: string) {
+  try {
+    const res = await apiPost<any>(`/meetings/${meetingId}/share`, { groupId });
+    return { success: true, passcode: res.data?.passcode };
+  } catch (error: any) {
+    console.error("Failed to share meeting:", error.message);
+    return { success: false, errorMessage: error.message || "Failed to share meeting" };
+  }
+}
+
+export async function createMeetingAction(prevState: any, formData: FormData) {
+  try {
+    const parsed = createMeetingSchema.safeParse({
+      title: formData.get("title"),
+      type: formData.get("type"),
+      scheduledAtIso: formData.get("scheduledAtIso"),
+    });
+
+    if (!parsed.success) {
+      return { success: false, errorMessage: parsed.error.issues[0].message };
+    }
+
+    const { title, type, scheduledAtIso } = parsed.data;
+
+    // Default values for 'new'
+    let scheduledAt = new Date().toISOString();
+    let durationMinutes = 60; 
+    
+    if (type === "schedule") {
+      const localD = new Date(scheduledAtIso!);
+      
+      // Relax validation: allow scheduling up to 5 minutes in the past
+      // to account for clock skew and the time it takes to fill the form.
+      const fiveMinsAgo = new Date();
+      fiveMinsAgo.setMinutes(fiveMinsAgo.getMinutes() - 5);
+
+      if (localD < fiveMinsAgo) {
+        return { success: false, errorMessage: "Start time cannot be in the past." };
+      }
+
+      scheduledAt = localD.toISOString();
+    }
+
+    // Since QuickActions doesn't select a group, we get the instructor's first group
+    // The endpoint to get instructor's groups is likely /groups or /groups/instructor
+    let groupId = "";
+    try {
+      const response = await apiGet<any>("/groups");
+      const groups = response.data;
+      if (groups && groups.length > 0) {
+        groupId = groups[0].id;
+      }
+    } catch (e) {
+      console.warn("Failed to fetch groups for default meeting group", e);
+    }
+
+    if (!groupId) {
+      return { success: false, errorMessage: "You must create a group before scheduling a meeting." };
+    }
+
+    const payload = {
+      title,
+      scheduledAt,
+      durationMinutes,
+      groupId,
+    };
+
+    await apiPost<any>("/meetings", payload);
+    
+  } catch (error: any) {
+    return { success: false, errorMessage: error.message || "Failed to create meeting" };
+  }
+  
+  revalidatePath("/dashboard-instructor");
+  revalidatePath("/dashboard-instructor/upcoming");
+  redirect("/dashboard-instructor/upcoming");
+}
+
+export async function getUpcomingMeetings() {
+  try {
+    const res = await apiGet<any>("/meetings/upcoming");
+    const rawMeetings = res.data || [];
+    
+    // Sort meetings by scheduledAt descending (latest first, so newly scheduled meetings far in the future appear at the top)
+    rawMeetings.sort((a: any, b: any) => new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime());
+    
+    return rawMeetings.map((m: any) => {
+      const d = new Date(m.scheduledAt);
+      return {
+        id: m.id,
+        title: m.title,
+        group: m.group?.name || "General",
+        date: format(d, "MMMM d, yyyy"),
+        time: format(d, "h:mm a"),
+        dateTime: m.scheduledAt,
+        duration: m.durationMinutes || 60,
+        status: m.status,
+        passcode: m.passcode
+      };
+    });
+  } catch (error) {
+    console.error("Failed to fetch upcoming meetings:", error);
+    return [];
+  }
+}
+
+export async function getTodayMeetings() {
+  try {
+    const res = await apiGet<any>("/meetings/today");
+    const rawMeetings = res.data || [];
+    return rawMeetings.map((m: any) => {
+      const d = new Date(m.scheduledAt);
+      return {
+        id: m.id,
+        title: m.title,
+        group: m.group?.name || "General",
+        date: format(d, "MMMM d, yyyy"),
+        time: format(d, "h:mm a"),
+        dateTime: m.scheduledAt,
+        duration: m.durationMinutes || 60,
+        status: m.status,
+        passcode: m.passcode
+      };
+    });
+  } catch (error) {
+    console.error("Failed to fetch today's meetings:", error);
+    return [];
+  }
+}

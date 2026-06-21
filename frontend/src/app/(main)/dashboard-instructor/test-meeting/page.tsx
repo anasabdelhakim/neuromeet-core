@@ -26,7 +26,7 @@ export default function TestMeetingPage() {
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 animate-page-entrance">
       <Card className="w-full max-w-lg bg-black-soft-subtle border-border backdrop-blur-xl shadow-hard relative overflow-hidden">
         {/* Glow Effects */}
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary-soft-subtle rounded-full blur-3xl pointer-events-none" />

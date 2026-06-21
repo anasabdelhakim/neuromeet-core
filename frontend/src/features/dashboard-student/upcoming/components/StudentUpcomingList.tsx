@@ -1,8 +1,21 @@
 import { StudentUpcomingCard } from "./StudentUpcomingCard";
-import { dummyStudentUpcomingMeetings } from "../constants/dummy";
+import { getStudentUpcomingMeetings } from "../actions/student-meeting-actions";
+import { CalendarX } from "lucide-react";
 
-export function StudentUpcomingList() {
-  const meetings = dummyStudentUpcomingMeetings;
+export async function StudentUpcomingList() {
+  const meetings = await getStudentUpcomingMeetings();
+
+  if (meetings.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <CalendarX size={48} className="text-muted-foreground mb-4 opacity-40" />
+        <p className="text-muted-foreground text-sm">No upcoming meetings found.</p>
+        <p className="text-muted-foreground text-xs mt-1 opacity-60">
+          Your instructor will schedule sessions for your enrolled groups.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">

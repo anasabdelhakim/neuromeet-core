@@ -40,6 +40,7 @@ export function AssignStudentModal({ groups, allStudents }: AssignStudentModalPr
 
   const group = useMemo(() => groups.find(g => g.id === assignGroupId), [groups, assignGroupId]);
 
+  const [isOpen, setIsOpen] = useState(false);
   const [pendingInvites, setPendingInvites] = useState<Set<string>>(new Set());
 
   const [removedStudents, setRemovedStudents] = useState<Set<string>>(new Set());
@@ -48,6 +49,9 @@ export function AssignStudentModal({ groups, allStudents }: AssignStudentModalPr
     if (group) {
       setPendingInvites(new Set((group.invitations || []).map((inv: any) => inv.studentId)));
       setRemovedStudents(new Set());
+      setIsOpen(true);
+    } else {
+      setIsOpen(false);
     }
   }, [group]);
 
@@ -70,7 +74,10 @@ export function AssignStudentModal({ groups, allStudents }: AssignStudentModalPr
     name ? name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2) : "??";
 
   const closeDialog = () => {
-    router.replace(pathname, { scroll: false });
+    setIsOpen(false);
+    setTimeout(() => {
+      router.replace(pathname, { scroll: false });
+    }, 300);
   };
 
   const handleInviteStudent = (studentId: string, e: React.MouseEvent) => {
@@ -114,7 +121,7 @@ export function AssignStudentModal({ groups, allStudents }: AssignStudentModalPr
   if (!group) return null;
 
   return (
-    <Dialog open={!!assignGroupId} onOpenChange={(open) => !open && closeDialog()}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && closeDialog()}>
       <DialogContent className="rounded-soft border bg-card backdrop-blur-2xl p-0 overflow-hidden max-w-md">
         <DialogHeader className="px-5 pt-5 pb-4 border-b border-border/50">
           <DialogTitle className="text-xl font-bold">Assign Student</DialogTitle>

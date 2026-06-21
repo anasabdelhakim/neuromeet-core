@@ -8,6 +8,7 @@ import { GroupCardActions } from "./GroupCardActions";
 import { Users, BookOpen, Plus } from "lucide-react";
 import { AvatarChain } from "../../constants/avatars";
 import { AssignStudentModal } from "./AssignStudentModal";
+import { AssignStudentButton } from "./AssignStudentButton";
 import Link from "next/link";
 
 export async function GroupsList() {
@@ -76,15 +77,7 @@ export async function GroupsList() {
                     </div>
                   </div>
                   
-                  <Link
-                    href={`?assignGroupId=${group.id}`}
-                    scroll={false}
-                    className="flex items-center justify-center rounded-md bg-primary/10 text-primary px-3 py-2 text-xs font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-normal ease-standard shrink-0 shadow-soft"
-                    title="Assign Student"
-                  >
-                    <Plus className="w-3.5 h-3.5 mr-1.5 font-bold" />
-                    Assign
-                  </Link>
+                  <AssignStudentButton groupId={group.id} />
                 </div>
               </CardContent>
             </Card>
