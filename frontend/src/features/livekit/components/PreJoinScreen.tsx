@@ -3,7 +3,7 @@
 import { PreJoin } from "@livekit/components-react";
 import { Shield, Video, Mic } from "lucide-react";
 import { cn } from "@/src/lib/utils";
-import { Logo } from "@/src/features/landing";
+import { Logo } from "@/src/features/landing/components/Logo";
 
 interface PreJoinScreenProps {
   onSubmit: (values: any) => void;
