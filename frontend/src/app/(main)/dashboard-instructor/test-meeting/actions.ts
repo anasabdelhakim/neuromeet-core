@@ -4,21 +4,7 @@ import { redirect } from 'next/navigation';
 import { apiPost } from '@/src/lib/api-client';
 import { getAuthCookies } from '@/src/lib/auth-cookies';
 
-function parseJwt(token: string) {
-  try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
-    );
-    return JSON.parse(jsonPayload);
-  } catch (e) {
-    return null;
-  }
-}
+import { parseJwt } from '@/src/features/livekit/helpers/auth';
 
 export async function launchTestMeetingAction() {
   let meetingId: string;

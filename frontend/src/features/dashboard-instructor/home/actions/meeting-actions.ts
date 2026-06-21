@@ -80,7 +80,7 @@ export async function createMeetingAction(prevState: any, formData: FormData) {
 
     // Since QuickActions doesn't select a group, we get the instructor's first group
     // The endpoint to get instructor's groups is likely /groups or /groups/instructor
-    let groupId = "";
+    let groupId: string | undefined = undefined;
     try {
       const response = await apiGet<any>("/groups");
       const groups = response.data;
@@ -89,10 +89,6 @@ export async function createMeetingAction(prevState: any, formData: FormData) {
       }
     } catch (e) {
       console.warn("Failed to fetch groups for default meeting group", e);
-    }
-
-    if (!groupId) {
-      return { success: false, errorMessage: "You must create a group before scheduling a meeting." };
     }
 
     const payload = {

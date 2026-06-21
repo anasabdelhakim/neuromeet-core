@@ -57,8 +57,9 @@ export class CreateMeetingDto {
   @IsPositive()
   durationMinutes?: number;
 
+  @IsOptional()
   @IsString()
-  groupId: string;
+  groupId?: string;
 }
 
 // =========================

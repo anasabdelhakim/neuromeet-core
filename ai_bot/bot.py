@@ -337,7 +337,20 @@ async def main():
         participant: rtc.RemoteParticipant,
     ):
         if track.kind == rtc.TrackKind.KIND_VIDEO:
-            logger.info(f"[bot] Subscribing to track: {participant.identity}")
+            is_instructor = False
+            try:
+                if participant.metadata:
+                    meta = json.loads(participant.metadata)
+                    if meta.get("role") == "INSTRUCTOR":
+                        is_instructor = True
+            except Exception:
+                pass
+
+            if is_instructor:
+                logger.info(f"[bot] Ignoring instructor track: {participant.identity}")
+                return
+
+            logger.info(f"[bot] Subscribing to student track: {participant.identity}")
             asyncio.create_task(
                 consume_video_track(
                     track, participant, buffers, round_robin_queue
@@ -355,6 +368,18 @@ async def main():
 
     # ── Subscribe to tracks that already exist when the bot joins ──
     for participant in room.remote_participants.values():
+        is_instructor = False
+        try:
+            if participant.metadata:
+                meta = json.loads(participant.metadata)
+                if meta.get("role") == "INSTRUCTOR":
+                    is_instructor = True
+        except Exception:
+            pass
+
+        if is_instructor:
+            continue
+
         for pub in participant.track_publications.values():
             if pub.track and pub.kind == rtc.TrackKind.KIND_VIDEO:
                 asyncio.create_task(
