@@ -31,6 +31,8 @@ export async function getStudentUpcomingMeetings() {
   }
 }
 
+import { cookies } from "next/headers";
+
 export async function joinMeetingAction(meetingId: string, passcode: string) {
   let roomName = "";
   try {
@@ -44,6 +46,9 @@ export async function joinMeetingAction(meetingId: string, passcode: string) {
   }
 
   if (roomName) {
+    // Store successful join in a cookie so they don't have to enter passcode again
+    const cookieStore = await cookies();
+    cookieStore.set(`joined_meeting_${meetingId}`, roomName, { maxAge: 60 * 60 * 24 });
     redirect(`/livekit?room=${roomName}`);
   }
 

@@ -1,6 +1,8 @@
 import { Video, Loader } from "lucide-react";
 import { PasscodeForm } from "./PasscodeForm";
 import { Suspense } from "react";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export async function generateStaticParams() {
   return [{ meetingId: "dummy" }];
@@ -9,6 +11,12 @@ export async function generateStaticParams() {
 async function MeetingDataLoader({ paramsPromise }: { paramsPromise: Promise<{ meetingId: string }> }) {
   const resolvedParams = await paramsPromise;
   const meetingId = resolvedParams.meetingId;
+
+  const cookieStore = await cookies();
+  const roomName = cookieStore.get(`joined_meeting_${meetingId}`)?.value;
+  if (roomName) {
+    redirect(`/livekit?room=${roomName}`);
+  }
 
   return (
     <div className="relative z-10 flex flex-col items-center w-full max-w-md">

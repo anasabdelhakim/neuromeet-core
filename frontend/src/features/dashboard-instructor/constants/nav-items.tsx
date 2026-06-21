@@ -22,9 +22,4 @@ export const navItems: NavItem[] = [
   },
   { icon: Users, label: "Students", href: "/dashboard-instructor/students" },
   { icon: Component, label: "Groups", href: "/dashboard-instructor/groups", hideOnMobile: true },
-  {
-    icon: Sparkles,
-    label: "Meeting",
-    href: "/dashboard-instructor/test-meeting",
-  },
 ];

@@ -10,7 +10,6 @@ import {
 } from "@livekit/components-react";
 import "@livekit/components-styles";
 import { endMeetingAction } from "@/src/app/(main)/livekit/actions";
-import { PreJoinScreen } from "./PreJoinScreen";
 import { MeetingRoom } from "./MeetingRoom";
 
 interface MeetingPageProps {
@@ -25,7 +24,6 @@ export default function MeetingPage({
   isInstructor = false,
 }: MeetingPageProps) {
   const router = useRouter();
-  const [preJoinChoices, setPreJoinChoices] = useState<any>(undefined);
 
   const handleDisconnected = async () => {
     if (isInstructor) {
@@ -40,19 +38,10 @@ export default function MeetingPage({
     );
   };
 
-  if (!preJoinChoices) {
-    return (
-      <PreJoinScreen
-        onSubmit={(values) => setPreJoinChoices(values)}
-        isInstructor={isInstructor}
-      />
-    );
-  }
-
   return (
     <LiveKitRoom
-      video={preJoinChoices.videoEnabled}
-      audio={preJoinChoices.audioEnabled}
+      video={true}
+      audio={true}
       token={token}
       serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
       data-lk-theme="default"
