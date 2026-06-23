@@ -57,8 +57,53 @@ async function AdminStatsLoader() {
   );
 }
 
-export default function AdminHomePage() {
+function AdminStatsSkeleton() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {[1, 2, 3].map((id) => (
+        <Card key={id} className="p-4 flex items-center justify-center gap-4 bg-black-soft-subtle border border-border">
+          <div className="h-[48px] w-[48px] rounded-full bg-custom-gray animate-pulse" />
+          <div className="space-y-2 flex flex-col items-center">
+            <div className="h-8 w-12 bg-custom-gray animate-pulse rounded" />
+            <div className="h-3 w-20 bg-custom-gray animate-pulse rounded" />
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
+}
 
+function AdminUsersSkeleton() {
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col sm:flex-row gap-4 h-13">
+        <div className="relative flex-1">
+          <div className="h-12 w-full bg-custom-gray animate-pulse rounded-soft" />
+        </div>
+        <div className="h-12 w-full sm:w-60 bg-custom-gray animate-pulse rounded-soft" />
+      </div>
+      <div className="border border-border max-sm:mt-12 rounded-soft overflow-hidden bg-black-soft-subtle flex flex-col">
+        <div className="p-2 overflow-x-auto">
+          <div className="w-full min-w-[800px]">
+            <div className="bg-black-soft h-14 w-full animate-pulse rounded-t-soft" />
+            {[1, 2, 3, 4, 5].map((id) => (
+              <div key={id} className="flex items-center justify-between py-4 px-4 border-b border-border/50 last:border-0 hover:bg-black-soft transition-colors">
+                <div className="h-5 w-32 bg-custom-gray animate-pulse rounded" />
+                <div className="h-5 w-48 bg-custom-gray animate-pulse rounded hidden md:block" />
+                <div className="h-10 w-40 bg-custom-gray animate-pulse rounded-soft" />
+                <div className="h-6 w-20 bg-custom-gray animate-pulse rounded-full" />
+                <div className="h-5 w-24 bg-custom-gray animate-pulse rounded" />
+                <div className="h-10 w-10 bg-custom-gray animate-pulse rounded-soft" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function AdminHomePage() {
   return (
     <div className="flex flex-col gap-6 animate-page-entrance">
       {/* Hero — no upcoming badge for admin */}
@@ -67,33 +112,14 @@ export default function AdminHomePage() {
       </Suspense>
 
       {/* Stats */}
-      <Suspense
-        fallback={
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {[1, 2, 3].map((id) => (
-              <div key={id} className="h-[88px] bg-custom-gray border border-border animate-pulse rounded-soft" />
-            ))}
-          </div>
-        }
-      >
+      <Suspense fallback={<AdminStatsSkeleton />}>
         <AdminStatsLoader />
       </Suspense>
 
       {/* User Management */}
       <div className="flex flex-col gap-4 mt-2">
         <h2 className="text-lg font-semibold text-foreground">User Management</h2>
-        <Suspense
-          fallback={
-            <div className="flex flex-col gap-4">
-              {[1, 2, 3, 4, 5].map((id) => (
-                <div
-                  key={id}
-                  className="w-full h-16 bg-custom-gray border border-border animate-pulse rounded-soft"
-                />
-              ))}
-            </div>
-          }
-        >
+        <Suspense fallback={<AdminUsersSkeleton />}>
           <AdminUsersLoader />
         </Suspense>
       </div>

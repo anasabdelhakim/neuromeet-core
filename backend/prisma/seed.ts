@@ -28,7 +28,7 @@ async function main() {
   const studentPassword = await Bun.password.hash('Student1234#');
   
   // Create an array of users to seed
-  const studentPromises = [];
+  const studentPromises: Promise<any>[] = [];
   for (let i = 1; i <= 100; i++) {
     studentPromises.push(
       prisma.user.upsert({
@@ -68,7 +68,7 @@ async function main() {
     where: { email: { startsWith: 'student', endsWith: '@neuromeet.com' } }
   });
 
-  const enrollmentPromises = [];
+  const enrollmentPromises: Promise<any>[] = [];
   for (const student of students) {
     enrollmentPromises.push(
       prisma.enrollment.upsert({

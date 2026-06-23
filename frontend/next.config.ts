@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
   },
   cacheComponents: true,
   experimental: {
+    serverActions: {
+      bodySizeLimit: '5mb',
+    },
     turbopackFileSystemCacheForDev: true,
     turbopackFileSystemCacheForBuild: true,
     optimizePackageImports: [

@@ -57,6 +57,7 @@ export function AdminUsersClient({ initialData }: Props) {
   const [page, setPage] = useState(1);
   const [fetchPending, startFetch] = useTransition();
   const [mutatePending, startMutate] = useTransition();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const refetch = (overrides?: { search?: string; role?: string; page?: number }) => {
     startFetch(async () => {
@@ -111,11 +112,13 @@ export function AdminUsersClient({ initialData }: Props) {
   };
 
   const handleDelete = (userId: string) => {
+    setDeletingId(userId);
     startMutate(async () => {
       const res = await deleteUserAction(userId);
       if (res.success) {
         setUsers((prev) => prev.filter((u) => u.id !== userId));
       }
+      setDeletingId(null);
     });
   };
 
@@ -229,10 +232,10 @@ export function AdminUsersClient({ initialData }: Props) {
                             variant="destructive"
                             size="icon"
                             className="h-10 w-10"
-                            disabled={pending}
+                            disabled={pending || deletingId === user.id}
                             title="Delete user"
                           >
-                            {mutatePending ? <Loader className="animate-spin" size={20} /> : <Trash2 size={20} />}
+                            {deletingId === user.id ? <Loader className="animate-spin" size={20} /> : <Trash2 size={20} />}
                           </Button>
                         } />
                         <AlertDialogContent className="border-destructive/20">
@@ -246,8 +249,24 @@ export function AdminUsersClient({ initialData }: Props) {
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel className="h-11" disabled={pending}>Cancel</AlertDialogCancel>
-                            <AlertDialogAction variant="destructive" className="h-11 font-semibold" disabled={pending} onClick={() => handleDelete(user.id)}>Delete Completely</AlertDialogAction>
+                            <AlertDialogCancel className="h-11" disabled={pending || deletingId === user.id}>Cancel</AlertDialogCancel>
+                            <AlertDialogAction 
+                              variant="destructive" 
+                              className="h-11 font-semibold" 
+                              disabled={pending || deletingId === user.id} 
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleDelete(user.id);
+                              }}
+                            >
+                              {deletingId === user.id ? (
+                                <>
+                                  <Loader className="w-4 h-4 mr-2 animate-spin" /> Deleting...
+                                </>
+                              ) : (
+                                "Delete Completely"
+                              )}
+                            </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
