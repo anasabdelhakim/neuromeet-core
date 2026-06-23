@@ -105,14 +105,14 @@ export function MeetingActionsPopover({
   return (
     <>
       <Popover open={isOpen} onOpenChange={handleOpenChange}>
-        <PopoverTrigger asChild>
-          <Button
+        <PopoverTrigger render={      <Button
             variant="ghost"
             size="icon"
             className="h-8 w-8 flex-shrink-0 text-white-soft-deep hover:text-white hover:bg-white-soft-muted"
           >
             <MoreVertical size={18} />
-          </Button>
+          </Button>}>
+    
         </PopoverTrigger>
 
         <PopoverContent align="end" className="w-48 p-1 flex flex-col gap-0.5 z-50">
