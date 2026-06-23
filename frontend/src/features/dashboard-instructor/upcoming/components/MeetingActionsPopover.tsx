@@ -83,10 +83,15 @@ export function MeetingActionsPopover({
   };
 
   const isLive = status === "LIVE";
+  
+  // A meeting is considered active/live if status is LIVE, or if participantsCount > 0, 
+  // or if the scheduled time has already arrived/passed.
+  const isPastScheduled = dateTime ? new Date(dateTime).getTime() <= Date.now() : false;
+  const isLiveOrActive = isLive || participantsCount > 0 || isPastScheduled;
 
   const handleDeleteOrEnd = () => {
     startDeleteTransition(async () => {
-      if (isLive) {
+      if (isLiveOrActive) {
         await endMeetingAction(meetingId);
       } else {
         await deleteMeetingAction(meetingId);
@@ -136,26 +141,15 @@ export function MeetingActionsPopover({
               <div className="h-px bg-border my-1 w-full" />
             </>
           )}
-          {participantsCount > 0 ? (
-            <Button 
-              variant="ghost" 
-              className="w-full justify-start h-8 px-2 text-sm font-normal text-destructive hover:text-destructive hover:bg-destructive/10" 
-              onClick={() => { setIsOpen(false); setIsDeleteDialogOpen(true); }}
-            >
-              {isLive ? <SquareUserRound size={16} className="mr-2" /> : <Trash2 size={16} className="mr-2" />}
-              {isLive ? "End Meeting" : "Delete Meeting"}
-            </Button>
-          ) : (
-            <Button 
-              variant="ghost" 
-              className="w-full justify-start h-8 px-2 text-sm font-normal text-destructive hover:text-destructive hover:bg-destructive/10" 
-              onClick={handleDeleteOrEnd}
-              disabled={isDeleting}
-            >
-              {isDeleting ? <Loader className="w-4 h-4 mr-2 animate-spin" /> : (isLive ? <SquareUserRound size={16} className="mr-2" /> : <Trash2 size={16} className="mr-2" />)}
-              {isDeleting ? (isLive ? "Ending..." : "Deleting...") : (isLive ? "End Meeting" : "Delete Meeting")}
-            </Button>
-          )}
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start h-8 px-2 text-sm font-normal text-destructive hover:text-destructive hover:bg-destructive/10" 
+            onClick={() => { setIsOpen(false); setIsDeleteDialogOpen(true); }}
+            disabled={isDeleting}
+          >
+            {isDeleting ? <Loader className="w-4 h-4 mr-2 animate-spin" /> : (isLiveOrActive ? <SquareUserRound size={16} className="mr-2" /> : <Trash2 size={16} className="mr-2" />)}
+            {isDeleting ? (isLiveOrActive ? "Ending..." : "Deleting...") : (isLiveOrActive ? "End Meeting" : "Delete Meeting")}
+          </Button>
         </PopoverContent>
       </Popover>
 
@@ -180,15 +174,15 @@ export function MeetingActionsPopover({
       }}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{isLive ? "End Meeting?" : "Delete Meeting?"}</AlertDialogTitle>
+            <AlertDialogTitle>{isLiveOrActive ? "End Meeting?" : "Delete Meeting?"}</AlertDialogTitle>
             <AlertDialogDescription>
-              {isLive && (
+              {isLiveOrActive && (
                 <span className="text-destructive font-medium block mb-2">
-                  Warning: Active Session.
+                  Warning: Active or Scheduled Session.
                 </span>
               )}
-              {isLive 
-                ? "This will instantly end the meeting, remove all participants, stop the recording, and move the meeting to your history. This cannot be undone. Are you sure?"
+              {isLiveOrActive 
+                ? "This will instantly end the meeting, remove all participants, stop any active session, and move the meeting to history. This cannot be undone. Are you sure?"
                 : "This will permanently delete the scheduled meeting. This action cannot be undone. Are you sure?"}
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -203,10 +197,10 @@ export function MeetingActionsPopover({
             >
               {isDeleting ? (
                 <>
-                  <Loader className="w-4 h-4 mr-2 animate-spin" /> {isLive ? "Ending..." : "Deleting..."}
+                  <Loader className="w-4 h-4 mr-2 animate-spin" /> {isLiveOrActive ? "Ending..." : "Deleting..."}
                 </>
               ) : (
-                isLive ? "End Meeting" : "Delete Meeting"
+                isLiveOrActive ? "End Meeting" : "Delete Meeting"
               )}
             </Button>
           </div>
