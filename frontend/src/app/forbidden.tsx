@@ -18,7 +18,7 @@ export default function Forbidden() {
             You do not have the necessary permissions to view this page. If you believe this is an error, please contact your administrator.
           </p>
         </div>
-        <Button render={<Link href="/sign-in" />} className="w-full bg-primary hover:bg-primary-hover text-white h-11 rounded-soft font-medium transition-all shadow-hard">
+        <Button render={<Link href="/sign-in" />} nativeButton={false} className="w-full bg-primary hover:bg-primary-hover text-white h-11 rounded-soft font-medium transition-all shadow-hard">
           Return to Login
         </Button>
       </div>

@@ -24,6 +24,7 @@ import {
   Users,
   LineChart,
   Trash2,
+  Loader,
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import {
@@ -50,6 +51,18 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
   
   // Single active popover state (stores student ID to prevent rendering a popover DOM for every row)
   const [activePopoverId, setActivePopoverId] = useState<string | null>(null);
+
+  // Loading state for messaging
+  const [messagingId, setMessagingId] = useState<string | null>(null);
+
+  const handleMessageStudent = (loadingKey: string, email: string) => {
+    setMessagingId(loadingKey);
+    setTimeout(() => {
+      window.location.href = `mailto:${email}`;
+      setMessagingId(null);
+      setActivePopoverId(null);
+    }, 1000);
+  };
 
   // 1. Filtering Logic
   const filteredStudents = useMemo(() => {
@@ -242,10 +255,20 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
                       {/* Only render content DOM if this specific popover is active */}
                       {activePopoverId === student.id && (
                         <PopoverContent align="end" className="w-48 p-1 flex flex-col gap-0.5">
-                          <Button variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
-                            <Mail size={14} className="text-primary-light mr-2" /> Message Student
+                          <Button 
+                            variant="ghost" 
+                            className="w-full justify-start h-8 px-2 text-sm font-normal"
+                            disabled={messagingId === student.id}
+                            onClick={() => handleMessageStudent(student.id, student.email)}
+                          >
+                            {messagingId === student.id ? (
+                              <Loader size={14} className="animate-spin mr-2 text-primary-light" />
+                            ) : (
+                              <Mail size={14} className="text-primary-light mr-2" />
+                            )}
+                            {messagingId === student.id ? "Opening Mail..." : "Message Student"}
                           </Button>
-                          <Button render={<Link href="/coming-soon" />} variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
+                          <Button render={<Link href="/coming-soon" />} nativeButton={false} variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
                             <LineChart size={14} className="text-status-success mr-2" /> View Analytics
                           </Button>
                         </PopoverContent>
@@ -341,13 +364,23 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
                   
                   {activePopoverId === `mobile-${student.id}` && (
                     <PopoverContent align="end" className="w-48 p-1 flex flex-col gap-0.5">
-                      <Button variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
-                        <Mail size={14} className="text-primary-light mr-2" /> Message Student
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-start h-8 px-2 text-sm font-normal"
+                        disabled={messagingId === `mobile-${student.id}`}
+                        onClick={() => handleMessageStudent(`mobile-${student.id}`, student.email)}
+                      >
+                        {messagingId === `mobile-${student.id}` ? (
+                          <Loader2 size={14} className="animate-spin mr-2 text-primary-light" />
+                        ) : (
+                          <Mail size={14} className="text-primary-light mr-2" />
+                        )}
+                        {messagingId === `mobile-${student.id}` ? "Opening Mail..." : "Message Student"}
                       </Button>
                       <Button variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
                         <UserPlus size={14} className="text-status-success mr-2" /> Reassign Group
                       </Button>
-                      <Button render={<Link href="/coming-soon" />} variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
+                      <Button render={<Link href="/coming-soon" />} nativeButton={false} variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
                         <LineChart size={14} className="text-brand-cyan mr-2" /> View Analytics
                       </Button>
                       <Button variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal text-destructive hover:text-destructive hover:bg-destructive/10">

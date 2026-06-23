@@ -18,7 +18,7 @@ export default function Unauthorized() {
             You must be logged in to view this page. Please sign in to continue accessing NeuroMeet.
           </p>
         </div>
-        <Button render={<Link href="/sign-in" />} className="w-full bg-primary hover:bg-primary-hover text-white h-11 rounded-soft font-medium transition-all shadow-hard">
+        <Button render={<Link href="/sign-in" />} nativeButton={false} className="w-full bg-primary hover:bg-primary-hover text-white h-11 rounded-soft font-medium transition-all shadow-hard">
           Sign In
         </Button>
       </div>

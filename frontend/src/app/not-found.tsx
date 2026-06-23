@@ -18,7 +18,7 @@ export default function NotFound() {
             We couldn't find the page you were looking for. It might have been moved or doesn't exist.
           </p>
         </div>
-        <Button render={<Link href="/sign-in" />} className="w-full bg-primary hover:bg-primary-hover text-white h-11 rounded-soft font-medium transition-all shadow-hard">
+        <Button render={<Link href="/sign-in" />} nativeButton={false} className="w-full bg-primary hover:bg-primary-hover text-white h-11 rounded-soft font-medium transition-all shadow-hard">
           Return to Dashboard
         </Button>
       </div>
