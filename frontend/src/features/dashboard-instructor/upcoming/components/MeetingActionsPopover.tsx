@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/src/components/ui/button";
 import {
@@ -23,7 +23,7 @@ import { ShareMeetingModal } from "./ShareMeetingModal";
 import { EditMeetingModal } from "./EditMeetingModal";
 import { deleteMeetingAction, endMeetingAction } from "../../home/actions/meeting-actions";
 
-type PopoverVariant = "active" | "history";
+type PopoverVariant = "active" | "history" | "previous";
 
 interface MeetingActionsPopoverProps {
   title?: string;
@@ -37,6 +37,7 @@ interface MeetingActionsPopoverProps {
   onShareToGroup?: () => void;
   groups?: any[];
   participantsCount?: number;
+  isPast?: boolean; // ضفنا دي عشان نستقبلها جاهزة وممكن منستخدمهاش لو مش محتاجينها
 }
 
 export function MeetingActionsPopover({
@@ -51,6 +52,7 @@ export function MeetingActionsPopover({
   onShareToGroup,
   groups = [],
   participantsCount = 0,
+  isPast = false, // القيمة الافتراضية
 }: MeetingActionsPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -82,16 +84,11 @@ export function MeetingActionsPopover({
       }
   };
 
+  // شيلنا الـ useEffect والـ Date.now() تماماً من هنا
   const isLive = status === "LIVE";
-  const [isPastScheduled, setIsPastScheduled] = useState(false);
-
-  useEffect(() => {
-    if (dateTime) {
-      setIsPastScheduled(new Date(dateTime).getTime() <= Date.now());
-    }
-  }, [dateTime]);
-
-  const isLiveOrActive = isLive || participantsCount > 0 || isPastScheduled;
+  
+  // بنعتمد على الـ props الجاهزة بس عشان نعرض زرار End بدل Delete
+  const isLiveOrActive = isLive || participantsCount > 0 || isPast || variant === "previous" || variant === "history";
 
   const handleDeleteOrEnd = () => {
     startDeleteTransition(async () => {
@@ -108,13 +105,14 @@ export function MeetingActionsPopover({
   return (
     <>
       <Popover open={isOpen} onOpenChange={handleOpenChange}>
-        <PopoverTrigger render={  <Button
+        <PopoverTrigger asChild>
+          <Button
             variant="ghost"
             size="icon"
             className="h-8 w-8 flex-shrink-0 text-white-soft-deep hover:text-white hover:bg-white-soft-muted"
           >
             <MoreVertical size={18} />
-          </Button>}>
+          </Button>
         </PopoverTrigger>
 
         <PopoverContent align="end" className="w-48 p-1 flex flex-col gap-0.5 z-50">
@@ -182,7 +180,7 @@ export function MeetingActionsPopover({
             <AlertDialogDescription>
               {isLiveOrActive && (
                 <span className="text-destructive font-medium block mb-2">
-                  Warning: Active or Scheduled Session.
+                  Warning: Active or Past Session.
                 </span>
               )}
               {isLiveOrActive 
