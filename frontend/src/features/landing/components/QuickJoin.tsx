@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { Video, ShieldCheck } from "lucide-react";
+import { Video, ShieldCheck, Loader } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
+import { useRouter } from "next/navigation";
+import { getUserProfile } from "@/src/features/auth/actions/auth-actions";
 import {
   Card,
   CardContent,
@@ -14,12 +16,42 @@ import {
 
 export const QuickJoin = () => {
   const [meetingCode, setMeetingCode] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-  const handleJoin = (e: React.FormEvent) => {
+  const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (meetingCode.trim()) {
-      console.log(`Joining meeting: ${meetingCode}`);
-      // Implement join logic here
+    if (!meetingCode.trim() || isLoading) return;
+
+    setIsLoading(true);
+    try {
+      // Validate authentication status
+      const user = await getUserProfile();
+      if (!user) {
+        // Redirect unauthorized/unauthenticated guests to sign-in page
+        router.push("/sign-in");
+        return;
+      }
+
+      let cleanLink = meetingCode.trim();
+
+      // Handle raw meeting room links or local paths
+      if (cleanLink.includes("room=")) {
+        const roomMatch = cleanLink.match(/room=([^&]+)/);
+        if (roomMatch) cleanLink = roomMatch[1];
+      }
+
+      try {
+        const url = new URL(cleanLink);
+        router.push(url.pathname + url.search);
+      } catch {
+        router.push(`/livekit?room=${cleanLink}`);
+      }
+    } catch (err) {
+      console.error("Auth check failed:", err);
+      router.push("/sign-in");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -45,19 +77,26 @@ export const QuickJoin = () => {
               className="w-full border-0 bg-transparent text-foreground placeholder:text-muted-foreground focus-visible:ring-0 shadow-none px-4 sm:text-lg h-10"
               value={meetingCode}
               onChange={(e) => setMeetingCode(e.target.value)}
+              disabled={isLoading}
             />
             <Button
               type="submit"
-              className="bg-foreground text-background rounded-full px-3 md:px-4 max-sm:px-3 py-5 font-semibold shrink-0 text-sm"
-              disabled={!meetingCode.trim()}
+              className="bg-foreground text-background rounded-full px-3 md:px-4 max-sm:px-3 py-5 font-semibold shrink-0 text-sm gap-1.5"
+              disabled={!meetingCode.trim() || isLoading}
             >
-              <Video className="size-5" strokeWidth={2.5} />
-              <span className="max-sm:hidden text-base">Join Now</span>
+              {isLoading ? (
+                <Loader className="w-5 h-5 animate-spin" />
+              ) : (
+                <Video className="size-5" strokeWidth={2.5} />
+              )}
+              <span className="max-sm:hidden text-base">
+                {isLoading ? "Joining..." : "Join Now"}
+              </span>
             </Button>
           </form>
           <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
             <ShieldCheck className="w-4 h-4" />
-            <span>No account required for guests</span>
+            <span>Active session required to enter</span>
           </div>
         </CardContent>
       </Card>
