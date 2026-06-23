@@ -49,13 +49,24 @@ export async function GET(request: NextRequest) {
     // 2️⃣ Securely store the tokens in httpOnly cookies
     await setAuthCookies(resData.access_token, resData.refresh_token);
 
-    // 3️⃣ Determine route based on user's role and redirect to the dashboard
-    const redirectPath =
-      resData.data?.role === "STUDENT"
-        ? "/dashboard-student"
-        : "/dashboard-instructor";
+    // 3️⃣ Determine route based on user's role and redirect to the dashboard (or meeting if cookie exists)
+    const meetingRedirect = request.cookies.get("meeting_redirect_url")?.value;
+    let redirectPath = meetingRedirect || "";
 
-    return NextResponse.redirect(new URL(redirectPath, baseUrl));
+    if (!redirectPath) {
+      redirectPath =
+        resData.data?.role === "STUDENT"
+          ? "/dashboard-student"
+          : "/dashboard-instructor";
+    }
+
+    const redirectRes = NextResponse.redirect(new URL(redirectPath, baseUrl));
+    
+    if (meetingRedirect) {
+      redirectRes.cookies.delete("meeting_redirect_url");
+    }
+
+    return redirectRes;
   } catch (error) {
     console.error("[BFF Handshake] Error occurred during exchange:", error);
     return NextResponse.redirect(new URL("/sign-in?error=exchange_error", baseUrl));

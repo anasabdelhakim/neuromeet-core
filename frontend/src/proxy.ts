@@ -141,6 +141,16 @@ export default async function proxy(request: NextRequest) {
     return redirectRes;
   }
 
+  // 2c. Authenticated users with a pending meeting redirect trying to access dashboards/protected pages -> Direct to meeting
+  if (isAuthenticated && role && isProtectedRoute) {
+    const meetingRedirect = request.cookies.get("meeting_redirect_url")?.value;
+    if (meetingRedirect) {
+      const redirectRes = NextResponse.redirect(new URL(meetingRedirect, request.url));
+      redirectRes.cookies.delete("meeting_redirect_url");
+      return redirectRes;
+    }
+  }
+
   // 3. Strict Role-Based Access Control (RBAC)
   if (isAccessValid && role && isProtectedRoute) {
     const dashboardUrl = getCorrectDashboard(role);
