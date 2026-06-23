@@ -54,14 +54,12 @@ def get_model():
                 _model = ort.InferenceSession(model_path, providers=providers)
                 logger.info(f"[bot] ONNX model loaded with providers: {_model.get_providers()}")
             except Exception as e:
-                logger.warning(f"⚠️ [bot] Failed to load ONNX model ({e}). Using random PyTorch weights for testing as a fake model until the real one is provided! ⚠️")
-                _model = EngagementModel(freeze_cnn=False)
-                _model.to(DEVICE).eval()
+                logger.error(f"❌ [bot] Failed to load ONNX model ({e}). Cannot proceed without a valid model.")
+                raise RuntimeError(f"Failed to load ONNX model: {e}")
         else:
             # We are running on CPU. Let PyTorch use all available threads
             # to process the massive Vision Transformer quickly.
-            # (Removed set_num_threads(1) so it doesn't freeze the CPU)
-            _model = EngagementModel(freeze_cnn=False)
+            _model = EngagementModel(freeze_cnn=True)
             try:
                 ckpt = torch.load(model_path, map_location=DEVICE)
                 
@@ -76,15 +74,18 @@ def get_model():
                 _model.load_state_dict(state_dict)
                 logger.info(f"[bot] PyTorch model loaded successfully from {model_path} on {DEVICE} 🚀")
                 
-            except FileNotFoundError:
-                logger.warning(f"⚠️ [bot] WARNING: '{model_path}' not found! Running with randomly initialized weights for testing. ⚠️")
+            except FileNotFoundError as e:
+                logger.error(f"❌ [bot] CRITICAL: Model file '{model_path}' not found! Cannot run inference without a trained model.")
+                raise RuntimeError(f"Model file not found: {model_path}")
             except RuntimeError as e:
                 logger.error(f"❌ [bot] ERROR: Architecture mismatch between best_model.pth and model.py! Details: {e}")
-                logger.warning("Running with randomly initialized weights as a fallback.")
+                raise RuntimeError(f"Model architecture mismatch: {e}")
             except Exception as e:
                 logger.error(f"❌ [bot] Unexpected error loading PyTorch model: {e}")
+                raise RuntimeError(f"Failed to load model: {e}")
 
             _model.to(DEVICE).eval()
+            logger.info(f"[bot] Model ready on {DEVICE}. Frozen ViT backbone + LSTM head with dropout.")
     return _model
 
 
@@ -188,8 +189,16 @@ async def consume_video_track(
     Async generator that reads frames from a single participant's video track,
     resizes to 224×224, and queues that participant for inference every
     INFERENCE_INTERVAL_S seconds once SEQ_LEN frames have been collected.
+    
+    Skips the AI bot's own track to avoid self-tracking.
     """
     pid = participant.identity
+    
+    # Skip the AI bot's own track — it has no camera but may appear as a participant
+    if pid.startswith(BOT_IDENTITY_PREFIX):
+        logger.info(f"[bot] Skipping bot's own track: {pid}")
+        return
+    
     buf = ParticipantBuffer(pid)
     buffers[pid] = buf
 
@@ -375,6 +384,7 @@ async def main():
     # ── Subscribe to tracks that already exist when the bot joins ──
     for participant in room.remote_participants.values():
         is_instructor = False
+        is_bot = False
         try:
             if participant.metadata:
                 meta = json.loads(participant.metadata)
@@ -383,7 +393,11 @@ async def main():
         except Exception:
             pass
 
+        # Skip instructor and bot participants
         if is_instructor:
+            continue
+        if participant.identity.startswith(BOT_IDENTITY_PREFIX):
+            logger.info(f"[bot] Skipping existing bot participant: {participant.identity}")
             continue
 
         for pub in participant.track_publications.values():

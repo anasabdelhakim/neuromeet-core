@@ -30,22 +30,34 @@ class ViTBackbone(nn.Module):
         return self.vit(x)
 
 class EngagementHead(nn.Module):
-    """Wrapper to match the exact 'head.lstm' and 'head.fc' structure"""
-    def __init__(self, input_dim=768, hidden_dim=96, num_layers=1):
+    """Wrapper to match the exact 'head.lstm' and 'head.fc' structure.
+    
+    Matches the training notebook's LSTMClassifier:
+    - feat_dropout: dropout on per-frame ViT features (0.5)
+    - lstm dropout: applied between LSTM layers (0.7, only when num_layers > 1)
+    - final dropout: dropout on LSTM final hidden state before FC (0.7)
+    """
+    def __init__(self, input_dim=768, hidden_dim=96, num_layers=1,
+                 feat_dropout=0.5, dropout=0.7):
         super().__init__()
+        self.feat_dropout = nn.Dropout(feat_dropout)
         self.lstm = nn.LSTM(
             input_size=input_dim, 
             hidden_size=hidden_dim, 
             num_layers=num_layers, 
-            batch_first=True
+            batch_first=True,
+            dropout=dropout if num_layers > 1 else 0.0
         )
+        self.dropout = nn.Dropout(dropout)
         self.fc = nn.Linear(hidden_dim, 1)
         
     def forward(self, x):
         # x is (B, T, 768)
+        x = self.feat_dropout(x)
         lstm_out, _ = self.lstm(x)
         # We only care about the prediction after seeing the entire sequence
         last_hidden = lstm_out[:, -1, :] # (B, 96)
+        last_hidden = self.dropout(last_hidden)
         out = self.fc(last_hidden)       # (B, 1)
         return out
 
@@ -54,11 +66,12 @@ class EngagementModel(nn.Module):
     Vision Transformer (ViT Base) + LSTM temporal model for engagement detection.
     This exactly matches the architecture of the provided best_model.pth!
     """
-    def __init__(self, freeze_cnn: bool = False):
+    def __init__(self, freeze_cnn: bool = True):
         super().__init__()
 
         self.backbone = ViTBackbone()
-        self.head = EngagementHead(input_dim=768, hidden_dim=96)
+        self.head = EngagementHead(input_dim=768, hidden_dim=96, num_layers=1,
+                                    feat_dropout=0.5, dropout=0.7)
 
         if freeze_cnn:
             # Freeze all backbone layers if requested

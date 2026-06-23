@@ -1,12 +1,12 @@
 "use client";
 
 import { useEngagementData, ParticipantScore } from "@/src/hooks/useEngagementData";
-import { TrendingUp, AlertCircle } from "lucide-react";
+import { TrendingUp, AlertCircle, Bot } from "lucide-react";
 
-const DISENGAGEMENT_THRESHOLD = 0.45;
+const DISENGAGEMENT_THRESHOLD = 0.50;
 
 export function EngagementDashboard() {
-  const { scores, disengagedCount, averageScore, totalParticipants } =
+  const { scores, disengagedCount, averageScore, totalParticipants, modelStatus } =
     useEngagementData();
 
   return (
@@ -39,6 +39,18 @@ export function EngagementDashboard() {
           <p className="text-xs font-medium text-destructive">
             {disengagedCount} student{disengagedCount > 1 ? "s" : ""}{" "}
             {disengagedCount > 1 ? "appear" : "appears"} disengaged
+          </p>
+        </div>
+      )}
+
+      {/* Model Status Indicator */}
+      {modelStatus && (
+        <div className="flex items-center gap-2 px-3 py-2 rounded-card bg-black-soft-muted border border-border">
+          <Bot size={14} className={modelStatus === 'active' ? 'text-status-success' : 'text-status-warning'} />
+          <p className="text-xs text-muted-foreground">
+            AI Model: <span className={modelStatus === 'active' ? 'text-status-success font-medium' : 'text-status-warning font-medium'}>
+              {modelStatus === 'active' ? 'Active' : 'Connecting...'}
+            </span>
           </p>
         </div>
       )}

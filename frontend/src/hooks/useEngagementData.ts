@@ -48,8 +48,8 @@ export function useEngagementData() {
   const handleData = useCallback(
     (
       payload: Uint8Array,
-      participant: unknown,
-      kind: DataPacket_Kind,
+      participant?: unknown,
+      kind?: DataPacket_Kind,
       topic?: string,
     ) => {
       // Only process messages on the "engagement" topic
@@ -89,9 +89,16 @@ export function useEngagementData() {
 
   useEffect(() => {
     if (!room) return;
-    room.on(RoomEvent.DataReceived, handleData);
+    // Type assertion to handle LiveKit's callback signature
+    const boundHandler = handleData as (
+      payload: Uint8Array,
+      participant?: unknown,
+      kind?: DataPacket_Kind,
+      topic?: string,
+    ) => void;
+    room.on(RoomEvent.DataReceived, boundHandler);
     return () => {
-      room.off(RoomEvent.DataReceived, handleData);
+      room.off(RoomEvent.DataReceived, boundHandler);
     };
   }, [room, handleData]);
 
@@ -110,10 +117,14 @@ export function useEngagementData() {
         sortedScores.length
       : null;
 
+  // Model status: 'active' once we receive the first engagement update, 'connecting' otherwise
+  const modelStatus: 'connecting' | 'active' = sortedScores.length > 0 ? 'active' : 'connecting';
+
   return {
     scores: sortedScores,
     disengagedCount,
     averageScore,
     totalParticipants: sortedScores.length,
-  };
+    modelStatus,
+  }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   GridLayout,
   ParticipantTile,
@@ -9,7 +9,7 @@ import {
   useParticipants,
 } from "@livekit/components-react";
 import { Track } from "livekit-client";
-import { X, Users } from "lucide-react";
+import { X, Users, ChevronLeft, ChevronRight } from "lucide-react";
 import { EngagementDashboard } from "./EngagementDashboard";
 import { ParticipantList } from "./ParticipantList";
 import { MeetingControls } from "./MeetingControls";
@@ -55,7 +55,9 @@ function Sidebar({ activeTab, isInstructor, onClose }: SidebarProps) {
   };
 
   const participants = useParticipants();
-  const participantCount = participants.length + 1;
+  // Exclude AI bot from participant count (identity starts with "ai-bot-")
+  const humanParticipants = participants.filter((p) => !p.identity.startsWith("ai-bot-"));
+  const participantCount = humanParticipants.length + 1; // +1 for the local user
 
   return (
     <aside className="absolute md:relative inset-y-0 right-0 z-50 w-full md:w-[360px] h-full bg-background/95 backdrop-blur-xl border-l border-border flex flex-col shadow-[-4px_0_24px_rgba(0,0,0,0.15)] transition-all duration-300">
@@ -113,6 +115,7 @@ interface MeetingRoomProps {
 
 export function MeetingRoom({ isInstructor, room }: MeetingRoomProps) {
   const [activeTab, setActiveTab] = useState<ActiveSidebarTab>(null);
+  const [gridPage, setGridPage] = useState(0);
 
   const tracks = useTracks(
     [
@@ -122,8 +125,29 @@ export function MeetingRoom({ isInstructor, room }: MeetingRoomProps) {
     { updateOnlyOn: [], onlySubscribed: false }
   );
 
+  const participants = useParticipants();
+  const humanParticipants = participants.filter((p) => !p.identity.startsWith("ai-bot-"));
+  const totalHumanParticipants = humanParticipants.length + 1; // +1 for local user
+
+  // Pagination: 4 participants per page
+  const PARTICIPANTS_PER_PAGE = 4;
+  const totalPages = Math.ceil(totalHumanParticipants / PARTICIPANTS_PER_PAGE);
+  const currentPageTracks = useMemo(() => {
+    const startIdx = gridPage * PARTICIPANTS_PER_PAGE;
+    const endIdx = startIdx + PARTICIPANTS_PER_PAGE;
+    return tracks.slice(startIdx, endIdx);
+  }, [tracks, gridPage]);
+
   const toggleTab = (tab: NonNullable<ActiveSidebarTab>) => {
     setActiveTab((prev) => (prev === tab ? null : tab));
+  };
+
+  const nextPage = () => {
+    setGridPage((prev) => Math.min(prev + 1, totalPages - 1));
+  };
+
+  const prevPage = () => {
+    setGridPage((prev) => Math.max(prev - 1, 0));
   };
 
   return (
@@ -133,7 +157,7 @@ export function MeetingRoom({ isInstructor, room }: MeetingRoomProps) {
         {/* Main Video Area */}
         <main className="flex-1 flex items-center justify-center p-4 md:p-6 overflow-hidden relative bg-black select-none">
           <div className={cn(
-            "w-full h-full max-w-[1600px] flex items-center justify-center transition-all duration-300",
+            "w-full h-full max-w-[1920px] max-h-[1080px] flex flex-col items-center justify-center transition-all duration-300",
             /* Grid Layout */
             "[&_.lk-grid-layout]:bg-transparent [&_.lk-grid-layout]:p-4 [&_.lk-grid-layout]:gap-3",
             "[&_.lk-focus-layout]:p-4 [&_.lk-focus-layout]:gap-3",
@@ -149,9 +173,61 @@ export function MeetingRoom({ isInstructor, room }: MeetingRoomProps) {
             /* Placeholders */
             "[&_.lk-placeholder]:bg-card"
           )}>
-            <GridLayout tracks={tracks} style={{ height: "100%" }}>
-              <InstructorBadgedTile />
-            </GridLayout>
+            {/* Video Grid */}
+            <div className="flex-1 w-full flex items-center justify-center">
+              <GridLayout tracks={currentPageTracks} style={{ height: "100%" }}>
+                <InstructorBadgedTile />
+              </GridLayout>
+            </div>
+
+            {/* Pagination Controls - Show only if more than 4 participants */}
+            {totalPages > 1 && (
+              <div className="flex items-center gap-4 py-3">
+                <button
+                  onClick={prevPage}
+                  disabled={gridPage === 0}
+                  className={cn(
+                    "flex items-center justify-center w-8 h-8 rounded-full transition-colors",
+                    gridPage === 0
+                      ? "text-muted-foreground opacity-50 cursor-not-allowed"
+                      : "text-white bg-black-soft-muted border border-border hover:bg-muted"
+                  )}
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                
+                <div className="flex items-center gap-2">
+                  {Array.from({ length: totalPages }, (_, i) => i).map((pageNum) => (
+                    <button
+                      key={pageNum}
+                      onClick={() => setGridPage(pageNum)}
+                      className={cn(
+                        "w-2 h-2 rounded-full transition-all",
+                        pageNum === gridPage
+                          ? "bg-primary w-6"
+                          : "bg-muted-foreground hover:bg-muted"
+                      )}
+                      aria-label={`Go to page ${pageNum + 1}`}
+                    />
+                  ))}
+                </div>
+
+                <button
+                  onClick={nextPage}
+                  disabled={gridPage === totalPages - 1}
+                  className={cn(
+                    "flex items-center justify-center w-8 h-8 rounded-full transition-colors",
+                    gridPage === totalPages - 1
+                      ? "text-muted-foreground opacity-50 cursor-not-allowed"
+                      : "text-white bg-black-soft-muted border border-border hover:bg-muted"
+                  )}
+                  aria-label="Next page"
+                >
+                  <ChevronRight size={18} />
+                </button>
+              </div>
+            )}
           </div>
         </main>
 
