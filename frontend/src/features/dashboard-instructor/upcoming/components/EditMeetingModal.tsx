@@ -112,6 +112,7 @@ export function EditMeetingModal({
                 id="title"
                 {...register("title")}
                 aria-invalid={!!errors.title}
+                disabled={isLoading}
                 className="bg-black-soft-muted rounded-soft focus-visible:ring-primary h-11 w-full"
               />
               <FieldError>{errors.title?.message}</FieldError>
@@ -124,6 +125,7 @@ export function EditMeetingModal({
               <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                 <PopoverTrigger render={ <Button
                     variant="outline"
+                    disabled={isLoading}
                     className={cn(
                       "w-full justify-between font-normal bg-black-soft-muted h-11 border-none rounded-soft hover:bg-black-soft-deep hover:text-white transition-all duration-fast ease-standard focus-visible:ring-primary outline-none mb-1",
                       !date && "text-muted-foreground",
@@ -161,6 +163,7 @@ export function EditMeetingModal({
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
                 required
+                disabled={isLoading}
                 className="bg-black-soft-muted rounded-soft focus-visible:ring-primary h-11 [&::-webkit-calendar-picker-indicator]:invert"
               />
             </div>

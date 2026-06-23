@@ -217,6 +217,7 @@ export function QuickActions() {
                       {...registerNew("title")}
                       placeholder="e.g. Ad-hoc Q&A"
                       aria-invalid={!!errorsNew.title}
+                      disabled={pending}
                       className="bg-black-soft-muted focus-visible:ring-action-new-input focus-visible:border-action-new transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
                     />
                     <FieldError>{errorsNew.title?.message}</FieldError>
@@ -245,11 +246,13 @@ export function QuickActions() {
                     placeholder="Enter 6-digit code or URL..."
                     value={joinLink}
                     onChange={(e) => setJoinLink(e.target.value)}
+                    disabled={pending}
                     className="bg-black-soft-muted focus-visible:ring-action-join-input focus-visible:border-action-join transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
                   />
                 </div>
                 <Button
                   onClick={handleJoin}
+                  disabled={pending}
                   className={cn(
                     "w-full h-12 mt-2 text-white font-semibold text-base shadow-hard transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border hover:brightness-110",
                     activeButtonClass,
@@ -271,6 +274,7 @@ export function QuickActions() {
                       {...registerSchedule("title")}
                       placeholder="e.g. Advanced AI Architecture"
                       aria-invalid={!!errorsSchedule.title}
+                      disabled={pending}
                       className="bg-black-soft-muted focus-visible:ring-action-schedule-input focus-visible:border-action-schedule transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
                     />
                     <FieldError>{errorsSchedule.title?.message}</FieldError>
@@ -283,6 +287,7 @@ export function QuickActions() {
                       <PopoverTrigger render={
                         <Button
                           variant="outline"
+                          disabled={pending}
                           className={cn(
                             "w-full justify-between font-normal bg-black-soft-muted h-12 border-none rounded-soft hover:bg-black-soft-deep hover:text-white transition-all duration-fast ease-standard focus-visible:ring-action-schedule-input outline-none mb-1",
                             !date && "text-muted-foreground",
@@ -324,12 +329,13 @@ export function QuickActions() {
                       value={timeFrom}
                       onChange={(e) => setTimeFrom(e.target.value)}
                       required
+                      disabled={pending}
                       suppressHydrationWarning
                       className="bg-black-soft-muted focus-visible:ring-action-schedule-input focus-visible:border-action-schedule transition-all duration-fast ease-standard h-12 px-4 rounded-soft [&::-webkit-calendar-picker-indicator]:invert"
                     />
                   </div>
                 </div>
-                <SubmitButton cta={activeCard.cta} btnClass={activeButtonClass} disabled={!isValidSchedule} />
+                <SubmitButton cta={activeCard.cta} btnClass={activeButtonClass} disabled={pending || !isValidSchedule} />
               </form>
             )}
           </div>
