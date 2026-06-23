@@ -94,13 +94,21 @@ export default async function proxy(request: NextRequest) {
     return null;
   };
 
-  // 1. Authenticated users on Auth pages -> Dashboard
+  // 1. Authenticated users on Auth pages -> Dashboard (or Meeting Room if quick-join redirect cookie exists)
   if (isAuthRoute && isAuthenticated && role) {
-    const dashboardUrl = getCorrectDashboard(role);
-    if (dashboardUrl) {
+    const meetingRedirect = request.cookies.get("meeting_redirect_url")?.value;
+    const targetUrl = meetingRedirect || getCorrectDashboard(role);
+
+    if (targetUrl) {
       // Create a redirect response, but we MUST copy over the refreshed cookies 
       // if they were updated above!
-      const redirectRes = NextResponse.redirect(new URL(dashboardUrl, request.url));
+      const redirectRes = NextResponse.redirect(new URL(targetUrl, request.url));
+      
+      if (meetingRedirect) {
+        // Clear the cookie so we don't redirect repeatedly
+        redirectRes.cookies.delete("meeting_redirect_url");
+      }
+
       if (response.cookies.has('access_token')) {
         redirectRes.cookies.set('access_token', response.cookies.get('access_token')!.value, response.cookies.get('access_token')!);
         redirectRes.cookies.set('refresh_token', response.cookies.get('refresh_token')!.value, response.cookies.get('refresh_token')!);

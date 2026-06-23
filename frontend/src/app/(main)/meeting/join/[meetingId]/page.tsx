@@ -13,6 +13,23 @@ async function MeetingDataLoader({ paramsPromise }: { paramsPromise: Promise<{ m
   const meetingId = resolvedParams.meetingId;
 
   const cookieStore = await cookies();
+  
+  // UX Security: Check if user is authenticated first.
+  // If not, redirect them to sign-in page and save current path in the meeting redirect cookie.
+  const accessToken = cookieStore.get('access_token')?.value;
+  const refreshToken = cookieStore.get('refresh_token')?.value;
+  
+  if (!accessToken && !refreshToken) {
+    cookieStore.set('meeting_redirect_url', `/meeting/join/${meetingId}`, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 15 * 60, // 15 minutes
+    });
+    redirect("/sign-in");
+  }
+
   const roomName = cookieStore.get(`joined_meeting_${meetingId}`)?.value;
   if (roomName) {
     redirect(`/livekit?room=${roomName}`);
