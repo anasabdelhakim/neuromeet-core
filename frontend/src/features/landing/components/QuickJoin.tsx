@@ -5,7 +5,7 @@ import { Video, ShieldCheck, Loader } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { useRouter } from "next/navigation";
-import { getUserProfile } from "@/src/features/auth/actions/auth-actions";
+import { getUserProfile, setRedirectCookie } from "@/src/features/auth/actions/auth-actions";
 import {
   Card,
   CardContent,
@@ -25,14 +25,6 @@ export const QuickJoin = () => {
 
     setIsLoading(true);
     try {
-      // Validate authentication status
-      const user = await getUserProfile();
-      if (!user) {
-        // Redirect unauthorized/unauthenticated guests to sign-in page
-        router.push("/sign-in");
-        return;
-      }
-
       let cleanLink = meetingCode.trim();
 
       // Handle raw meeting room links or local paths
@@ -41,12 +33,24 @@ export const QuickJoin = () => {
         if (roomMatch) cleanLink = roomMatch[1];
       }
 
+      let targetUrl = `/livekit?room=${cleanLink}`;
       try {
         const url = new URL(cleanLink);
-        router.push(url.pathname + url.search);
+        targetUrl = url.pathname + url.search;
       } catch {
-        router.push(`/livekit?room=${cleanLink}`);
+        // If not a full URL, treat as room code
       }
+
+      // Validate authentication status
+      const user = await getUserProfile();
+      if (!user) {
+        // Save the redirect path securely in a cookie before going to auth pages
+        await setRedirectCookie(targetUrl);
+        router.push("/sign-in");
+        return;
+      }
+
+      router.push(targetUrl);
     } catch (err) {
       console.error("Auth check failed:", err);
       router.push("/sign-in");

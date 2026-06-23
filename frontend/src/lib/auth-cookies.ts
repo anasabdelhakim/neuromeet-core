@@ -108,3 +108,25 @@ export async function getOtpSecondsRemaining(): Promise<number> {
   const elapsed = Math.floor((Date.now() - sentAt) / 1000);
   return Math.max(0, OTP_COOLDOWN_SECONDS - elapsed);
 }
+
+// ---------- Redirect Flow Cookies ----------
+export async function setMeetingRedirectUrl(path: string) {
+  const cookieStore = await cookies();
+  cookieStore.set('meeting_redirect_url', path, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 15 * 60, // 15 minutes is plenty to complete signup/signin
+  });
+}
+
+export async function getMeetingRedirectUrl() {
+  const cookieStore = await cookies();
+  return cookieStore.get('meeting_redirect_url')?.value || '';
+}
+
+export async function clearMeetingRedirectUrl() {
+  const cookieStore = await cookies();
+  cookieStore.delete({ name: 'meeting_redirect_url', path: '/' });
+}

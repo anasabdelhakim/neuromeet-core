@@ -21,6 +21,9 @@ import {
   clearResetData,
   setOtpSentAt,
   getOtpSecondsRemaining,
+  setMeetingRedirectUrl,
+  getMeetingRedirectUrl,
+  clearMeetingRedirectUrl,
 } from "@/src/lib/auth-cookies";
 import {
   loginFormSchema,
@@ -85,6 +88,7 @@ export async function signInAction(
     email: formData.get("email") as string,
     password: formData.get("password") as string,
   };
+  const redirectTo = formData.get("redirectTo") as string;
 
   // SECURITY: Double-layer validation — Zod validates on the server even though
   // the client also validates. This prevents bypassing client-side checks.
@@ -109,16 +113,25 @@ export async function signInAction(
     // This prevents XSS attacks from stealing tokens via document.cookie or JS access.
     await setAuthCookies(res.access_token, res.refresh_token);
 
-    let redirectPath: string;
-    switch (res.data.role) {
-      case "ADMIN":
-        redirectPath = "/dashboard-admin";
-        break;
-      case "STUDENT":
-        redirectPath = "/dashboard-student";
-        break;
-      default:
-        redirectPath = "/dashboard-instructor";
+    let redirectPath = redirectTo || "";
+    if (!redirectPath) {
+      redirectPath = await getMeetingRedirectUrl();
+      if (redirectPath) {
+        await clearMeetingRedirectUrl();
+      }
+    }
+
+    if (!redirectPath) {
+      switch (res.data.role) {
+        case "ADMIN":
+          redirectPath = "/dashboard-admin";
+          break;
+        case "STUDENT":
+          redirectPath = "/dashboard-student";
+          break;
+        default:
+          redirectPath = "/dashboard-instructor";
+      }
     }
 
     redirect(redirectPath);
@@ -488,7 +501,12 @@ export async function updateUserProfile(
     const resData = await apiPost<AuthResponse>('/userMe/avatar', uploadData);
 
     const role = resData.data?.role;
-    const redirectPath = role === "STUDENT" ? "/dashboard-student" : "/dashboard-instructor";
+    let redirectPath = await getMeetingRedirectUrl();
+    if (redirectPath) {
+      await clearMeetingRedirectUrl();
+    } else {
+      redirectPath = role === "STUDENT" ? "/dashboard-student" : "/dashboard-instructor";
+    }
     redirect(redirectPath);
   } catch (err: any) {
     if (isRedirectError(err)) {
@@ -510,12 +528,21 @@ export async function skipProfileCompletion() {
   try {
     const res = await apiPatch<any>('/userMe', { isProfileComplete: true });
     const role = res.data?.user?.role || res.data?.role;
-    const redirectPath = role === "STUDENT" ? "/dashboard-student" : "/dashboard-instructor";
+    let redirectPath = await getMeetingRedirectUrl();
+    if (redirectPath) {
+      await clearMeetingRedirectUrl();
+    } else {
+      redirectPath = role === "STUDENT" ? "/dashboard-student" : "/dashboard-instructor";
+    }
     redirect(redirectPath);
   } catch (err) {
     if (isRedirectError(err)) throw err;
     redirect("/sign-in");
   }
+}
+
+export async function setRedirectCookie(path: string) {
+  await setMeetingRedirectUrl(path);
 }
 
 import { cache } from 'react';
