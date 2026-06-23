@@ -30,12 +30,12 @@ export default function Error({
             We encountered an unexpected error while processing your request. Please try again.
           </p>
         </div>
-        <div className="flex gap-4">
-          <Button onClick={() => window.location.href = '/sign-in'} variant="outline" className="w-full h-11 rounded-soft font-medium transition-all">
-            Dashboard
-          </Button>
-          <Button onClick={() => reset()} className="w-full bg-primary hover:bg-primary-hover text-white h-11 rounded-soft font-medium transition-all shadow-hard">
+        <div className="flex flex-col sm:flex-row gap-3 w-full justify-center">
+          <Button onClick={() => reset()} className="w-full sm:w-auto px-6 bg-primary hover:bg-primary-hover text-white h-11 rounded-soft font-medium transition-all shadow-hard">
             Try Again
+          </Button>
+          <Button onClick={() => window.location.href = '/sign-in'} variant="outline" className="w-full sm:w-auto px-6 h-11 rounded-soft font-medium transition-all">
+            Dashboard
           </Button>
         </div>
       </div>

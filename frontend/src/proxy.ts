@@ -86,6 +86,7 @@ export default async function proxy(request: NextRequest) {
   const isSettingProfileRoute = pathname.startsWith("/setting-profile");
   
   const isProtectedRoute = isInstructorRoute || isStudentRoute || isAdminRoute || isSettingProfileRoute;
+  const isJoinRoute = pathname.startsWith("/meeting/join/");
 
   const getCorrectDashboard = (userRole?: string) => {
     if (userRole === "INSTRUCTOR") return "/dashboard-instructor";
@@ -120,6 +121,21 @@ export default async function proxy(request: NextRequest) {
   // 2. Unauthenticated users on Protected pages -> Sign-in
   if (isProtectedRoute && !isAuthenticated) {
     const redirectRes = NextResponse.redirect(new URL("/sign-in", request.url));
+    redirectRes.cookies.delete("access_token");
+    redirectRes.cookies.delete("refresh_token");
+    return redirectRes;
+  }
+
+  // 2b. Unauthenticated users on Join Meeting pages -> Sign-in + Set meeting_redirect_url cookie
+  if (isJoinRoute && !isAuthenticated) {
+    const redirectRes = NextResponse.redirect(new URL("/sign-in", request.url));
+    redirectRes.cookies.set("meeting_redirect_url", pathname, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 15 * 60, // 15 minutes
+    });
     redirectRes.cookies.delete("access_token");
     redirectRes.cookies.delete("refresh_token");
     return redirectRes;
