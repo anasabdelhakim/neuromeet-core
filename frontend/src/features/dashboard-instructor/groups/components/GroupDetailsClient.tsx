@@ -30,12 +30,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/src/components/ui/popover";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/src/components/ui/dropdown-menu";
+
 import {
   Command,
   CommandEmpty,
@@ -174,7 +169,6 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
                       <CommandItem
                         key={student.id}
                         value={student.name}
-                        onSelect={() => {}} // Handle on the button instead
                         className="flex items-center justify-between gap-2"
                       >
                         <div className="flex items-center gap-2 overflow-hidden flex-1">
@@ -287,26 +281,26 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
 
                     <TableCell className="py-4 pr-5 text-right">
                       <AlertDialog>
-                        <DropdownMenu 
+                        <Popover 
                           open={activePopoverId === student.id} 
                           onOpenChange={(isOpen) => setActivePopoverId(isOpen ? student.id : null)}
                         >
-                          <DropdownMenuTrigger render={
+                          <PopoverTrigger render={
                             <Button disabled={isPending} variant="ghost" size="icon" className="h-8 w-8 rounded-medium text-muted-foreground hover:text-foreground hover:bg-white-soft-muted">
                               <MoreHorizontal size={16} />
                             </Button>
                           } />
                           
                           {activePopoverId === student.id && (
-                            <DropdownMenuContent align="end" className="w-44">
+                            <PopoverContent align="end" className="w-44 p-1 flex flex-col gap-0.5">
                               <AlertDialogTrigger render={
-                                <DropdownMenuItem variant="destructive" className="w-full justify-start">
+                                <Button variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal text-destructive hover:text-destructive hover:bg-destructive/10">
                                   <Trash2 size={14} className="mr-2" /> Remove
-                                </DropdownMenuItem>
+                                </Button>
                               } />
-                            </DropdownMenuContent>
+                            </PopoverContent>
                           )}
-                        </DropdownMenu>
+                        </Popover>
 
                         <AlertDialogContent>
                           <AlertDialogHeader>

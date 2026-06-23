@@ -64,3 +64,12 @@ export const resetPasswordSchema = z
   });
 
 
+export const createGroupSchema = z.object({
+  name: z.string().min(3, "Group Name must be at least 3 characters").max(50, "Group Name must be at most 50 characters"),
+  subject: z.string().optional(),
+  description: z.string().optional(),
+});
+
+export const meetingSchema = z.object({
+  title: z.string().min(3, "Lecture Topic must be at least 3 characters").max(100, "Lecture Topic must be at most 100 characters"),
+});

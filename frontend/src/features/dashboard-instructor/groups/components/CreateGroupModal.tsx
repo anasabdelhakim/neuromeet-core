@@ -13,15 +13,31 @@ import {
 } from "@/src/components/ui/dialog";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
-import { Label } from "@/src/components/ui/label";
+import { Field, FieldLabel, FieldError } from "@/src/components/ui/field";
 import { PlusCircle, Loader } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { createGroupSchema } from "@/src/validations/zod";
 
 export function CreateGroupModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [state, action, pending] = useActionState<CreateGroupState, FormData>(createGroupAction, { success: false });
 
+  const {
+    register,
+    formState: { errors },
+    reset,
+  } = useForm<z.infer<typeof createGroupSchema>>({
+    resolver: zodResolver(createGroupSchema),
+    mode: "onTouched",
+  });
+
   // Close dialog on success
-  if (state.success && isOpen) setIsOpen(false);
+  if (state.success && isOpen) {
+    reset();
+    setIsOpen(false);
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -42,43 +58,53 @@ export function CreateGroupModal() {
         </DialogHeader>
         <form action={action} className="space-y-5 pt-2">
           {state.error && (
-            <p className="text-destructive text-sm text-center bg-destructive-soft rounded-medium py-2 px-3">
-              {state.error}
-            </p>
+            <div className="animate-alert-entrance">
+              <p className="text-destructive text-sm text-center bg-destructive-soft rounded-medium py-2 px-3">
+                {state.error}
+              </p>
+            </div>
           )}
-          <div className="space-y-2">
-            <Label htmlFor="name" className="text-sm font-medium">
-              Group Name <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              id="name"
-              name="name"
-              placeholder="e.g., Computer Science 101"
-              className="bg-black-soft-muted rounded-soft focus-visible:ring-primary h-11"
-              required
-            />
+          <div>
+            <Field>
+              <FieldLabel htmlFor="name">Group Name <span className="text-red-500">*</span></FieldLabel>
+              <Input
+                id="name"
+                {...register("name")}
+                placeholder="e.g., Computer Science 101"
+                aria-invalid={!!errors.name}
+                className="bg-black-soft-muted rounded-soft focus-visible:ring-primary h-11"
+                disabled={pending}
+              />
+              <FieldError>{errors.name?.message}</FieldError>
+            </Field>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="subject" className="text-sm font-medium">
-              Subject (Optional)
-            </Label>
-            <Input
-              id="subject"
-              name="subject"
-              placeholder="e.g., Programming"
-              className="bg-black-soft-muted rounded-soft focus-visible:ring-primary h-11"
-            />
+          <div>
+            <Field>
+              <FieldLabel htmlFor="subject">Subject (Optional)</FieldLabel>
+              <Input
+                id="subject"
+                {...register("subject")}
+                placeholder="e.g., Programming"
+                aria-invalid={!!errors.subject}
+                className="bg-black-soft-muted rounded-soft focus-visible:ring-primary h-11"
+                disabled={pending}
+              />
+              <FieldError>{errors.subject?.message}</FieldError>
+            </Field>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="description" className="text-sm font-medium">
-              Description (Optional)
-            </Label>
-            <Input
-              id="description"
-              name="description"
-              placeholder="Brief description about the group..."
-              className="bg-black-soft-muted rounded-soft focus-visible:ring-primary h-11"
-            />
+          <div>
+            <Field>
+              <FieldLabel htmlFor="description">Description (Optional)</FieldLabel>
+              <Input
+                id="description"
+                {...register("description")}
+                placeholder="Brief description about the group..."
+                aria-invalid={!!errors.description}
+                className="bg-black-soft-muted rounded-soft focus-visible:ring-primary h-11"
+                disabled={pending}
+              />
+              <FieldError>{errors.description?.message}</FieldError>
+            </Field>
           </div>
           <div className="pt-2 flex justify-end gap-3">
             <Button

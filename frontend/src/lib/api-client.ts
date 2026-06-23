@@ -13,14 +13,14 @@ export class ApiError extends Error {
   }
 }
 
-let refreshPromise: Promise<string | null> | null = null;
+const globalAny = globalThis as any;
 
 async function handleTokenRefresh(): Promise<string | null> {
-  if (refreshPromise) {
-    return refreshPromise;
+  if (globalAny.refreshPromise) {
+    return globalAny.refreshPromise;
   }
 
-  refreshPromise = (async () => {
+  globalAny.refreshPromise = (async () => {
     try {
       const cookieStore = await cookies();
       const refreshToken = cookieStore.get('refresh_token')?.value;
@@ -44,11 +44,11 @@ async function handleTokenRefresh(): Promise<string | null> {
     } catch (error) {
       return null;
     } finally {
-      refreshPromise = null;
+      globalAny.refreshPromise = null;
     }
   })();
 
-  return refreshPromise;
+  return globalAny.refreshPromise;
 }
 
 async function request<T>(

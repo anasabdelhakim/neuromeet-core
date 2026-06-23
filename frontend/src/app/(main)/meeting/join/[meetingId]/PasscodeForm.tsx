@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
@@ -16,7 +16,27 @@ interface PasscodeFormProps {
 export function PasscodeForm({ meetingId, meetingTitle }: PasscodeFormProps) {
   const [passcode, setPasscode] = useState("");
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Attempt seamless auto-join if they already have a saved session passcode
+  useEffect(() => {
+    const autoJoin = async () => {
+      const savedPasscode = sessionStorage.getItem(`passcode_${meetingId}`);
+      if (!savedPasscode) {
+        setIsLoading(false);
+        return;
+      }
+      
+      const res = await joinMeetingAction(meetingId, savedPasscode);
+      if (res && !res.success) {
+        sessionStorage.removeItem(`passcode_${meetingId}`);
+        setError(res.errorMessage);
+        setIsLoading(false);
+      }
+    };
+    
+    autoJoin();
+  }, [meetingId]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,13 +48,17 @@ export function PasscodeForm({ meetingId, meetingTitle }: PasscodeFormProps) {
     setIsLoading(true);
     setError("");
 
+    // Save optimistically. If the server action redirects on success, this persists.
+    sessionStorage.setItem(`passcode_${meetingId}`, passcode);
+
     const res = await joinMeetingAction(meetingId, passcode);
-    // If joinMeetingAction succeeds, it calls redirect() and this code won't run.
-    // If it returns, it means there was an error.
+    
     if (res && !res.success) {
+      // If it failed, remove the invalid passcode and show the error
+      sessionStorage.removeItem(`passcode_${meetingId}`);
       setError(res.errorMessage);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (

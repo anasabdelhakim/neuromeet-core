@@ -129,7 +129,17 @@ export class MeetingsService {
         scheduledAt: true,
         durationMinutes: true,
         groupId: true,
-        group: { select: { name: true } },
+        group: {
+          select: {
+            name: true,
+            enrollments: {
+              select: {
+                student: { select: { name: true, avatarUrl: true } }
+              },
+              take: 5
+            }
+          }
+        },
         livekitRoomName: true,
         passcode: true, // we'll need this for instructor to see
       },
@@ -156,7 +166,17 @@ export class MeetingsService {
         scheduledAt: true,
         durationMinutes: true,
         groupId: true,
-        group: { select: { name: true } },
+        group: {
+          select: {
+            name: true,
+            enrollments: {
+              select: {
+                student: { select: { name: true, avatarUrl: true } }
+              },
+              take: 5
+            }
+          }
+        },
         livekitRoomName: true,
       },
       orderBy: { scheduledAt: 'asc' },
@@ -177,7 +197,17 @@ export class MeetingsService {
         scheduledAt: true,
         durationMinutes: true,
         groupId: true,
-        group: { select: { name: true } },
+        group: {
+          select: {
+            name: true,
+            enrollments: {
+              select: {
+                student: { select: { name: true, avatarUrl: true } }
+              },
+              take: 5
+            }
+          }
+        },
       },
       orderBy: { scheduledAt: 'desc' },
     });
@@ -436,10 +466,25 @@ export class MeetingsService {
       throw new BadRequestException('This meeting is no longer active');
     }
 
+    // Check if already in the meeting (Seamless Reconnection)
+    const existing = await this.prisma.meetingParticipant.findUnique({
+      where: { meetingId_userId: { meetingId, userId } },
+      select: {
+        id: true,
+        role: true,
+        consentGiven: true,
+        joinedAt: true,
+        user: { select: { id: true, name: true, email: true } },
+      },
+    });
+
+    if (existing) {
+      // If the user is already a recognized participant, let them back in seamlessly!
+      return { status: 'success', data: { participant: existing, livekitRoomName: meeting.livekitRoomName } };
+    }
+
     if (meeting.hostId !== userId) {
       // Validate Passcode
-      // We no longer strictly require the student to be in the group's enrollment
-      // as long as they have the valid passcode.
       let isValidPasscode = false;
       if (meeting.passcode) {
         // Since we stopped hashing, we check plain text first
@@ -456,15 +501,6 @@ export class MeetingsService {
       if (!isValidPasscode) {
         throw new ForbiddenException('Invalid passcode');
       }
-    }
-
-    // Check if already in the meeting
-    const existing = await this.prisma.meetingParticipant.findUnique({
-      where: { meetingId_userId: { meetingId, userId } },
-    });
-
-    if (existing) {
-      throw new ConflictException('You have already joined this meeting');
     }
 
     const role = meeting.hostId === userId ? 'HOST' : 'PARTICIPANT';
@@ -545,6 +581,17 @@ export class MeetingsService {
     if (meeting.livekitRoomName) {
       this.botService.recallBotFromRoom(meeting.livekitRoomName).catch(err => {
         console.error("Failed to recall bot:", err);
+      });
+
+      // Forcefully close the LiveKit room to kick all participants out
+      const { RoomServiceClient } = require('livekit-server-sdk');
+      const roomService = new RoomServiceClient(
+        process.env.LIVEKIT_API_URL,
+        process.env.LIVEKIT_API_KEY,
+        process.env.LIVEKIT_API_SECRET,
+      );
+      roomService.deleteRoom(meeting.livekitRoomName).catch((err: any) => {
+        console.error("Failed to delete LiveKit room:", err);
       });
     }
 

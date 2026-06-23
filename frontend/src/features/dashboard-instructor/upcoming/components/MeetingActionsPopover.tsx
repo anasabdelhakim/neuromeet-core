@@ -1,14 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Button } from "@/src/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/src/components/ui/dropdown-menu";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,10 +16,11 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/src/components/ui/alert-dialog";
-import { MoreVertical, Copy, CheckSquare, Pencil, Trash2, Share2 } from "lucide-react";
+import { MoreVertical, Copy, CheckSquare, Pencil, Trash2, Share2, SquareUserRound, Loader } from "lucide-react";
 import { ShareMeetingModal } from "./ShareMeetingModal";
+import { EditMeetingModal } from "./EditMeetingModal";
+import { deleteMeetingAction, endMeetingAction } from "../../home/actions/meeting-actions";
 
 type PopoverVariant = "active" | "history";
 
@@ -30,11 +29,13 @@ interface MeetingActionsPopoverProps {
   dateTime?: string;
   meetingId: string;
   passcode?: string;
+  status?: string;
   variant?: PopoverVariant;
   onEdit?: () => void;
   onCopyInvitation?: () => void;
   onShareToGroup?: () => void;
   groups?: any[];
+  participantsCount?: number;
 }
 
 export function MeetingActionsPopover({
@@ -42,16 +43,20 @@ export function MeetingActionsPopover({
   dateTime,
   meetingId,
   passcode,
+  status = "SCHEDULED",
   variant = "active",
   onEdit,
   onCopyInvitation,
   onShareToGroup,
   groups = [],
+  participantsCount = 0,
 }: MeetingActionsPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [isDeleting, startDeleteTransition] = useTransition();
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
@@ -75,31 +80,35 @@ export function MeetingActionsPopover({
       }
   };
 
-  // Define the deletion logic here or call a Server Action
-  const handleDelete = async () => {
-    console.log(`Deleting meeting with ID: ${meetingId}`);
-    // Example: await deleteMeetingAction(meetingId);
+  const isLive = status === "LIVE";
+
+  const handleDeleteOrEnd = () => {
+    startDeleteTransition(async () => {
+      if (isLive) {
+        await endMeetingAction(meetingId);
+      } else {
+        await deleteMeetingAction(meetingId);
+      }
+      setIsDeleteDialogOpen(false);
+    });
   };
 
   return (
-    <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-      <DropdownMenu onOpenChange={handleOpenChange}>
-        <DropdownMenuTrigger
-          render={
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 flex-shrink-0 text-white-soft-deep hover:text-white hover:bg-white-soft-muted"
-            >
-              <MoreVertical size={18} />
-            </Button>
-          }
-        />
+    <>
+      <Popover open={isOpen} onOpenChange={handleOpenChange}>
+        <PopoverTrigger render={  <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 flex-shrink-0 text-white-soft-deep hover:text-white hover:bg-white-soft-muted"
+          >
+            <MoreVertical size={18} />
+          </Button>}>
+        </PopoverTrigger>
 
-        <DropdownMenuContent align="end" className="w-48">
+        <PopoverContent align="end" className="w-48 p-1 flex flex-col gap-0.5 z-50">
           {variant === "active" && (
             <>
-              <DropdownMenuItem onClick={handleCopy} disabled={isCopied}>
+              <Button variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal" onClick={handleCopy} disabled={isCopied}>
                 {isCopied ? (
                   <>
                     <CheckSquare size={16} className="mr-2 text-status-success" />
@@ -111,25 +120,41 @@ export function MeetingActionsPopover({
                     <span>Copy Join Link</span>
                   </>
                 )}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onEdit?.()}>
+              </Button>
+              <Button variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal" onClick={() => { setIsOpen(false); setIsEditModalOpen(true); }}>
                 <Pencil size={16} className="mr-2 text-muted-foreground" />
                 Edit Meeting
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setIsShareModalOpen(true)}>
+              </Button>
+              <div className="h-px bg-border my-1 w-full" />
+              <Button variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal" onClick={() => { setIsOpen(false); setIsShareModalOpen(true); }}>
                 <Share2 size={16} className="mr-2 text-muted-foreground" />
                 Share to Group
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
+              </Button>
+              <div className="h-px bg-border my-1 w-full" />
             </>
           )}
-          <DropdownMenuItem variant="destructive" onClick={() => setIsDeleteDialogOpen(true)}>
-            <Trash2 size={16} className="mr-2" />
-            Delete Meeting
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+          {participantsCount > 0 ? (
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start h-8 px-2 text-sm font-normal text-destructive hover:text-destructive hover:bg-destructive/10" 
+              onClick={() => { setIsOpen(false); setIsDeleteDialogOpen(true); }}
+            >
+              {isLive ? <SquareUserRound size={16} className="mr-2" /> : <Trash2 size={16} className="mr-2" />}
+              {isLive ? "End Meeting" : "Delete Meeting"}
+            </Button>
+          ) : (
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start h-8 px-2 text-sm font-normal text-destructive hover:text-destructive hover:bg-destructive/10" 
+              onClick={handleDeleteOrEnd}
+              disabled={isDeleting}
+            >
+              {isDeleting ? <Loader className="w-4 h-4 mr-2 animate-spin" /> : (isLive ? <SquareUserRound size={16} className="mr-2" /> : <Trash2 size={16} className="mr-2" />)}
+              {isDeleting ? (isLive ? "Ending..." : "Deleting...") : (isLive ? "End Meeting" : "Delete Meeting")}
+            </Button>
+          )}
+        </PopoverContent>
+      </Popover>
 
       <ShareMeetingModal
         isOpen={isShareModalOpen}
@@ -139,18 +164,51 @@ export function MeetingActionsPopover({
         groups={groups}
       />
 
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Delete Meeting?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. All data will be removed.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction variant="destructive" onClick={handleDelete}>Delete Meeting</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+      <EditMeetingModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        meetingId={meetingId}
+        initialTitle={title}
+        initialDateTime={dateTime || ""}
+      />
+
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={(open) => {
+        if (!isDeleting) setIsDeleteDialogOpen(open);
+      }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{isLive ? "End Meeting?" : "Delete Meeting?"}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {isLive && (
+                <span className="text-destructive font-medium block mb-2">
+                  Warning: Active Session.
+                </span>
+              )}
+              {isLive 
+                ? "This will instantly end the meeting, remove all participants, stop the recording, and move the meeting to your history. This cannot be undone. Are you sure?"
+                : "This will permanently delete the scheduled meeting. This action cannot be undone. Are you sure?"}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 mt-4">
+            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)} disabled={isDeleting}>
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleDeleteOrEnd}
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <>
+                  <Loader className="w-4 h-4 mr-2 animate-spin" /> {isLive ? "Ending..." : "Deleting..."}
+                </>
+              ) : (
+                isLive ? "End Meeting" : "Delete Meeting"
+              )}
+            </Button>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

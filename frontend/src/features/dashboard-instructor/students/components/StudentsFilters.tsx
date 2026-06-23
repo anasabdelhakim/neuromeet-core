@@ -7,11 +7,10 @@ import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Avatar, AvatarFallback } from "@/src/components/ui/avatar";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/src/components/ui/dropdown-menu";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
 import {
   Search,
   Mail,
@@ -109,7 +108,7 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
             value={searchQuery}
             onChange={handleSearch}
             placeholder="Search by name or email..."
-            className="pl-9 h-11 bg-black-soft-muted border-border rounded-soft focus-visible:ring-primary-light"
+            className="pl-9 h-12  rounded-soft focus-visible:ring-primary"
           />
         </div>
       </div>
@@ -150,10 +149,10 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
       </div>
 
       {/* ----------------- DESKTOP VIEW ----------------- */}
-      <div className="hidden md:block border border-border rounded-soft overflow-hidden bg-black-soft-subtle p-2">
+      <div className="hidden md:block border border-border rounded-soft overflow-hidden bg-black-soft-subtle pt-2">
         <Table className="w-full min-w-max text-base">
           <TableHeader>
-            <TableRow className="bg-black-soft hover:bg-black-soft">
+            <TableRow className="">
               <TableHead className="py-4 pl-5">Student</TableHead>
               <TableHead className="py-4">Email</TableHead>
               <TableHead className="py-4">Group</TableHead>
@@ -227,11 +226,11 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
                   </TableCell>
 
                   <TableCell className="py-4 pr-5 text-right">
-                    <DropdownMenu 
+                    <Popover 
                       open={activePopoverId === student.id} 
                       onOpenChange={(isOpen) => setActivePopoverId(isOpen ? student.id : null)}
                     >
-                      <DropdownMenuTrigger
+                      <PopoverTrigger
                         render={
                           <Button variant="ghost" size="icon" className="h-8 w-8 rounded-medium text-muted-foreground hover:text-foreground hover:bg-white-soft-muted">
                             <MoreHorizontal size={16} />
@@ -239,24 +238,18 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
                         }
                       />
                       
-                      {/* Only render content DOM if this specific dropdown is active */}
+                      {/* Only render content DOM if this specific popover is active */}
                       {activePopoverId === student.id && (
-                        <DropdownMenuContent align="end" className="w-48">
-                          <DropdownMenuItem>
-                            <Mail size={14} className="text-primary-light" /> Message Student
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <UserPlus size={14} className="text-status-success" /> Reassign Group
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <LineChart size={14} className="text-brand-cyan" /> View Analytics
-                          </DropdownMenuItem>
-                          <DropdownMenuItem variant="destructive">
-                            <Trash2 size={14} /> Remove Student
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
+                        <PopoverContent align="end" className="w-48 p-1 flex flex-col gap-0.5">
+                          <Button variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
+                            <Mail size={14} className="text-primary-light mr-2" /> Message Student
+                          </Button>
+                          <Button variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
+                            <LineChart size={14} className="text-status-success mr-2" /> View Analytics
+                          </Button>
+                        </PopoverContent>
                       )}
-                    </DropdownMenu>
+                    </Popover>
                   </TableCell>
                 </TableRow>
               ))
@@ -280,21 +273,22 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
             >
               Previous
             </Button>
-            
-            {Array.from({ length: totalPages }).map((_, idx) => (
-              <Button 
-                key={idx}
-                variant={safePage === idx + 1 ? "default" : "ghost"} 
-                size="sm"
-                onClick={() => setCurrentPage(idx + 1)}
-                className={cn(
-                  "h-8 w-8 rounded-medium text-xs font-bold", 
-                  safePage !== idx + 1 && "text-muted-foreground hover:bg-white/5"
-                )}
-              >
-                {idx + 1}
-              </Button>
-            ))}
+            <div className="flex items-center gap-1 overflow-x-auto max-w-[104px] sm:max-w-[180px] scroll-smooth snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              {Array.from({ length: totalPages }).map((_, idx) => (
+                <Button 
+                  key={idx}
+                  variant={safePage === idx + 1 ? "default" : "ghost"} 
+                  size="sm"
+                  onClick={() => setCurrentPage(idx + 1)}
+                  className={cn(
+                    "h-8 w-8 shrink-0 rounded-medium text-xs font-bold snap-start", 
+                    safePage !== idx + 1 && "text-muted-foreground hover:bg-white/5"
+                  )}
+                >
+                  {idx + 1}
+                </Button>
+              ))}
+            </div>
 
             <Button 
               variant="outline" 
@@ -332,11 +326,11 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
                   </div>
                 </div>
                 
-                <DropdownMenu 
+                <Popover 
                   open={activePopoverId === `mobile-${student.id}`} 
                   onOpenChange={(isOpen) => setActivePopoverId(isOpen ? `mobile-${student.id}` : null)}
                 >
-                  <DropdownMenuTrigger
+                  <PopoverTrigger
                     render={
                       <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 rounded-medium -mr-2 text-muted-foreground hover:text-foreground">
                         <MoreHorizontal size={18} />
@@ -345,22 +339,22 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
                   />
                   
                   {activePopoverId === `mobile-${student.id}` && (
-                    <DropdownMenuContent align="end" className="w-48">
-                      <DropdownMenuItem>
-                        <Mail size={14} className="text-primary-light" /> Message Student
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <UserPlus size={14} className="text-status-success" /> Reassign Group
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <LineChart size={14} className="text-brand-cyan" /> View Analytics
-                      </DropdownMenuItem>
-                      <DropdownMenuItem variant="destructive">
-                        <Trash2 size={14} /> Remove Student
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
+                    <PopoverContent align="end" className="w-48 p-1 flex flex-col gap-0.5">
+                      <Button variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
+                        <Mail size={14} className="text-primary-light mr-2" /> Message Student
+                      </Button>
+                      <Button variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
+                        <UserPlus size={14} className="text-status-success mr-2" /> Reassign Group
+                      </Button>
+                      <Button variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
+                        <LineChart size={14} className="text-brand-cyan mr-2" /> View Analytics
+                      </Button>
+                      <Button variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal text-destructive hover:text-destructive hover:bg-destructive/10">
+                        <Trash2 size={14} className="mr-2" /> Remove Student
+                      </Button>
+                    </PopoverContent>
                   )}
-                </DropdownMenu>
+                </Popover>
 
               </div>
 
@@ -396,31 +390,48 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
         )}
 
         {/* Mobile Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between mt-2 pt-4 border-t border-border">
+        <div className="flex flex-col gap-3 mt-2 pt-4 border-t border-border">
+          <div className="text-center text-sm font-medium text-muted-foreground">
+            Page {safePage} of {totalPages}
+          </div>
+          <div className="flex items-center justify-between">
             <Button 
               variant="outline" 
               size="icon" 
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={safePage === 1}
-              className="h-9 w-9 rounded-medium"
+              className="h-9 w-9 shrink-0 rounded-medium"
             >
               <ChevronLeft size={18} />
             </Button>
-            <span className="text-sm font-medium text-muted-foreground">
-              Page {safePage} of {totalPages}
-            </span>
+            <div className="flex items-center gap-1 overflow-x-auto max-w-[120px] sm:max-w-[180px] scroll-smooth snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-2">
+              {Array.from({ length: totalPages }).map((_, idx) => (
+                <Button 
+                  key={idx}
+                  variant={safePage === idx + 1 ? "default" : "ghost"} 
+                  size="sm"
+                  onClick={() => setCurrentPage(idx + 1)}
+                  className={cn(
+                    "h-8 w-8 shrink-0 rounded-medium text-xs font-bold snap-start", 
+                    safePage !== idx + 1 && "text-muted-foreground hover:bg-white/5"
+                  )}
+                >
+                  {idx + 1}
+                </Button>
+              ))}
+            </div>
+
             <Button 
               variant="outline" 
               size="icon" 
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={safePage === totalPages}
-              className="h-9 w-9 rounded-medium"
+              className="h-9 w-9 shrink-0 rounded-medium"
             >
               <ChevronRight size={18} />
             </Button>
           </div>
-        )}
+        </div>
       </div>
       
     </div>

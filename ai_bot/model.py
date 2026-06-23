@@ -6,7 +6,7 @@ import torchvision.transforms as T
 # ─── ImageNet normalisation constants ─────────────────────────────────────────
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD  = [0.229, 0.224, 0.225]
-SEQ_LEN  = 16
+SEQ_LEN  = 24
 IMG_SIZE = 224
 
 # ─── Inference transform (mirrors the validation transform used during training)
@@ -68,7 +68,7 @@ class EngagementModel(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Args:
-            x: (B, T, C, H, W)  where T=SEQ_LEN=16
+            x: (B, T, C, H, W)  where T=SEQ_LEN=24
         Returns:
             logits: (B,)  — apply sigmoid externally for probabilities
         """

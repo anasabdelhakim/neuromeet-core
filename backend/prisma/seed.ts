@@ -24,20 +24,66 @@ async function main() {
   });
   console.log(`✅ Admin created: ${admin.email} (${admin.role})`);
 
-  // Create INSTRUCTOR account
-  const instructorPassword = await Bun.password.hash('Anas1234#');
-  const instructor = await prisma.user.upsert({
-    where: { email: 'anasabdoali22@gmail.com' },
-    update: {},
-    create: {
-      name: 'Anas Abdelhakim',
-      email: 'anasabdoali22@gmail.com',
-      password: instructorPassword,
-      role: 'INSTRUCTOR',
-      isProfileComplete: true,
-    },
+  console.log('Generating 100 student users...');
+  const studentPassword = await Bun.password.hash('Student1234#');
+  
+  // Create an array of users to seed
+  const studentPromises = [];
+  for (let i = 1; i <= 100; i++) {
+    studentPromises.push(
+      prisma.user.upsert({
+        where: { email: `student${i}@neuromeet.com` },
+        update: {},
+        create: {
+          name: `Student ${i}`,
+          email: `student${i}@neuromeet.com`,
+          password: studentPassword,
+          role: 'STUDENT',
+          isProfileComplete: true,
+        },
+      })
+    );
+  }
+  
+  // Wait for all to complete
+  await Promise.all(studentPromises);
+  console.log('✅ 100 Students created.');
+
+  console.log('Creating Scaling Test Group and enrolling students...');
+  let testGroup = await prisma.group.findFirst({
+    where: { name: 'Scaling Test Group', instructorId: admin.id }
   });
-  console.log(`✅ Instructor created: ${instructor.email} (${instructor.role})`);
+
+  if (!testGroup) {
+    testGroup = await prisma.group.create({
+      data: {
+        name: 'Scaling Test Group',
+        description: 'A group containing 100 students to test dashboard performance',
+        instructorId: admin.id
+      }
+    });
+  }
+
+  const students = await prisma.user.findMany({
+    where: { email: { startsWith: 'student', endsWith: '@neuromeet.com' } }
+  });
+
+  const enrollmentPromises = [];
+  for (const student of students) {
+    enrollmentPromises.push(
+      prisma.enrollment.upsert({
+        where: { studentId_groupId: { studentId: student.id, groupId: testGroup.id } },
+        update: {},
+        create: {
+          studentId: student.id,
+          groupId: testGroup.id
+        }
+      })
+    );
+  }
+  
+  await Promise.all(enrollmentPromises);
+  console.log('✅ 100 Students successfully enrolled in Scaling Test Group.');
 
   console.log('🎉 Seeding complete!');
 }

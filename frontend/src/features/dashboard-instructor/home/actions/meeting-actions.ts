@@ -1,6 +1,6 @@
 "use server";
 
-import { apiPost, apiGet } from "@/src/lib/api-client";
+import { apiPost, apiGet, apiDelete, apiPatch } from "@/src/lib/api-client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -42,6 +42,39 @@ export async function shareMeetingAction(meetingId: string, groupId: string) {
   } catch (error: any) {
     console.error("Failed to share meeting:", error.message);
     return { success: false, errorMessage: error.message || "Failed to share meeting" };
+  }
+}
+
+export async function deleteMeetingAction(meetingId: string) {
+  try {
+    await apiDelete<any>(`/meetings/${meetingId}`);
+    revalidatePath("/dashboard-instructor");
+    revalidatePath("/dashboard-instructor/upcoming");
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, errorMessage: error.message || "Failed to delete meeting" };
+  }
+}
+
+export async function endMeetingAction(meetingId: string) {
+  try {
+    await apiPost<any>(`/meetings/${meetingId}/end`, {});
+    revalidatePath("/dashboard-instructor");
+    revalidatePath("/dashboard-instructor/upcoming");
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, errorMessage: error.message || "Failed to end meeting" };
+  }
+}
+
+export async function editMeetingAction(meetingId: string, data: { title: string; scheduledAt: string; durationMinutes?: number }) {
+  try {
+    await apiPatch<any>(`/meetings/${meetingId}`, data);
+    revalidatePath("/dashboard-instructor");
+    revalidatePath("/dashboard-instructor/upcoming");
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, errorMessage: error.message || "Failed to edit meeting" };
   }
 }
 

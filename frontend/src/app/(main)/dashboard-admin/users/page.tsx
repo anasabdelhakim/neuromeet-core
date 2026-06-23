@@ -3,7 +3,7 @@ import { AdminUsersClient } from "@/src/features/dashboard-admin/users/AdminUser
 import { getUsersAction } from "@/src/features/dashboard-admin/actions/admin-actions";
 
 async function AdminUsersLoader() {
-  const initialData = await getUsersAction({ page: "1", limit: "20" });
+  const initialData = await getUsersAction({ page: "1", limit: "5" });
   return <AdminUsersClient initialData={initialData} />;
 }
 

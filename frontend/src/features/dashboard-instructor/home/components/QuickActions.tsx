@@ -25,10 +25,14 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/src/components/ui/dialog";
+import { Field, FieldLabel, FieldError } from "@/src/components/ui/field";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { meetingSchema } from "@/src/validations/zod";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { Button } from "@/src/components/ui/button";
-import { Field, FieldGroup, FieldLabel } from "@/src/components/ui/field";
 
 import { Calendar } from "@/src/components/ui/calendar";
 import {
@@ -37,7 +41,7 @@ import {
   PopoverTrigger,
 } from "@/src/components/ui/popover";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, Clock2Icon, ChevronDownIcon } from "lucide-react";
+import { Calendar as CalendarIcon, Clock2Icon, ChevronDownIcon, Loader } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 
 function SubmitButton({ cta, btnClass }: { cta: string, btnClass: string }) {
@@ -71,7 +75,23 @@ export function QuickActions() {
   const [date, setDate] = useState<Date>();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [timeFrom, setTimeFrom] = useState("");
-  const [state, action] = useActionState(createMeetingAction, { success: true, errorMessage: "" });
+  const [state, action, pending] = useActionState(createMeetingAction, { success: true, errorMessage: "" });
+
+  const {
+    register: registerNew,
+    formState: { errors: errorsNew },
+  } = useForm<z.infer<typeof meetingSchema>>({
+    resolver: zodResolver(meetingSchema),
+    mode: "onTouched",
+  });
+
+  const {
+    register: registerSchedule,
+    formState: { errors: errorsSchedule },
+  } = useForm<z.infer<typeof meetingSchema>>({
+    resolver: zodResolver(meetingSchema),
+    mode: "onTouched",
+  });
 
   const scheduledAtIso = useMemo(() => {
     if (!date || !timeFrom) return "";
@@ -83,6 +103,7 @@ export function QuickActions() {
 
   useEffect(() => {
     const now = new Date();
+    setDate(new Date(now.getFullYear(), now.getMonth(), now.getDate())); // Set default date to today without time
     now.setMinutes(now.getMinutes() + 2); // Set default start time 2 mins in the future
     setTimeFrom(`${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`);
   }, []);
@@ -153,26 +174,41 @@ export function QuickActions() {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-5 py-2">
+            {!state.success && state.errorMessage && (
+              <div className="animate-alert-entrance">
+                <p className="text-destructive text-sm text-center bg-destructive-soft rounded-medium py-2 px-3">
+                  {state.errorMessage}
+                </p>
+              </div>
+            )}
             {activeCard.id === "new" && (
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-muted-foreground-mid">
-                    Session Name
-                  </Label>
-                  <Input
-                    placeholder="e.g. Ad-hoc Q&A"
-                    className="bg-black-soft-muted focus-visible:ring-action-new-input focus-visible:border-action-new transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
-                  />
+              <form action={action} className="space-y-4">
+                <input type="hidden" name="type" value="instant" />
+                <div>
+                  <Field>
+                    <FieldLabel htmlFor="title">Session Name <span className="text-red-500">*</span></FieldLabel>
+                    <Input
+                      id="title"
+                      {...registerNew("title")}
+                      placeholder="e.g. Ad-hoc Q&A"
+                      aria-invalid={!!errorsNew.title}
+                      className="bg-black-soft-muted focus-visible:ring-action-new-input focus-visible:border-action-new transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
+                    />
+                    <FieldError>{errorsNew.title?.message}</FieldError>
+                  </Field>
                 </div>
                 <Button
+                  type="submit"
+                  disabled={pending}
                   className={cn(
                     "w-full h-12 mt-2 text-white font-semibold text-base shadow-hard transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border hover:brightness-110",
                     activeButtonClass,
                   )}
                 >
+                  {pending ? <Loader className="w-4 h-4 animate-spin mr-2" /> : null}
                   {activeCard.cta}
                 </Button>
-              </div>
+              </form>
             )}
             {activeCard.id === "join" && (
               <div className="space-y-4">
@@ -199,26 +235,28 @@ export function QuickActions() {
               <form action={action} className="space-y-4">
                 <input type="hidden" name="type" value="schedule" />
                 <input type="hidden" name="scheduledAtIso" value={scheduledAtIso} />
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-muted-foreground-mid">
-                    Lecture Topic
-                  </Label>
-                  <Input
-                    name="title"
-                    required
-                    placeholder="e.g. Advanced AI Architecture"
-                    className="bg-black-soft-muted  focus-visible:ring-action-schedule-input focus-visible:border-action-schedule transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
-                  />
+                <div>
+                  <Field>
+                    <FieldLabel htmlFor="schedule-title">Lecture Topic <span className="text-red-500">*</span></FieldLabel>
+                    <Input
+                      id="schedule-title"
+                      {...registerSchedule("title")}
+                      placeholder="e.g. Advanced AI Architecture"
+                      aria-invalid={!!errorsSchedule.title}
+                      className="bg-black-soft-muted focus-visible:ring-action-schedule-input focus-visible:border-action-schedule transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
+                    />
+                    <FieldError>{errorsSchedule.title?.message}</FieldError>
+                  </Field>
                 </div>
-                <FieldGroup className="flex flex-row gap-4 w-full">
-                  <Field className="flex-1">
-                    <FieldLabel className="text-sm font-medium text-muted-foreground-mid">Date</FieldLabel>
+                <div className="grid grid-cols-2 gap-4 w-full">
+                  <div className="space-y-2 flex-1">
+                    <Label className="text-sm font-medium text-muted-foreground-mid">Date <span className="text-red-500">*</span></Label>
                     <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                       <PopoverTrigger render={
                         <Button
                           variant="outline"
                           className={cn(
-                            "w-full justify-between font-normal bg-black-soft-muted h-12 border-none rounded-soft hover:bg-black-soft-deep hover:text-white transition-all duration-fast ease-standard focus-visible:ring-action-schedule-input outline-none",
+                            "w-full justify-between font-normal bg-black-soft-muted h-12 border-none rounded-soft hover:bg-black-soft-deep hover:text-white transition-all duration-fast ease-standard focus-visible:ring-action-schedule-input outline-none mb-1",
                             !date && "text-muted-foreground",
                           )}
                         >
@@ -246,25 +284,23 @@ export function QuickActions() {
                         </Card>
                       </PopoverContent>
                     </Popover>
-                  </Field>
-                </FieldGroup>
-                <FieldGroup className="flex flex-row gap-4 w-full">
-                  <Field className="flex-1">
-                    <FieldLabel htmlFor="time-from" className="text-sm font-medium text-muted-foreground-mid">
-                      Start Time
-                    </FieldLabel>
+                  </div>
+                  <div className="space-y-2 flex-1">
+                    <Label htmlFor="time-from" className="text-sm font-medium text-muted-foreground-mid">
+                      Start Time <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                       type="time"
                       id="time-from"
                       name="timeFrom"
                       value={timeFrom}
                       onChange={(e) => setTimeFrom(e.target.value)}
+                      required
                       suppressHydrationWarning
-                      className="appearance-none bg-black-soft-muted h-12 border-none rounded-soft [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none focus-visible:ring-action-schedule-input text-white w-full px-4"
+                      className="bg-black-soft-muted focus-visible:ring-action-schedule-input focus-visible:border-action-schedule transition-all duration-fast ease-standard h-12 px-4 rounded-soft [&::-webkit-calendar-picker-indicator]:invert"
                     />
-                  </Field>
-                </FieldGroup>
-                {state?.errorMessage && <p className="text-sm text-status-error">{state.errorMessage}</p>}
+                  </div>
+                </div>
                 <SubmitButton cta={activeCard.cta} btnClass={activeButtonClass} />
               </form>
             )}

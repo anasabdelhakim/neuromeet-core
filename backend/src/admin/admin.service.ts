@@ -60,7 +60,7 @@ export class AdminService {
           isProfileComplete: true,
           created_at: true,
         },
-        orderBy: { created_at: 'desc' },
+        orderBy: { created_at: 'asc' },
         skip,
         take: limit,
       }),
@@ -147,10 +147,9 @@ export class AdminService {
       throw new NotFoundException('User not found');
     }
 
-    // Soft delete — set active to false
-    await this.prisma.user.update({
+    // Hard delete — permanently remove user from database
+    await this.prisma.user.delete({
       where: { id: userId },
-      data: { active: false },
     });
 
     return {

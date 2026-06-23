@@ -16,11 +16,18 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
   // Using a fallback of 85 here just in case it's missing during your transition.
   const engagementScore = 85;
 
+  const mappedAvatars = (meeting as any).group?.enrollments?.map((e: any) => ({
+    alt: e.student?.name || "Unknown",
+    initials: e.student?.name ? e.student.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2) : "??",
+    src: e.student?.avatarUrl,
+    color: "bg-primary-soft-muted",
+  })) || [];
+
   // Extracted Action Block for consistent mobile/desktop responsive rendering
   const ActionBlock = (
     <div className="flex w-full sm:w-auto items-center gap-3 flex-shrink-0">
       <div className="hidden sm:block">
-        <AvatarChain />
+        <AvatarChain avatars={mappedAvatars} max={5} />
       </div>
       <div className="flex flex-1 sm:flex-initial gap-2 w-full">
         <Button variant="outline" className="flex-1 sm:w-auto border rounded-medium">

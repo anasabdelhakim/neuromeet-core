@@ -30,9 +30,9 @@ logger = logging.getLogger("engagement-bot")
 # ─── Config ───────────────────────────────────────────────────────────────────
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-SEQ_LEN = 16                 # Number of frames per inference clip
+SEQ_LEN = 24                 # Number of frames per inference clip (matched to training notebook)
 INFERENCE_INTERVAL_S = 2.0   # Run inference every N seconds per participant
-DISENGAGEMENT_THRESHOLD = 0.45  # Below this → is_disengaged=True (matches frontend)
+DISENGAGEMENT_THRESHOLD = 0.50  # Below this → is_disengaged=True (matches training notebook)
 MAX_CONCURRENT = 10          # Semaphore cap — prevents GPU OOM on large classes
 
 
@@ -93,11 +93,12 @@ def get_model():
 class ParticipantBuffer:
     def __init__(self, participant_id: str):
         self.participant_id = participant_id
-        # maxlen=SEQ_LEN gives us a sliding window — always have the latest 16 frames
+        # maxlen=SEQ_LEN gives us a sliding window — always have the latest 24 frames
         self.frames: deque = deque(maxlen=SEQ_LEN)
         self.last_inference: float = 0.0
         self.active: bool = True
         self.is_inferring: bool = False
+        self.last_frame_time: float = 0.0  # Used for frame rate throttling
 
 
 # ─── Synchronous Inference (runs in thread pool via run_in_executor) ──────────
@@ -216,8 +217,12 @@ async def consume_video_track(
                 # A robust fallback if needed, but usually reshape works
                 np_frame = np_frame[:expected_size].reshape(frame.height, frame.width, 3)
 
-            np_frame = cv2.resize(np_frame, (224, 224))
-            buf.frames.append(np_frame)
+            now_t = time.time()
+            # Throttle to ~12 FPS (1 frame every ~83ms) to match training data sampling rate
+            if now_t - buf.last_frame_time >= (1.0 / 12.0):
+                buf.last_frame_time = now_t
+                np_frame = cv2.resize(np_frame, (224, 224))
+                buf.frames.append(np_frame)
 
             # Queue for inference when buffer is full and interval has elapsed
             now = time.monotonic()
@@ -257,6 +262,7 @@ async def inference_worker(
             continue
 
         frames_snapshot = list(buf.frames)  # snapshot before inference
+        buf.frames.clear()  # Clear old frames so next inference starts fresh
 
         async with semaphore:
             try:

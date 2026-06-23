@@ -20,6 +20,13 @@ export function UpcomingMeetingCard({ meeting, groups }: UpcomingMeetingCardProp
   const { isArrived, isStartingSoon } = calculateMeetingStatus(meeting.dateTime);
   const variant = isArrived ? "glass" : isStartingSoon ? "gradient" : "default";
 
+  const mappedAvatars = (meeting as any).group?.enrollments?.map((e: any) => ({
+    alt: e.student?.name || "Unknown",
+    initials: e.student?.name ? e.student.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2) : "??",
+    src: e.student?.avatarUrl,
+    color: "bg-primary-soft-muted",
+  })) || [];
+
   return (
     <Card
       variant={variant}
@@ -48,13 +55,22 @@ export function UpcomingMeetingCard({ meeting, groups }: UpcomingMeetingCardProp
           </div>
 
           <div className="hidden sm:flex items-center gap-4 flex-shrink-0">
-            <AvatarChain />
+            <AvatarChain avatars={mappedAvatars} max={5} />
             <Suspense fallback={<div className="w-24 h-10 bg-muted rounded animate-pulse" />}>
               <DynamicMeetingActions dateTime={meeting.dateTime} meetingId={meeting.id} />
             </Suspense>
           </div>
         </div>
-        <MeetingActionsPopover title={meeting.title} dateTime={meeting.dateTime} meetingId={meeting.id} passcode={meeting.passcode} variant="active" groups={groups} />
+        <MeetingActionsPopover 
+          title={meeting.title} 
+          dateTime={meeting.dateTime} 
+          meetingId={meeting.id} 
+          passcode={meeting.passcode} 
+          status={(meeting as any).status} 
+          variant="active" 
+          groups={groups} 
+          participantsCount={meeting.participants?.length || 0}
+        />
       </div>
 
       <div className="sm:hidden w-full px-1">

@@ -15,12 +15,10 @@ import {
   AlertDialogTrigger,
 } from "@/src/components/ui/alert-dialog";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/src/components/ui/dropdown-menu";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/components/ui/popover";
 import {
   Dialog,
   DialogContent,
@@ -29,14 +27,18 @@ import {
   DialogDescription,
 } from "@/src/components/ui/dialog";
 import { Input } from "@/src/components/ui/input";
-import { Label } from "@/src/components/ui/label";
-import { Group, CreateGroupState } from "../types/groups-types";
-import { updateGroupAction, deleteGroupAction } from "../actions/groups-actions";
+import { Field, FieldLabel, FieldError } from "@/src/components/ui/field";
+import { deleteGroupAction, updateGroupAction } from "../actions/groups-actions";
+import { CreateGroupState, Group } from "../types/groups-types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { createGroupSchema } from "@/src/validations/zod";
 
 export function GroupCardActions({ group }: { group: Group }) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isDeleting, startDelete] = useTransition();
+  const [isDeleting, startDeleteTransition] = useTransition();
 
   const updateActionWithId = updateGroupAction.bind(null, group.id);
   const [state, action, pending] = useActionState<CreateGroupState, FormData>(
@@ -44,50 +46,93 @@ export function GroupCardActions({ group }: { group: Group }) {
     { success: false }
   );
 
+  const {
+    register,
+    formState: { errors },
+    reset,
+  } = useForm<z.infer<typeof createGroupSchema>>({
+    resolver: zodResolver(createGroupSchema),
+    defaultValues: {
+      name: group.name,
+      subject: group.subject || "",
+      description: group.description || "",
+    },
+    mode: "onTouched",
+  });
+
   if (state.success && isEditDialogOpen) {
+    reset();
     setIsEditDialogOpen(false);
   }
 
   const handleDelete = () => {
-    startDelete(async () => {
+    startDeleteTransition(async () => {
       await deleteGroupAction(group.id);
       setIsDeleteDialogOpen(false);
     });
   };
 
 
+  const enrollmentsCount = group._count?.enrollments ?? group.enrollments?.length ?? 0;
+  const hasStudents = Number(enrollmentsCount) > 0;
+
   return (
     <>
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" disabled={isDeleting} />
-            }
+      <Popover>
+        <PopoverTrigger render={          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" disabled={isDeleting}>
+            <MoreVertical className="w-4 h-4" />
+          </Button>}>
+
+        </PopoverTrigger>
+        <PopoverContent align="end" className="w-40 p-1 flex flex-col gap-0.5">
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start h-8 px-2 text-sm font-normal" 
+            onClick={() => setIsEditDialogOpen(true)}
           >
-            {isDeleting ? <Loader className="w-4 h-4 animate-spin" /> : <MoreVertical className="w-4 h-4" />}
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
-              <Edit2 className="w-4 h-4" /> Edit Group
-            </DropdownMenuItem>
+            <Edit2 className="w-4 h-4 mr-2" /> Edit Group
+          </Button>
 
-            <DropdownMenuItem variant="destructive" onClick={() => setIsDeleteDialogOpen(true)}>
+          {hasStudents ? (
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start h-8 px-2 text-sm font-normal text-destructive hover:text-destructive hover:bg-destructive/10" 
+              onClick={() => setIsDeleteDialogOpen(true)}
+            >
               <Trash2 className="w-4 h-4 mr-2" /> Delete Group
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </Button>
+          ) : (
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start h-8 px-2 text-sm font-normal text-destructive hover:text-destructive hover:bg-destructive/10" 
+              onClick={handleDelete}
+            >
+              {isDeleting ? <Loader className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2" />}
+              {isDeleting ? "Deleting..." : "Delete Group"}
+            </Button>
+          )}
+        </PopoverContent>
+      </Popover>
 
+      <AlertDialog 
+        open={isDeleteDialogOpen} 
+        onOpenChange={(open) => {
+          if (!isDeleting) setIsDeleteDialogOpen(open);
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Group?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. All associated data will be removed.
+              <span className="text-destructive font-medium block mb-2">Warning: This group has {enrollmentsCount} enrolled students.</span>
+              Deleting this group will immediately remove all students from it and delete all associated data. This action cannot be undone. Are you sure?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" onClick={handleDelete}>Delete Group</AlertDialogAction>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
+              {isDeleting ? <><Loader className="w-4 h-4 mr-2 animate-spin" /> Deleting...</> : "Delete Group"}
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -102,46 +147,53 @@ export function GroupCardActions({ group }: { group: Group }) {
           </DialogHeader>
           <form action={action} className="space-y-5 pt-2">
             {state.error && (
-              <p className="text-destructive text-sm text-center bg-destructive-soft rounded-medium py-2 px-3">
-                {state.error}
-              </p>
+              <div className="animate-alert-entrance">
+                <p className="text-destructive text-sm text-center bg-destructive-soft rounded-medium py-2 px-3">
+                  {state.error}
+                </p>
+              </div>
             )}
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium">
-                Group Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="name"
-                name="name"
-                defaultValue={group.name}
-                placeholder="e.g., Computer Science 101"
-                className="bg-black-soft-muted rounded-soft focus-visible:ring-primary h-11"
-                required
-              />
+            <div>
+              <Field>
+                <FieldLabel htmlFor="name">Group Name <span className="text-red-500">*</span></FieldLabel>
+                <Input
+                  id="name"
+                  {...register("name")}
+                  placeholder="e.g., Computer Science 101"
+                  aria-invalid={!!errors.name}
+                  className="bg-black-soft-muted rounded-soft focus-visible:ring-primary h-11"
+                  disabled={pending}
+                />
+                <FieldError>{errors.name?.message}</FieldError>
+              </Field>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="subject" className="text-sm font-medium">
-                Subject (Optional)
-              </Label>
-              <Input
-                id="subject"
-                name="subject"
-                defaultValue={group.subject || ""}
-                placeholder="e.g., Programming"
-                className="bg-black-soft-muted rounded-soft focus-visible:ring-primary h-11"
-              />
+            <div>
+              <Field>
+                <FieldLabel htmlFor="subject">Subject (Optional)</FieldLabel>
+                <Input
+                  id="subject"
+                  {...register("subject")}
+                  placeholder="e.g., Programming"
+                  aria-invalid={!!errors.subject}
+                  className="bg-black-soft-muted rounded-soft focus-visible:ring-primary h-11"
+                  disabled={pending}
+                />
+                <FieldError>{errors.subject?.message}</FieldError>
+              </Field>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="description" className="text-sm font-medium">
-                Description (Optional)
-              </Label>
-              <Input
-                id="description"
-                name="description"
-                defaultValue={group.description || ""}
-                placeholder="Brief description about the group..."
-                className="bg-black-soft-muted rounded-soft focus-visible:ring-primary h-11"
-              />
+            <div>
+              <Field>
+                <FieldLabel htmlFor="description">Description (Optional)</FieldLabel>
+                <Input
+                  id="description"
+                  {...register("description")}
+                  placeholder="Brief description about the group..."
+                  aria-invalid={!!errors.description}
+                  className="bg-black-soft-muted rounded-soft focus-visible:ring-primary h-11"
+                  disabled={pending}
+                />
+                <FieldError>{errors.description?.message}</FieldError>
+              </Field>
             </div>
             <div className="pt-2 flex justify-end gap-3">
               <Button
