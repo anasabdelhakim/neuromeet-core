@@ -40,13 +40,13 @@ export async function DynamicMeetingActions({ dateTime, meetingId }: { dateTime:
 
   return (
     <div className="flex w-full sm:w-auto items-center gap-2 flex-shrink-0">
-      <div className="flex flex-1 sm:flex-initial gap-2">
+      <div className="flex w-full sm:flex-initial gap-2">
         {isArrived ? (
-          <form action={startAction} className="flex-1 sm:w-auto">
+          <form action={startAction} className="w-full sm:w-auto">
             <StartMeetingButton />
           </form>
         ) : (
-          <Button variant="outline" className="flex-1 sm:w-auto text-muted-foreground opacity-50 cursor-not-allowed">
+          <Button variant="outline" className="w-full sm:w-auto text-muted-foreground opacity-50 cursor-not-allowed">
             Starting Soon
           </Button>
         )}

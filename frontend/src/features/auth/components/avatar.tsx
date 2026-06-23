@@ -114,19 +114,21 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
           </div>
 
           <div className="flex flex-col space-y-0.5">
-            <Link href="/profile" className="w-full">
+            <Link href="/coming-soon" className="w-full">
               <Button
                 variant="ghost"
                 className="justify-start gap-2 w-full h-9 text-sm"
+                onClick={() => setIsOpen(false)}
               >
                 <User className="h-4 w-4" /> View Profile
               </Button>
             </Link>
 
-            <Link href="/settings" className="w-full">
+            <Link href="/coming-soon" className="w-full">
               <Button
                 variant="ghost"
                 className="justify-start gap-2 w-full h-9 text-sm"
+                onClick={() => setIsOpen(false)}
               >
                 <Settings className="h-4 w-4" /> Account Settings
               </Button>

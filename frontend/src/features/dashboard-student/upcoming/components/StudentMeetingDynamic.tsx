@@ -39,17 +39,17 @@ export async function DynamicStudentMeetingActions({ dateTime, meetingId }: { da
 
   return (
     <div className="flex w-full sm:w-auto items-center gap-2 flex-shrink-0">
-      <div className="flex flex-1 sm:flex-initial gap-2">
+      <div className="flex w-full sm:flex-initial gap-2">
         {isArrived ? (
           <Link
             href={`/meeting/join/${meetingId}`}
-            className={cn(buttonVariants({ variant: "live" }), "flex-1 sm:w-auto")}
+            className={cn(buttonVariants({ variant: "live" }), "w-full sm:w-auto")}
           >
             <Play size={16} fill="currentColor" className="mr-1" />
             Join Now
           </Link>
         ) : (
-          <Button variant="outline" className="flex-1 sm:w-auto text-muted-foreground opacity-50 cursor-not-allowed" disabled>
+          <Button variant="outline" className="w-full sm:w-auto text-muted-foreground opacity-50 cursor-not-allowed" disabled>
             Starting Soon
           </Button>
         )}

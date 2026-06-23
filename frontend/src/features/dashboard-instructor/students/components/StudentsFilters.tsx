@@ -6,6 +6,7 @@ import { Card } from "@/src/components/ui/card";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Avatar, AvatarFallback } from "@/src/components/ui/avatar";
+import Link from "next/link";
 import {
   Popover,
   PopoverContent,
@@ -244,7 +245,7 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
                           <Button variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
                             <Mail size={14} className="text-primary-light mr-2" /> Message Student
                           </Button>
-                          <Button variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
+                          <Button render={<Link href="/coming-soon" />} variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
                             <LineChart size={14} className="text-status-success mr-2" /> View Analytics
                           </Button>
                         </PopoverContent>
@@ -346,7 +347,7 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
                       <Button variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
                         <UserPlus size={14} className="text-status-success mr-2" /> Reassign Group
                       </Button>
-                      <Button variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
+                      <Button render={<Link href="/coming-soon" />} variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
                         <LineChart size={14} className="text-brand-cyan mr-2" /> View Analytics
                       </Button>
                       <Button variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal text-destructive hover:text-destructive hover:bg-destructive/10">

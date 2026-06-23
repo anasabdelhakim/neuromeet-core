@@ -11,7 +11,7 @@ export function StartMeetingButton() {
     <Button
       type="submit"
       variant="live"
-      className="flex-1 sm:w-auto"
+      className="w-full sm:w-auto"
       disabled={pending}
     >
       {pending ? (
