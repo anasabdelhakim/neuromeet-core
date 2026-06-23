@@ -26,11 +26,11 @@ export function CreateGroupModal() {
 
   const {
     register,
-    formState: { errors },
+    formState: { errors, isValid },
     reset,
   } = useForm<z.infer<typeof createGroupSchema>>({
     resolver: zodResolver(createGroupSchema),
-    mode: "onTouched",
+    mode: "onChange",
   });
 
   // Close dialog on success
@@ -116,7 +116,7 @@ export function CreateGroupModal() {
             >
               Cancel
             </Button>
-            <Button type="submit"  disabled={pending}>
+            <Button type="submit" disabled={pending || !isValid}>
               {pending ? (
                 <>
                   <Loader className="w-4 h-4 mr-2 animate-spin" /> Creating...

@@ -42,11 +42,11 @@ export function EditMeetingModal({
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<z.infer<typeof meetingSchema>>({
     resolver: zodResolver(meetingSchema),
     defaultValues: { title: initialTitle },
-    mode: "onTouched",
+    mode: "onChange",
   });
 
   const [date, setDate] = useState<Date | undefined>(undefined);
@@ -170,7 +170,7 @@ export function EditMeetingModal({
             <Button type="button" variant="outline" onClick={onClose} disabled={isLoading}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading || !isValid}>
               {isLoading ? (
                 <>
                   <Loader className="w-4 h-4 mr-2 animate-spin" /> Saving...

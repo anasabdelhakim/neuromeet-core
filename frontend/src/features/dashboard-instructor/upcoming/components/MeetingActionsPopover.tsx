@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/src/components/ui/button";
 import {
   Popover,
@@ -57,6 +58,7 @@ export function MeetingActionsPopover({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [isDeleting, startDeleteTransition] = useTransition();
+  const router = useRouter();
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
@@ -90,6 +92,7 @@ export function MeetingActionsPopover({
         await deleteMeetingAction(meetingId);
       }
       setIsDeleteDialogOpen(false);
+      router.refresh();
     });
   };
 

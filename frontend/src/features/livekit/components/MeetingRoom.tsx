@@ -18,8 +18,8 @@ import { MeetingControls } from "./MeetingControls";
 import { cn } from "@/src/lib/utils";
 import type { ActiveSidebarTab } from "../types/meeting-types";
 
-function InstructorBadgedTile() {
-  const trackRef = useTrackRefContext();
+function InstructorBadgedTile(props: any) {
+  const trackRef = props.trackRef;
   const participant = trackRef?.participant;
 
   let isInstructor = false;
@@ -32,7 +32,7 @@ function InstructorBadgedTile() {
 
   return (
     <div className="relative w-full h-full">
-      <ParticipantTile />
+      <ParticipantTile {...props} />
       {isInstructor && (
         <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 bg-black bg-opacity-70 backdrop-blur-sm border border-brand-cyan text-brand-cyan text-xs font-semibold px-2.5 py-1 rounded-full pointer-events-none">
           <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan animate-pulse inline-block" />

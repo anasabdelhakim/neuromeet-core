@@ -7,13 +7,16 @@ import { z } from "zod";
 import { format } from "date-fns";
 
 const createMeetingSchema = z.object({
-  title: z.string().min(1, "Lecture Topic is required.").min(3, "Lecture Topic must be at least 3 characters."),
+  title: z.string().optional().nullable(),
   type: z.string(),
-  scheduledAtIso: z.string().optional(),
+  scheduledAtIso: z.string().optional().nullable(),
 }).superRefine((data, ctx) => {
   if (data.type === "schedule") {
     if (!data.scheduledAtIso) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Date and Start time are required for scheduling." });
+    }
+    if (!data.title || data.title.length < 3) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Lecture Topic is required for scheduling (min 3 chars)." });
     }
   }
 });
@@ -79,6 +82,8 @@ export async function editMeetingAction(meetingId: string, data: { title: string
 }
 
 export async function createMeetingAction(prevState: any, formData: FormData) {
+  let finalRedirectUrl = "/dashboard-instructor/upcoming";
+
   try {
     const parsed = createMeetingSchema.safeParse({
       title: formData.get("title"),
@@ -90,7 +95,8 @@ export async function createMeetingAction(prevState: any, formData: FormData) {
       return { success: false, errorMessage: parsed.error.issues[0].message };
     }
 
-    const { title, type, scheduledAtIso } = parsed.data;
+    const { type, scheduledAtIso } = parsed.data;
+    const title = parsed.data.title || "Immediate Session";
 
     // Default values for 'new'
     let scheduledAt = new Date().toISOString();
@@ -112,7 +118,6 @@ export async function createMeetingAction(prevState: any, formData: FormData) {
     }
 
     // Since QuickActions doesn't select a group, we get the instructor's first group
-    // The endpoint to get instructor's groups is likely /groups or /groups/instructor
     let groupId: string | undefined = undefined;
     try {
       const response = await apiGet<any>("/groups");
@@ -131,15 +136,27 @@ export async function createMeetingAction(prevState: any, formData: FormData) {
       groupId,
     };
 
-    await apiPost<any>("/meetings", payload);
-    
+    const createRes = await apiPost<any>("/meetings", payload);
+    const newMeeting = createRes.data;
+
+    if (type === "instant" && newMeeting?.id) {
+       try {
+         const startRes = await apiPost<any>(`/meetings/${newMeeting.id}/start`, {});
+         if (startRes.data?.livekitRoomName) {
+           finalRedirectUrl = `/livekit?room=${startRes.data.livekitRoomName}`;
+         }
+       } catch (e) {
+         console.error("Failed to auto-start instant meeting:", e);
+       }
+    }
   } catch (error: any) {
     return { success: false, errorMessage: error.message || "Failed to create meeting" };
   }
-  
+
+  // Next.js redirect MUST be called outside the try-catch block
   revalidatePath("/dashboard-instructor");
   revalidatePath("/dashboard-instructor/upcoming");
-  redirect("/dashboard-instructor/upcoming");
+  redirect(finalRedirectUrl);
 }
 
 export async function getUpcomingMeetings() {

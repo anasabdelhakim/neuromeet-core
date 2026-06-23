@@ -4,7 +4,7 @@ export const Cards = [
   {
     id: "new",
     icon: Plus,
-    title: "New Session",
+    title: "Immediate Session",
     desc: "Start an instant live session",
     cta: "Start Now",
     href: "/livekit",

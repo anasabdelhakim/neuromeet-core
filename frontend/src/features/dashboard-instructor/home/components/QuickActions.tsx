@@ -2,6 +2,7 @@
 
 import { useState, useActionState, useEffect, useMemo } from "react";
 import { useFormStatus } from "react-dom";
+import { useRouter } from "next/navigation";
 import { createMeetingAction } from "../actions/meeting-actions";
 import {
   Cards,
@@ -44,12 +45,12 @@ import { format } from "date-fns";
 import { Calendar as CalendarIcon, Clock2Icon, ChevronDownIcon, Loader } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 
-function SubmitButton({ cta, btnClass }: { cta: string, btnClass: string }) {
+function SubmitButton({ cta, btnClass, disabled }: { cta: string, btnClass: string, disabled?: boolean }) {
   const { pending } = useFormStatus();
   return (
     <Button
       type="submit"
-      disabled={pending}
+      disabled={pending || disabled}
       className={cn(
         "w-full h-12 mt-2 text-white font-semibold text-base shadow-hard transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border hover:brightness-110",
         btnClass,
@@ -77,21 +78,45 @@ export function QuickActions() {
   const [timeFrom, setTimeFrom] = useState("");
   const [state, action, pending] = useActionState(createMeetingAction, { success: true, errorMessage: "" });
 
+  const router = useRouter();
+  const [joinLink, setJoinLink] = useState("");
+
+  const handleJoin = () => {
+    if (!joinLink) return;
+    setIsOpen(false);
+    try {
+      const url = new URL(joinLink);
+      router.push(joinLink);
+    } catch {
+      router.push(`/livekit?room=${joinLink}`);
+    }
+  };
+
   const {
     register: registerNew,
-    formState: { errors: errorsNew },
+    formState: { errors: errorsNew, isValid: isValidNew },
+    reset: resetNew,
   } = useForm<z.infer<typeof meetingSchema>>({
     resolver: zodResolver(meetingSchema),
-    mode: "onTouched",
+    mode: "onChange",
   });
 
   const {
     register: registerSchedule,
-    formState: { errors: errorsSchedule },
+    formState: { errors: errorsSchedule, isValid: isValidSchedule },
+    reset: resetSchedule,
   } = useForm<z.infer<typeof meetingSchema>>({
     resolver: zodResolver(meetingSchema),
-    mode: "onTouched",
+    mode: "onChange",
   });
+
+  useEffect(() => {
+    if (!isOpen) {
+      resetNew();
+      resetSchedule();
+      setJoinLink("");
+    }
+  }, [isOpen, resetNew, resetSchedule]);
 
   const scheduledAtIso = useMemo(() => {
     if (!date || !timeFrom) return "";
@@ -186,7 +211,7 @@ export function QuickActions() {
                 <input type="hidden" name="type" value="instant" />
                 <div>
                   <Field>
-                    <FieldLabel htmlFor="title">Session Name <span className="text-red-500">*</span></FieldLabel>
+                    <FieldLabel htmlFor="title">Lecture Topic <span className="text-red-500">*</span></FieldLabel>
                     <Input
                       id="title"
                       {...registerNew("title")}
@@ -199,7 +224,7 @@ export function QuickActions() {
                 </div>
                 <Button
                   type="submit"
-                  disabled={pending}
+                  disabled={pending || !isValidNew}
                   className={cn(
                     "w-full h-12 mt-2 text-white font-semibold text-base shadow-hard transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border hover:brightness-110",
                     activeButtonClass,
@@ -218,10 +243,13 @@ export function QuickActions() {
                   </Label>
                   <Input
                     placeholder="Enter 6-digit code or URL..."
+                    value={joinLink}
+                    onChange={(e) => setJoinLink(e.target.value)}
                     className="bg-black-soft-muted focus-visible:ring-action-join-input focus-visible:border-action-join transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
                   />
                 </div>
                 <Button
+                  onClick={handleJoin}
                   className={cn(
                     "w-full h-12 mt-2 text-white font-semibold text-base shadow-hard transition-all duration-normal ease-standard rounded-soft hover:scale-[1.02] border hover:brightness-110",
                     activeButtonClass,
@@ -301,7 +329,7 @@ export function QuickActions() {
                     />
                   </div>
                 </div>
-                <SubmitButton cta={activeCard.cta} btnClass={activeButtonClass} />
+                <SubmitButton cta={activeCard.cta} btnClass={activeButtonClass} disabled={!isValidSchedule} />
               </form>
             )}
           </div>

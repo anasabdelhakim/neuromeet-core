@@ -48,7 +48,7 @@ export function GroupCardActions({ group }: { group: Group }) {
 
   const {
     register,
-    formState: { errors },
+    formState: { errors, isValid },
     reset,
   } = useForm<z.infer<typeof createGroupSchema>>({
     resolver: zodResolver(createGroupSchema),
@@ -57,7 +57,7 @@ export function GroupCardActions({ group }: { group: Group }) {
       subject: group.subject || "",
       description: group.description || "",
     },
-    mode: "onTouched",
+    mode: "onChange",
   });
 
   if (state.success && isEditDialogOpen) {
@@ -204,7 +204,7 @@ export function GroupCardActions({ group }: { group: Group }) {
               >
                 Cancel
               </Button>
-              <Button type="submit"  disabled={pending}>
+              <Button type="submit" disabled={pending || !isValid}>
                 {pending ? (
                   <>
                     <Loader className="w-4 h-4 mr-2 animate-spin" /> Saving...
