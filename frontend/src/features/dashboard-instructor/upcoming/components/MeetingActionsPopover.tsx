@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/src/components/ui/button";
 import {
@@ -83,10 +83,14 @@ export function MeetingActionsPopover({
   };
 
   const isLive = status === "LIVE";
-  
-  // A meeting is considered active/live if status is LIVE, or if participantsCount > 0, 
-  // or if the scheduled time has already arrived/passed.
-  const isPastScheduled = dateTime ? new Date(dateTime).getTime() <= Date.now() : false;
+  const [isPastScheduled, setIsPastScheduled] = useState(false);
+
+  useEffect(() => {
+    if (dateTime) {
+      setIsPastScheduled(new Date(dateTime).getTime() <= Date.now());
+    }
+  }, [dateTime]);
+
   const isLiveOrActive = isLive || participantsCount > 0 || isPastScheduled;
 
   const handleDeleteOrEnd = () => {
