@@ -211,6 +211,17 @@ export class DriveService implements OnModuleInit {
         `✅ Upload complete: ${fmt(result.totalBytes)} in ${Math.round(durationMs / 1000)}s @ ${speedMBps} MB/s`,
       );
 
+      // Fix 403 Error: Make the file viewable by anyone with the link
+      try {
+        await this.drive.permissions.create({
+          fileId: result.fileId,
+          requestBody: { role: 'reader', type: 'anyone' },
+        });
+        this.logger.log(`🔓 Granted public read permission to file ${result.fileId}`);
+      } catch (permError) {
+        this.logger.warn(`Failed to set permissions for ${result.fileId}: ${permError}`);
+      }
+
       if (meeting) {
         await this.prisma.recording.update({
           where: { meetingId: meeting.id },

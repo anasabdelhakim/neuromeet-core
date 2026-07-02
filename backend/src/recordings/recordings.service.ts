@@ -66,10 +66,17 @@ export class RecordingsService {
     });
 
     if (meeting) {
-      await this.prisma.recording.updateMany({
+      const latestRecording = await this.prisma.recording.findFirst({
         where: { meetingId: meeting.id },
-        data: { r2Key: thumbnail },
+        orderBy: { uploadedAt: 'desc' },
       });
+
+      if (latestRecording) {
+        await this.prisma.recording.update({
+          where: { id: latestRecording.id },
+          data: { r2Key: thumbnail },
+        });
+      }
     }
     return { success: true };
   }

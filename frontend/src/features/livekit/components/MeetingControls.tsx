@@ -87,6 +87,7 @@ export function MeetingControls({
   const streamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const recordingStartTimeRef = useRef<number>(0);
+  const thumbnailRef = useRef<string | null>(null);
   const [allowStudentRecording, setAllowStudentRecording] = useState(true);
 
   useEffect(() => {
@@ -143,7 +144,16 @@ export function MeetingControls({
       body: blob,
     })
       .then(res => res.json())
-      .then(data => console.log("Recording upload completed successfully:", data))
+      .then(data => {
+        console.log("Recording upload completed successfully:", data);
+        if (thumbnailRef.current) {
+          fetch(`/api/recordings/${room}/thumbnail`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ thumbnail: thumbnailRef.current }),
+          }).catch(err => console.error("Thumbnail upload failed:", err));
+        }
+      })
       .catch((err) => console.error("Background recording upload failed:", err));
   };
 
@@ -165,13 +175,7 @@ export function MeetingControls({
           const ctx = canvas.getContext("2d");
           if (ctx) {
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
-            
-            fetch(`/api/recordings/${room}/thumbnail`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ thumbnail: dataUrl }),
-            }).catch(err => console.error("Thumbnail upload failed:", err));
+            thumbnailRef.current = canvas.toDataURL("image/jpeg", 0.7);
           }
           video.srcObject = null;
         }, 2000); // Wait 2 seconds for the screen content to fully render
