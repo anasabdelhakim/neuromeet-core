@@ -14,7 +14,7 @@ export function SidebarNavLinks() {
 
   return (
     <>
-      {studentNavItems.map(({ icon: Icon, label, href }) => {
+      {studentNavItems.map(({ icon: Icon, label, href, hideOnMobile }) => {
         const active = pathname === href;
 
         return (
@@ -24,11 +24,13 @@ export function SidebarNavLinks() {
                 <Link
                   href={href}
                   prefetch={true}
-                  className={`flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 px-0 md:px-3 py-0.5 md:py-2.5 rounded-soft text-[12px] sm:text-xs md:text-base transition-all duration-normal ease-standard flex-1 md:flex-none ${
+                  className={cn(
+                    "flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 px-0 md:px-3 py-0.5 md:py-2.5 rounded-soft text-[12px] sm:text-xs md:text-base transition-all duration-normal ease-standard flex-1 md:flex-none",
                     active
                       ? "text-primary md:bg-primary md:text-primary-foreground"
-                      : "text-muted-foreground hover:text-foreground md:hover:bg-secondary"
-                  }`}
+                      : "text-muted-foreground hover:text-foreground md:hover:bg-secondary",
+                    hideOnMobile && "max-md:hidden"
+                  )}
                 />
               }
             >

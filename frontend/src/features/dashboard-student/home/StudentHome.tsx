@@ -87,7 +87,7 @@ export function StudentHome() {
             href="/dashboard-student/upcoming"
             className="text-xs font-semibold text-primary-light hover:text-primary flex items-center transition-colors uppercase tracking-wider"
           >
-            View all schedule <ChevronRight className="w-3 h-3 ml-0.5" />
+            View all <ChevronRight className="w-3 h-3 ml-0.5" />
           </Link>
         </div>
 
