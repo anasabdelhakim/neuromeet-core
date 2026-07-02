@@ -120,7 +120,7 @@ class ParticipantBuffer:
 
 
 
-def calibrate_probability(p: float, temperature: float = 0.8, bias: float = 0.8) -> float:
+def calibrate_probability(p: float, temperature: float = 0.4, bias: float = 1.0) -> float:
     """
     Applies Logit Calibration (Platt Scaling / Temperature Scaling) to calibrate 
     the raw neural network probability. This is the industry-standard ML technique 
