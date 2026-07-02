@@ -123,6 +123,9 @@ export class DriveController {
     // driveService.getResumeOffset(storedUrl) and resume from there.
     const uploadSessionKey = `recording:session:${meetingId}`;
 
+    const query = req.query as any;
+    const duration = parseInt(query.duration || '0', 10);
+
     try {
       // This call does NOT return until the entire stream is uploaded.
       // The connection stays open the whole time — that's expected.
@@ -130,6 +133,7 @@ export class DriveController {
       const result = await this.driveService.streamRecordingToDrive(
         meetingId,
         rawStream,
+        duration,
         contentType.split(';')[0].trim(), // strip charset if present
       );
 

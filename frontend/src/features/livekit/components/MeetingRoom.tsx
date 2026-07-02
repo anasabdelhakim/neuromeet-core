@@ -165,9 +165,9 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
             "[&_.lk-focus-layout]:w-full [&_.lk-focus-layout]:h-full [&_.lk-focus-layout]:grid [&_.lk-focus-layout]:gap-4 [&_.lk-focus-layout]:p-2",
             
             /* Participant Tile Styles */
-            "[&_.lk-participant-tile]:w-full [&_.lk-participant-tile]:h-full [&_.lk-participant-tile]:relative [&_.lk-participant-tile]:flex [&_.lk-participant-tile]:items-center [&_.lk-participant-tile]:justify-center [&_.lk-participant-tile]:overflow-hidden [&_.lk-participant-tile]:bg-card [&_.lk-participant-tile]:transition-all [&_.lk-participant-tile]:duration-300",
+            "[&_.lk-participant-tile]:w-full [&_.lk-participant-tile]:h-full [&_.lk-participant-tile]:relative [&_.lk-participant-tile]:flex [&_.lk-participant-tile]:items-center [&_.lk-participant-tile]:justify-center [&_.lk-participant-tile]:overflow-hidden [&_.lk-participant-tile]:bg-black [&_.lk-participant-tile]:transition-all [&_.lk-participant-tile]:duration-300 [&_.lk-participant-tile]:rounded-2xl",
             "[&_.lk-participant-tile[data-speaking='true']]:border-primary [&_.lk-participant-tile[data-speaking='true']]:ring-2 [&_.lk-participant-tile[data-speaking='true']]:ring-primary/50",
-            "[&_.lk-participant-tile_video]:w-full [&_.lk-participant-tile_video]:h-full [&_.lk-participant-tile_video]:object-cover",
+            "[&_.lk-participant-tile_video]:w-full [&_.lk-participant-tile_video]:h-full [&_.lk-participant-tile_video]:!object-contain",
             
             /* Tile Metadata (Name/Badges) */
             "[&_.lk-participant-metadata]:absolute [&_.lk-participant-metadata]:bottom-0 [&_.lk-participant-metadata]:inset-x-0 [&_.lk-participant-metadata]:bg-gradient-to-t [&_.lk-participant-metadata]:from-black/90 [&_.lk-participant-metadata]:to-transparent [&_.lk-participant-metadata]:p-4 [&_.lk-participant-metadata]:flex [&_.lk-participant-metadata]:items-center [&_.lk-participant-metadata]:gap-2 [&_.lk-participant-metadata]:z-10",

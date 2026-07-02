@@ -89,7 +89,7 @@ export function GroupCardActions({ group }: { group: Group }) {
         <PopoverContent align="end" className="w-40 p-1 flex flex-col gap-0.5">
           <Button 
             variant="ghost" 
-            className="w-full justify-start h-8 px-2 text-sm font-normal" 
+            className="w-full justify-start h-8 px-2 text-sm font-normal rounded-hard" 
             onClick={() => setIsEditDialogOpen(true)}
           >
             <Edit2 className="w-4 h-4 mr-2" /> Edit Group
@@ -98,7 +98,7 @@ export function GroupCardActions({ group }: { group: Group }) {
           {hasStudents ? (
             <Button 
               variant="ghost" 
-              className="w-full justify-start h-8 px-2 text-sm font-normal text-destructive hover:text-destructive hover:bg-destructive/10" 
+              className="w-full justify-start h-8 px-2 text-sm font-normal text-destructive hover:text-destructive hover:bg-destructive/10 rounded-hard" 
               onClick={() => setIsDeleteDialogOpen(true)}
             >
               <Trash2 className="w-4 h-4 mr-2" /> Delete Group
@@ -106,7 +106,7 @@ export function GroupCardActions({ group }: { group: Group }) {
           ) : (
             <Button 
               variant="ghost" 
-              className="w-full justify-start h-8 px-2 text-sm font-normal text-destructive hover:text-destructive hover:bg-destructive/10" 
+              className="w-full justify-start h-8 px-2 text-sm font-normal text-destructive hover:text-destructive hover:bg-destructive/10 rounded-hard" 
               onClick={handleDelete}
             >
               {isDeleting ? <Loader className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2" />}

@@ -145,6 +145,7 @@ export class DriveService implements OnModuleInit {
   async streamRecordingToDrive(
     meetingId: string,
     rawStream: NodeJS.ReadableStream,
+    recordingDurationSeconds: number,
     mimeType: string = 'video/webm',
     folderId?: string,
   ): Promise<RecordingUploadResult> {
@@ -218,7 +219,7 @@ export class DriveService implements OnModuleInit {
             driveFileId: result.fileId,
             driveWebViewLink: result.webViewLink,
             sizeBytes: result.totalBytes,
-            duration: Math.round(durationMs / 1000),
+            duration: recordingDurationSeconds > 0 ? recordingDurationSeconds : Math.round(durationMs / 1000),
           },
         });
       }

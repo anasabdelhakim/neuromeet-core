@@ -10,7 +10,7 @@ import { setAuthCookies } from "@/src/lib/auth-cookies";
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const handoffToken = searchParams.get("token");
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? new URL(request.url).origin;
+  const baseUrl = new URL(request.url).origin;
 
   if (!handoffToken) {
     console.error("[BFF Handshake] Handoff token is missing.");

@@ -86,6 +86,7 @@ export function MeetingControls({
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const recordingStartTimeRef = useRef<number>(0);
   const [allowStudentRecording, setAllowStudentRecording] = useState(true);
 
   useEffect(() => {
@@ -130,13 +131,12 @@ export function MeetingControls({
     }
   };
 
-  const uploadRecording = (chunks: Blob[]) => {
+  const uploadRecording = (chunks: Blob[], durationSeconds: number) => {
     if (chunks.length === 0) return;
     const blob = new Blob(chunks, { type: 'video/webm' });
-    const backendUrl = process.env.NEXT_PUBLIC_NESTJS_URL || "http://localhost:4000/api/v1";
-    const uploadUrl = `${backendUrl}/drive/recording/stream/${room}`;
+    const uploadUrl = `/api/recordings/${room}/stream?duration=${durationSeconds}`;
 
-    console.log(`Starting recording upload to: ${uploadUrl}, size: ${(blob.size / 1024 / 1024).toFixed(2)} MB`);
+    console.log(`Starting recording upload to: ${uploadUrl}, size: ${(blob.size / 1024 / 1024).toFixed(2)} MB, duration: ${durationSeconds}s`);
 
     fetch(uploadUrl, {
       method: 'POST',
@@ -167,8 +167,7 @@ export function MeetingControls({
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
             
-            const backendUrl = process.env.NEXT_PUBLIC_NESTJS_URL || "http://localhost:4000/api/v1";
-            fetch(`${backendUrl}/recordings/${room}/thumbnail`, {
+            fetch(`/api/recordings/${room}/thumbnail`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ thumbnail: dataUrl }),
@@ -243,7 +242,8 @@ export function MeetingControls({
         };
 
         mediaRecorder.onstop = () => {
-          uploadRecording(chunksRef.current);
+          const duration = Math.round((Date.now() - recordingStartTimeRef.current) / 1000);
+          uploadRecording(chunksRef.current, duration);
           setIsRecording(false);
           alert("Recording stopped. Uploading to Google Drive in the background...");
           if (micStream) {
@@ -256,6 +256,7 @@ export function MeetingControls({
           mediaRecorder.stop();
         };
 
+        recordingStartTimeRef.current = Date.now();
         mediaRecorder.start(1000);
         captureThumbnail(combinedStream);
         setIsRecording(true);

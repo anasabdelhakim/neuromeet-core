@@ -67,8 +67,7 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
   useEffect(() => {
     if (recording.status !== "PROCESSING") return;
 
-    const backendUrl = process.env.NEXT_PUBLIC_NESTJS_URL || "http://localhost:4000/api/v1";
-    const sseUrl = `${backendUrl}/drive/recording/progress/${recording.meetingId}`;
+    const sseUrl = `/api/recordings/${recording.meetingId}/progress`;
     const eventSource = new EventSource(sseUrl);
 
     eventSource.onmessage = (event) => {
@@ -107,6 +106,15 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
     });
   };
 
+  const formatDuration = (totalSeconds: number) => {
+    if (!totalSeconds) return "0:00";
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = Math.floor(totalSeconds % 60);
+    if (h > 0) return `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  };
+
   return (
     <>
       <Card variant="gradient" className="py-0 cursor-pointer hover:scale-[1.02] transition-transform duration-normal ease-standard group" onClick={() => setIsPlayerOpen(true)}>
@@ -131,7 +139,7 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
           </Badge>
           <Badge className="absolute z-20 bottom-1 right-2 flex items-center gap-1 bg-custom-gray border-border shadow-hard rounded-hard tracking-wider">
             <Clock size={12} />
-            <span>{recording.duration}min</span>
+            <span>{formatDuration(recording.duration)}</span>
           </Badge>
         </div>
         <CardContent>
