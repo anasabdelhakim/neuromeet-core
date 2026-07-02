@@ -426,7 +426,7 @@ async def main():
                 logger.info(f"[bot] Ignoring instructor track: {participant.identity}")
                 return
 
-            if publication.source == rtc.TrackSource.TRACK_SOURCE_SCREEN_SHARE:
+            if getattr(track, "name", "") == "screen":
                 logger.info(f"[bot] Ignoring screen share track: {participant.identity}")
                 return
 
@@ -462,7 +462,7 @@ async def main():
 
         for pub in participant.track_publications.values():
             if pub.track and pub.kind == rtc.TrackKind.KIND_VIDEO:
-                if pub.track.source == rtc.TrackSource.SOURCE_SCREEN_SHARE:
+                if getattr(pub.track, "name", "") == "screen":
                     continue
                 asyncio.create_task(
                     consume_video_track(
