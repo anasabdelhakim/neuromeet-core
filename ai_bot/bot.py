@@ -33,7 +33,7 @@ logger = logging.getLogger("engagement-bot")
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 SEQ_LEN = 24                 # MUST match the SEQ_LEN used during training and ONNX export
 INFERENCE_INTERVAL_S = 5.0   # Run inference every N seconds — set above CPU inference time to avoid queue buildup
-DISENGAGEMENT_THRESHOLD = 0.50  # Below this → is_disengaged=True
+DISENGAGEMENT_THRESHOLD = 0.40  # Below this → is_disengaged=True
 MAX_CONCURRENT = 1 if DEVICE.type == "cpu" else 10  # CPU: serialize to avoid thread contention
 EMA_ALPHA = 0.35             # Exponential Moving Average smoothing (0=ignore new, 1=no smoothing)
 
@@ -120,7 +120,7 @@ class ParticipantBuffer:
 
 
 
-def calibrate_probability(p: float, temperature: float = 0.4, bias: float = 1.0) -> float:
+def calibrate_probability(p: float, temperature: float = 0.8, bias: float = 1.5) -> float:
     """
     Applies Logit Calibration (Platt Scaling / Temperature Scaling) to calibrate 
     the raw neural network probability. This is the industry-standard ML technique 
