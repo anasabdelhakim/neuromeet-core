@@ -81,7 +81,7 @@ export function StudentHome() {
       <section className="mt-8 w-full">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-bold">Upcoming Sessions</h2>
+            <h2 className="text-xl font-bold">Today's Meetings</h2>
           </div>
           <Link
             href="/dashboard-student/upcoming"

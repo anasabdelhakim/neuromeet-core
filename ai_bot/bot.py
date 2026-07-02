@@ -33,9 +33,9 @@ logger = logging.getLogger("engagement-bot")
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 SEQ_LEN = 24                 # MUST match the SEQ_LEN used during training and ONNX export
 INFERENCE_INTERVAL_S = 5.0   # Run inference every N seconds — set above CPU inference time to avoid queue buildup
-DISENGAGEMENT_THRESHOLD = 0.40  # Below this → is_disengaged=True
+DISENGAGEMENT_THRESHOLD = 0.50  # Below this → is_disengaged=True
 MAX_CONCURRENT = 1 if DEVICE.type == "cpu" else 10  # CPU: serialize to avoid thread contention
-EMA_ALPHA = 0.35             # Exponential Moving Average smoothing (0=ignore new, 1=no smoothing)
+EMA_ALPHA = 0.60             # Exponential Moving Average smoothing (0=ignore new, 1=no smoothing)
 
 
 # ─── Model Singleton ──────────────────────────────────────────────────────────
@@ -120,7 +120,7 @@ class ParticipantBuffer:
 
 
 
-def calibrate_probability(p: float, temperature: float = 0.8, bias: float = 1.5) -> float:
+def calibrate_probability(p: float, temperature: float = 0.4, bias: float = 0.5) -> float:
     """
     Applies Logit Calibration (Platt Scaling / Temperature Scaling) to calibrate 
     the raw neural network probability. This is the industry-standard ML technique 
@@ -222,7 +222,16 @@ async def consume_video_track(
         else:
             logger.warning(f"Frame padding: got {len(np_frame)}, expected {expected}")
             np_frame = np_frame[:expected].reshape(height, width, 3)
-        return cv2.resize(np_frame, (224, 224))
+            
+        # CRITICAL ML FIX: Never squish the aspect ratio!
+        # Center-crop the image to a perfect square first, then resize down to 224x224.
+        # This ensures faces remain proportional (not tall/thin), exactly like the training data.
+        sz = min(width, height)
+        y = (height - sz) // 2
+        x = (width - sz) // 2
+        square_frame = np_frame[y:y+sz, x:x+sz]
+        
+        return cv2.resize(square_frame, (224, 224))
 
     try:
         async for frame_event in video_stream:
