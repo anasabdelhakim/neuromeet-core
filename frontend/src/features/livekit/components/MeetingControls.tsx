@@ -132,29 +132,63 @@ export function MeetingControls({
     }
   };
 
-  const uploadRecording = (chunks: Blob[], durationSeconds: number) => {
+  const uploadRecording = async (chunks: Blob[], durationSeconds: number) => {
     if (chunks.length === 0) return;
     const blob = new Blob(chunks, { type: 'video/webm' });
-    const uploadUrl = `/api/recordings/${room}/stream?duration=${durationSeconds}`;
+    const totalSize = blob.size;
+    
+    console.log(`Starting Direct Resumable Chunking upload. Size: ${(totalSize / 1024 / 1024).toFixed(2)} MB`);
 
-    console.log(`Starting recording upload to: ${uploadUrl}, size: ${(blob.size / 1024 / 1024).toFixed(2)} MB, duration: ${durationSeconds}s`);
+    try {
+      // Step 1: Initialize Resumable Session
+      const initRes = await fetch(`/api/recordings/${room}/init`, { method: 'POST' });
+      const { uploadUrl } = await initRes.json();
+      
+      if (!uploadUrl) throw new Error("Failed to get Google Drive uploadUrl");
 
-    fetch(uploadUrl, {
-      method: 'POST',
-      body: blob,
-    })
-      .then(res => res.json())
-      .then(data => {
-        console.log("Recording upload completed successfully:", data);
-        if (thumbnailRef.current) {
-          fetch(`/api/recordings/${room}/thumbnail`, {
+      // Step 2: Slice and Upload Chunks
+      const CHUNK_SIZE = 256 * 1024 * 8; // Exactly 2MB
+      let byteOffset = 0;
+      let isFinal = false;
+      let finalData = null;
+
+      while (byteOffset < totalSize) {
+        const end = Math.min(byteOffset + CHUNK_SIZE, totalSize);
+        const chunkBlob = blob.slice(byteOffset, end);
+        isFinal = end === totalSize;
+
+        console.log(`Uploading chunk: ${byteOffset}-${end}/${totalSize}`);
+
+        const chunkRes = await fetch(
+          `/api/recordings/${room}/chunk?uploadUrl=${encodeURIComponent(uploadUrl)}&byteOffset=${byteOffset}&totalSize=${totalSize}&isFinal=${isFinal}&duration=${durationSeconds}`,
+          {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ thumbnail: thumbnailRef.current }),
-          }).catch(err => console.error("Thumbnail upload failed:", err));
+            body: chunkBlob,
+            headers: { 'Content-Type': 'application/octet-stream' }
+          }
+        );
+
+        if (!chunkRes.ok) throw new Error(`Chunk upload failed with status ${chunkRes.status}`);
+
+        if (isFinal) {
+          finalData = await chunkRes.json();
         }
-      })
-      .catch((err) => console.error("Background recording upload failed:", err));
+
+        byteOffset = end;
+      }
+
+      console.log("Recording upload completed successfully:", finalData);
+      
+      if (thumbnailRef.current) {
+        fetch(`/api/recordings/${room}/thumbnail`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ thumbnail: thumbnailRef.current }),
+        }).catch(err => console.error("Thumbnail upload failed:", err));
+      }
+    } catch (err) {
+      console.error("Direct Resumable Chunking failed:", err);
+    }
   };
 
   const captureThumbnail = (stream: MediaStream) => {

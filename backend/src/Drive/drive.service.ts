@@ -130,18 +130,7 @@ export class DriveService implements OnModuleInit {
   }
 
   // ── Public: Large recording stream upload ────────────────────────────────
-  //
-  // Architecture (strictly sequential — Drive API requires it):
-  //
-  //   Raw HTTP stream → accumulate 10 MB → PUT to Drive → ACK (308) → repeat
-  //                                                      ↓ on final chunk
-  //                                                  ACK (200/201) → done
-  //
-  // RAM ceiling: ~10 MB regardless of file size.
-  // The previous 503 error was caused by sending chunk N+1 before Drive ACKed
-  // chunk N. Drive resumable uploads are sequential by design — parallelism
-  // across chunks of the same session is not supported.
-
+  // Existing stream method preserved for backward compatibility
   async streamRecordingToDrive(
     meetingId: string,
     rawStream: NodeJS.ReadableStream,
@@ -149,59 +138,14 @@ export class DriveService implements OnModuleInit {
     mimeType: string = 'video/webm',
     folderId?: string,
   ): Promise<RecordingUploadResult> {
-    const startTime = Date.now();
     const targetFolder = folderId || process.env.GOOGLE_DRIVE_FOLDER_ID!;
-    const fileName = `recording-${meetingId}-${startTime}.webm`;
+    const { uploadUrl, meeting, fileName, startTime } = await this.initResumableUpload(
+      meetingId, mimeType, targetFolder
+    );
 
-    this.logger.log(`🎬 Stream upload starting: meeting=${meetingId}`);
-
-    let meeting = await this.prisma.meeting.findFirst({
-      where: {
-        OR: [
-          { id: meetingId },
-          { livekitRoomName: meetingId },
-        ],
-      },
-    });
-
-    if (!meeting) {
-      const instructor = await this.prisma.user.findFirst({
-        where: { role: 'INSTRUCTOR' },
-      });
-      if (instructor) {
-        meeting = await this.prisma.meeting.create({
-          data: {
-            title: `LiveKit Room: ${meetingId}`,
-            livekitRoomName: meetingId,
-            hostId: instructor.id,
-            status: 'LIVE',
-          },
-        });
-      }
-    }
-
-    if (meeting) {
-      await this.prisma.recording.upsert({
-        where: { meetingId: meeting.id },
-        create: {
-          meetingId: meeting.id,
-          fileName,
-          status: 'UPLOADING',
-        },
-        update: {
-          fileName,
-          status: 'UPLOADING',
-        },
-      });
-    }
+    this.logger.log(`🔗 Stream session opened: ${fileName}`);
 
     try {
-      const accessToken = await this._getAccessToken();
-      const uploadUrl = await this._initResumableSession(
-        fileName, mimeType, targetFolder, accessToken,
-      );
-
-      this.logger.log(`🔗 Session opened: ${fileName}`);
 
       const result = await this._pipeStream(meetingId, rawStream, uploadUrl, mimeType);
       const durationMs = Date.now() - startTime;
@@ -255,6 +199,129 @@ export class DriveService implements OnModuleInit {
       }
       throw error;
     }
+  }
+
+  // ── Public: Direct Resumable Chunking ────────────────────────────────────
+
+  async initResumableUpload(
+    meetingId: string,
+    mimeType: string = 'video/webm',
+    folderId?: string,
+  ) {
+    const startTime = Date.now();
+    const targetFolder = folderId || process.env.GOOGLE_DRIVE_FOLDER_ID!;
+    const fileName = `recording-${meetingId}-${startTime}.webm`;
+
+    let meeting = await this.prisma.meeting.findFirst({
+      where: {
+        OR: [{ id: meetingId }, { livekitRoomName: meetingId }],
+      },
+    });
+
+    if (!meeting) {
+      const instructor = await this.prisma.user.findFirst({
+        where: { role: 'INSTRUCTOR' },
+      });
+      if (instructor) {
+        meeting = await this.prisma.meeting.create({
+          data: {
+            title: `LiveKit Room: ${meetingId}`,
+            livekitRoomName: meetingId,
+            hostId: instructor.id,
+            status: 'LIVE',
+          },
+        });
+      }
+    }
+
+    if (meeting) {
+      await this.prisma.recording.upsert({
+        where: { meetingId: meeting.id },
+        create: {
+          meetingId: meeting.id,
+          fileName,
+          status: 'UPLOADING',
+        },
+        update: {
+          fileName,
+          status: 'UPLOADING',
+        },
+      });
+    }
+
+    const accessToken = await this._getAccessToken();
+    const uploadUrl = await this._initResumableSession(
+      fileName,
+      mimeType,
+      targetFolder,
+      accessToken,
+    );
+
+    return { uploadUrl, meeting, fileName, startTime };
+  }
+
+  async uploadChunkToDrive(
+    uploadUrl: string,
+    chunkBuffer: Buffer,
+    byteOffset: number,
+    totalSize: number | '*',
+    isFinal: boolean,
+    meetingId: string,
+    recordingDurationSeconds: number,
+  ) {
+    const parsedUrl = new URL(uploadUrl);
+    const urlPath = parsedUrl.pathname + parsedUrl.search;
+
+    const result = await this._putChunkWithRetry(
+      parsedUrl.hostname,
+      urlPath,
+      chunkBuffer,
+      byteOffset,
+      totalSize,
+      'video/webm',
+      isFinal,
+    );
+
+    // If final, update permissions and database
+    if (isFinal && result.fileId) {
+      try {
+        await this.drive.permissions.create({
+          fileId: result.fileId,
+          requestBody: { role: 'reader', type: 'anyone' },
+        });
+        this.logger.log(`🔓 Granted public read permission to file ${result.fileId}`);
+      } catch (e) {
+        this.logger.warn(`Failed to set permissions for ${result.fileId}: ${e}`);
+      }
+
+      const meeting = await this.prisma.meeting.findFirst({
+        where: { OR: [{ id: meetingId }, { livekitRoomName: meetingId }] },
+      });
+
+      if (meeting) {
+        await this.prisma.recording.update({
+          where: { meetingId: meeting.id },
+          data: {
+            status: 'UPLOADED',
+            driveFileId: result.fileId,
+            driveWebViewLink: result.webViewLink,
+            sizeBytes: totalSize === '*' ? 0 : totalSize,
+            duration: recordingDurationSeconds,
+          },
+        });
+      }
+
+      this._publishProgress({
+        meetingId,
+        bytesUploaded: totalSize === '*' ? byteOffset + chunkBuffer.length : totalSize,
+        totalBytes: totalSize === '*' ? null : totalSize,
+        chunksUploaded: -1,
+        status: 'complete',
+        message: `Upload complete!`,
+      }).catch(() => {});
+    }
+
+    return result;
   }
 
   // ── Private: Token cache ──────────────────────────────────────────────────

@@ -86,6 +86,7 @@ export class DriveController {
   //
   // Content-Type must be: video/webm (or video/mp4 depending on your Egress config)
   //
+  //
   @Post('recording/stream/:meetingId')
   @HttpCode(HttpStatus.OK)
   async streamRecording(
@@ -192,6 +193,55 @@ export class DriveController {
         reason: error.message,
       });
     }
+  }
+
+  // ── POST /api/v1/drive/recording/init/:meetingId ─────────────────────────
+  @Post('recording/init/:meetingId')
+  @HttpCode(HttpStatus.OK)
+  async initRecordingUpload(@Param('meetingId') meetingId: string) {
+    if (!meetingId || meetingId.trim() === '') {
+      throw new BadRequestException('meetingId parameter is required');
+    }
+    return this.driveService.initResumableUpload(meetingId);
+  }
+
+  // ── PUT /api/v1/drive/recording/chunk/:meetingId ─────────────────────────
+  @Post('recording/chunk/:meetingId')
+  @HttpCode(HttpStatus.OK)
+  async uploadRecordingChunk(
+    @Param('meetingId') meetingId: string,
+    @Req() req: FastifyRequest,
+  ) {
+    const query = req.query as any;
+    const uploadUrl = query.uploadUrl as string;
+    const byteOffset = parseInt(query.byteOffset || '0', 10);
+    const totalSizeStr = query.totalSize || '*';
+    const totalSize = totalSizeStr === '*' ? '*' : parseInt(totalSizeStr, 10);
+    const isFinal = query.isFinal === 'true';
+    const duration = parseInt(query.duration || '0', 10);
+
+    if (!uploadUrl) {
+      throw new BadRequestException('uploadUrl query parameter is required');
+    }
+
+    const chunkBuffer = await new Promise<Buffer>((resolve, reject) => {
+      const chunks: Buffer[] = [];
+      req.raw.on('data', (chunk) => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
+      req.raw.on('end', () => resolve(Buffer.concat(chunks)));
+      req.raw.on('error', reject);
+    });
+
+    const result = await this.driveService.uploadChunkToDrive(
+      uploadUrl,
+      chunkBuffer,
+      byteOffset,
+      totalSize,
+      isFinal,
+      meetingId,
+      duration,
+    );
+
+    return result;
   }
 
   // ── GET /api/v1/drive/recording/progress/:meetingId ──────────────────────
