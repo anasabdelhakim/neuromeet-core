@@ -107,6 +107,7 @@ export class GroupsService {
             name: true,
             email: true,
             avatarUrl: true,
+            sessions: { select: { lastUsedAt: true }, orderBy: { lastUsedAt: 'desc' }, take: 1 },
           },
         },
       },

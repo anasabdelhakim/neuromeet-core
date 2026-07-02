@@ -105,7 +105,13 @@ export class GroupsController {
   async getAllStudents() {
     const students = await this.groupsService['prisma'].user.findMany({
       where: { role: 'STUDENT' },
-      select: { id: true, name: true, email: true, avatarUrl: true },
+      select: { 
+        id: true, 
+        name: true, 
+        email: true, 
+        avatarUrl: true,
+        sessions: { select: { lastUsedAt: true }, orderBy: { lastUsedAt: 'desc' }, take: 1 }
+      },
       orderBy: { name: 'asc' }
     });
     return { status: 'success', data: students };
