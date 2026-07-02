@@ -66,17 +66,18 @@ export class RecordingsService {
     });
 
     if (meeting) {
-      const latestRecording = await this.prisma.recording.findFirst({
+      await this.prisma.recording.upsert({
         where: { meetingId: meeting.id },
-        orderBy: { uploadedAt: 'desc' },
+        create: {
+          meetingId: meeting.id,
+          fileName: `recording-${meeting.id}.webm`,
+          status: 'PROCESSING',
+          r2Key: thumbnail,
+        },
+        update: {
+          r2Key: thumbnail,
+        },
       });
-
-      if (latestRecording) {
-        await this.prisma.recording.update({
-          where: { id: latestRecording.id },
-          data: { r2Key: thumbnail },
-        });
-      }
     }
     return { success: true };
   }
