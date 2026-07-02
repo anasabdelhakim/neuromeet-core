@@ -11,7 +11,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ roo
     const backendRes = await fetch(`${BASE_URL}/drive/recording/init/${resolvedParams.room}`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {})
       }
     });
