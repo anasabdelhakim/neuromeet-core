@@ -164,6 +164,15 @@ export function MeetingControls({
       
       if (!uploadUrl) throw new Error("Failed to get Google Drive uploadUrl");
 
+      // Step 1.5: Upload the Thumbnail now that the DB row exists
+      if (thumbnailRef.current) {
+        fetch(`/api/recordings/${room}/thumbnail`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ thumbnail: thumbnailRef.current }),
+        }).catch(err => console.error("Thumbnail upload failed:", err));
+      }
+
       // Step 2: Slice and Upload Chunks
       const CHUNK_SIZE = 256 * 1024 * 8; // Exactly 2MB
       let byteOffset = 0;
@@ -221,13 +230,6 @@ export function MeetingControls({
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
             thumbnailRef.current = dataUrl;
-            
-            // Instantly upload thumbnail so it's ready before the meeting ends
-            fetch(`/api/recordings/${room}/thumbnail`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ thumbnail: dataUrl }),
-            }).catch(err => console.error("Thumbnail instant upload failed:", err));
           }
           video.srcObject = null;
         }, 2000); // Wait 2 seconds for the screen content to fully render

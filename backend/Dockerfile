@@ -34,4 +34,4 @@ COPY --from=builder /app/lib/prisma/_migrations ./lib/prisma/_migrations
 ENV NODE_ENV=production
 EXPOSE 7860
 
-CMD ["sh", "-c", "bunx prisma migrate deploy && bun dist/main.js"]
+CMD ["sh", "-c", "bunx prisma db push --accept-data-loss && bun dist/main.js"]
