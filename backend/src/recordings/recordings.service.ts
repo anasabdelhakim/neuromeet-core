@@ -105,8 +105,8 @@ export class RecordingsService {
 
     if (!recording) throw new NotFoundException('Recording not found');
 
-    if (recording.meeting?.hostId !== userId) {
-      throw new ForbiddenException('Only the host can delete this recording');
+    if (recording.meeting?.hostId !== userId && recording.recordedById !== userId) {
+      throw new ForbiddenException('Only the host or the recording owner can delete this recording');
     }
 
     await this.prisma.recording.delete({

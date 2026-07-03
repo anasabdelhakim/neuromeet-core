@@ -148,11 +148,9 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
 
           <div className="flex gap-2 mt-3 border-t border-border py-3 px-0 justify-between items-center w-full">
             <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-              {isInstructor && (
-                <ActionButton label="Delete recording" variant="destructive" className="rounded-hard" onClick={() => setIsDeleteDialogOpen(true)} disabled={isDeleting}>
-                  {isDeleting ? <Loader className="w-4 h-4 animate-spin" /> : <Trash2Icon size={18} />}
-                </ActionButton>
-              )}
+              <ActionButton label="Delete recording" variant="destructive" className="rounded-hard" onClick={() => setIsDeleteDialogOpen(true)} disabled={isDeleting}>
+                {isDeleting ? <Loader className="w-4 h-4 animate-spin" /> : <Trash2Icon size={18} />}
+              </ActionButton>
             </div>
 
             <Button 
