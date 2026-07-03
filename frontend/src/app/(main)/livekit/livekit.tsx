@@ -4,7 +4,7 @@ import { parseJwt } from "@/src/features/livekit/helpers/auth";
 import { apiGet } from "@/src/lib/api-client";
 
 export default async function Livekit(props: {
-  searchParams: Promise<{ room?: string; user?: string }>;
+  searchParams: Promise<{ room?: string; user?: string; guest?: string }>;
 }) {
   const params = await props.searchParams;
   const room = params?.room || "test-room";
@@ -42,8 +42,8 @@ export default async function Livekit(props: {
     try {
       const { apiPost } = await import("@/src/lib/api-client");
       const joinRes = await apiPost<any>(`/meetings/${meetingId}/join`, { passcode: meetingPasscode });
-      if (joinRes.data?.isGuest) {
-        isGuest = true;
+      if (joinRes.data && typeof joinRes.data.isGuest === "boolean") {
+        isGuest = joinRes.data.isGuest;
       }
     } catch (joinErr) {
       console.warn("Participant join tracking notice:", joinErr);

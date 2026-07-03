@@ -241,8 +241,14 @@ export function MeetingControls({
     if (!isRecording) {
       try {
         // 1. Capture the display (Chrome tab/screen) along with system/tab audio (other participants)
+        // PERF: Limited frame rate to 15-24fps and resolution to 720p/1080p to vastly reduce CPU load and prevent lag.
         const displayStream = await navigator.mediaDevices.getDisplayMedia({
-          video: { displaySurface: "browser" },
+          video: { 
+            displaySurface: "browser",
+            frameRate: { ideal: 15, max: 24 },
+            width: { max: 1920, ideal: 1280 },
+            height: { max: 1080, ideal: 720 }
+          },
           audio: true,
         });
 
@@ -288,7 +294,11 @@ export function MeetingControls({
           mimeType = 'video/webm';
         }
 
-        const mediaRecorder = new MediaRecorder(combinedStream, { mimeType });
+        // PERF: Reduced videoBitsPerSecond to 1.5 Mbps to significantly reduce VP8 CPU encoding overhead
+        const mediaRecorder = new MediaRecorder(combinedStream, { 
+          mimeType,
+          videoBitsPerSecond: 1500000 // 1.5 Mbps
+        });
         mediaRecorderRef.current = mediaRecorder;
 
         mediaRecorder.ondataavailable = (e) => {

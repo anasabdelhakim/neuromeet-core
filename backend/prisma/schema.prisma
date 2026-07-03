@@ -198,7 +198,7 @@ model Meeting {
   groupId       String?
   group         Group?        @relation(fields: [groupId], references: [id])
   room          Room?
-  recording     Recording?
+  recordings    Recording[]
 
   @@index([hostId])
   @@index([status])

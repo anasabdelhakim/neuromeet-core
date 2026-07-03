@@ -11,12 +11,7 @@ export class RecordingsService {
     const whereClause = user?.role === 'INSTRUCTOR' ? {
       meeting: { hostId: userId }
     } : {
-      meeting: {
-        OR: [
-          { hostId: userId },
-          { group: { enrollments: { some: { studentId: userId } } } },
-        ],
-      },
+      recordedById: userId
     };
 
     const recordings = await this.prisma.recording.findMany({
@@ -55,7 +50,7 @@ export class RecordingsService {
     return { data };
   }
 
-  async saveThumbnail(meetingId: string, thumbnail: string) {
+  async saveThumbnail(meetingId: string, thumbnail: string, userId: string) {
     const meeting = await this.prisma.meeting.findFirst({
       where: {
         OR: [
@@ -66,18 +61,38 @@ export class RecordingsService {
     });
 
     if (meeting) {
-      await this.prisma.recording.upsert({
-        where: { meetingId: meeting.id },
-        create: {
+      const recording = await this.prisma.recording.findFirst({
+        where: {
           meetingId: meeting.id,
-          fileName: `recording-${meeting.id}.webm`,
+          recordedById: userId,
           status: 'PROCESSING',
-          r2Key: thumbnail,
         },
-        update: {
-          r2Key: thumbnail,
-        },
+        orderBy: { uploadedAt: 'desc' }
       });
+
+      if (recording) {
+        await this.prisma.recording.update({
+          where: { id: recording.id },
+          data: { r2Key: thumbnail },
+        });
+      } else {
+        // Fallback: update the latest UPLOADING recording
+        const uploadingRecording = await this.prisma.recording.findFirst({
+          where: {
+            meetingId: meeting.id,
+            recordedById: userId,
+            status: 'UPLOADING',
+          },
+          orderBy: { uploadedAt: 'desc' }
+        });
+        
+        if (uploadingRecording) {
+          await this.prisma.recording.update({
+            where: { id: uploadingRecording.id },
+            data: { r2Key: thumbnail },
+          });
+        }
+      }
     }
     return { success: true };
   }
