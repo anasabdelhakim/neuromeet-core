@@ -13,6 +13,8 @@ import {
 import { type FastifyRequest, type FastifyReply } from 'fastify';
 import { DriveService } from './drive.service';
 import { CacheService } from '../utils/cache.service';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from '../user/guard/auth.guard';
 
 @Controller('drive')
 export class DriveController {
@@ -198,19 +200,21 @@ export class DriveController {
   // ── POST /api/v1/drive/recording/init/:meetingId ─────────────────────────
   @Post('recording/init/:meetingId')
   @HttpCode(HttpStatus.OK)
-  async initRecordingUpload(@Param('meetingId') meetingId: string) {
+  @UseGuards(AuthGuard)
+  async initRecordingUpload(@Param('meetingId') meetingId: string, @Req() req: any) {
     if (!meetingId || meetingId.trim() === '') {
       throw new BadRequestException('meetingId parameter is required');
     }
-    return this.driveService.initResumableUpload(meetingId);
+    return this.driveService.initResumableUpload(meetingId, req.user.id);
   }
 
   // ── PUT /api/v1/drive/recording/chunk/:meetingId ─────────────────────────
   @Post('recording/chunk/:meetingId')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
   async uploadRecordingChunk(
     @Param('meetingId') meetingId: string,
-    @Req() req: FastifyRequest,
+    @Req() req: any,
   ) {
     const query = req.query as any;
     const uploadUrl = query.uploadUrl as string;
@@ -239,6 +243,7 @@ export class DriveController {
       isFinal,
       meetingId,
       duration,
+      req.user.id,
     );
 
     return result;
