@@ -58,6 +58,7 @@ export function AdminUsersClient({ initialData }: Props) {
   const [fetchPending, startFetch] = useTransition();
   const [mutatePending, startMutate] = useTransition();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [alertError, setAlertError] = useState<string | null>(null);
 
   const refetch = (overrides?: { search?: string; role?: string; page?: number }) => {
     startFetch(async () => {
@@ -106,7 +107,7 @@ export function AdminUsersClient({ initialData }: Props) {
       if (res.success && res.data) {
         setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, role: res.data!.role as any } : u)));
       } else {
-        alert("Failed to change role: " + (res.error || "Unknown error"));
+        setAlertError(res.error || "Unknown error");
       }
     });
   };
@@ -327,6 +328,26 @@ export function AdminUsersClient({ initialData }: Props) {
         </div>
       )}
       </div>
+
+      {/* Error Alert Dialog */}
+      <AlertDialog open={!!alertError} onOpenChange={(open) => !open && setAlertError(null)}>
+        <AlertDialogContent className="border-destructive/20">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+              <AlertTriangle size={24} />
+              Role Update Failed
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-base mt-2">
+              Failed to change the user's role: <strong>{alertError}</strong>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setAlertError(null)}>
+              Dismiss
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

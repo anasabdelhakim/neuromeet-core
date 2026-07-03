@@ -19,6 +19,7 @@ export default async function Livekit(props: {
   let meetingTitle = "Instant Session";
   let meetingPasscode = "443451"; 
   let meetingId = room.startsWith("room-") ? room.replace(/^room-/, "") : room;
+  let isGuest = params?.guest === "true" || false;
 
   try {
     const res = await apiGet<any>("/meetings");
@@ -40,7 +41,10 @@ export default async function Livekit(props: {
     // Root Lifecycle Fix: Explicitly invoke the join API so the database accurately registers the participant
     try {
       const { apiPost } = await import("@/src/lib/api-client");
-      await apiPost(`/meetings/${meetingId}/join`, { passcode: meetingPasscode });
+      const joinRes = await apiPost<any>(`/meetings/${meetingId}/join`, { passcode: meetingPasscode });
+      if (joinRes.data?.isGuest) {
+        isGuest = true;
+      }
     } catch (joinErr) {
       console.warn("Participant join tracking notice:", joinErr);
     }
@@ -70,6 +74,7 @@ export default async function Livekit(props: {
       meetingTitle={meetingTitle}
       meetingPasscode={meetingPasscode}
       meetingId={meetingId}
+      isGuest={isGuest}
     />
   );
 }

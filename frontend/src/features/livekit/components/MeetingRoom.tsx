@@ -115,9 +115,10 @@ interface MeetingRoomProps {
   meetingTitle?: string;
   meetingPasscode?: string;
   meetingId?: string;
+  isGuest?: boolean;
 }
 
-export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Session", meetingPasscode = "443451", meetingId = room }: MeetingRoomProps) {
+export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Session", meetingPasscode = "443451", meetingId = room, isGuest = false }: MeetingRoomProps) {
   const [activeTab, setActiveTab] = useState<ActiveSidebarTab>(null);
   const [showJoiningInfoModal, setShowJoiningInfoModal] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -275,6 +276,7 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
         isInstructor={isInstructor}
         onToggleTab={toggleTab}
         meetingId={meetingId}
+        isGuest={isGuest}
       />
     </div>
   );

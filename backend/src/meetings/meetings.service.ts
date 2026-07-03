@@ -495,9 +495,11 @@ export class MeetingsService {
       },
     });
 
+    const isGuest = meeting.hostId !== userId && (!meeting.group || meeting.group.enrollments.length === 0);
+
     if (existing) {
       // If the user is already a recognized participant, let them back in seamlessly!
-      return { status: 'success', data: { participant: existing, livekitRoomName: meeting.livekitRoomName } };
+      return { status: 'success', data: { participant: existing, livekitRoomName: meeting.livekitRoomName, isGuest } };
     }
 
     if (meeting.hostId !== userId) {
@@ -546,7 +548,7 @@ export class MeetingsService {
       this.cache.del(`meetings:user:${userId}`),
     ]);
 
-    return { status: 'success', data: { participant, livekitRoomName: meeting.livekitRoomName } };
+    return { status: 'success', data: { participant, livekitRoomName: meeting.livekitRoomName, isGuest } };
   }
 
   async startMeeting(meetingId: string, userId: string) {

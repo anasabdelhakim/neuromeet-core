@@ -17,6 +17,7 @@ interface MeetingPageProps {
   meetingTitle?: string;
   meetingPasscode?: string;
   meetingId?: string;
+  isGuest?: boolean;
 }
 
 export default function MeetingPage({
@@ -26,6 +27,7 @@ export default function MeetingPage({
   meetingTitle = "Instant Session",
   meetingPasscode = "443451",
   meetingId = room,
+  isGuest = false,
 }: MeetingPageProps) {
   const router = useRouter();
 
@@ -65,6 +67,7 @@ export default function MeetingPage({
         meetingTitle={meetingTitle}
         meetingPasscode={meetingPasscode}
         meetingId={meetingId}
+        isGuest={isGuest}
       />
     </LiveKitRoom>
   );

@@ -21,6 +21,15 @@ import { cn } from "@/src/lib/utils";
 import type { ActiveSidebarTab } from "../types/meeting-types";
 
 import { leaveMeetingAction } from "@/src/features/dashboard-instructor/home/actions/meeting-actions";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/src/components/ui/alert-dialog";
 
 interface MeetingControlsProps {
   room: string;
@@ -28,6 +37,7 @@ interface MeetingControlsProps {
   isInstructor: boolean;
   onToggleTab: (tab: NonNullable<ActiveSidebarTab>) => void;
   meetingId?: string;
+  isGuest?: boolean;
 }
 
 interface IconButtonProps {
@@ -67,6 +77,7 @@ export function MeetingControls({
   isInstructor,
   onToggleTab,
   meetingId,
+  isGuest = false,
 }: MeetingControlsProps) {
   const { 
     isMicrophoneEnabled, 
@@ -82,6 +93,7 @@ export function MeetingControls({
   const [currentTime, setCurrentTime] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showGuestAlert, setShowGuestAlert] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -95,6 +107,12 @@ export function MeetingControls({
       new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     setCurrentTime(formatTime());
     const id = setInterval(() => setCurrentTime(formatTime()), 15_000);
+
+    if (isGuest) {
+      setTimeout(() => {
+        setShowGuestAlert(true);
+      }, 2000);
+    }
 
     const checkPermission = async () => {
       try {
@@ -340,7 +358,8 @@ export function MeetingControls({
     .replace(/\b\w/g, (c) => c.toUpperCase());
 
   return (
-    <footer className="h-16 sm:h-20 bg-background/95 backdrop-blur-xl border-t border-border px-3 sm:px-6 flex items-center justify-between z-30 shrink-0 select-none overflow-hidden w-full">
+    <>
+      <footer className="h-16 sm:h-20 bg-background/95 backdrop-blur-xl border-t border-border px-3 sm:px-6 flex items-center justify-between z-30 shrink-0 select-none overflow-hidden w-full">
       {/* Left Zone: Time and Session Name */}
       <div className="hidden md:flex flex-col justify-center min-w-[150px] max-w-[250px]">
         <div className="text-sm sm:text-base font-semibold text-foreground tracking-tight tabular-nums">
@@ -372,7 +391,7 @@ export function MeetingControls({
           onClick={toggleScreenShare}
         />
 
-        {(isInstructor || allowStudentRecording) && (
+        {(isInstructor || (allowStudentRecording && !isGuest)) && (
           <IconButton
             icon={<Disc size={16} className="sm:w-[19px] sm:h-[19px]" />}
             label={isRecording ? "Stop Recording" : "Start Recording"}
@@ -462,5 +481,24 @@ export function MeetingControls({
         )}
       </div>
     </footer>
+
+      <AlertDialog open={showGuestAlert} onOpenChange={setShowGuestAlert}>
+        <AlertDialogContent className="bg-background border-border">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-xl">Guest Notice</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground text-[15px]">
+              You are currently joining this meeting as a <strong>Guest</strong> because you are not enrolled in the associated group.
+              <br/><br/>
+              Please note that you will <strong>not</strong> be able to save recordings or view upcoming meeting cards on your dashboard for this session.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setShowGuestAlert(false)}>
+              Understood
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

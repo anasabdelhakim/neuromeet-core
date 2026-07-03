@@ -59,6 +59,10 @@ export async function joinMeetingAction(meetingId: string, passcode: string) {
       consentGiven: true,
     });
     roomName = res.data?.livekitRoomName;
+    const isGuest = res.data?.isGuest;
+    if (isGuest) {
+      roomName += "&guest=true";
+    }
   } catch (error: any) {
     return { success: false, errorMessage: error.message || "Failed to join meeting" };
   }
