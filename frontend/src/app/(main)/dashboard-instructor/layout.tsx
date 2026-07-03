@@ -17,7 +17,7 @@ export default function RootLayout({
   return (
     <TooltipProvider>
     <DashboardBackground>
-      <div className="flex h-[100dvh] w-full relative text-foreground flex-col md:flex-row overflow-hidden">
+      <div className="flex h-[100svh] w-full relative text-foreground flex-col md:flex-row overflow-hidden">
         {/* Desktop Sidebar */}
         <div className="hidden md:block md:static md:sticky md:top-0 md:h-screen md:bg-transparent shrink-0">
           <InstructorSidebar />

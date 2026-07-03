@@ -12,7 +12,7 @@ interface PreJoinScreenProps {
 
 export function PreJoinScreen({ onSubmit, isInstructor }: PreJoinScreenProps) {
   return (
-    <div className="flex h-screen w-full bg-background overflow-hidden">
+    <div className="flex h-[100svh] w-full bg-background overflow-hidden">
       {/* Left panel — branding */}
       <div className="hidden lg:flex flex-col justify-between w-2/5 bg-card border-r border-border p-10 relative overflow-hidden">
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-primary/20 rounded-full blur-3xl pointer-events-none" />

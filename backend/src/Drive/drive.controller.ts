@@ -15,6 +15,7 @@ import { DriveService } from './drive.service';
 import { CacheService } from '../utils/cache.service';
 import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../user/guard/auth.guard';
+import { Roles } from '../user/decorators/user.decorators';
 
 @Controller('drive')
 export class DriveController {
@@ -200,6 +201,7 @@ export class DriveController {
   // ── POST /api/v1/drive/recording/init/:meetingId ─────────────────────────
   @Post('recording/init/:meetingId')
   @HttpCode(HttpStatus.OK)
+  @Roles(['INSTRUCTOR', 'STUDENT'])
   @UseGuards(AuthGuard)
   async initRecordingUpload(@Param('meetingId') meetingId: string, @Req() req: any) {
     if (!meetingId || meetingId.trim() === '') {
@@ -211,6 +213,7 @@ export class DriveController {
   // ── PUT /api/v1/drive/recording/chunk/:meetingId ─────────────────────────
   @Post('recording/chunk/:meetingId')
   @HttpCode(HttpStatus.OK)
+  @Roles(['INSTRUCTOR', 'STUDENT'])
   @UseGuards(AuthGuard)
   async uploadRecordingChunk(
     @Param('meetingId') meetingId: string,
