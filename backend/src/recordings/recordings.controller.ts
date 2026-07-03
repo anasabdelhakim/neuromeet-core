@@ -17,8 +17,8 @@ export class RecordingsController {
   }
 
   @Post(':meetingId/thumbnail')
-  async saveThumbnail(@Param('meetingId') meetingId: string, @Body() body: { thumbnail: string }) {
-    return this.recordingsService.saveThumbnail(meetingId, body.thumbnail);
+  async saveThumbnail(@Param('meetingId') meetingId: string, @Body() body: { thumbnail: string }, @Req() req: any) {
+    return this.recordingsService.saveThumbnail(meetingId, body.thumbnail, req.user.id);
   }
 
   @Delete(':id')

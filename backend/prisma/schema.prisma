@@ -102,6 +102,7 @@ model User {
   enrollments         Enrollment[] @relation("StudentEnrollments")
   invitations         Invitation[] @relation("StudentInvitations")
   notifications       Notification[]
+  recordings          Recording[]  @relation("UserRecordings")
 
   @@index([email])
   @@index([verificationCode, created_at])
@@ -206,6 +207,7 @@ model Meeting {
   @@index([status, hostId])
   @@index([groupId])
   @@index([roomCode])
+  @@index([livekitRoomName])
 }
 
 model MeetingParticipant {
@@ -266,11 +268,15 @@ model Recording {
   duration         Int?
   sizeBytes        Float?
   uploadedAt       DateTime        @default(now())
-  meetingId        String?         @unique
+  meetingId        String?
   meeting          Meeting?        @relation(fields: [meetingId], references: [id], onDelete: SetNull)
+  recordedById     String?
+  recordedBy       User?           @relation("UserRecordings", fields: [recordedById], references: [id], onDelete: SetNull)
   
   @@index([meetingId])
   @@index([status])
+  @@index([recordedById])
+  @@index([meetingId, recordedById, status])
 }
 
 model Notification {

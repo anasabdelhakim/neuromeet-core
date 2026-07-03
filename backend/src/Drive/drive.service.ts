@@ -167,16 +167,22 @@ export class DriveService implements OnModuleInit {
       }
 
       if (meeting) {
-        await this.prisma.recording.update({
-          where: { meetingId: meeting.id },
-          data: {
-            status: 'UPLOADED',
-            driveFileId: result.fileId,
-            driveWebViewLink: result.webViewLink,
-            sizeBytes: result.totalBytes,
-            duration: recordingDurationSeconds > 0 ? recordingDurationSeconds : Math.round(durationMs / 1000),
-          },
+        const recording = await this.prisma.recording.findFirst({
+          where: { meetingId: meeting.id, status: 'UPLOADING' },
+          orderBy: { uploadedAt: 'desc' }
         });
+        if (recording) {
+          await this.prisma.recording.update({
+            where: { id: recording.id },
+            data: {
+              status: 'UPLOADED',
+              driveFileId: result.fileId,
+              driveWebViewLink: result.webViewLink,
+              sizeBytes: result.totalBytes,
+              duration: recordingDurationSeconds > 0 ? recordingDurationSeconds : Math.round(durationMs / 1000),
+            },
+          });
+        }
       }
 
       // Fire-and-forget — don't block the return on Cache
@@ -192,10 +198,16 @@ export class DriveService implements OnModuleInit {
       return { ...result, durationMs };
     } catch (error) {
       if (meeting) {
-        await this.prisma.recording.update({
-          where: { meetingId: meeting.id },
-          data: { status: 'FAILED' },
-        }).catch(() => {});
+        const recording = await this.prisma.recording.findFirst({
+          where: { meetingId: meeting.id, status: 'UPLOADING' },
+          orderBy: { uploadedAt: 'desc' }
+        });
+        if (recording) {
+          await this.prisma.recording.update({
+            where: { id: recording.id },
+            data: { status: 'FAILED' },
+          }).catch(() => {});
+        }
       }
       throw error;
     }
@@ -205,6 +217,7 @@ export class DriveService implements OnModuleInit {
 
   async initResumableUpload(
     meetingId: string,
+    userId: string,
     mimeType: string = 'video/webm',
     folderId?: string,
   ) {
@@ -235,16 +248,12 @@ export class DriveService implements OnModuleInit {
     }
 
     if (meeting) {
-      await this.prisma.recording.upsert({
-        where: { meetingId: meeting.id },
-        create: {
+      await this.prisma.recording.create({
+        data: {
           meetingId: meeting.id,
           fileName,
           status: 'UPLOADING',
-        },
-        update: {
-          fileName,
-          status: 'UPLOADING',
+          recordedById: userId,
         },
       });
     }
@@ -268,6 +277,7 @@ export class DriveService implements OnModuleInit {
     isFinal: boolean,
     meetingId: string,
     recordingDurationSeconds: number,
+    userId: string,
   ) {
     const parsedUrl = new URL(uploadUrl);
     const urlPath = parsedUrl.pathname + parsedUrl.search;
@@ -299,16 +309,27 @@ export class DriveService implements OnModuleInit {
       });
 
       if (meeting) {
-        await this.prisma.recording.update({
-          where: { meetingId: meeting.id },
-          data: {
-            status: 'UPLOADED',
-            driveFileId: result.fileId,
-            driveWebViewLink: result.webViewLink,
-            sizeBytes: totalSize === '*' ? 0 : totalSize,
-            duration: recordingDurationSeconds,
+        const recording = await this.prisma.recording.findFirst({
+          where: {
+            meetingId: meeting.id,
+            recordedById: userId,
+            status: 'UPLOADING',
           },
+          orderBy: { uploadedAt: 'desc' },
         });
+
+        if (recording) {
+          await this.prisma.recording.update({
+            where: { id: recording.id },
+            data: {
+              status: 'UPLOADED',
+              driveFileId: result.fileId,
+              driveWebViewLink: result.webViewLink,
+              sizeBytes: totalSize === '*' ? 0 : totalSize,
+              duration: recordingDurationSeconds,
+            },
+          });
+        }
       }
 
       this._publishProgress({
