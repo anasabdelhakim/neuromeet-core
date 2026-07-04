@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { getInstructorMeetingsAction } from "@/src/features/dashboard-instructor/analytics/actions/analytics-actions";
+import { getInstructorMeetingsAction, getMeetingAnalyticsAction } from "@/src/features/dashboard-instructor/analytics/actions/analytics-actions";
 import InstructorAnalyticsClient from "@/src/features/dashboard-instructor/analytics/components/InstructorAnalyticsClient";
 
 import { Suspense } from "react";
@@ -10,15 +10,19 @@ export const metadata: Metadata = {
   description: "View engagement analytics and student focus metrics.",
 };
 
-async function AnalyticsContent() {
+async function AnalyticsContent({ meetingId }: { meetingId?: string }) {
   const meetings = await getInstructorMeetingsAction();
-  return <InstructorAnalyticsClient meetings={meetings} />;
+  
+  const selectedId = meetingId || (meetings.length > 0 ? meetings[0].id : "");
+  const data = selectedId ? await getMeetingAnalyticsAction(selectedId) : null;
+
+  return <InstructorAnalyticsClient meetings={meetings} initialData={data} />;
 }
 
-export default function AnalyticsPage() {
+export default function AnalyticsPage({ searchParams }: { searchParams: { meetingId?: string } }) {
   return (
-    <Suspense fallback={<AnalyticsSkeleton />}>
-      <AnalyticsContent />
+    <Suspense fallback={<AnalyticsSkeleton />} key={searchParams.meetingId}>
+      <AnalyticsContent meetingId={searchParams.meetingId} />
     </Suspense>
   );
 }

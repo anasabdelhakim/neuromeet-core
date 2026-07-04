@@ -1,9 +1,7 @@
 import { Metadata } from "next";
 import { getStudentAnalyticsAction } from "@/src/features/dashboard-instructor/analytics/actions/analytics-actions";
 import StudentAnalyticsClient from "@/src/features/dashboard-instructor/analytics/components/StudentAnalyticsClient";
-
 import { Suspense } from "react";
-import { Loader } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Student Analytics | NeuroMeet",

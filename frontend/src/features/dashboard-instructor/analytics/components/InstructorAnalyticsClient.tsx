@@ -22,14 +22,22 @@ import {
   PopoverTrigger,
 } from "@/src/components/ui/popover";
 import { Button } from "@/src/components/ui/button";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function InstructorAnalyticsClient({ meetings }: { meetings: MeetingListDTO[] }) {
+export default function InstructorAnalyticsClient({ 
+  meetings,
+  initialData 
+}: { 
+  meetings: MeetingListDTO[],
+  initialData: MeetingAnalyticsDTO | null
+}) {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const [selectedMeetingId, setSelectedMeetingId] = useState<string>(meetings[0]?.id || "");
-  const [data, setData] = useState<MeetingAnalyticsDTO | null>(null);
-  const [loading, setLoading] = useState(true);
+  const initialMeetingId = searchParams.get("meetingId") || (meetings.length > 0 ? meetings[0].id : "");
+
+  const [selectedMeetingId, setSelectedMeetingId] = useState<string>(initialMeetingId);
   const [open, setOpen] = useState(false);
+  const data = initialData;
 
   useEffect(() => {
     const meetingIdParam = searchParams.get("meetingId");
@@ -38,24 +46,15 @@ export default function InstructorAnalyticsClient({ meetings }: { meetings: Meet
     }
   }, [searchParams, meetings]);
 
-  useEffect(() => {
-    if (!selectedMeetingId) return;
+  const handleMeetingSelect = (meetingId: string) => {
+    setSelectedMeetingId(meetingId);
+    setOpen(false);
+    router.push(`/dashboard-instructor/analytics?meetingId=${meetingId}`);
+  };
 
-    const fetchMeetingAnalytics = async () => {
-      setLoading(true);
-      const res = await getMeetingAnalyticsAction(selectedMeetingId);
-      setData(res);
-      setLoading(false);
-    };
-
-    fetchMeetingAnalytics();
-  }, [selectedMeetingId]);
-
-  if (!meetings || meetings.length === 0) {
-    return <div className="p-8 text-center text-muted-foreground">No meetings available for analytics yet.</div>;
-  }
-
-  const engagementPercent = data ? Math.round(data.kpis.avgEngagement * 100) : 0;
+  const engagementPercent = data?.kpis.avgEngagement 
+    ? Math.round(data.kpis.avgEngagement * 100) 
+    : 0;
 
   const formattedMatrix = data ? data.studentMatrix.map(s => ({
     ...s,
@@ -98,10 +97,7 @@ export default function InstructorAnalyticsClient({ meetings }: { meetings: Meet
                       <CommandItem
                         key={m.id}
                         value={m.title}
-                        onSelect={() => {
-                          setSelectedMeetingId(m.id);
-                          setOpen(false);
-                        }}
+                        onSelect={() => handleMeetingSelect(m.id)}
                       >
                         <Check
                           className={cn(
@@ -120,8 +116,11 @@ export default function InstructorAnalyticsClient({ meetings }: { meetings: Meet
         </div>
       </div>
 
-      {loading ? (
-        <AnalyticsSkeleton />
+      {meetings.length === 0 ? (
+        <div className="flex flex-col items-center justify-center p-12 text-center bg-black-soft-subtle border border-border rounded-soft">
+          <p className="text-muted-foreground mb-2">No past meetings found.</p>
+          <p className="text-sm text-muted-foreground-muted">Hold your first meeting to start seeing analytics!</p>
+        </div>
       ) : !data ? (
         <div className="flex justify-center p-12 text-muted-foreground">Failed to load analytics for this meeting.</div>
       ) : (
@@ -250,39 +249,4 @@ export default function InstructorAnalyticsClient({ meetings }: { meetings: Meet
   );
 }
 
-function AnalyticsSkeleton() {
-  return (
-    <div className="space-y-6 animate-in fade-in duration-500 w-full mt-4">
-      {/* KPI Cards Mock */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-28 bg-black-soft-subtle border border-border animate-pulse rounded-soft p-3 sm:p-5 flex flex-col justify-between">
-            <div className="flex justify-between items-start gap-2">
-              <div className="h-4 w-16 sm:w-24 bg-white-soft-muted rounded-medium shrink-0" />
-              <div className="h-8 w-8 bg-white-soft-muted rounded-full shrink-0" />
-            </div>
-            <div className="h-8 w-16 bg-white-soft-muted rounded-medium mt-2 shrink-0" />
-          </div>
-        ))}
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Scatter Chart Mock */}
-        <div className="col-span-1 lg:col-span-3 h-[400px] bg-black-soft-subtle border border-border animate-pulse rounded-soft p-5 flex flex-col">
-          <div className="h-5 w-40 bg-white-soft-muted rounded-medium mb-1" />
-          <div className="h-3 w-56 bg-white-soft-muted rounded-medium mb-6 opacity-60" />
-          <div className="flex-1 w-full bg-black-soft-muted rounded-medium border border-border/50" />
-        </div>
-      </div>
-
-      {/* Table Mock */}
-      <div className="w-full bg-black-soft-subtle border border-border rounded-soft p-5 flex flex-col gap-4 animate-pulse">
-         <div className="h-5 w-48 bg-white-soft-muted rounded-medium mb-1" />
-         <div className="h-3 w-64 bg-white-soft-muted rounded-medium mb-2 opacity-60" />
-         {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-16 w-full bg-black-soft-muted rounded-medium border border-border/50" />
-         ))}
-      </div>
-    </div>
-  );
-}

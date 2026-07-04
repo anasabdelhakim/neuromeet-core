@@ -297,7 +297,7 @@ export function AdminUsersClient({ initialData }: Props) {
             >
               Previous
             </Button>
-            <div className="flex items-center gap-1 overflow-x-auto max-w-[104px] sm:max-w-[180px] scroll-smooth snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className="flex items-center gap-1 overflow-x-auto max-w-[180px] sm:max-w-[180px] scroll-smooth snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               {Array.from({ length: totalPages }).map((_, idx) => (
                 <Button 
                   key={idx}

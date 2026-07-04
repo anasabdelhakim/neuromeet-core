@@ -295,7 +295,7 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
             >
               Previous
             </Button>
-            <div className="flex items-center gap-1 overflow-x-auto max-w-[104px] sm:max-w-[180px] scroll-smooth snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className="flex items-center gap-1 overflow-x-auto max-w-[180px] sm:max-w-[180px] scroll-smooth snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               {Array.from({ length: totalPages }).map((_, idx) => (
                 <Button 
                   key={idx}
@@ -430,7 +430,7 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
             >
               <ChevronLeft size={18} />
             </Button>
-            <div className="flex items-center gap-1 overflow-x-auto max-w-[120px] sm:max-w-[180px] scroll-smooth snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-2">
+            <div className="flex items-center gap-1 overflow-x-auto max-w-[180px] sm:max-w-[180px] scroll-smooth snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] px-2">
               {Array.from({ length: totalPages }).map((_, idx) => (
                 <Button 
                   key={idx}
