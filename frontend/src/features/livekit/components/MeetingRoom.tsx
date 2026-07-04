@@ -156,7 +156,7 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
   };
 
   return (
-    <div className="flex flex-col h-[100svh] w-screen bg-background text-foreground overflow-hidden font-sans relative">
+    <div className="flex flex-col h-[100dvh] w-screen bg-background text-foreground overflow-hidden font-sans relative">
       <div className="flex-1 flex overflow-hidden relative w-full">
         <main className="flex-1 flex items-center justify-center p-4 md:p-6 overflow-hidden relative bg-black select-none">
           <div className={cn(

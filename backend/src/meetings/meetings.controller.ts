@@ -66,6 +66,11 @@ export class MeetingsController {
     return this.meetingsService.getStudentUpcomingMeetings(req.user.id);
   }
 
+  @Get('student/today')
+  getStudentTodayMeetings(@Req() req: any) {
+    return this.meetingsService.getStudentTodayMeetings(req.user.id);
+  }
+
   @Get('student/previous')
   getStudentPreviousMeetings(@Req() req: any) {
     return this.meetingsService.getStudentPreviousMeetings(req.user.id);

@@ -39,6 +39,39 @@ export async function getStudentUpcomingMeetings() {
   }
 }
 
+export async function getStudentTodayMeetings() {
+  try {
+    const res = await apiGet<any>("/meetings/student/today");
+    const rawMeetings = res.data || [];
+    rawMeetings.sort((a: any, b: any) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime());
+
+    return rawMeetings.map((m: any) => {
+      const d = new Date(m.scheduledAt);
+      
+      let realDuration = m.durationMinutes || 60;
+      if (m.startedAt && m.endedAt) {
+        const start = new Date(m.startedAt).getTime();
+        const end = new Date(m.endedAt).getTime();
+        realDuration = Math.max(1, Math.round((end - start) / 60000));
+      }
+
+      return {
+        id: m.id,
+        title: m.title,
+        groupName: m.group?.name || "General",
+        date: format(d, "MMMM d, yyyy"),
+        time: format(d, "h:mm a"),
+        dateTime: m.scheduledAt,
+        duration: realDuration,
+        status: m.status,
+      };
+    });
+  } catch (error) {
+    console.error("Failed to fetch student today meetings:", error);
+    return [];
+  }
+}
+
 export async function getStudentPreviousMeetings() {
   try {
     const res = await apiGet<any>("/meetings/student/previous");

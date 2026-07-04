@@ -4,7 +4,7 @@ import { Loader, Video } from "lucide-react";
 
 function MeetingLoadingScreen() {
   return (
-    <div className="flex flex-col items-center justify-center h-[100svh] w-full bg-background relative overflow-hidden">
+    <div className="flex flex-col items-center justify-center h-[100dvh] w-full bg-background relative overflow-hidden">
       {/* Background glow effects */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-soft-subtle rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xl aspect-square bg-brand-cyan opacity-10 rounded-full blur-3xl pointer-events-none" />

@@ -63,9 +63,10 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, startDeleteTransition] = useTransition();
   const [progressText, setProgressText] = useState("Processing...");
+  const [currentStatus, setCurrentStatus] = useState(recording.status);
 
   useEffect(() => {
-    if (recording.status !== "PROCESSING") return;
+    if (currentStatus !== "PROCESSING") return;
 
     const sseUrl = `/api/recordings/${recording.meetingId}/progress`;
     const eventSource = new EventSource(sseUrl);
@@ -75,8 +76,8 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
         const data = JSON.parse(event.data);
         if (data.status === "complete") {
           setProgressText("Completed (100%)");
+          setCurrentStatus("COMPLETED");
           eventSource.close();
-          window.location.reload();
         } else if (data.status === "streaming" || data.status === "finalizing") {
           if (data.totalBytes && data.totalBytes > 0) {
             const percent = Math.min(100, Math.round((data.bytesUploaded / data.totalBytes) * 100));
@@ -97,7 +98,7 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
     return () => {
       eventSource.close();
     };
-  }, [recording.status, recording.meetingId]);
+  }, [currentStatus, recording.meetingId]);
 
   const handleDelete = () => {
     startDeleteTransition(async () => {
@@ -135,7 +136,7 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-destructive"></span>
             </span>
-            <span>{recording.status === "PROCESSING" ? progressText : "Record"}</span>
+            <span>{currentStatus === "PROCESSING" ? progressText : "Record"}</span>
           </Badge>
           <Badge className="absolute z-20 bottom-1 right-2 flex items-center gap-1 bg-custom-gray border-border shadow-hard rounded-hard tracking-wider">
             <Clock size={12} />
@@ -155,10 +156,10 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
 
             <Button 
               className="rounded-medium gap-2" 
-              onClick={() => recording.status !== "PROCESSING" && setIsPlayerOpen(true)}
-              disabled={recording.status === "PROCESSING"}
+              onClick={() => currentStatus !== "PROCESSING" && setIsPlayerOpen(true)}
+              disabled={currentStatus === "PROCESSING"}
             >
-              {recording.status === "PROCESSING" ? (
+              {currentStatus === "PROCESSING" ? (
                 <>
                   <Loader className="w-4 h-4 animate-spin" />
                   {progressText}

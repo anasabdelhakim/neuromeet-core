@@ -7,7 +7,7 @@ import { CalendarDays, Clock, BookOpen, ChevronRight, Users } from "lucide-react
 import { cn } from "@/src/lib/utils";
 import Link from "next/link";
 import { connection } from "next/server";
-import { getStudentUpcomingMeetings } from "@/src/features/dashboard-student/upcoming/actions/student-meeting-actions";
+import { getStudentUpcomingMeetings, getStudentTodayMeetings } from "@/src/features/dashboard-student/upcoming/actions/student-meeting-actions";
 import { getRecordingsAction } from "@/src/features/dashboard-instructor/recordings/actions/recordings-actions";
 import { getStudentGroupsAction } from "@/src/features/dashboard-student/groups/actions/student-groups-actions";
 import { StudentUpcomingCard } from "@/src/features/dashboard-student/upcoming/components/StudentUpcomingCard";
@@ -125,8 +125,8 @@ export function StudentHome() {
 
 async function StudentHomeUpcomingList() {
   await connection();
-  const allMeetings = await getStudentUpcomingMeetings();
-  // Only show the 3 most immediate upcoming meetings on the dashboard home
+  const allMeetings = await getStudentTodayMeetings();
+  // Only show the 3 most immediate upcoming/today meetings on the dashboard home
   const meetings = allMeetings.slice(0, 3);
 
   if (meetings.length === 0) {

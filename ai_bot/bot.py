@@ -32,10 +32,11 @@ logger = logging.getLogger("engagement-bot")
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 SEQ_LEN = 24                 # MUST match the SEQ_LEN used during training and ONNX export
+BUFFER_MAXLEN = 60           # Store 60 frames (captured at ~10 FPS = 6 seconds context)
 INFERENCE_INTERVAL_S = 5.0   # Run inference every N seconds — set above CPU inference time to avoid queue buildup
 DISENGAGEMENT_THRESHOLD = 0.50  # Below this → is_disengaged=True
 MAX_CONCURRENT = 1 if DEVICE.type == "cpu" else 10  # CPU: serialize to avoid thread contention
-EMA_ALPHA = 0.35             # Exponential Moving Average smoothing (0=ignore new, 1=no smoothing)
+EMA_ALPHA = 0.50             # Exponential Moving Average smoothing (0=ignore new, 1=no smoothing)
 
 
 # ─── Model Singleton ──────────────────────────────────────────────────────────
@@ -110,7 +111,7 @@ def get_model():
 class ParticipantBuffer:
     def __init__(self, participant_id: str):
         self.participant_id = participant_id
-        self.frames: deque = deque(maxlen=SEQ_LEN)  # Sliding window — always holds the latest SEQ_LEN frames
+        self.frames: deque = deque(maxlen=BUFFER_MAXLEN)  # Sliding window — always holds the latest BUFFER_MAXLEN frames
         self.last_inference: float = 0.0
         self.active: bool = True
         self.is_inferring: bool = False
@@ -120,21 +121,7 @@ class ParticipantBuffer:
 
 
 
-def calibrate_probability(p: float, temperature: float = 0.8, bias: float = 0.8) -> float:
-    """
-    Applies Logit Calibration (Platt Scaling / Temperature Scaling) to calibrate 
-    the raw neural network probability. This is the industry-standard ML technique 
-    for fixing "expected error" and domain shift (e.g., webcam vs dataset lighting) 
-    without using hardcoded linear multipliers.
-    
-    - temperature < 1.0 makes the model more confident.
-    - bias > 0 shifts the baseline probability up to match real-world engagement.
-    """
-    p = max(0.0001, min(0.9999, float(p)))
-    logit = math.log(p / (1.0 - p))
-    calibrated_logit = (logit / temperature) + bias
-    return 1.0 / (1.0 + math.exp(-calibrated_logit))
-
+# Calibrate probability removed to avoid artificial inflation of scores.
 
 def run_batch_inference(frame_lists: list) -> list:
     """
@@ -143,15 +130,18 @@ def run_batch_inference(frame_lists: list) -> list:
     """
     model = get_model()
     
-    # Safety: ensure exactly SEQ_LEN frames per list
+    # Subsample exactly SEQ_LEN frames uniformly from the buffer
     safe_lists = []
     for frames in frame_lists:
-        if len(frames) != SEQ_LEN:
-            if len(frames) > SEQ_LEN:
-                frames = frames[-SEQ_LEN:]
-            else:
-                frames = frames + [frames[-1]] * (SEQ_LEN - len(frames))
-        safe_lists.append(frames)
+        total = len(frames)
+        if total >= SEQ_LEN:
+            idxs = np.linspace(0, total - 1, SEQ_LEN).astype(int)
+            sampled_frames = [frames[i] for i in idxs]
+        elif total > 0:
+            sampled_frames = frames + [frames[-1]] * (SEQ_LEN - total)
+        else:
+            sampled_frames = frames
+        safe_lists.append(sampled_frames)
     
     if isinstance(model, ort.InferenceSession):
         # ── ONNX Batch Inference ──
@@ -240,8 +230,8 @@ async def consume_video_track(
 
             now_t = time.monotonic()
 
-            # Throttle to ~2 FPS. This rate gives 24 frames in ~12 seconds.
-            if now_t - buf.last_frame_time < 0.5:
+            # Throttle to ~10 FPS. This rate gives 60 frames in ~6 seconds.
+            if now_t - buf.last_frame_time < 0.1:
                 continue
             buf.last_frame_time = now_t
 
@@ -256,7 +246,7 @@ async def consume_video_track(
 
             # Queue for inference when buffer is full and interval has elapsed
             if (
-                len(buf.frames) == SEQ_LEN
+                len(buf.frames) == BUFFER_MAXLEN
                 and (now_t - buf.last_inference) >= INFERENCE_INTERVAL_S
                 and not buf.is_inferring
             ):
@@ -304,7 +294,7 @@ async def inference_worker(
         
         for p in pids:
             buf = buffers.get(p)
-            if buf is None or not buf.active or len(buf.frames) < SEQ_LEN:
+            if buf is None or not buf.active or len(buf.frames) < BUFFER_MAXLEN:
                 round_robin_queue.task_done()
                 if buf:
                     buf.is_inferring = False
@@ -336,12 +326,7 @@ async def inference_worker(
                     else:
                         buf.ema_score = EMA_ALPHA * raw + (1 - EMA_ALPHA) * buf.ema_score
 
-                    # ── Probability Calibration ──
-                    # Mathematically models the error distribution of the AI to output accurate 
-                    # percentages. A raw score of 39% naturally scales along a smooth logistic curve.
-                    calibrated = calibrate_probability(buf.ema_score)
-
-                    smoothed = round(calibrated, 4)
+                    smoothed = round(buf.ema_score, 4)
                     is_disengaged = smoothed < DISENGAGEMENT_THRESHOLD
 
                     payload = json.dumps({

@@ -328,8 +328,13 @@ export function MeetingControls({
         mediaRecorder.start(1000);
         captureThumbnail(combinedStream);
         setIsRecording(true);
-      } catch (err) {
+      } catch (err: any) {
         console.error("Failed to start recording:", err);
+        if (err.name === "NotSupportedError" || err.name === "NotAllowedError" || navigator.userAgent.match(/Android|iPhone|iPad|iPod/i)) {
+          alert("Screen recording is not supported on mobile browsers due to OS security. Please use a desktop computer to record sessions.");
+        } else {
+          alert("Failed to start recording. Please make sure you allow screen sharing permissions.");
+        }
       }
     } else {
       mediaRecorderRef.current?.stop();
@@ -347,7 +352,11 @@ export function MeetingControls({
   };
 
   const toggleScreenShare = async () => {
-    await localParticipant.setScreenShareEnabled(!isScreenShareEnabled);
+    try {
+      await localParticipant.setScreenShareEnabled(!isScreenShareEnabled);
+    } catch (err: any) {
+      alert("Screen sharing is not supported on this device/browser (e.g. mobile phones). Please use a desktop computer.");
+    }
   };
 
   const handleLeave = async () => {

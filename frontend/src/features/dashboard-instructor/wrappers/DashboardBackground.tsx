@@ -6,7 +6,7 @@ export const DashboardBackground: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   return (
-    <div className="h-[100svh] w-full relative text-foreground">
+    <div className="h-[100dvh] w-full relative text-foreground">
       <div className="fixed inset-0 -z-10 bg-background">
 
         {/* Static Theme Spots (Optimized as radial gradients instead of heavy blurs) */}

@@ -33,19 +33,23 @@ class EngagementHead(nn.Module):
     """Wrapper to match the exact 'head.lstm' and 'head.fc' structure"""
     def __init__(self, input_dim=768, hidden_dim=96, num_layers=1):
         super().__init__()
+        self.feat_dropout = nn.Dropout(0.5)
         self.lstm = nn.LSTM(
             input_size=input_dim, 
             hidden_size=hidden_dim, 
             num_layers=num_layers, 
             batch_first=True
         )
+        self.dropout = nn.Dropout(0.7)
         self.fc = nn.Linear(hidden_dim, 1)
         
     def forward(self, x):
         # x is (B, T, 768)
-        lstm_out, _ = self.lstm(x)
+        x = self.feat_dropout(x)
+        out, (h_n, c_n) = self.lstm(x)
         # We only care about the prediction after seeing the entire sequence
-        last_hidden = lstm_out[:, -1, :] # (B, 96)
+        last_hidden = h_n[-1] # (B, 96)
+        last_hidden = self.dropout(last_hidden)
         out = self.fc(last_hidden)       # (B, 1)
         return out
 

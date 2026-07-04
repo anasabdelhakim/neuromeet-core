@@ -52,11 +52,11 @@ services:
       - "8080:8080"
     volumes:
       # Mount your trained model checkpoint here
-      - ./ai_bot/models:/models:ro
+      - ./ai_bot/models:/models:rw
     env_file:
       - ./backend/.env
     environment:
-      - MODEL_PATH=/models/best_model.pth
+      - MODEL_PATH=/models/engagement.onnx
 
 volumes:
   pgdata:

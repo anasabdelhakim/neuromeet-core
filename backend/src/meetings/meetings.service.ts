@@ -238,6 +238,33 @@ export class MeetingsService {
     return { status: 'success', data: meetings };
   }
 
+  async getStudentTodayMeetings(userId: string) {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
+
+    const meetings = await this.prisma.meeting.findMany({
+      where: {
+        group: { enrollments: { some: { studentId: userId } } },
+        scheduledAt: { gte: start, lte: end },
+      },
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        scheduledAt: true,
+        durationMinutes: true,
+        startedAt: true,
+        endedAt: true,
+        groupId: true,
+        group: { select: { name: true } },
+      },
+      orderBy: { scheduledAt: 'asc' },
+    });
+    return { status: 'success', data: meetings };
+  }
+
   async getStudentPreviousMeetings(userId: string) {
     const meetings = await this.prisma.meeting.findMany({
       where: {
@@ -618,7 +645,7 @@ export class MeetingsService {
       // Forcefully close the LiveKit room to kick all participants out
       const { RoomServiceClient } = require('livekit-server-sdk');
       const roomService = new RoomServiceClient(
-        process.env.LIVEKIT_API_URL,
+        process.env.LIVEKIT_URL || process.env.LIVEKIT_API_URL,
         process.env.LIVEKIT_API_KEY,
         process.env.LIVEKIT_API_SECRET,
       );
@@ -681,6 +708,17 @@ export class MeetingsService {
       if (endedMeeting.livekitRoomName) {
         this.botService.recallBotFromRoom(endedMeeting.livekitRoomName).catch(err => {
           console.error("Failed to recall bot:", err);
+        });
+
+        // Forcefully close the LiveKit room to finalize recordings
+        const { RoomServiceClient } = require('livekit-server-sdk');
+        const roomService = new RoomServiceClient(
+          process.env.LIVEKIT_URL || process.env.LIVEKIT_API_URL,
+          process.env.LIVEKIT_API_KEY,
+          process.env.LIVEKIT_API_SECRET,
+        );
+        roomService.deleteRoom(endedMeeting.livekitRoomName).catch((err: any) => {
+          console.error("Failed to delete LiveKit room on auto-end:", err);
         });
       }
     }
