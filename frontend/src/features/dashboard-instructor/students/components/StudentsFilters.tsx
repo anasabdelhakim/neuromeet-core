@@ -266,7 +266,7 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
                             )}
                             {messagingId === student.id ? "Opening Mail..." : "Message Student"}
                           </Button>
-                          <Button render={<Link href="/coming-soon" />} nativeButton={false} variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
+                          <Button render={<Link href={`/dashboard-instructor/students/${student.id}/analytics`} />} nativeButton={false} variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
                             <LineChart size={14} className="text-status-success mr-2" /> View Analytics
                           </Button>
                         </PopoverContent>
@@ -375,7 +375,7 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
                         )}
                         {messagingId === `mobile-${student.id}` ? "Opening Mail..." : "Message Student"}
                       </Button>
-                      <Button render={<Link href="/coming-soon" />} nativeButton={false} variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
+                      <Button render={<Link href={`/dashboard-instructor/students/${student.id}/analytics`} />} nativeButton={false} variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
                         <LineChart size={14} className="text-status-success mr-2" /> View Analytics
                       </Button>
                     </PopoverContent>

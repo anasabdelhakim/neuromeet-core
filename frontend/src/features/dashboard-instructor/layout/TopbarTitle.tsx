@@ -8,12 +8,15 @@ const pageTitles: Record<string, string> = {
   "/dashboard-instructor/previous": "Previous",
   "/dashboard-instructor/recordings": "Recordings",
   "/dashboard-instructor/students": "Students",
-  "/dashboard-instructor/test-meeting": "Test Meeting",
 };
 
 export function TopbarTitle() {
   const pathname = usePathname();
-  const title = pageTitles[pathname] || "Dashboard";
+  let title = pageTitles[pathname] || "Dashboard";
+
+  if (pathname.includes("/analytics")) {
+    title = "Analytics";
+  }
 
   return <h1 className="text-2xl font-semibold">{title}</h1>;
 }

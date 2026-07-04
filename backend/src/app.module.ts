@@ -19,6 +19,7 @@ import { CacheModule } from './utils/cache.module';
 import { AdminModule } from './admin/admin.module';
 import { GroupsModule } from './groups/groups.module';
 import { RecordingsModule } from './recordings/recordings.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { RecordingsModule } from './recordings/recordings.module';
     CacheModule,
     AdminModule,
     RecordingsModule,
+    AnalyticsModule,
   ],
   controllers: [AppController, DriveController],
   providers: [AppService, DriveService],

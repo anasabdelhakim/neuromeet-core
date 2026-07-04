@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BASE_URL } from "@/src/lib/api-client";
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ room: string }> }) {
   try {
@@ -23,6 +24,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ roo
     });
 
     const data = await backendRes.json().catch(() => ({}));
+    
+    // If this was the final chunk, automatically revalidate the recordings dashboards
+    // so that when the user navigates there, the durations and status are perfectly fresh!
+    if (url.searchParams.get("isFinal") === "true") {
+      revalidatePath("/dashboard-instructor/recordings");
+      revalidatePath("/dashboard-instructor");
+    }
+
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
     console.error("Chunk Proxy Error:", error);

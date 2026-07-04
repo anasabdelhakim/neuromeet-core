@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, Delete, Body } from '@nestjs/common';
 import { LivekitService } from './livekit.service';
 import { LiveKitBotService } from './livekit-bot.service';
 
@@ -29,5 +29,14 @@ export class LivekitController {
     return {
       token: await this.livekitService.createToken(room, user, role),
     };
+  }
+
+  @Delete('participant')
+  async kickParticipant(
+    @Body('room') room: string,
+    @Body('identity') identity: string,
+  ) {
+    console.log(`[🔥 LIVEKIT CONTROLLER] Kicking user ${identity} from room ${room}`);
+    return this.livekitService.removeParticipant(room, identity);
   }
 }

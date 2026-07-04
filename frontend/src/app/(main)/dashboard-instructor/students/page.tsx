@@ -26,12 +26,12 @@ function StudentsSkeleton() {
       {/* Stats Cards Mock */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-28 bg-black-soft-subtle border border-border animate-pulse rounded-soft p-5 flex flex-col justify-between">
-            <div className="flex justify-between items-start">
-              <div className="h-4 w-20 bg-white-soft-muted rounded-medium" />
-              <div className="h-8 w-8 bg-white-soft-muted rounded-full" />
+          <div key={i} className="h-28 bg-black-soft-subtle border border-border animate-pulse rounded-soft p-3 sm:p-5 flex flex-col justify-between">
+            <div className="flex justify-between items-start gap-2">
+              <div className="h-4 w-16 sm:w-24 bg-white-soft-muted rounded-medium shrink-0" />
+              <div className="h-8 w-8 bg-white-soft-muted rounded-full shrink-0" />
             </div>
-            <div className="h-8 w-16 bg-white-soft-muted rounded-medium mt-2" />
+            <div className="h-8 w-16 bg-white-soft-muted rounded-medium mt-2 shrink-0" />
           </div>
         ))}
       </div>

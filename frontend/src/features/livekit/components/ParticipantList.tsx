@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useParticipants } from "@livekit/components-react";
-import { Mic, MicOff, Video, VideoOff, Copy, Check, ChevronDown, ChevronUp, Info } from "lucide-react";
+import { useParticipants, useRoomContext } from "@livekit/components-react";
+import { Mic, MicOff, Video, VideoOff, Copy, Check, ChevronDown, ChevronUp, Info, UserX } from "lucide-react";
+import { kickParticipantAction } from "../actions/livekit-actions";
 
 interface ParticipantListProps {
   meetingTitle?: string;
@@ -16,6 +17,22 @@ export function ParticipantList({ meetingTitle = "Instant Session", meetingPassc
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedPasscode, setCopiedPasscode] = useState(false);
   const [isInfoExpanded, setIsInfoExpanded] = useState(false);
+  const room = useRoomContext();
+
+  const handleKick = async (identity: string) => {
+    if (confirm(`Are you sure you want to kick ${identity}?`)) {
+      await kickParticipantAction(room.name, identity);
+    }
+  };
+
+  // Determine if the local user (the person looking at this screen) is an instructor
+  let localIsInstructor = false;
+  try {
+    if (room.localParticipant.metadata) {
+      const meta = JSON.parse(room.localParticipant.metadata);
+      localIsInstructor = meta.role === "INSTRUCTOR";
+    }
+  } catch (_) {}
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -142,16 +159,21 @@ export function ParticipantList({ meetingTitle = "Instant Session", meetingPassc
                 </p>
               </div>
 
-              <div className="flex items-center gap-1.5 flex-shrink-0">
-                {p.isMicrophoneEnabled ? (
-                  <Mic size={14} className="text-muted-foreground" />
-                ) : (
-                  <MicOff size={14} className="text-destructive" />
-                )}
-                {p.isCameraEnabled ? (
-                  <Video size={14} className="text-muted-foreground" />
-                ) : (
-                  <VideoOff size={14} className="text-destructive" />
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex items-center gap-1.5 text-muted-foreground mr-1">
+                  {p.isMicrophoneEnabled ? <Mic size={14} /> : <MicOff size={14} className="text-destructive" />}
+                  {p.isCameraEnabled ? <Video size={14} /> : <VideoOff size={14} className="text-destructive" />}
+                </div>
+
+                {/* Only show kick button if local user is instructor AND the target is NOT an instructor */}
+                {localIsInstructor && !isInstructor && p.identity !== room.localParticipant.identity && (
+                  <button 
+                    onClick={() => handleKick(p.identity)}
+                    title="Kick Student"
+                    className="p-1.5 text-muted-foreground hover:bg-destructive/20 hover:text-destructive rounded-md transition-colors"
+                  >
+                    <UserX size={14} />
+                  </button>
                 )}
               </div>
             </div>

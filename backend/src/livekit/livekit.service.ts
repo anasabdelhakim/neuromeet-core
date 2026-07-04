@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AccessToken } from 'livekit-server-sdk';
+import { AccessToken, RoomServiceClient } from 'livekit-server-sdk';
 
 @Injectable()
 export class LivekitService {
@@ -21,5 +21,15 @@ export class LivekitService {
     });
 
     return await at.toJwt();
+  }
+
+  async removeParticipant(room: string, identity: string) {
+    const svc = new RoomServiceClient(
+      process.env.NEXT_PUBLIC_LIVEKIT_URL || process.env.LIVEKIT_URL || '',
+      process.env.LIVEKIT_API_KEY,
+      process.env.LIVEKIT_API_SECRET
+    );
+    await svc.removeParticipant(room, identity);
+    return { success: true };
   }
 }
