@@ -8,20 +8,20 @@ export const metadata: Metadata = {
   description: "View specific student engagement metrics.",
 };
 
-async function StudentAnalyticsContent({ studentId }: { studentId: string }) {
+async function StudentAnalyticsContent({ params }: { params: Promise<{ studentId: string }> }) {
+  const { studentId } = await params;
   const data = await getStudentAnalyticsAction(studentId);
   return <StudentAnalyticsClient data={data!} />;
 }
 
-export default async function SpecificStudentAnalyticsPage({
+export default function SpecificStudentAnalyticsPage({
   params,
 }: {
   params: Promise<{ studentId: string }>;
 }) {
-  const { studentId } = await params;
   return (
     <Suspense fallback={<AnalyticsSkeleton />}>
-      <StudentAnalyticsContent studentId={studentId} />
+      <StudentAnalyticsContent params={params} />
     </Suspense>
   );
 }

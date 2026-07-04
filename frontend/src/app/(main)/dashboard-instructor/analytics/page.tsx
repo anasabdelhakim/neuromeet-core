@@ -10,21 +10,20 @@ export const metadata: Metadata = {
   description: "View engagement analytics and student focus metrics.",
 };
 
-async function AnalyticsContent({ meetingId }: { meetingId?: string }) {
+async function AnalyticsContent({ searchParams }: { searchParams: Promise<{ meetingId?: string }> }) {
+  const sp = await searchParams;
   const meetings = await getInstructorMeetingsAction();
   
-  const selectedId = meetingId || (meetings.length > 0 ? meetings[0].id : "");
+  const selectedId = sp.meetingId || (meetings.length > 0 ? meetings[0].id : "");
   const data = selectedId ? await getMeetingAnalyticsAction(selectedId) : null;
 
   return <InstructorAnalyticsClient meetings={meetings} initialData={data} />;
 }
 
-export default async function AnalyticsPage({ searchParams }: { searchParams: Promise<{ meetingId?: string }> }) {
-  const sp = await searchParams;
-  
+export default function AnalyticsPage({ searchParams }: { searchParams: Promise<{ meetingId?: string }> }) {
   return (
-    <Suspense fallback={<AnalyticsSkeleton />} key={sp.meetingId}>
-      <AnalyticsContent meetingId={sp.meetingId} />
+    <Suspense fallback={<AnalyticsSkeleton />}>
+      <AnalyticsContent searchParams={searchParams} />
     </Suspense>
   );
 }
