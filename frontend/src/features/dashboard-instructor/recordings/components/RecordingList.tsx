@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { dummyRecordings } from "../constants/dummy-recordings";
 import { RecordingDTO, deleteRecordingAction } from "../actions/recordings-actions";
@@ -59,6 +60,7 @@ export const RecordingsList = ({ recordings = [], isInstructor = true }: { recor
 };
 
 export function RecordingCard({ recording, isInstructor = true }: { recording: RecordingDTO; isInstructor?: boolean }) {
+  const router = useRouter();
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, startDeleteTransition] = useTransition();
@@ -78,6 +80,8 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
           setProgressText("Completed (100%)");
           setCurrentStatus("COMPLETED");
           eventSource.close();
+          // Silently refresh server components to fetch the final duration
+          router.refresh();
         } else if (data.status === "streaming" || data.status === "finalizing") {
           if (data.totalBytes && data.totalBytes > 0) {
             const percent = Math.min(100, Math.round((data.bytesUploaded / data.totalBytes) * 100));
