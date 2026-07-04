@@ -16,11 +16,12 @@ async function StudentAnalyticsContent({ studentId }: { studentId: string }) {
 export default async function SpecificStudentAnalyticsPage({
   params,
 }: {
-  params: { studentId: string };
+  params: Promise<{ studentId: string }>;
 }) {
+  const { studentId } = await params;
   return (
     <Suspense fallback={<AnalyticsSkeleton />}>
-      <StudentAnalyticsContent studentId={params.studentId} />
+      <StudentAnalyticsContent studentId={studentId} />
     </Suspense>
   );
 }

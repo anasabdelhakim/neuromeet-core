@@ -19,10 +19,12 @@ async function AnalyticsContent({ meetingId }: { meetingId?: string }) {
   return <InstructorAnalyticsClient meetings={meetings} initialData={data} />;
 }
 
-export default function AnalyticsPage({ searchParams }: { searchParams: { meetingId?: string } }) {
+export default async function AnalyticsPage({ searchParams }: { searchParams: Promise<{ meetingId?: string }> }) {
+  const sp = await searchParams;
+  
   return (
-    <Suspense fallback={<AnalyticsSkeleton />} key={searchParams.meetingId}>
-      <AnalyticsContent meetingId={searchParams.meetingId} />
+    <Suspense fallback={<AnalyticsSkeleton />} key={sp.meetingId}>
+      <AnalyticsContent meetingId={sp.meetingId} />
     </Suspense>
   );
 }
