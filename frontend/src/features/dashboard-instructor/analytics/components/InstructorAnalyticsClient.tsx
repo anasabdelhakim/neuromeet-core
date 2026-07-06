@@ -61,7 +61,7 @@ export default function InstructorAnalyticsClient({
   const formattedMatrix = data ? data.studentMatrix.map(s => ({
     ...s,
     engagement: Math.round(s.avgEngagement * 100),
-    hours: Math.round(s.totalSeconds / 3600 * 10) / 10
+    hours: Math.round(s.totalSeconds / 60)
   })) : [];
 
   return (
@@ -146,7 +146,7 @@ export default function InstructorAnalyticsClient({
             <DataCard
               icon={Clock}
               label="Total Watch Time"
-              value={`${data.kpis.totalHours}h`}
+              value={`${data.kpis.totalMinutes}m`}
               colorClass="text-brand-purple"
               bgClass="bg-brand-purple/10 border-brand-purple/20"
             />
@@ -173,8 +173,8 @@ export default function InstructorAnalyticsClient({
                     <XAxis 
                       type="number" 
                       dataKey="hours" 
-                      name="Hours" 
-                      unit="h" 
+                      name="Minutes" 
+                      unit="m" 
                       stroke="#888888" 
                       fontSize={12}
                       tickLine={false}

@@ -64,7 +64,7 @@ export class AnalyticsService {
         totalParticipants: studentMatrix.length,
         avgEngagement,
         totalAdhdFlags,
-        totalHours: (totalSeconds / 3600).toFixed(1)
+        totalMinutes: Math.round(totalSeconds / 60)
       },
       studentMatrix
     };
@@ -110,7 +110,7 @@ export class AnalyticsService {
     return {
       studentName: student?.name || "Unknown Student",
       kpis: {
-        totalHours: (totalSeconds / 3600).toFixed(1),
+        totalMinutes: Math.round(totalSeconds / 60),
         avgEngagement,
         totalAdhdFlags
       },

@@ -8,9 +8,8 @@ export class RecordingsService {
   async getAllRecordings(userId: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     
-    const whereClause = user?.role === 'INSTRUCTOR' ? {
-      meeting: { hostId: userId }
-    } : {
+    // Only fetch recordings that this specific user actually recorded
+    const whereClause = {
       recordedById: userId
     };
 

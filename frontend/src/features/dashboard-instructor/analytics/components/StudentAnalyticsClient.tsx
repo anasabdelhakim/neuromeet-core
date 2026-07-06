@@ -36,8 +36,8 @@ export default function StudentAnalyticsClient({ data }: { data: StudentAnalytic
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <DataCard
           icon={Clock}
-          label="Hours Attended"
-          value={`${data.kpis.totalHours}h`}
+          label="Minutes Attended"
+          value={`${data.kpis.totalMinutes}m`}
           colorClass="text-brand-cyan"
           bgClass="bg-brand-cyan/10 border-brand-cyan/20"
         />

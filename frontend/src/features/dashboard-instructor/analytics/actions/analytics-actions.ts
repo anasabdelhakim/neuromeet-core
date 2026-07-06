@@ -13,7 +13,7 @@ export interface MeetingAnalyticsDTO {
     totalParticipants: number;
     avgEngagement: number;
     totalAdhdFlags: number;
-    totalHours: string;
+    totalMinutes: string | number;
   };
   studentMatrix: Array<{
     name: string;
@@ -50,7 +50,7 @@ export async function getMeetingAnalyticsAction(meetingId: string): Promise<Meet
 export interface StudentAnalyticsDTO {
   studentName: string;
   kpis: {
-    totalHours: string;
+    totalMinutes: string | number;
     avgEngagement: number;
     totalAdhdFlags: number;
   };
