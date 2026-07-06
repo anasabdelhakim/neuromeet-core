@@ -14,6 +14,11 @@ export interface ParticipantScore {
   ts: number;
   /** Rolling window of the last 12 scores (for sparkline) */
   history: number[];
+  /** Accumulated data for analytics syncing */
+  cumulativeSum: number;
+  cumulativeCount: number;
+  totalFlips: number;
+  wasDisengaged: boolean;
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
@@ -42,7 +47,9 @@ export interface ParticipantScore {
  *   ts: number                  // Unix ms
  * }
  */
-export function useEngagementData() {
+import { syncEngagementStatsAction } from '../features/dashboard-instructor/analytics/actions/analytics-actions';
+
+export function useEngagementData(meetingId?: string) {
   const room = useRoomContext();
   const [scores, setScores] = useState<Record<string, ParticipantScore>>({});
 
@@ -62,12 +69,21 @@ export function useEngagementData() {
         if (msg.type !== 'engagement_update') return;
 
         setScores((prev) => {
-          const existing = prev[msg.participant_id];
+          const existing = prev[msg.participant_id] || {
+            cumulativeSum: 0,
+            cumulativeCount: 0,
+            totalFlips: 0,
+            wasDisengaged: false
+          };
+
           // Keep rolling window of last 12 readings for the sparkline
           const history = [
             ...(existing?.history ?? []),
             msg.engagement_score as number,
           ].slice(-12);
+          
+          const isDisengaged = msg.is_disengaged;
+          const newlyDisengaged = isDisengaged && !existing.wasDisengaged;
 
           return {
             ...prev,
@@ -75,10 +91,14 @@ export function useEngagementData() {
               participantId: msg.participant_id,
               participantName: msg.participant_name || msg.participant_id,
               engagementScore: msg.engagement_score,
-              isDisengaged: msg.is_disengaged,
+              isDisengaged,
               label: msg.label,
               ts: msg.ts,
               history,
+              cumulativeSum: existing.cumulativeSum + msg.engagement_score,
+              cumulativeCount: existing.cumulativeCount + 1,
+              totalFlips: existing.totalFlips + (newlyDisengaged ? 1 : 0),
+              wasDisengaged: isDisengaged
             },
           };
         });
@@ -96,6 +116,32 @@ export function useEngagementData() {
       room.off(RoomEvent.DataReceived, handleData);
     };
   }, [room, handleData]);
+
+  // Sync data to backend every 15 seconds if meetingId is provided
+  useEffect(() => {
+    if (!meetingId) return;
+    
+    const interval = setInterval(() => {
+      setScores(currentScores => {
+        const stats = Object.values(currentScores).map(s => {
+          const avgScore = s.cumulativeCount > 0 ? s.cumulativeSum / s.cumulativeCount : 0;
+          return {
+            participantIdentity: s.participantName, // the name or email matching the DB
+            avgEngagementScore: avgScore,
+            adhdFlagged: s.totalFlips > 0 // if they flipped to disengaged at least once
+          };
+        });
+        
+        if (stats.length > 0) {
+          syncEngagementStatsAction(meetingId, stats);
+        }
+        
+        return currentScores;
+      });
+    }, 15000);
+    
+    return () => clearInterval(interval);
+  }, [meetingId]);
 
   // ─── Derived state ──────────────────────────────────────────────────────────
 

@@ -2,7 +2,7 @@ import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
 import { Play } from "lucide-react";
 import { StatusBar } from "./StatusBar";
-import { StartMeetingButton } from "./StartMeetingButton";
+import { StartMeetingForm } from "./StartMeetingButton";
 import { calculateMeetingStatus } from "../helper/time-calc";
 import { connection } from "next/server";
 import { startMeetingAction } from "../../home/actions/meeting-actions";
@@ -36,15 +36,11 @@ export async function DynamicMeetingActions({ dateTime, meetingId }: { dateTime:
   await connection();
   const { isArrived } = calculateMeetingStatus(dateTime);
 
-  const startAction = startMeetingAction.bind(null, meetingId);
-
   return (
     <div className="flex w-full sm:w-auto items-center gap-2 flex-shrink-0">
       <div className="flex w-full sm:flex-initial gap-2">
         {isArrived ? (
-          <form action={startAction} className="w-full sm:w-auto">
-            <StartMeetingButton />
-          </form>
+          <StartMeetingForm meetingId={meetingId} />
         ) : (
           <Button variant="outline" className="w-full sm:w-auto text-muted-foreground opacity-50 cursor-not-allowed">
             Starting Soon
@@ -59,5 +55,5 @@ export async function DynamicMeetingStatusBar({ dateTime, duration }: { dateTime
   await connection();
   const { isArrived, timeLabel } = calculateMeetingStatus(dateTime);
 
-  return <StatusBar duration={duration} isArrived={isArrived} timeLabel={timeLabel} />;
+  return <StatusBar duration={duration} isArrived={isArrived} timeLabel={timeLabel} dateTime={dateTime} />;
 }

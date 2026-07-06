@@ -1,6 +1,6 @@
 "use server";
 
-import { apiGet } from "@/src/lib/api-client";
+import { apiGet, apiPost } from "@/src/lib/api-client";
 
 export interface MeetingListDTO {
   id: string;
@@ -73,3 +73,15 @@ export async function getStudentAnalyticsAction(studentId: string): Promise<Stud
     return null;
   }
 }
+
+export async function syncEngagementStatsAction(
+  meetingId: string, 
+  stats: { participantIdentity: string, avgEngagementScore: number, adhdFlagged: boolean }[]
+) {
+  try {
+    await apiPost(`/meetings/${meetingId}/sync-engagement`, { stats });
+  } catch (error) {
+    console.error("Failed to sync engagement stats:", error);
+  }
+}
+

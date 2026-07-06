@@ -152,6 +152,15 @@ export class MeetingsController {
     );
   }
 
+  @Post(':id/sync-engagement')
+  @Roles(['INSTRUCTOR', 'ADMIN'])
+  syncEngagement(
+    @Param('id') id: string,
+    @Body() body: { stats: { participantIdentity: string; avgEngagementScore: number; adhdFlagged: boolean }[] }
+  ) {
+    return this.meetingsService.syncEngagement(id, body.stats);
+  }
+
   // =========================
   // MATERIALS
   // =========================

@@ -1,18 +1,40 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { calculateMeetingStatus } from "../helper/time-calc";
+
 interface StatusBarProps {
   duration: number;
   isArrived?: boolean;
   timeLabel?: string;
+  dateTime?: string;
 }
 
 export function StatusBar({
   duration,
   isArrived = false,
-  timeLabel,
+  timeLabel: initialTimeLabel,
+  dateTime,
 }: StatusBarProps) {
   const numberOfMarkers =
     Math.floor(duration / 15) - (duration % 15 === 0 ? 1 : 0);
 
   const markers = Array.from({ length: Math.max(0, numberOfMarkers) });
+
+  const [currentLabel, setCurrentLabel] = useState(initialTimeLabel || (isArrived ? "Live" : "Starting Soon"));
+
+  useEffect(() => {
+    if (!dateTime) return;
+
+    const updateLabel = () => {
+      const status = calculateMeetingStatus(dateTime);
+      setCurrentLabel(status.timeLabel);
+    };
+
+    // Update the label every 30 seconds
+    const interval = setInterval(updateLabel, 30000);
+    return () => clearInterval(interval);
+  }, [dateTime]);
 
   return (
     <div className="w-full h-2 bg-muted-foreground-soft rounded-full relative mt-8 max-sm:mt-7">
@@ -38,7 +60,7 @@ export function StatusBar({
       >
         <div className="absolute right-0.5 -top-7 flex flex-col items-center translate-x-1/2">
           <span className="rounded-medium px-2 py-0.5 text-xs font-medium bg-custom-gray text-foreground border shadow-medium whitespace-nowrap">
-            {timeLabel || (isArrived ? "Live" : "Starting Soon")}
+            {currentLabel}
           </span>
           <div className="h-1.5 w-1.5 -translate-y-1 rotate-45 bg-custom-gray border-r border-b"></div>
         </div>

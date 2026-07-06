@@ -50,8 +50,8 @@ export default function StudentAnalyticsClient({ data }: { data: StudentAnalytic
         />
         <DataCard
           icon={Trophy}
-          label="Focus Rank"
-          value="Top 15%"
+          label="Meetings Attended"
+          value={data.timeline.length}
           colorClass="text-yellow-500"
           bgClass="bg-yellow-500/10 border-yellow-500/20"
         />
@@ -108,43 +108,6 @@ export default function StudentAnalyticsClient({ data }: { data: StudentAnalytic
           </CardContent>
         </Card>
 
-        {/* AI Recommendations */}
-        <Card className="col-span-1 bg-black-soft-subtle border-border rounded-soft shadow-none flex flex-col">
-          <CardHeader>
-            <CardTitle className="text-xl">AI Insights</CardTitle>
-            <CardDescription>Instructor tips based on patterns</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4 flex-1">
-            {data.kpis.totalAdhdFlags > 5 ? (
-              <div className="p-4 rounded-lg bg-status-warning/10 border border-status-warning/20">
-                <h4 className="font-semibold text-status-warning flex items-center gap-2 mb-1">
-                  <Lightbulb size={16} /> Needs Attention
-                </h4>
-                <p className="text-sm text-foreground/80">
-                  This student's attention frequently drifts during long sessions. Consider calling on them directly to regain their focus!
-                </p>
-              </div>
-            ) : (
-              <div className="p-4 rounded-lg bg-status-success/10 border border-status-success/20">
-                <h4 className="font-semibold text-status-success flex items-center gap-2 mb-1">
-                  <Trophy size={16} /> Great Job!
-                </h4>
-                <p className="text-sm text-foreground/80">
-                  This student's focus levels are incredibly stable. They maintain strong eye contact and engagement throughout your meetings.
-                </p>
-              </div>
-            )}
-            
-            <div className="p-4 rounded-lg bg-white/5 border border-white/5">
-               <h4 className="font-semibold text-brand-cyan flex items-center gap-2 mb-1">
-                  <Activity size={16} /> Best Time
-                </h4>
-                <p className="text-sm text-foreground/80">
-                  Their highest engagement scores typically happen during morning sessions.
-                </p>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );

@@ -4,9 +4,10 @@ import { Play, Info } from "lucide-react";
 import { StatusBar } from "@/src/features/dashboard-instructor/upcoming/components/StatusBar";
 import { calculateMeetingStatus } from "@/src/features/dashboard-instructor/upcoming/helper/time-calc";
 import { connection } from "next/server";
-import Link from "next/link";
 import { buttonVariants } from "@/src/components/ui/button";
 import { cn } from "@/src/lib/utils";
+import { JoinMeetingButton } from "./JoinMeetingButton";
+import { studentNavigateToJoinAction } from "../actions/student-meeting-actions";
 
 export async function DynamicStudentMeetingBadge({ dateTime }: { dateTime: string }) {
   await connection();
@@ -36,18 +37,15 @@ export async function DynamicStudentMeetingBadge({ dateTime }: { dateTime: strin
 export async function DynamicStudentMeetingActions({ dateTime, meetingId }: { dateTime: string; meetingId: string }) {
   await connection();
   const { isArrived } = calculateMeetingStatus(dateTime);
+  const joinAction = studentNavigateToJoinAction.bind(null, meetingId);
 
   return (
     <div className="flex w-full sm:w-auto items-center gap-2 flex-shrink-0">
       <div className="flex w-full sm:flex-initial gap-2">
         {isArrived ? (
-          <Link
-            href={`/meeting/join/${meetingId}`}
-            className={cn(buttonVariants({ variant: "live" }), "w-full sm:w-auto")}
-          >
-            <Play size={16} fill="currentColor" className="mr-1" />
-            Join Now
-          </Link>
+          <form action={joinAction} className="w-full sm:w-auto">
+            <JoinMeetingButton />
+          </form>
         ) : (
           <Button variant="outline" className="w-full sm:w-auto text-muted-foreground opacity-50 cursor-not-allowed" disabled>
             Starting Soon
@@ -63,5 +61,5 @@ export async function DynamicStudentMeetingStatusBar({ dateTime, duration }: { d
   const { isArrived, isStartingSoon } = calculateMeetingStatus(dateTime);
   const timeLabel = isArrived ? "Live" : isStartingSoon ? "Starting Soon" : "Later";
 
-  return <StatusBar duration={duration} isArrived={isArrived} timeLabel={timeLabel} />;
+  return <StatusBar duration={duration} isArrived={isArrived} timeLabel={timeLabel} dateTime={dateTime} />;
 }

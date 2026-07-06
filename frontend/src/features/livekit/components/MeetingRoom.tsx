@@ -11,6 +11,7 @@ import {
 import { Track } from "livekit-client";
 import { X, Users, Copy, Check } from "lucide-react";
 import { EngagementDashboard } from "./EngagementDashboard";
+import { useEngagementData } from "@/src/hooks/useEngagementData";
 import { ParticipantList } from "./ParticipantList";
 import { MeetingControls } from "./MeetingControls";
 import { cn } from "@/src/lib/utils";
@@ -109,6 +110,13 @@ function Sidebar({ activeTab, isInstructor, onClose, meetingTitle, meetingPassco
   );
 }
 
+// Invisible component to keep engagement sync running in the background for instructors
+// without causing the entire MeetingRoom to re-render on every data packet
+function EngagementSync({ meetingId }: { meetingId: string }) {
+  useEngagementData(meetingId);
+  return null;
+}
+
 interface MeetingRoomProps {
   isInstructor: boolean;
   room: string;
@@ -157,6 +165,7 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
 
   return (
     <div className="flex flex-col h-[100dvh] w-screen bg-background text-foreground overflow-hidden font-sans relative">
+      {isInstructor && meetingId && <EngagementSync meetingId={meetingId} />}
       <div className="flex-1 flex overflow-hidden relative w-full">
         <main className="flex-1 flex items-center justify-center p-4 md:p-6 overflow-hidden relative bg-black select-none">
           <div className={cn(

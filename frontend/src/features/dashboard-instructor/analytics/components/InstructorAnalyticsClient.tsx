@@ -33,7 +33,8 @@ export default function InstructorAnalyticsClient({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialMeetingId = searchParams.get("meetingId") || (meetings.length > 0 ? meetings[0].id : "");
+  const initialMeetingId = searchParams.get("meetingId") || 
+    (meetings.length > 0 ? [...meetings].sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime())[0].id : "");
 
   const [selectedMeetingId, setSelectedMeetingId] = useState<string>(initialMeetingId);
   const [open, setOpen] = useState(false);
@@ -50,6 +51,7 @@ export default function InstructorAnalyticsClient({
     setSelectedMeetingId(meetingId);
     setOpen(false);
     router.push(`/dashboard-instructor/analytics?meetingId=${meetingId}`);
+    router.refresh(); // Forces Next.js to bypass client-cache and pull fresh data
   };
 
   const engagementPercent = data?.kpis.avgEngagement 

@@ -13,7 +13,7 @@ interface PreviousMeetingCardProps {
 }
 
 export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
-  const engagementScore = meeting.avgEngagement || 85;
+  const engagementScore = meeting.avgEngagement ?? 0;
 
   const mappedAvatars = (meeting as any).group?.enrollments?.map((e: any) => ({
     alt: e.student?.name || "Unknown",

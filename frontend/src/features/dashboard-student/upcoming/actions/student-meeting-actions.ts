@@ -109,3 +109,7 @@ export async function joinMeetingAction(meetingId: string, passcode: string) {
 
   return { success: false, errorMessage: "Meeting room not available" };
 }
+
+export async function studentNavigateToJoinAction(meetingId: string) {
+  redirect(`/meeting/join/${meetingId}`);
+}

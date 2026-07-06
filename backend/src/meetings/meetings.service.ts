@@ -210,10 +210,28 @@ export class MeetingsService {
             }
           }
         },
+        participants: {
+          select: { avgEngagementScore: true }
+        }
       },
       orderBy: { scheduledAt: 'desc' },
     });
-    return { status: 'success', data: meetings };
+
+    const mappedMeetings = meetings.map(m => {
+      let sum = 0;
+      let count = 0;
+      m.participants.forEach(p => {
+        if (p.avgEngagementScore !== null) {
+          sum += p.avgEngagementScore;
+          count++;
+        }
+      });
+      const avg = count > 0 ? Math.round((sum / count) * 100) : 0;
+      const { participants, ...rest } = m;
+      return { ...rest, avgEngagement: avg };
+    });
+
+    return { status: 'success', data: mappedMeetings };
   }
 
   async getStudentUpcomingMeetings(userId: string) {
@@ -248,6 +266,7 @@ export class MeetingsService {
       where: {
         group: { enrollments: { some: { studentId: userId } } },
         scheduledAt: { gte: start, lte: end },
+        status: { in: ['SCHEDULED', 'LIVE'] },
       },
       select: {
         id: true,
@@ -945,5 +964,44 @@ export class MeetingsService {
     await this.prisma.meetingMaterial.delete({ where: { id: materialId } });
 
     return { status: 'success', message: 'Material deleted successfully' };
+  }
+
+  // =========================
+  // ENGAGEMENT SYNC
+  // =========================
+  
+  async syncEngagement(
+    meetingId: string,
+    stats: { participantIdentity: string; avgEngagementScore: number; adhdFlagged: boolean }[]
+  ) {
+    const meeting = await this.prisma.meeting.findUnique({
+      where: { id: meetingId },
+      include: { participants: { include: { user: true } } }
+    });
+    
+    if (!meeting) return { success: false };
+
+    for (const stat of stats) {
+      // Find the participant whose user name or email matches the LiveKit identity
+      const p = meeting.participants.find(
+        mp => mp.user.name === stat.participantIdentity || 
+              mp.user.email === stat.participantIdentity || 
+              mp.user.id === stat.participantIdentity
+      );
+
+      if (p) {
+        await this.prisma.meetingParticipant.update({
+          where: { id: p.id },
+          data: {
+            avgEngagementScore: stat.avgEngagementScore,
+            adhdFlagged: stat.adhdFlagged
+          }
+        });
+      }
+    }
+    
+    // Invalidate caches
+    await this.cache.del(`participants:${meetingId}`);
+    return { success: true };
   }
 }

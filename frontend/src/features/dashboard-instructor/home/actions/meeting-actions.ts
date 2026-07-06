@@ -21,21 +21,22 @@ const createMeetingSchema = z.object({
   }
 });
 
-export async function startMeetingAction(meetingId: string) {
+export async function startMeetingAction(meetingId: string, prevState: any, formData: FormData) {
   let roomName = "";
   try {
     const res = await apiPost<any>(`/meetings/${meetingId}/start`, {});
     roomName = res.data?.livekitRoomName;
   } catch (error: any) {
-    // If it fails, maybe log it or throw an error to be handled by an error boundary
     console.error("Failed to start meeting:", error.message);
-    throw new Error(error.message || "Failed to start meeting");
+    return { success: false, errorMessage: error.message || "Failed to start meeting" };
   }
 
   if (roomName) {
     // Redirect to the LiveKit meeting room page
     redirect(`/livekit?room=${roomName}`);
   }
+  
+  return { success: false, errorMessage: "Meeting room not returned" };
 }
 
 export async function shareMeetingAction(meetingId: string, groupId: string) {
@@ -252,12 +253,8 @@ export async function joinSessionAction(prevState: any, formData: FormData) {
 export async function leaveMeetingAction(meetingId: string) {
   try {
     await apiPost<any>(`/meetings/${meetingId}/leave`, {});
-    revalidatePath("/dashboard-instructor");
-    revalidatePath("/dashboard-instructor/upcoming");
-    revalidatePath("/dashboard-instructor/previous");
-    revalidatePath("/dashboard-student");
-    revalidatePath("/dashboard-student/upcoming");
-    revalidatePath("/dashboard-student/previous");
+    revalidatePath("/dashboard-instructor", "layout");
+    revalidatePath("/dashboard-student", "layout");
   } catch (error) {
     console.error("Failed to leave meeting:", error);
   }
