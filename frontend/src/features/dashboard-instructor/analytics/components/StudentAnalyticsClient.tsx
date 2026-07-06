@@ -23,6 +23,10 @@ export default function StudentAnalyticsClient({ data }: { data: StudentAnalytic
 
   const engagementPercent = Math.round(data.kpis.avgEngagement * 100);
 
+  const totalMinutesDisplay = data?.kpis.totalMinutes !== undefined 
+    ? data.kpis.totalMinutes 
+    : Math.round(Number((data.kpis as any).totalHours || 0) * 60);
+
   return (
     <div className="flex flex-col gap-6 w-full animate-page-entrance">
       <div className="flex justify-between items-start">
@@ -37,7 +41,7 @@ export default function StudentAnalyticsClient({ data }: { data: StudentAnalytic
         <DataCard
           icon={Clock}
           label="Minutes Attended"
-          value={`${data.kpis.totalMinutes}m`}
+          value={`${totalMinutesDisplay}m`}
           colorClass="text-brand-cyan"
           bgClass="bg-brand-cyan/10 border-brand-cyan/20"
         />
@@ -66,7 +70,7 @@ export default function StudentAnalyticsClient({ data }: { data: StudentAnalytic
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Engagement Timeline Chart */}
-        <Card className="col-span-1 lg:col-span-2 bg-black-soft-subtle border-border rounded-soft shadow-none">
+        <Card className="col-span-1 lg:col-span-3 bg-black-soft-subtle border-border rounded-soft shadow-none">
           <CardHeader>
             <CardTitle className="text-xl">Focus Timeline</CardTitle>
             <CardDescription>AI-calculated attention span across previous meetings</CardDescription>

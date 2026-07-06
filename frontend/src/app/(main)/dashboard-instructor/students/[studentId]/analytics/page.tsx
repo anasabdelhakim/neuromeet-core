@@ -54,18 +54,10 @@ function AnalyticsSkeleton() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         {/* Main Chart Mock */}
-        <div className="col-span-1 lg:col-span-2 h-[400px] bg-black-soft-subtle border border-border animate-pulse rounded-soft p-5 flex flex-col">
+        <div className="col-span-1 lg:col-span-3 h-[400px] bg-black-soft-subtle border border-border animate-pulse rounded-soft p-5 flex flex-col">
           <div className="h-5 w-40 bg-white-soft-muted rounded-medium mb-1" />
           <div className="h-3 w-56 bg-white-soft-muted rounded-medium mb-6 opacity-60" />
           <div className="flex-1 w-full bg-black-soft-muted rounded-medium border border-border/50" />
-        </div>
-
-        {/* Insights Mock */}
-        <div className="col-span-1 h-[400px] bg-black-soft-subtle border border-border animate-pulse rounded-soft p-5 flex flex-col gap-4">
-          <div className="h-5 w-32 bg-white-soft-muted rounded-medium mb-2" />
-          {[1, 2].map((i) => (
-            <div key={i} className="w-full h-24 bg-black-soft-muted rounded-medium border border-border/50" />
-          ))}
         </div>
       </div>
     </div>

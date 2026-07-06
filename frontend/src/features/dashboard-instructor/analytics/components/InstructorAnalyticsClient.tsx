@@ -58,6 +58,10 @@ export default function InstructorAnalyticsClient({
     ? Math.round(data.kpis.avgEngagement * 100) 
     : 0;
 
+  const totalMinutesDisplay = data?.kpis.totalMinutes !== undefined 
+    ? data.kpis.totalMinutes 
+    : data ? Math.round(Number((data.kpis as any).totalHours || 0) * 60) : 0;
+
   const formattedMatrix = data ? data.studentMatrix.map(s => ({
     ...s,
     engagement: Math.round(s.avgEngagement * 100),
@@ -146,7 +150,7 @@ export default function InstructorAnalyticsClient({
             <DataCard
               icon={Clock}
               label="Total Watch Time"
-              value={`${data.kpis.totalMinutes}m`}
+              value={`${totalMinutesDisplay}m`}
               colorClass="text-brand-purple"
               bgClass="bg-brand-purple/10 border-brand-purple/20"
             />
@@ -225,7 +229,9 @@ export default function InstructorAnalyticsClient({
                       </div>
                       <div className="flex items-center gap-6">
                         <div className="text-right">
-                          <p className="text-sm font-medium text-foreground">{student.engagement}% Avg</p>
+                          <p className="text-sm font-medium text-foreground">
+                            {student.engagement > 0 ? `${student.engagement}% Avg` : "No Data"}
+                          </p>
                           <div className="w-24 h-1.5 bg-black-soft rounded-full mt-1 overflow-hidden">
                             <div className="h-full bg-status-success rounded-full" style={{ width: `${student.engagement}%` }} />
                           </div>
