@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+
 import { Badge } from "@/src/components/ui/badge";
 import { Card, CardContent, CardDescription } from "@/src/components/ui/card";
 import Image from "next/image";
@@ -27,20 +27,7 @@ export function HeroClock({ showUpcoming = true, upcomingMeeting }: HeroClockPro
       </div>
       <CardContent className="flex flex-col justify-between gap-6 max-sm:gap-3 relative z-10">
         <CardDescription className="flex flex-col justify-start items-start relative z-10 w-full">
-          <Suspense
-            fallback={
-              <>
-                <h1 className="text-6xl font-black tracking-tighter text-white-soft-muted shadow-soft md:text-7xl animate-pulse">
-                  --:-- --
-                </h1>
-                <p className="mt-2 text-lg font-medium text-white-soft-subtle md:text-xl animate-pulse">
-                  Loading clock...
-                </p>
-              </>
-            }
-          >
-            <ServerTimeDisplay />
-          </Suspense>
+          <ServerTimeDisplay />
         </CardDescription>
 
         {showUpcoming && upcomingMeeting && (

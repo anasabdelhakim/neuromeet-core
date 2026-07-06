@@ -58,8 +58,7 @@ export async function DynamicStudentMeetingActions({ dateTime, meetingId }: { da
 
 export async function DynamicStudentMeetingStatusBar({ dateTime, duration }: { dateTime: string; duration: number }) {
   await connection();
-  const { isArrived, isStartingSoon } = calculateMeetingStatus(dateTime);
-  const timeLabel = isArrived ? "Live" : isStartingSoon ? "Starting Soon" : "Later";
+  const { isArrived, timeLabel } = calculateMeetingStatus(dateTime);
 
   return <StatusBar duration={duration} isArrived={isArrived} timeLabel={timeLabel} dateTime={dateTime} />;
 }
