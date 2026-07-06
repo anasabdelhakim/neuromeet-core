@@ -36,7 +36,8 @@ BUFFER_MAXLEN = 60           # Store 60 frames (captured at ~10 FPS = 6 seconds 
 INFERENCE_INTERVAL_S = 5.0   # Run inference every N seconds — set above CPU inference time to avoid queue buildup
 DISENGAGEMENT_THRESHOLD = 0.50  # Below this → is_disengaged=True
 MAX_CONCURRENT = 1 if DEVICE.type == "cpu" else 10  # CPU: serialize to avoid thread contention
-EMA_ALPHA = 0.50             # Exponential Moving Average smoothing (0=ignore new, 1=no smoothing)
+EMA_ALPHA_UP = 0.40          # Slower climb (smooths out noise when returning to engagement)
+EMA_ALPHA_DOWN = 0.85        # Faster drop (catches disengagement instantly)
 
 
 # ─── Model Singleton ──────────────────────────────────────────────────────────
@@ -320,11 +321,13 @@ async def inference_worker(
                     if not buf:
                         continue
 
-                    # ── EMA Smoothing ──
+                    # ── Asymmetric EMA Smoothing ──
                     if buf.ema_score is None:
                         buf.ema_score = raw
                     else:
-                        buf.ema_score = EMA_ALPHA * raw + (1 - EMA_ALPHA) * buf.ema_score
+                        # Use a dynamic alpha: drop fast, climb slow
+                        alpha = EMA_ALPHA_DOWN if raw < buf.ema_score else EMA_ALPHA_UP
+                        buf.ema_score = alpha * raw + (1 - alpha) * buf.ema_score
 
                     smoothed = round(buf.ema_score, 4)
                     is_disengaged = smoothed < DISENGAGEMENT_THRESHOLD

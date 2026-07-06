@@ -86,7 +86,7 @@ export class GroupsController {
                 email: true,
                 avatarUrl: true,
                 sessions: { select: { lastUsedAt: true }, orderBy: { lastUsedAt: 'desc' }, take: 1 },
-                meetingParticipants: { where: { meeting: { hostId: instructorId } }, select: { avgEngagementScore: true } }
+                meetingParticipants: { where: { meeting: { hostId: instructorId } }, select: { avgEngagementScore: true, joinedAt: true } }
               }
             }
           }

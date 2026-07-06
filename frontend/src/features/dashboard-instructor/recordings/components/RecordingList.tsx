@@ -77,11 +77,16 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
       try {
         const data = JSON.parse(event.data);
         if (data.status === "complete") {
-          setProgressText("Completed (100%)");
-          setCurrentStatus("COMPLETED");
+          setProgressText("Finalizing Link...");
           eventSource.close();
-          // Silently refresh server components to fetch the final duration
-          router.refresh();
+          
+          // Google Drive's "anyone with the link" permissions take 2-5 seconds to propagate across their CDN.
+          // Delaying the "Play" button prevents the user from clicking instantly and hitting a 403 error.
+          setTimeout(() => {
+            setProgressText("Completed (100%)");
+            setCurrentStatus("COMPLETED");
+            router.refresh();
+          }, 5000);
         } else if (data.status === "streaming" || data.status === "finalizing") {
           if (data.totalBytes && data.totalBytes > 0) {
             const percent = Math.min(100, Math.round((data.bytesUploaded / data.totalBytes) * 100));

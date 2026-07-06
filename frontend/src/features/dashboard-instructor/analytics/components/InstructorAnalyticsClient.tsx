@@ -150,7 +150,7 @@ export default function InstructorAnalyticsClient({
             <DataCard
               icon={Clock}
               label="Total Watch Time"
-              value={`${totalMinutesDisplay}m`}
+              value={`${totalMinutesDisplay} min`}
               colorClass="text-brand-purple"
               bgClass="bg-brand-purple/10 border-brand-purple/20"
             />
@@ -178,7 +178,7 @@ export default function InstructorAnalyticsClient({
                       type="number" 
                       dataKey="hours" 
                       name="Minutes" 
-                      unit="m" 
+                      unit=" min" 
                       stroke="#888888" 
                       fontSize={12}
                       tickLine={false}

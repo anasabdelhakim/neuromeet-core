@@ -41,7 +41,7 @@ export default function StudentAnalyticsClient({ data }: { data: StudentAnalytic
         <DataCard
           icon={Clock}
           label="Minutes Attended"
-          value={`${totalMinutesDisplay}m`}
+          value={`${totalMinutesDisplay} min`}
           colorClass="text-brand-cyan"
           bgClass="bg-brand-cyan/10 border-brand-cyan/20"
         />

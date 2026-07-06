@@ -247,9 +247,18 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
                 const student = e.student;
                 if (!student) return null;
                 
-                const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000);
-                const lastSession = student.sessions?.[0]?.lastUsedAt ? new Date(student.sessions[0].lastUsedAt) : null;
-                const isActive = lastSession ? lastSession > fifteenMinsAgo : false;
+                const lastSessionDate = student.sessions?.[0]?.lastUsedAt ? new Date(student.sessions[0].lastUsedAt) : null;
+                const lastMeetingDate = student.meetingParticipants?.length > 0 
+                  ? student.meetingParticipants.reduce((latest: Date | null, p: any) => {
+                      const joinedAt = p.joinedAt ? new Date(p.joinedAt) : null;
+                      if (!latest) return joinedAt;
+                      return joinedAt && joinedAt > latest ? joinedAt : latest;
+                    }, null)
+                  : null;
+                
+                const lastActiveDate = lastSessionDate || lastMeetingDate;
+                // Treat as "Active" if they were seen in the last 24 hours (like the Student List)
+                const isActive = lastActiveDate ? (new Date().getTime() - lastActiveDate.getTime() < 24 * 60 * 60 * 1000) : false;
 
                 return (
                   <TableRow key={student.id} className="border-b border-border last:border-0 hover:bg-black-soft transition-colors duration-fast">

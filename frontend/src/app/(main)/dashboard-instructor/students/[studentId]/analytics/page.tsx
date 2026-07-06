@@ -34,7 +34,7 @@ function AnalyticsSkeleton() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500 w-full">
       {/* Header Mock */}
-      <div>
+      <div className="hidden sm:block">
         <div className="h-8 w-64 bg-white-soft-muted animate-pulse rounded-medium" />
         <div className="h-4 w-96 bg-white-soft-muted animate-pulse rounded-medium mt-2" />
       </div>
