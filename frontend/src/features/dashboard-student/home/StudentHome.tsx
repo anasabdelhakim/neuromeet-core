@@ -126,7 +126,7 @@ export function StudentHome() {
 async function StudentHomeUpcomingList() {
   await connection();
   const allMeetings = await getStudentTodayMeetings();
-  // Only show the 3 most immediate upcoming/today meetings on the dashboard home
+
   const meetings = allMeetings.slice(0, 3);
 
   if (meetings.length === 0) {

@@ -1,6 +1,5 @@
 import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
-
 import { cn } from "@/src/lib/utils";
 const buttonVariants = cva(
   "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all duration-fast ease-standard outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive-soft dark:aria-invalid:border-destructive-hover dark:aria-invalid:ring-destructive-hover-strong [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
@@ -17,7 +16,6 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive-soft text-destructive hover:bg-destructive-soft-hover focus-visible:border-destructive-hover focus-visible:ring-destructive-soft dark:bg-destructive-soft-hover dark:hover:bg-destructive-hover-strong dark:focus-visible:ring-destructive-hover-strong",
         link: "text-primary underline-offset-4 hover:underline",
-        // ── Design System Variants ──
         effect:
           "border-none bg-gradient-to-r from-primary to-brand-purple text-white shadow-lg shadow-brand-cyan-soft transition-all duration-normal ease-standard hover:shadow-brand-cyan-hover hover:-translate-y-0.5",
         live:
@@ -45,7 +43,6 @@ const buttonVariants = cva(
     },
   },
 );
-
 function Button({
   className,
   variant = "default",
@@ -60,5 +57,4 @@ function Button({
     />
   );
 }
-
 export { Button, buttonVariants };

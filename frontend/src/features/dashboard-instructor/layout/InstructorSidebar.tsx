@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { SidebarNavLinks } from "./NavLinks";
-
 export function InstructorSidebar() {
   return (
     <aside className="w-full md:w-60 max-lg:md:w-20 shrink-0 flex flex-row md:flex-col md:border-r h-full md:overflow-y-auto px-0 md:px-4 py-2 md:py-8 justify-between">
@@ -17,7 +16,6 @@ export function InstructorSidebar() {
           NeuroMeet
         </span>
       </div>
-
       {/* Main nav */}
       <nav className="flex flex-row md:flex-col max-sm:px-0.5 md:gap-3 mt-0 md:mt-8 flex-1 justify-between md:justify-start">
         <SidebarNavLinks />

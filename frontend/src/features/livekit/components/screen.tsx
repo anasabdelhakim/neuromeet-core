@@ -51,11 +51,20 @@ export default function MeetingPage({
         dynacast: true,
         publishDefaults: {
           simulcast: true,
-          videoCodec: "vp8",
+          videoCodec: "vp9",
+          screenShareEncoding: {
+            maxBitrate: 1500000,
+            maxFramerate: 30,
+          }
         },
         videoCaptureDefaults: {
-          resolution: { width: 640, height: 480, frameRate: 15 }, 
+          resolution: { width: 640, height: 480, frameRate: 24 }, 
         },
+        audioCaptureDefaults: {
+          autoGainControl: true,
+          echoCancellation: true,
+          noiseSuppression: true,
+        }
       }}
       onDisconnected={handleDisconnected}
     >

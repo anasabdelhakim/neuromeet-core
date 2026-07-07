@@ -7,7 +7,6 @@ import {
 } from 'react-hook-form';
 import { Input } from '@/src/components/ui/input';
 import { cn } from '@/src/lib/utils';
-
 interface PasswordInputProps {
   control: Control<any>;
   pending: boolean;
@@ -16,7 +15,6 @@ interface PasswordInputProps {
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   placeholder?: string;
 }
-
 export function PasswordInput({
   control,
   pending,
@@ -32,7 +30,6 @@ export function PasswordInput({
     defaultValue: '',
   });
   const isPasswordEmpty = passwordValue === '';
-
   return (
     <div className="relative">
       <Input

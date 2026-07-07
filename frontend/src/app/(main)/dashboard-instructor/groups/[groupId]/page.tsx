@@ -17,7 +17,6 @@ async function GroupDataLoader({ paramsPromise }: { paramsPromise: Promise<{ gro
   const resolvedParams = await paramsPromise;
   const groupId = resolvedParams.groupId;
 
-  // Fetch all data for the page
   const [dashboardRes, studentsRes] = await Promise.all([
     getDashboardData(),
     getAllStudents()
@@ -27,9 +26,8 @@ async function GroupDataLoader({ paramsPromise }: { paramsPromise: Promise<{ gro
     notFound();
   }
 
-  // Find the specific group
   const group = dashboardRes.data.find((g: any) => g.id === groupId);
-  
+
   if (!group) {
     notFound();
   }

@@ -1,8 +1,6 @@
 "use server";
-
 import { apiPost } from "@/src/lib/api-client";
 import { revalidatePath } from "next/cache";
-
 export async function endMeetingAction(roomId: string) {
   try {
     await apiPost(`/meetings/${roomId}/end`, {});

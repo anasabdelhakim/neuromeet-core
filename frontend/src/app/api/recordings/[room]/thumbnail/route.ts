@@ -22,6 +22,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ roo
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
     console.error("Thumbnail Proxy Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

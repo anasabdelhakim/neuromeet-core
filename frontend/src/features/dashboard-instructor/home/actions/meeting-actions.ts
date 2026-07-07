@@ -32,10 +32,10 @@ export async function startMeetingAction(meetingId: string, prevState: any, form
   }
 
   if (roomName) {
-    // Redirect to the LiveKit meeting room page
+
     redirect(`/livekit?room=${roomName}`);
   }
-  
+
   return { success: false, errorMessage: "Meeting room not returned" };
 }
 
@@ -101,15 +101,12 @@ export async function createMeetingAction(prevState: any, formData: FormData) {
     const { type, scheduledAtIso } = parsed.data;
     const title = parsed.data.title || "Immediate Session";
 
-    // Default values for 'new'
     let scheduledAt = new Date().toISOString();
     let durationMinutes = 60; 
-    
+
     if (type === "schedule") {
       const localD = new Date(scheduledAtIso!);
-      
-      // Relax validation: allow scheduling up to 5 minutes in the past
-      // to account for clock skew and the time it takes to fill the form.
+
       const fiveMinsAgo = new Date();
       fiveMinsAgo.setMinutes(fiveMinsAgo.getMinutes() - 5);
 
@@ -146,7 +143,6 @@ export async function createMeetingAction(prevState: any, formData: FormData) {
     return { success: false, errorMessage: error.message || "Failed to create meeting" };
   }
 
-  // Next.js redirect MUST be called outside the try-catch block
   revalidatePath("/dashboard-instructor");
   revalidatePath("/dashboard-instructor/upcoming");
   redirect(finalRedirectUrl);
@@ -156,16 +152,14 @@ export async function getUpcomingMeetings() {
   try {
     const res = await apiGet<any>("/meetings/upcoming");
     let rawMeetings = res.data || [];
-    
-    // Strict BFF Filtering: Only remove meetings when status is ENDED (all participants left or instructor ended)
+
     rawMeetings = rawMeetings.filter((m: any) => {
       if (m.status === "ENDED") return false;
       return true;
     });
 
-    // Sort meetings by scheduledAt descending (latest first, so newly scheduled meetings far in the future appear at the top)
     rawMeetings.sort((a: any, b: any) => new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime());
-    
+
     return rawMeetings.map((m: any) => {
       const d = new Date(m.scheduledAt);
       return {
@@ -192,7 +186,6 @@ export async function getTodayMeetings() {
     const res = await apiGet<any>("/meetings/today");
     let rawMeetings = res.data || [];
 
-    // Strict BFF Filtering: Only remove meetings when status is ENDED (all participants left or instructor ended)
     rawMeetings = rawMeetings.filter((m: any) => {
       if (m.status === "ENDED") return false;
       return true;

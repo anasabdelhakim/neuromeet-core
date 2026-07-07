@@ -27,7 +27,6 @@ export async function getAllStudents() {
   }
 }
 
-
 export async function removeStudentFromGroup(groupId: string, studentId: string) {
   try {
     await apiDelete(`/groups/${groupId}/students/${studentId}`);

@@ -9,12 +9,11 @@ export async function getStudentUpcomingMeetings() {
     const res = await apiGet<any>("/meetings/student/upcoming");
     const rawMeetings = res.data || [];
 
-    // Sort meetings by scheduledAt descending (latest first, so newly scheduled meetings far in the future appear at the top)
     rawMeetings.sort((a: any, b: any) => new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime());
 
     return rawMeetings.map((m: any) => {
       const d = new Date(m.scheduledAt);
-      
+
       let realDuration = m.durationMinutes || 60;
       if (m.startedAt && m.endedAt) {
         const start = new Date(m.startedAt).getTime();
@@ -47,7 +46,7 @@ export async function getStudentTodayMeetings() {
 
     return rawMeetings.map((m: any) => {
       const d = new Date(m.scheduledAt);
-      
+
       let realDuration = m.durationMinutes || 60;
       if (m.startedAt && m.endedAt) {
         const start = new Date(m.startedAt).getTime();
@@ -101,7 +100,7 @@ export async function joinMeetingAction(meetingId: string, passcode: string) {
   }
 
   if (roomName) {
-    // Store successful join in a cookie so they don't have to enter passcode again
+
     const cookieStore = await cookies();
     cookieStore.set(`joined_meeting_${meetingId}`, roomName, { maxAge: 60 * 60 * 24 });
     redirect(`/livekit?room=${roomName}`);

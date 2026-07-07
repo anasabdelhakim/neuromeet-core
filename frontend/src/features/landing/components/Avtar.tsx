@@ -3,7 +3,6 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { decodeJwtRole } from "@/src/lib/jwt";
 import { getUserProfile } from "@/src/features/auth/actions/auth-actions";
-
 export const Avtar = async () => {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token")?.value;
@@ -11,19 +10,16 @@ export const Avtar = async () => {
   if (accessToken) {
     role = decodeJwtRole(accessToken);
   }
-
   if (!role) {
     const user = await getUserProfile();
     role = user?.role;
   }
-
   const getDashboardUrl = () => {
     if (role === "INSTRUCTOR") return "/dashboard-instructor";
     if (role === "STUDENT") return "/dashboard-student";
     if (role === "ADMIN") return "/dashboard-admin";
     return "/sign-in";
   };
-
   return (
     <div className="flex gap-4 max-sm:gap-2 items-center">
       {role ? (
@@ -42,7 +38,6 @@ export const Avtar = async () => {
               Sign In
             </Button>
           </Link>
-
           <Link href="/sign-up">
             <Button className="px-8 py-5 max-sm:px-4 max-sm:py-4 max-sm:text-sm max-sm:rounded-hard rounded-full font-bold">
               Register

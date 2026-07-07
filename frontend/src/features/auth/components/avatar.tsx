@@ -1,11 +1,8 @@
 "use client";
-
 import { useState, useTransition, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { LogOut, Settings, Trash2, Shield, User } from "lucide-react";
-
 import { signOutAction, deleteMyAccountAction } from "@/src/features/auth/actions/auth-actions";
-
 import { Button } from "@/src/components/ui/button";
 import {
   Avatar,
@@ -25,21 +22,17 @@ import {
   DialogDescription,
 } from "@/src/components/ui/dialog";
 import Link from "next/link";
-
 import { cn } from "@/src/lib/utils";
 import { toggleStudentRecordingAction, getStudentRecordingPermissionAction } from "@/src/features/dashboard-instructor/recordings/actions/recordings-actions";
-
 interface ProfileData {
   name: string;
   email: string;
   avatarUrl?: string | null;
   role?: string;
 }
-
 interface AvatarSecProps {
   profile: ProfileData;
 }
-
 function getInitials(name: string): string {
   return name
     .split(" ")
@@ -48,28 +41,24 @@ function getInitials(name: string): string {
     .toUpperCase()
     .slice(0, 2);
 }
-
 function getAvatarSrc(profile: ProfileData): string | undefined {
   if (profile?.avatarUrl && profile.avatarUrl.trim() !== "") {
     return profile.avatarUrl;
   }
   return undefined;
 }
-
 const AvatarSec = ({ profile }: AvatarSecProps) => {
   const [isPending, startTransition] = useTransition();
   const [isOpen, setIsOpen] = useState(false); // New state to control overlay
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [allowStudentRecording, setAllowStudentRecording] = useState(true);
-
   useEffect(() => {
     startTransition(async () => {
       const allowed = await getStudentRecordingPermissionAction();
       setAllowStudentRecording(allowed);
     });
   }, []);
-
   const handleToggleRecording = (allowed: boolean) => {
     setAllowStudentRecording(allowed);
     startTransition(async () => {
@@ -77,7 +66,6 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
       window.dispatchEvent(new Event("recordingPermissionChange"));
     });
   };
-
   const handleConfirmDelete = () => {
     startTransition(async () => {
       try {
@@ -88,19 +76,16 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
       }
     });
   };
-
   const avatarSrc = getAvatarSrc(profile);
   const displayName = profile?.name || "User";
   const initials = getInitials(displayName);
   const userRole = profile?.role || "INSTRUCTOR";
-
   return (
     <>
       {isOpen && typeof document !== "undefined" && createPortal(
         <div className="bg-overlay" />,
         document.body
       )}
-
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger
           onClick={(e) => {
@@ -126,7 +111,6 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
             </AvatarFallback>
           </Avatar>
         </PopoverTrigger>
-
         <PopoverContent
           align="end"
           sideOffset={16}
@@ -134,7 +118,6 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
         >
           {/* Custom Arrow with matching border and background */}
           <span className="absolute w-3 h-3 bg-card border-t border-l border-border rotate-45 -top-1.5 right-3.5 z-20"></span>
-
           {/* User Info */}
           <div className="flex items-center gap-3 mb-1">
             <Avatar className="h-12 w-12">
@@ -143,7 +126,6 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
                 {initials}
               </AvatarFallback>
             </Avatar>
-
             <div className="flex flex-col min-w-0">
               <p className="font-medium truncate">{displayName}</p>
               <p className="text-xs text-muted-foreground truncate">
@@ -151,7 +133,6 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
               </p>
             </div>
           </div>
-
           <div className="flex flex-col space-y-0.5">
             <Button
               variant="ghost"
@@ -163,9 +144,7 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
             >
               <Settings className="h-4 w-4" /> Account & Profile Settings
             </Button>
-
             <div className="border-t border-border my-1" />
-
             <Button
               variant="ghost"
               className="justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive-hover h-9 text-sm"
@@ -186,7 +165,6 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
           </div>
         </PopoverContent>
       </Popover>
-
       <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
         <DialogContent className="sm:max-w-[500px] rounded-soft border border-border bg-card backdrop-blur-2xl p-6 shadow-2xl flex flex-col gap-6 w-[92vw] sm:w-full max-h-[90vh] overflow-y-auto">
           <DialogHeader className="text-left">
@@ -197,7 +175,6 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
               Manage your personal information, instructor permissions, and account deletion.
             </DialogDescription>
           </DialogHeader>
-
           {/* Profile Information */}
           <div className="flex flex-col gap-4 border-b border-border pb-6">
             <h4 className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider text-left">Profile Information</h4>
@@ -217,7 +194,6 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
               </div>
             </div>
           </div>
-
           {/* Instructor Permission Settings */}
           {userRole === "INSTRUCTOR" && (
             <div className="flex flex-col gap-4 border-b border-border pb-6">
@@ -247,7 +223,6 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
               </div>
             </div>
           )}
-
           {/* Danger Zone */}
           <div className="flex flex-col gap-4">
             <h4 className="text-xs sm:text-sm font-semibold text-destructive uppercase tracking-wider text-center sm:text-left">Danger Zone</h4>
@@ -272,7 +247,6 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
           </div>
         </DialogContent>
       </Dialog>
-
       <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
         <DialogContent className="sm:max-w-[440px] rounded-soft border border-destructive/30 bg-card backdrop-blur-2xl p-6 shadow-2xl flex flex-col gap-6 w-[92vw] sm:w-full">
           <DialogHeader className="text-center sm:text-left">
@@ -283,7 +257,6 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
               Are you absolutely sure you want to permanently delete your account? This action cannot be undone and will immediately purge all your profile data and active sessions.
             </DialogDescription>
           </DialogHeader>
-
           <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 border-t border-border pt-4 w-full">
             <Button
               variant="ghost"
@@ -308,5 +281,4 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
     </>
   );
 };
-
 export default AvatarSec;

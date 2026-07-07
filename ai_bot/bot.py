@@ -231,8 +231,8 @@ async def consume_video_track(
 
             now_t = time.monotonic()
 
-            # Throttle to ~10 FPS. This rate gives 60 frames in ~6 seconds.
-            if now_t - buf.last_frame_time < 0.1:
+            # Throttle to ~5 FPS. This rate gives 60 frames in ~12 seconds.
+            if now_t - buf.last_frame_time < 0.2:
                 continue
             buf.last_frame_time = now_t
 

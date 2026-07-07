@@ -18,7 +18,7 @@ export class NotificationsService {
   constructor(private prisma: PrismaService) {}
 
   async createNotification(dto: CreateNotificationDto) {
-    // 1. Save to database for In-App Bell
+
     const notification = await this.prisma.notification.create({
       data: {
         userId: dto.userId,
@@ -29,9 +29,8 @@ export class NotificationsService {
       },
     });
 
-    // 2. Dispatch Email (if high priority)
     if (dto.sendEmail) {
-      // Background async email dispatch
+
       this.dispatchEmail(dto).catch(e => {
          this.logger.error(`Error in async email dispatch: ${e.message}`);
       });
@@ -47,10 +46,7 @@ export class NotificationsService {
         select: { email: true, name: true } 
       });
       if (!user) return;
-      
-      // MOCK EMAIL DISPATCHER: In a real app, integrate Nodemailer or Resend here.
-      // e.g. await this.emailService.send({ to: user.email, subject: dto.title, text: dto.body });
-      
+
       this.logger.log(`[EMAIL DISPATCH] To: ${user.email} | Subject: ${dto.title}`);
     } catch (e) {
       this.logger.error(`Failed to dispatch email to user ${dto.userId}`, e);

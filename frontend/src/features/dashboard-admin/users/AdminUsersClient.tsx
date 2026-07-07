@@ -40,9 +40,28 @@ import {
 } from "@/src/components/ui/alert-dialog";
 import { Search, Trash2, AlertTriangle, Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useReducer } from "react";
 
 const ROLE_OPTIONS = ["INSTRUCTOR", "STUDENT"] as const;
+
+type FilterState = { search: string; roleFilter: string; page: number };
+type FilterAction =
+  | { type: "SET_SEARCH"; payload: string }
+  | { type: "SET_ROLE"; payload: string }
+  | { type: "SET_PAGE"; payload: number };
+
+function filterReducer(state: FilterState, action: FilterAction): FilterState {
+  switch (action.type) {
+    case "SET_SEARCH":
+      return { ...state, search: action.payload, page: 1 };
+    case "SET_ROLE":
+      return { ...state, roleFilter: action.payload, page: 1 };
+    case "SET_PAGE":
+      return { ...state, page: action.payload };
+    default:
+      return state;
+  }
+}
 
 interface Props {
   initialData: UsersResponse;
@@ -52,20 +71,22 @@ export function AdminUsersClient({ initialData }: Props) {
   const router = useRouter();
   const [users, setUsers] = useState<AdminUser[]>(initialData.data.users);
   const [totalPages, setTotalPages] = useState(initialData.data.pagination.totalPages);
-  const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState("");
-  const [page, setPage] = useState(1);
+  const [{ search, roleFilter, page }, dispatch] = useReducer(filterReducer, {
+    search: "",
+    roleFilter: "",
+    page: 1,
+  });
   const [fetchPending, startFetch] = useTransition();
   const [mutatePending, startMutate] = useTransition();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [alertError, setAlertError] = useState<string | null>(null);
 
-  const refetch = (overrides?: { search?: string; role?: string; page?: number }) => {
+  const refetch = (currentState: FilterState) => {
     startFetch(async () => {
       const res = await getUsersAction({
-        search: overrides?.search ?? search,
-        role: (overrides?.role !== undefined ? overrides.role : roleFilter) || undefined,
-        page: String(overrides?.page ?? page),
+        search: currentState.search,
+        role: currentState.roleFilter || undefined,
+        page: String(currentState.page),
         limit: "5",
       });
       if (res?.data?.users) {
@@ -75,32 +96,26 @@ export function AdminUsersClient({ initialData }: Props) {
     });
   };
 
-  // Debounce search input to avoid spamming the server
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      setPage(1);
-      refetch({ search, page: 1 });
+      refetch({ search, roleFilter, page });
     }, 300);
     return () => clearTimeout(delayDebounceFn);
-  }, [search]);
+  }, [search, roleFilter, page]);
 
-  const handleSearch = (val: string) => {
-    setSearch(val);
-  };
+  const handleSearch = (val: string) => dispatch({ type: "SET_SEARCH", payload: val });
 
-  const handleRoleFilter = (val: string) => {
+  const handleRoleFilter = (val: string | null) => {
+    if (!val) return;
     const role = val === "all" ? "" : val;
-    setRoleFilter(role);
-    setPage(1);
-    refetch({ role, page: 1 });
+    dispatch({ type: "SET_ROLE", payload: role });
   };
 
   const handlePageChange = (next: number) => {
-    setPage(next);
-    refetch({ page: next });
+    dispatch({ type: "SET_PAGE", payload: next });
   };
 
-  const handleRoleChange = (userId: string, newRole: string) => {
+  const handleRoleChange = (userId: string, newRole: string | null) => {
     if (!newRole) return;
     startMutate(async () => {
       const res = await updateUserRoleAction(userId, newRole);
@@ -124,9 +139,6 @@ export function AdminUsersClient({ initialData }: Props) {
   };
 
   const pending = fetchPending || mutatePending;
-
-  // Filter out any users with the ADMIN role so they don't show up in the table
-  const displayedUsers = users.filter(user => user.role !== "ADMIN");
 
   return (
     <div className="flex flex-col gap-6">
@@ -181,14 +193,14 @@ export function AdminUsersClient({ initialData }: Props) {
                   </div>
                 </TableCell>
               </TableRow>
-            ) : displayedUsers.length === 0 ? (
+            ) : users.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-12 text-muted-foreground text-lg">
                   No users found.
                 </TableCell>
               </TableRow>
             ) : (
-              displayedUsers.map((user) => (
+              users.map((user) => (
                 <TableRow key={user.id} className="hover:bg-black-soft transition-colors">
                   <TableCell className="font-medium py-5">{user.name}</TableCell>
                   <TableCell className="text-muted-foreground py-5">{user.email}</TableCell>
@@ -286,7 +298,7 @@ export function AdminUsersClient({ initialData }: Props) {
           <span className="text-sm text-muted-foreground font-medium">
             Page <strong className="text-foreground">{page}</strong> of <strong className="text-foreground">{totalPages}</strong>
           </span>
-          
+
           <div className="flex items-center justify-between w-full sm:w-auto sm:justify-end gap-1">
             <Button 
               variant="outline" 

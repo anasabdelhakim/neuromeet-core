@@ -40,9 +40,9 @@ export function ShareMeetingModal({ meetingId, meetingTitle, groups = [], isOpen
 
     setIsLoading(true);
     setError("");
-    
+
     const res = await shareMeetingAction(meetingId, selectedGroupId);
-    
+
     if (res.success) {
       setSuccess(true);
       if (res.passcode) {
@@ -51,7 +51,7 @@ export function ShareMeetingModal({ meetingId, meetingTitle, groups = [], isOpen
     } else {
       setError(res.errorMessage || "Failed to share meeting.");
     }
-    
+
     setIsLoading(false);
   };
 
@@ -90,7 +90,7 @@ export function ShareMeetingModal({ meetingId, meetingTitle, groups = [], isOpen
           ) : (
             <div className="space-y-4 pt-2">
               <Label className="text-sm font-bold text-foreground mb-1 block tracking-wide">Select Target Group <span className="text-destructive">*</span></Label>
-              <Select disabled={isLoading} value={selectedGroupId} onValueChange={setSelectedGroupId}>
+              <Select disabled={isLoading} value={selectedGroupId} onValueChange={(val) => setSelectedGroupId(val || "")}>
                 <SelectTrigger className="w-full !h-11 text-base px-4 bg-black-soft-muted border-border rounded-soft focus-visible:ring-primary shadow-inner">
                   <SelectValue placeholder="Select a group to share with">
                     {selectedGroupId ? groups.find(g => g.id === selectedGroupId)?.name : null}

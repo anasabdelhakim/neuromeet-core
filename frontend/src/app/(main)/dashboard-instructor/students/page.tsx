@@ -1,6 +1,5 @@
 import { Suspense } from "react";
 import { StudentsList } from "@/src/features/dashboard-instructor/students/components/StudentsList";
-
 const StudentsPage = () => {
   return (
     <div className="flex flex-col gap-6 animate-page-entrance">
@@ -11,7 +10,6 @@ const StudentsPage = () => {
           Monitor engagement and manage your enrolled students
         </p>
       </div>
-
       {/* Dynamic Content */}
       <Suspense fallback={<StudentsSkeleton />}>
         <StudentsList />
@@ -19,7 +17,6 @@ const StudentsPage = () => {
     </div>
   );
 };
-
 function StudentsSkeleton() {
   return (
     <div className="flex flex-col gap-6">
@@ -35,7 +32,6 @@ function StudentsSkeleton() {
           </div>
         ))}
       </div>
-
       {/* Filters Mock */}
       <div className="flex flex-col gap-4 mt-4">
         <div className="h-11 w-full sm:max-w-md bg-white-soft-muted animate-pulse rounded-soft" />
@@ -45,7 +41,6 @@ function StudentsSkeleton() {
           ))}
         </div>
       </div>
-
       {/* Table Mock */}
       <div className="w-full bg-black-soft-subtle border border-border rounded-soft overflow-hidden mt-2">
         {/* Table Header */}
@@ -57,7 +52,6 @@ function StudentsSkeleton() {
            <div className="h-4 w-16 bg-white-soft-muted animate-pulse rounded-medium flex-1" />
            <div className="h-4 w-8 bg-white-soft-muted animate-pulse rounded-medium ml-auto" />
         </div>
-        
         {/* Table Rows */}
         {[1, 2, 3, 4, 5].map((i) => (
           <div key={i} className="flex flex-col md:flex-row p-5 border-b border-border last:border-0 gap-4 md:items-center">
@@ -76,5 +70,4 @@ function StudentsSkeleton() {
     </div>
   );
 }
-
 export default StudentsPage;

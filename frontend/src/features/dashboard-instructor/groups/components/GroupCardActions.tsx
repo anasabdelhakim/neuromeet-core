@@ -74,7 +74,6 @@ export function GroupCardActions({ group }: { group: Group }) {
     });
   };
 
-
   const enrollmentsCount = group._count?.enrollments ?? group.enrollments?.length ?? 0;
   const hasStudents = Number(enrollmentsCount) > 0;
 

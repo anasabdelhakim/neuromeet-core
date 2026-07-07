@@ -5,40 +5,28 @@ import { getVerificationEmailHtml } from './templates/verification-email';
 import { getPasswordResetConfirmationEmailHtml } from './templates/reset-password-email';
 import { getResetPasswordHtml } from './templates/verification-resetpassword';
 import { getMeetingInviteEmailHtml } from './templates/meeting-invite-email';
-
 @Injectable()
 export class EmailService {
   private resend: Resend;
   private readonly logger = new Logger(EmailService.name);
-  
   private readonly defaultFrom = 'NeuroMeet <info@anasdev.shop>';
-
   constructor() {
     const apiKey = process.env.RESEND_API_KEY;
-
     if (!apiKey) {
       throw new Error('Resend API key is required');
     }
-
     this.resend = new Resend(apiKey);
   }
-
-  // =========================
-  // ✅ Welcome Email
-  // =========================
   async sendWelcomeEmail(userEmail: string) {
     try {
       const htmlContent = getWelcomeEmailHtml(userEmail);
-
       const { data, error } = await this.resend.emails.send({
         from: this.defaultFrom, // ✅ التعديل هنا
         to: userEmail,
         subject: 'Welcome to NeuroMeet!',
         html: htmlContent,
       });
-
       if (error) throw error;
-
       this.logger.log(`✅ Welcome email sent to ${userEmail}`);
       return data;
     } catch (error) {
@@ -46,27 +34,19 @@ export class EmailService {
       throw new Error('Could not send welcome email');
     }
   }
-
-  // =========================
-  // ✅ Signup Code Email
-  // =========================
   async sendSignupCode(email: string, code: string) {
     try {
       if (!email || !code) {
         throw new Error('Email and code are required');
       }
-
       const htmlContent = getVerificationEmailHtml(code);
-
       const { data, error } = await this.resend.emails.send({
         from: this.defaultFrom, // ✅ التعديل هنا
         to: email, 
         subject: 'Your Verification Code',
         html: htmlContent,
       });
-
       if (error) throw error;
-
       this.logger.log(`✅ Signup code sent to ${email}`);
       return data;
     } catch (error) {
@@ -74,23 +54,16 @@ export class EmailService {
       throw new Error('Could not send signup code email');
     }
   }
-
-  // =========================
-  // ✅ Password Change Email
-  // =========================
   async sendPasswordChangeEmail(email: string) {
     try {
       const htmlContent = getPasswordResetConfirmationEmailHtml(email);
-
       const { data, error } = await this.resend.emails.send({
         from: this.defaultFrom, // ✅ التعديل هنا
         to: email,
         subject: 'Password Change Confirmation',
         html: htmlContent,
       });
-
       if (error) throw error;
-
       this.logger.log(`✅ Password change email sent to ${email}`);
       return data;
     } catch (error) {
@@ -98,27 +71,19 @@ export class EmailService {
       throw new Error('Could not send password change email');
     }
   }
-
-  // =========================
-  // ✅ Reset Password Code
-  // =========================
   async resetPasswordCode(email: string, code: string) {
     try {
       if (!email || !code) {
         throw new Error('Email and code are required');
       }
-
       const htmlContent = getResetPasswordHtml(code);
-
       const { data, error } = await this.resend.emails.send({
         from: this.defaultFrom, // ✅ التعديل هنا
         to: email,
         subject: 'Your Verification Code',
         html: htmlContent,
       });
-
       if (error) throw error;
-
       this.logger.log(`✅ Reset password code sent to ${email}`);
       return data;
     } catch (error) {
@@ -126,11 +91,6 @@ export class EmailService {
       throw new Error('Could not send reset password code email');
     }
   }
-
-
-  // =========================
-  // ✅ Meeting Invitation
-  // =========================
   async sendMeetingInvitations(
     students: { email: string; name: string }[],
     meetingDetails: {
@@ -151,7 +111,6 @@ export class EmailService {
           passcode: meetingDetails.passcode,
           joinUrl: meetingDetails.joinUrl,
         });
-
         return this.resend.emails.send({
           from: this.defaultFrom,
           to: student.email,
@@ -159,7 +118,6 @@ export class EmailService {
           html: htmlContent,
         });
       });
-
       await Promise.all(promises);
       this.logger.log(`✅ Sent ${students.length} meeting invitations`);
     } catch (error) {

@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import { Video, ShieldCheck, Loader } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
@@ -13,43 +12,32 @@ import {
   CardTitle,
   CardDescription,
 } from "@/src/components/ui/card";
-
 export const QuickJoin = () => {
   const [meetingCode, setMeetingCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-
   const handleJoin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!meetingCode.trim() || isLoading) return;
-
     setIsLoading(true);
     try {
       let cleanLink = meetingCode.trim();
-
-      // Handle raw meeting room links or local paths
       if (cleanLink.includes("room=")) {
         const roomMatch = cleanLink.match(/room=([^&]+)/);
         if (roomMatch) cleanLink = roomMatch[1];
       }
-
       let targetUrl = `/livekit?room=${cleanLink}`;
       try {
         const url = new URL(cleanLink);
         targetUrl = url.pathname + url.search;
       } catch {
-        // If not a full URL, treat as room code
       }
-
-      // Validate authentication status
       const user = await getUserProfile();
       if (!user) {
-        // Save the redirect path securely in a cookie before going to auth pages
         await setRedirectCookie(targetUrl);
         router.push("/sign-in");
         return;
       }
-
       router.push(targetUrl);
     } catch (err) {
       console.error("Auth check failed:", err);
@@ -58,7 +46,6 @@ export const QuickJoin = () => {
       setIsLoading(false);
     }
   };
-
   return (
     <section className="w-full max-w-2xl mx-auto mb-20 max-sm:mb-4">
       <Card variant="gradient">

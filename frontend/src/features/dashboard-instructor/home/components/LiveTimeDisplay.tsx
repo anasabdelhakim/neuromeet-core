@@ -1,5 +1,4 @@
 import { connection } from "next/server";
-
 function formatTime(d: Date) {
   return d.toLocaleTimeString("en-US", {
     hour: "2-digit",
@@ -8,7 +7,6 @@ function formatTime(d: Date) {
     timeZone: "UTC",
   });
 }
-
 function formatDate(d: Date) {
   return d.toLocaleDateString("en-US", {
     weekday: "long",
@@ -18,13 +16,9 @@ function formatDate(d: Date) {
     timeZone: "UTC",
   });
 }
-
 export async function ServerTimeDisplay() {
   await connection();
-
-  // Enforce +3h timezone
   const now = new Date(Date.now() + 3 * 60 * 60 * 1000);
-
   return (
     <>
       <h1 className="text-6xl max-sm:text-[3.25rem] font-black tracking-tighter text-white shadow-soft md:text-7xl">

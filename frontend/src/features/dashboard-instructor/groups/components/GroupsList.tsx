@@ -67,10 +67,11 @@ export async function GroupsList() {
                         <AvatarChain avatars={mappedAvatars} max={4} />
                       </div>
                     </div>
-                    
+
                     <Button 
                       render={<Link href={`/dashboard-instructor/groups/${group.id}`} />} 
                       className="shadow-soft hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer relative z-10"
+                      nativeButton={false}
                     >
                       Manage Group
                     </Button>

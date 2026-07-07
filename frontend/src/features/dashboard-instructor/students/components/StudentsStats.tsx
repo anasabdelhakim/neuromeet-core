@@ -1,6 +1,5 @@
 import { Users, Activity, TrendingUp, Layers } from "lucide-react";
 import { DataCard } from "@/src/features/dashboard-shared/components/DataCard";
-
 interface StudentsStatsProps {
   stats: {
     total: number;
@@ -9,7 +8,6 @@ interface StudentsStatsProps {
     avgEngagement: number;
   };
 }
-
 export function StudentsStats({ stats }: StudentsStatsProps) {
   const statConfig = [
     {
@@ -41,7 +39,6 @@ export function StudentsStats({ stats }: StudentsStatsProps) {
       bgClass: "bg-brand-purple/10 border-brand-purple/20",
     },
   ];
-
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
       {statConfig.map((stat) => (

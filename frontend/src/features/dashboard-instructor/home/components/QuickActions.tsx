@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useActionState, useEffect, useMemo } from "react";
 import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
@@ -34,7 +33,6 @@ import { meetingSchema } from "@/src/validations/zod";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
 import { Button } from "@/src/components/ui/button";
-
 import { Calendar } from "@/src/components/ui/calendar";
 import {
   Popover,
@@ -44,7 +42,6 @@ import {
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Clock2Icon, ChevronDownIcon, Loader } from "lucide-react";
 import { cn } from "@/src/lib/utils";
-
 function SubmitButton({ cta, btnClass, disabled }: { cta: string, btnClass: string, disabled?: boolean }) {
   const { pending } = useFormStatus();
   return (
@@ -60,28 +57,21 @@ function SubmitButton({ cta, btnClass, disabled }: { cta: string, btnClass: stri
     </Button>
   );
 }
-
 export function QuickActions() {
   const [activeCardId, setActiveCardId] = useState<string | null>("new");
   const [isOpen, setIsOpen] = useState(false);
-
-
   const activeCard = Cards.find((c) => c.id === activeCardId) || Cards[0];
-
   const activeIconGradientClass = iconGradientMap[activeCard.id] || "";
   const activeButtonClass = buttonGradientMap[activeCard.id] || "";
   const activeDialogClass = dialogBgMap[activeCard.id] || "";
   const ActiveIcon = activeCard.icon;
-
   const [date, setDate] = useState<Date>();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [timeFrom, setTimeFrom] = useState("");
   const [state, action, pending] = useActionState(createMeetingAction, { success: true, errorMessage: "" });
   const [joinState, joinAction, joinPending] = useActionState(joinSessionAction, { success: true, errorMessage: "" });
-
   const router = useRouter();
   const [joinLink, setJoinLink] = useState("");
-
   const handleJoin = () => {
     if (!joinLink) return;
     setIsOpen(false);
@@ -92,7 +82,6 @@ export function QuickActions() {
       router.push(`/livekit?room=${joinLink}`);
     }
   };
-
   const {
     register: registerNew,
     formState: { errors: errorsNew, isValid: isValidNew },
@@ -101,7 +90,6 @@ export function QuickActions() {
     resolver: zodResolver(meetingSchema),
     mode: "onChange",
   });
-
   const {
     register: registerSchedule,
     formState: { errors: errorsSchedule, isValid: isValidSchedule },
@@ -110,7 +98,6 @@ export function QuickActions() {
     resolver: zodResolver(meetingSchema),
     mode: "onChange",
   });
-
   useEffect(() => {
     if (!isOpen) {
       resetNew();
@@ -118,7 +105,6 @@ export function QuickActions() {
       setJoinLink("");
     }
   }, [isOpen, resetNew, resetSchedule]);
-
   const scheduledAtIso = useMemo(() => {
     if (!date || !timeFrom) return "";
     const d = new Date(date);
@@ -126,14 +112,12 @@ export function QuickActions() {
     d.setHours(hours, minutes, 0, 0);
     return d.toISOString();
   }, [date, timeFrom]);
-
   useEffect(() => {
     const now = new Date();
     setDate(new Date(now.getFullYear(), now.getMonth(), now.getDate())); // Set default date to today without time
     now.setMinutes(now.getMinutes() + 2); // Set default start time 2 mins in the future
     setTimeFrom(`${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`);
   }, []);
-
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-6">
@@ -142,7 +126,6 @@ export function QuickActions() {
           const gradientClass = gradientMap[card.id] || "";
           const iconGradientClass = iconGradientMap[card.id] || "";
           const shadowClass = shadowMap[card.id] || "";
-
           return (
             <Card
               key={card.id}
@@ -164,7 +147,6 @@ export function QuickActions() {
                   {card.title}
                 </CardTitle>
               </CardHeader>
-
               <CardContent>
                 <CardDescription className="text-sm leading-relaxed text-foreground">
                   {card.desc}
@@ -174,7 +156,6 @@ export function QuickActions() {
           );
         })}
       </div>
-
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent
           className={cn(

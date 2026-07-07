@@ -6,7 +6,6 @@ export const getVerificationEmailHtml = (
   const description = isPasswordReset
     ? 'You recently requested to reset your password for your NeuroMeet account. Please use the following One-Time Password (OTP) to proceed:'
     : 'Thank you for signing up for NeuroMeet! To complete your registration, please verify your email address using the following code:';
-
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -33,11 +32,9 @@ export const getVerificationEmailHtml = (
               <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin-bottom: 32px;">
                 ${description}
               </p>
-              
               <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; text-align: center; margin-bottom: 32px;">
                 <span style="font-size: 36px; font-weight: 800; letter-spacing: 12px; color: #1e40af;">${otp}</span>
               </div>
-              
               <p style="color: #6b7280; font-size: 15px; line-height: 1.6; margin-bottom: 0;">
                 If you didn't request this code, you can safely ignore this email. Someone else might have typed your email address by mistake.
               </p>

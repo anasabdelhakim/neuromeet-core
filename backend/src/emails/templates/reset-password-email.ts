@@ -32,7 +32,6 @@ export const getPasswordResetConfirmationEmailHtml = (
               <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin-bottom: 32px;">
                 We are writing to confirm that your password for your NeuroMeet account has been successfully changed.
               </p>
-              
               <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 32px;">
                 <tr>
                   <td align="center">
@@ -42,7 +41,6 @@ export const getPasswordResetConfirmationEmailHtml = (
                   </td>
                 </tr>
               </table>
-              
               <div style="background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 16px; border-radius: 4px;">
                 <p style="color: #92400e; font-size: 15px; line-height: 1.6; margin: 0;">
                   <strong>Didn't make this change?</strong><br>

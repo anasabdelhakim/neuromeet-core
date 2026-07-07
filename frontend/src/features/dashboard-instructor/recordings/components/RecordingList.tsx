@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -22,7 +21,6 @@ import {
 import { Clock, Play, Trash2Icon, Loader, Disc } from "lucide-react";
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
-
 const ActionButton = ({ children, variant = "outline", className, onClick, disabled }: any) => (
   <Button 
     variant={variant} 
@@ -34,10 +32,8 @@ const ActionButton = ({ children, variant = "outline", className, onClick, disab
     {children}
   </Button>
 );
-
 export const RecordingsList = ({ recordings = [], isInstructor = true }: { recordings?: RecordingDTO[]; isInstructor?: boolean }) => {
   const displayRecordings = recordings;
-
   if (displayRecordings.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center border border-border/50 rounded-xl bg-black-soft-subtle/30">
@@ -49,7 +45,6 @@ export const RecordingsList = ({ recordings = [], isInstructor = true }: { recor
       </div>
     );
   }
-
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-6">
       {displayRecordings.map((recording) => (
@@ -58,7 +53,6 @@ export const RecordingsList = ({ recordings = [], isInstructor = true }: { recor
     </div>
   );
 };
-
 export function RecordingCard({ recording, isInstructor = true }: { recording: RecordingDTO; isInstructor?: boolean }) {
   const router = useRouter();
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
@@ -66,22 +60,16 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
   const [isDeleting, startDeleteTransition] = useTransition();
   const [progressText, setProgressText] = useState("Processing...");
   const [currentStatus, setCurrentStatus] = useState(recording.status);
-
   useEffect(() => {
     if (currentStatus !== "PROCESSING") return;
-
     const sseUrl = `/api/recordings/${recording.meetingId}/progress`;
     const eventSource = new EventSource(sseUrl);
-
     eventSource.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
         if (data.status === "complete") {
           setProgressText("Finalizing Link...");
           eventSource.close();
-          
-          // Google Drive's "anyone with the link" permissions take 2-5 seconds to propagate across their CDN.
-          // Delaying the "Play" button prevents the user from clicking instantly and hitting a 403 error.
           setTimeout(() => {
             setProgressText("Completed (100%)");
             setCurrentStatus("COMPLETED");
@@ -99,23 +87,19 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
         console.error("Failed to parse SSE progress", err);
       }
     };
-
     eventSource.onerror = () => {
       eventSource.close();
     };
-
     return () => {
       eventSource.close();
     };
   }, [currentStatus, recording.meetingId]);
-
   const handleDelete = () => {
     startDeleteTransition(async () => {
       await deleteRecordingAction(recording.id);
       setIsDeleteDialogOpen(false);
     });
   };
-
   const formatDuration = (totalSeconds: number) => {
     if (!totalSeconds) return "0:00";
     const h = Math.floor(totalSeconds / 3600);
@@ -124,7 +108,6 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
     if (h > 0) return `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
     return `${m}:${s.toString().padStart(2, "0")}`;
   };
-
   return (
     <>
       <Card variant="gradient" className="py-0 cursor-pointer hover:scale-[1.02] transition-transform duration-normal ease-standard group" onClick={() => setIsPlayerOpen(true)}>
@@ -139,7 +122,6 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
           <div className="absolute inset-0 bg-black-soft-muted flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-normal ease-standard">
             <Play className="text-white w-10 h-10 fill-white" />
           </div>
-
           <Badge className="absolute z-20 top-1 left-2 flex items-center gap-1 bg-custom-gray border-border shadow-hard">
             <span className="relative flex h-2 w-2 mr-0.5 ">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive"></span>
@@ -155,14 +137,12 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
         <CardContent>
           <CardTitle>{recording.title}</CardTitle>
           <CardDescription className="my-2">{recording.dateTime || "Recently recorded"}</CardDescription>
-
           <div className="flex gap-2 mt-3 border-t border-border py-3 px-0 justify-between items-center w-full">
             <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
               <ActionButton label="Delete recording" variant="destructive" className="rounded-hard" onClick={() => setIsDeleteDialogOpen(true)} disabled={isDeleting}>
                 {isDeleting ? <Loader className="w-4 h-4 animate-spin" /> : <Trash2Icon size={18} />}
               </ActionButton>
             </div>
-
             <Button 
               className="rounded-medium gap-2" 
               onClick={() => currentStatus !== "PROCESSING" && setIsPlayerOpen(true)}
@@ -183,14 +163,12 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
           </div>
         </CardContent>
       </Card>
-
       <RecordingPlayerModal
         isOpen={isPlayerOpen}
         onClose={() => setIsPlayerOpen(false)}
         title={recording.title}
         gDriveViewLink={recording.gDriveViewLink}
       />
-
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={(open) => !isDeleting && setIsDeleteDialogOpen(open)}>
         <AlertDialogContent>
           <AlertDialogHeader>

@@ -1,32 +1,26 @@
 "use client";
-
 import { useActionState, useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-
 import { Button } from "@/src/components/ui/button";
 import { Card, CardContent } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import { Field, FieldLabel, FieldError } from "@/src/components/ui/field";
-
 import { otpFormSchema } from "@/src/validations/zod";
 import {
   verifyCodeAction,
   resendCodeAction,
 } from "@/src/features/auth/actions/auth-actions";
 import type { ActionResult } from "@/src/features/auth/actions/auth-actions";
-
 interface OTPFormProps {
   initialSecondsRemaining: number;
 }
-
 export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
   const searchParams = useSearchParams();
   const flow = searchParams.get("flow") || "reset";
-
   const {
     register,
     reset,
@@ -38,43 +32,27 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
     mode: "onTouched",
     reValidateMode: "onChange",
   });
-
   const [state, action, pending] = useActionState<ActionResult, FormData>(
     verifyCodeAction,
     { success: false, errorMessage: {} },
   );
-
   const handleAction = (formData: FormData) => {
     reset(getValues(), { keepValues: true });
     action(formData);
   };
-
   const showOtpError = !!errors.otp && (isSubmitted || touchedFields.otp);
-
   const { onBlur: otpOnBlur, ...otpRest } = register("otp");
-
-  // SECURITY: Timer state is seeded from a server-computed value (HTTP-only cookie).
-  // The client only counts down from whatever the server told it — no localStorage,
-  // no client-side timestamp that an attacker could edit in DevTools.
   const [timeLeft, setTimeLeft] = useState(initialSecondsRemaining);
   const [resending, setResending] = useState(false);
   const [resendError, setResendError] = useState("");
   const [resendSuccess, setResendSuccess] = useState("");
-
-  // Countdown effect — purely cosmetic, the real enforcement is server-side
   useEffect(() => {
     if (timeLeft <= 0) return;
-
     const interval = setInterval(() => {
       setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
-
     return () => clearInterval(interval);
   }, [timeLeft]);
-
-  // SECURITY: On resend, the server action checks the HTTP-only cookie.
-  // Even if someone bypasses the disabled button, the server will reject
-  // the request and return the real remaining seconds.
   const handleResend = useCallback(async () => {
     setResending(true);
     setResendError("");
@@ -85,7 +63,6 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
         setTimeLeft(result.secondsRemaining ?? 120);
         setResendSuccess("A new verification code has been resent to your email.");
       } else {
-        // If the server says "wait N seconds", sync the timer to that value
         if (result.secondsRemaining && result.secondsRemaining > 0) {
           setTimeLeft(result.secondsRemaining);
         }
@@ -95,13 +72,11 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
       setResending(false);
     }
   }, []);
-
   return (
     <Card variant="gradient">
       <CardContent>
         <form action={handleAction} className="space-y-4">
           <input type="hidden" name="flow" value={flow} />
-
           {/* SERVER ERROR */}
           {(state.errorMessage?.server || resendError) && (
             <div className="animate-alert-entrance">
@@ -110,7 +85,6 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
               </p>
             </div>
           )}
-
           {/* SUCCESS MESSAGE */}
           {resendSuccess && !(state.errorMessage?.server || resendError) && (
             <div className="animate-alert-entrance">
@@ -119,14 +93,12 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
               </p>
             </div>
           )}
-
           {/* INFO */}
           <div>
             <p className="text-sm text-muted-foreground text-center">
               Enter the 6-digit verification code sent to your email
             </p>
           </div>
-
           {/* OTP FIELD */}
           <div>
             <Field>
@@ -154,7 +126,6 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
               </FieldError>
             </Field>
           </div>
-
           {/* VERIFY BUTTON */}
           <div className="pt-2">
             <Button
@@ -175,7 +146,6 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
               )}
             </Button>
           </div>
-
           {/* RESEND & TIMER */}
           <div className="text-center">
             <Button

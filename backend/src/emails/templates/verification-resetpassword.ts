@@ -2,7 +2,6 @@ export const getResetPasswordHtml = (otp: string) => {
   const title = 'Reset your password';
   const description =
     'You requested to reset your password for your NeuroMeet account. Please use the following One-Time Password (OTP) to continue the password reset process:';
-
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -29,11 +28,9 @@ export const getResetPasswordHtml = (otp: string) => {
               <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin-bottom: 32px;">
                 ${description}
               </p>
-              
               <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; text-align: center; margin-bottom: 32px;">
                 <span style="font-size: 36px; font-weight: 800; letter-spacing: 12px; color: #1e40af;">${otp}</span>
               </div>
-              
               <p style="color: #6b7280; font-size: 15px; line-height: 1.6; margin-bottom: 0;">
                 This code will expire shortly. If you did not request a password reset, please ignore this email or contact support if you have concerns.
               </p>

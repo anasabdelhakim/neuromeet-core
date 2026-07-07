@@ -31,7 +31,6 @@ export function StatusBar({
       setCurrentLabel(status.timeLabel);
     };
 
-    // Update the label every 30 seconds
     const interval = setInterval(updateLabel, 30000);
     return () => clearInterval(interval);
   }, [dateTime]);

@@ -2,9 +2,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRoomContext } from '@livekit/components-react';
 import { RoomEvent, DataPacket_Kind } from 'livekit-client';
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 export interface ParticipantScore {
   participantId: string;
   participantName: string;        // Real display name from LiveKit
@@ -20,9 +17,6 @@ export interface ParticipantScore {
   totalFlips: number;
   wasDisengaged: boolean;
 }
-
-// ─── Hook ─────────────────────────────────────────────────────────────────────
-
 /**
  * useEngagementData
  *
@@ -48,11 +42,9 @@ export interface ParticipantScore {
  * }
  */
 import { syncEngagementStatsAction } from '../features/dashboard-instructor/analytics/actions/analytics-actions';
-
 export function useEngagementData(meetingId?: string) {
   const room = useRoomContext();
   const [scores, setScores] = useState<Record<string, ParticipantScore>>({});
-
   const handleData = useCallback(
     (
       payload: Uint8Array,
@@ -60,14 +52,10 @@ export function useEngagementData(meetingId?: string) {
       kind: DataPacket_Kind,
       topic?: string,
     ) => {
-      // Only process messages on the "engagement" topic
       if (topic !== 'engagement') return;
-
       try {
         const msg = JSON.parse(new TextDecoder().decode(payload));
-
         if (msg.type !== 'engagement_update') return;
-
         setScores((prev) => {
           const existing = prev[msg.participant_id] || {
             cumulativeSum: 0,
@@ -75,16 +63,12 @@ export function useEngagementData(meetingId?: string) {
             totalFlips: 0,
             wasDisengaged: false
           };
-
-          // Keep rolling window of last 12 readings for the sparkline
           const history = [
             ...(existing?.history ?? []),
             msg.engagement_score as number,
           ].slice(-12);
-          
           const isDisengaged = msg.is_disengaged;
           const newlyDisengaged = isDisengaged && !existing.wasDisengaged;
-
           return {
             ...prev,
             [msg.participant_id]: {
@@ -108,7 +92,6 @@ export function useEngagementData(meetingId?: string) {
     },
     [],
   );
-
   useEffect(() => {
     if (!room) return;
     room.on(RoomEvent.DataReceived, handleData);
@@ -116,11 +99,8 @@ export function useEngagementData(meetingId?: string) {
       room.off(RoomEvent.DataReceived, handleData);
     };
   }, [room, handleData]);
-
-  // Sync data to backend every 15 seconds if meetingId is provided
   useEffect(() => {
     if (!meetingId) return;
-    
     const interval = setInterval(() => {
       setScores(currentScores => {
         const stats = Object.values(currentScores).map(s => {
@@ -131,33 +111,24 @@ export function useEngagementData(meetingId?: string) {
             adhdFlagged: s.totalFlips > 0 // if they flipped to disengaged at least once
           };
         });
-        
         if (stats.length > 0) {
           syncEngagementStatsAction(meetingId, stats);
         }
-        
         return currentScores;
       });
     }, 15000);
-    
     return () => clearInterval(interval);
   }, [meetingId]);
-
-  // ─── Derived state ──────────────────────────────────────────────────────────
-
   /** Sorted ascending by score — lowest engagement first (most urgent) */
   const sortedScores = Object.values(scores).sort(
     (a, b) => a.engagementScore - b.engagementScore,
   );
-
   const disengagedCount = sortedScores.filter((s) => s.isDisengaged).length;
-
   const averageScore =
     sortedScores.length > 0
       ? sortedScores.reduce((sum, s) => sum + s.engagementScore, 0) /
         sortedScores.length
       : null;
-
   return {
     scores: sortedScores,
     disengagedCount,

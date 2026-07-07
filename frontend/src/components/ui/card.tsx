@@ -1,7 +1,6 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/src/lib/utils"
-
 const cardVariants = cva(
   "group/card flex flex-col gap-4 overflow-hidden rounded-xl bg-card py-4 text-sm text-card-foreground ring-1 ring-foreground/10 has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
   {
@@ -19,7 +18,6 @@ const cardVariants = cva(
     },
   }
 )
-
 function Card({
   className,
   size = "default",
@@ -35,7 +33,6 @@ function Card({
     />
   )
 }
-
 function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -48,7 +45,6 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
     />
   )
 }
-
 function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -61,7 +57,6 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
     />
   )
 }
-
 function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -71,7 +66,6 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
     />
   )
 }
-
 function CardAction({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -84,7 +78,6 @@ function CardAction({ className, ...props }: React.ComponentProps<"div">) {
     />
   )
 }
-
 function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -94,7 +87,6 @@ function CardContent({ className, ...props }: React.ComponentProps<"div">) {
     />
   )
 }
-
 function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -107,7 +99,6 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
     />
   )
 }
-
 export {
   Card,
   CardHeader,

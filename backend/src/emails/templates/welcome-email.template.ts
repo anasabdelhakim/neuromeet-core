@@ -15,23 +15,18 @@ export const getWelcomeEmailHtml = (
     <tr>
       <td align="center">
         <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:560px;width:100%;">
-
           <!-- HEADER -->
 <td style="padding: 0;">
   <!-- Apply your NeuroMeet styling to this inner wrapper -->
   <div style="background:linear-gradient(135deg,#0e1a2b 0%,#111827 100%); border-radius:16px 16px 0 0; padding:28px 32px 24px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.07);">
-    
     <div style="display:inline-block; background:linear-gradient(90deg,#00d2ff,#7e57c2); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-size:35px; font-weight:800; letter-spacing:-0.5px; margin-bottom:4px;">
       NeuroMeet
     </div>
-    
     <div style="color:#6b7280; font-size:12px; letter-spacing:1px; text-transform:uppercase;">
       Welcome aboard
     </div>
-    
   </div>
 </td>
-
           <!-- BODY -->
           <tr>
             <td style="background-color:#111827;padding:32px 15px 28px;">
@@ -39,7 +34,6 @@ export const getWelcomeEmailHtml = (
               <p style="color:#9ca3af;font-size:15px;line-height:1.65;margin:0 0 20px;">
                 Hi <strong style="color:#e5e7eb;">${userEmail}</strong>, your NeuroMeet account is ready. You now have full access to high-definition video meetings, seamless collaboration, and everything NeuroMeet has to offer.
               </p>
-
               <!-- FEATURE PILLS -->
               <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom:24px;">
                 <tr>
@@ -57,7 +51,6 @@ export const getWelcomeEmailHtml = (
                   </td>
                 </tr>
               </table>
-
               <!-- CTA -->
               <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom:24px;">
                 <tr>
@@ -68,13 +61,11 @@ export const getWelcomeEmailHtml = (
                   </td>
                 </tr>
               </table>
-
               <p style="color:#6b7280;font-size:13px;line-height:1.6;margin:0;text-align:center;">
                 Questions? Just reply to this email — we're always happy to help.
               </p>
             </td>
           </tr>
-
           <!-- FOOTER -->
           <tr>
             <td style="background-color:#0d0f14;border-radius:0 0 16px 16px;padding:18px 32px;text-align:center;border-top:1px solid rgba(255,255,255,0.06);">
@@ -84,7 +75,6 @@ export const getWelcomeEmailHtml = (
               </p>
             </td>
           </tr>
-
         </table>
       </td>
     </tr>

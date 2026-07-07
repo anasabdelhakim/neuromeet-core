@@ -32,7 +32,9 @@ export class AdminService {
     const limit = Math.min(100, Math.max(1, parseInt(query.limit || '20', 10)));
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: any = {
+      role: { not: 'ADMIN' }
+    };
 
     if (query.search) {
       where.OR = [
@@ -42,7 +44,7 @@ export class AdminService {
     }
 
     if (query.role) {
-      const validRoles = ['INSTRUCTOR', 'STUDENT', 'ADMIN'];
+      const validRoles = ['INSTRUCTOR', 'STUDENT'];
       if (validRoles.includes(query.role.toUpperCase())) {
         where.role = query.role.toUpperCase();
       }
@@ -81,12 +83,16 @@ export class AdminService {
     };
   }
 
-  async updateUserRole(userId: string, newRole: string) {
+  async updateUserRole(userId: string, newRole: string, requestingAdminId: string) {
     const validRoles = ['INSTRUCTOR', 'STUDENT', 'ADMIN'];
     const role = newRole.toUpperCase();
 
     if (!validRoles.includes(role)) {
       throw new ForbiddenException(`Invalid role: ${newRole}`);
+    }
+
+    if (userId === requestingAdminId && role !== 'ADMIN') {
+      throw new ForbiddenException('Cannot change your own admin role');
     }
 
     const user = await this.prisma.user.findUnique({
@@ -137,7 +143,10 @@ export class AdminService {
     };
   }
 
-  async deleteUser(userId: string) {
+  async deleteUser(userId: string, requestingAdminId: string) {
+    if (userId === requestingAdminId) {
+      throw new ForbiddenException('Cannot delete your own admin account');
+    }
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { id: true, role: true },

@@ -1,12 +1,10 @@
 import { Suspense } from "react";
 import { RecordingsList } from "@/src/features/dashboard-instructor/recordings";
 import { getRecordingsAction } from "@/src/features/dashboard-instructor/recordings/actions/recordings-actions";
-
 async function RecordingsContainer() {
   const recordings = await getRecordingsAction();
   return <RecordingsList recordings={recordings} isInstructor={true} />;
 }
-
 const RecordingsPage = () => {
   return (
     <div className="animate-page-entrance">
@@ -38,5 +36,4 @@ const RecordingsPage = () => {
     </div>
   );
 };
-
 export default RecordingsPage;

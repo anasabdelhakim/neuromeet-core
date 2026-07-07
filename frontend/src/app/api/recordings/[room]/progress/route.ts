@@ -14,7 +14,6 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ room
       }
     });
 
-    // Pipe the Server-Sent Events stream directly to the browser
     return new NextResponse(backendRes.body, {
       headers: {
         "Content-Type": "text/event-stream",
@@ -24,6 +23,6 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ room
     });
   } catch (error: any) {
     console.error("SSE Proxy Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

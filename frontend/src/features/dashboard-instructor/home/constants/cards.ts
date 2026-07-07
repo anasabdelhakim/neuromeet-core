@@ -1,5 +1,4 @@
 import { CalendarPlus, Link2, Plus, Video } from "lucide-react";
-
 export const Cards = [
   {
     id: "new",
@@ -44,35 +43,30 @@ export const Cards = [
     glow: "hover:shadow hover:shadow-action-yellow-subtle",
   },
 ] as const;
-
 export const gradientMap: Record<string, string> = {
   new: "bg-action-new-gradient",
   join: "bg-action-join-gradient",
   schedule: "bg-action-schedule-gradient",
   recordings: "bg-action-yellow-gradient",
 };
-
 export const iconGradientMap: Record<string, string> = {
   new: "bg-icon-new-gradient",
   join: "bg-icon-join-gradient",
   schedule: "bg-icon-schedule-gradient",
   recordings: "bg-icon-yellow-gradient",
 };
-
 export const shadowMap: Record<string, string> = {
   new: "shadow-action-new-subtle hover:shadow-action-new-deep",
   join: "shadow-action-join-subtle hover:shadow-action-join-deep",
   schedule: "shadow-action-schedule-subtle hover:shadow-action-schedule-deep",
   recordings: "shadow-action-yellow-subtle hover:shadow-action-yellow-deep",
 };
-
 export const buttonGradientMap: Record<string, string> = {
   new: "bg-btn-new-gradient",
   join: "bg-btn-join-gradient",
   schedule: "bg-btn-schedule-gradient",
   recordings: "bg-btn-yellow-gradient",
 };
-
 export const dialogBgMap: Record<string, string> = {
   new: "bg-dialog-bg-new border-action-new-input shadow-action-new-muted",
   join: "bg-dialog-bg-join border-action-join-input shadow-action-join-muted",
@@ -81,4 +75,3 @@ export const dialogBgMap: Record<string, string> = {
   recordings:
     "bg-dialog-bg-yellow border-action-yellow-input shadow-action-yellow-muted",
 };
-

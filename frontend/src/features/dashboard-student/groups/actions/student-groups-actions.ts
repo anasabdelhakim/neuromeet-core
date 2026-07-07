@@ -5,7 +5,6 @@ import { z } from "zod";
 
 import { apiPost, apiGet } from "@/src/lib/api-client";
 
-
 export async function getStudentGroupsAction() {
   try {
     const res = await apiGet<{ status: string; data: any[] }>("/groups/my-groups");

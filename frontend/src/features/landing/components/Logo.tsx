@@ -1,5 +1,4 @@
 import Image from "next/image";
-
 export const Logo = () => {
   return (
     <div className="flex items-center justify-center gap-2 select-none">

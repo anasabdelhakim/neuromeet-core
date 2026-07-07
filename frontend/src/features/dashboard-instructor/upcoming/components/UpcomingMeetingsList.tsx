@@ -9,7 +9,7 @@ export async function UpcomingMeetingsList() {
     getUpcomingMeetings(),
     getGroupsAction()
   ]);
-  
+
   const groups = groupsRes.success && groupsRes.data ? groupsRes.data : [];
 
   if (!meetings || meetings.length === 0) {

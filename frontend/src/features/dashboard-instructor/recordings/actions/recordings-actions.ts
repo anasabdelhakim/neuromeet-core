@@ -1,8 +1,6 @@
 "use server";
-
 import { apiGet, apiDelete } from "@/src/lib/api-client";
 import { revalidatePath } from "next/cache";
-
 export interface RecordingDTO {
   id: string;
   meetingId: string;
@@ -16,7 +14,6 @@ export interface RecordingDTO {
   image?: string;
   dateTime?: string;
 }
-
 export async function getRecordingsAction(): Promise<RecordingDTO[]> {
   try {
     const res = await apiGet<{ data: RecordingDTO[] }>("/recordings", {
@@ -28,7 +25,6 @@ export async function getRecordingsAction(): Promise<RecordingDTO[]> {
     return [];
   }
 }
-
 export async function deleteRecordingAction(recordingId: string) {
   try {
     await apiDelete(`/recordings/${recordingId}`);
@@ -39,9 +35,7 @@ export async function deleteRecordingAction(recordingId: string) {
     return { success: false, errorMessage: error.message || "Failed to delete recording" };
   }
 }
-
 import { cookies } from "next/headers";
-
 export async function toggleStudentRecordingAction(allowed: boolean): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.set("allowStudentRecording", String(allowed), {
@@ -51,7 +45,6 @@ export async function toggleStudentRecordingAction(allowed: boolean): Promise<vo
     sameSite: "lax",
   });
 }
-
 export async function getStudentRecordingPermissionAction(): Promise<boolean> {
   const cookieStore = await cookies();
   const val = cookieStore.get("allowStudentRecording")?.value;

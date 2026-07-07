@@ -103,7 +103,6 @@ function NotificationItem({
   );
 }
 
-
 function useNotifications() {
   const { data: notifications = [], mutate } = useSWR<NotificationData[]>(
     'notifications',
@@ -117,17 +116,17 @@ function useNotifications() {
   const unreadCount = notifications.filter(n => !n.read).length;
 
   const markAsRead = async (id: string) => {
-    // Optimistic UI update for instant feedback
+
     mutate(notifications.map(n => n.id === id ? { ...n, read: true } : n), false);
-    
+
     await markNotificationAsReadAction(id);
     mutate(); // Revalidate in background
   };
 
   const markAllAsRead = async () => {
-    // Optimistic UI update
+
     mutate(notifications.map(n => ({ ...n, read: true })), false);
-    
+
     await markAllNotificationsAsReadAction();
     mutate(); // Revalidate
   };
@@ -153,7 +152,6 @@ export function NotificationDropdown() {
     return notifications.slice(0, visibleCount);
   }, [notifications, visibleCount]);
 
-  // Optionally group them by date (e.g. Today, Yesterday) instead of hardcoded group
   const groupedNotifications = useMemo(() => {
     return visibleNotifications.reduce<Record<string, NotificationData[]>>(
       (acc, n) => {

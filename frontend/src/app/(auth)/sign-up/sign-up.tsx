@@ -1,6 +1,5 @@
-// src/components/auth/sign-up.tsx
-"use client";
 
+"use client";
 import { useActionState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -21,7 +20,6 @@ import { signUpAction } from "@/src/features/auth/actions/auth-actions";
 import type { ActionResult } from "@/src/features/auth/actions/auth-actions";
 import { PasswordInput } from "@/src/features/auth/components/password-input";
 import { PasswordStrengthUI } from "@/src/features/auth/components/password-strength-ui";
-
 export function SignUpForm() {
   const {
     register,
@@ -41,21 +39,17 @@ export function SignUpForm() {
       confirmPassword: "",
     },
   });
-
   const [state, action, pending] = useActionState<ActionResult, FormData>(
     signUpAction,
     { success: false, errorMessage: {} },
   );
-
   const handleAction = (formData: FormData) => {
     action(formData);
   };
-
   const { onBlur: usernameOnBlur, ...usernameRest } = register("username");
   const { onBlur: emailOnBlur, ...emailRest } = register("email");
   const { onBlur: passwordOnBlur, ...passwordRest } = register("password");
   const { onBlur: confirmPasswordOnBlur, ...confirmPasswordRest } = register("confirmPassword");
-
   const handleFocusNext =
     (field: "username" | "email" | "password" | "confirmPassword") =>
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -64,7 +58,6 @@ export function SignUpForm() {
         setFocus(field);
       }
     };
-
   return (
     <Card variant="gradient">
       <AuthTabs activeTab="sign-up" />
@@ -78,7 +71,6 @@ export function SignUpForm() {
               </p>
             </div>
           )}
-
           {/* USERNAME */}
           <div>
             <Field>
@@ -105,7 +97,6 @@ export function SignUpForm() {
               </FieldError>
             </Field>
           </div>
-
           {/* EMAIL */}
           <div>
             <Field>
@@ -131,12 +122,10 @@ export function SignUpForm() {
               </FieldError>
             </Field>
           </div>
-
           {/* PASSWORD */}
           <div>
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
-
               <PasswordInput
                 control={control as any}
                 pending={pending}
@@ -153,7 +142,6 @@ export function SignUpForm() {
                 }
                 onKeyDown={handleFocusNext("confirmPassword")}
               />
-
               {errors.password?.message || state.errorMessage.password?.[0] ? (
                 <FieldError>
                   {errors.password?.message || state.errorMessage.password?.[0]}
@@ -163,11 +151,9 @@ export function SignUpForm() {
                   Password must satisfy all rules below.
                 </FieldDescription>
               )}
-
               <PasswordStrengthUI control={control} error={errors.password} />
             </Field>
           </div>
-
           {/* CONFIRM PASSWORD */}
           <div>
             <Field>
@@ -195,7 +181,6 @@ export function SignUpForm() {
               </FieldError>
             </Field>
           </div>
-
           {/* SUBMIT BUTTON */}
           <div className="pt-2">
             <Button

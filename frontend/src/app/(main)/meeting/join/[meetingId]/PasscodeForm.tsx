@@ -18,7 +18,6 @@ export function PasscodeForm({ meetingId, meetingTitle }: PasscodeFormProps) {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
-  // Attempt seamless auto-join if they already have a saved session passcode
   useEffect(() => {
     const autoJoin = async () => {
       const savedPasscode = sessionStorage.getItem(`passcode_${meetingId}`);
@@ -26,7 +25,7 @@ export function PasscodeForm({ meetingId, meetingTitle }: PasscodeFormProps) {
         setIsLoading(false);
         return;
       }
-      
+
       const res = await joinMeetingAction(meetingId, savedPasscode);
       if (res && !res.success) {
         sessionStorage.removeItem(`passcode_${meetingId}`);
@@ -34,7 +33,7 @@ export function PasscodeForm({ meetingId, meetingTitle }: PasscodeFormProps) {
         setIsLoading(false);
       }
     };
-    
+
     autoJoin();
   }, [meetingId]);
 
@@ -48,13 +47,12 @@ export function PasscodeForm({ meetingId, meetingTitle }: PasscodeFormProps) {
     setIsLoading(true);
     setError("");
 
-    // Save optimistically. If the server action redirects on success, this persists.
     sessionStorage.setItem(`passcode_${meetingId}`, passcode);
 
     const res = await joinMeetingAction(meetingId, passcode);
-    
+
     if (res && !res.success) {
-      // If it failed, remove the invalid passcode and show the error
+
       sessionStorage.removeItem(`passcode_${meetingId}`);
       setError(res.errorMessage);
       setIsLoading(false);

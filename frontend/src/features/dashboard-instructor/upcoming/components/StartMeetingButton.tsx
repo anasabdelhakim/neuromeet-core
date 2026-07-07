@@ -6,7 +6,7 @@ import { Button } from "@/src/components/ui/button";
 import { Play, Loader } from "lucide-react";
 import { startMeetingAction } from "../../home/actions/meeting-actions";
 
-function SubmitButton() {
+function SubmitButton({ isLive }: { isLive?: boolean }) {
   const { pending } = useFormStatus();
 
   return (
@@ -21,18 +21,18 @@ function SubmitButton() {
       ) : (
         <Play size={16} fill="currentColor" className="mr-1" />
       )}
-      {pending ? "Starting..." : "Start"}
+      {pending ? (isLive ? "Continuing..." : "Starting...") : (isLive ? "Continue" : "Start")}
     </Button>
   );
 }
 
-export function StartMeetingForm({ meetingId }: { meetingId: string }) {
+export function StartMeetingForm({ meetingId, status }: { meetingId: string, status?: string }) {
   const actionWithId = startMeetingAction.bind(null, meetingId);
   const [state, action] = useActionState(actionWithId, { success: true, errorMessage: "" });
 
   return (
     <form action={action} className="w-full sm:w-auto flex flex-col gap-1 items-end sm:items-start">
-      <SubmitButton />
+      <SubmitButton isLive={status === "LIVE"} />
       {!state.success && state.errorMessage && (
         <span className="text-destructive text-xs font-medium max-w-[150px] text-right sm:text-left leading-tight">
           {state.errorMessage}

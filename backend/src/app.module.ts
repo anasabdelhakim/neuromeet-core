@@ -20,7 +20,6 @@ import { GroupsModule } from './groups/groups.module';
 import { RecordingsModule } from './recordings/recordings.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { NotificationsModule } from './notifications/notifications.module';
-
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -30,7 +29,6 @@ import { NotificationsModule } from './notifications/notifications.module';
         limit: 10,
       },
     ]),
-    // RedisModule temporarily disabled to use lightning-fast in-memory cache
     ScheduleModule.forRoot(),
     EventEmitterModule.forRoot(),
     PrismaModule,

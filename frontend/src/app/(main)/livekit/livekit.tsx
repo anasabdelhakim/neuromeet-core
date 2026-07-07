@@ -9,11 +9,10 @@ export default async function Livekit(props: {
   const params = await props.searchParams;
   const room = params?.room || "test-room";
 
-  // Extract real user identity from the JWT cookie
   const { accessToken } = await getAuthCookies();
   const payload = accessToken ? parseJwt(accessToken) : null;
   const isInstructor = payload?.role === "INSTRUCTOR";
-  // Use the user's real name or email as their LiveKit identity
+
   const user = params?.user || payload?.name || payload?.email || `user-${Date.now()}`;
 
   let meetingTitle = "Instant Session";
@@ -38,7 +37,6 @@ export default async function Livekit(props: {
       }
     }
 
-    // Root Lifecycle Fix: Explicitly invoke the join API so the database accurately registers the participant
     try {
       const { apiPost } = await import("@/src/lib/api-client");
       const joinRes = await apiPost<any>(`/meetings/${meetingId}/join`, { passcode: meetingPasscode });
@@ -52,7 +50,6 @@ export default async function Livekit(props: {
     console.warn("Failed to fetch meeting details for joining info", e);
   }
 
-  // Fetch the token from the NestJS backend
   const backendUrl = process.env.NESTJS_URL || "http://127.0.0.1:4000/api/v1";
   const role = payload?.role || "STUDENT";
   const res = await fetch(

@@ -1,7 +1,5 @@
 "use server";
-
 import { apiPost } from "../../../lib/api-client";
-
 export async function handleEmail(_: unknown, formData: FormData) {
   const email = formData.get("email") as string;
   if (!email) {

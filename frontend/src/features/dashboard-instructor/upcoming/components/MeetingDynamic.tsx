@@ -32,15 +32,15 @@ export async function DynamicMeetingBadge({ dateTime }: { dateTime: string }) {
   return null;
 }
 
-export async function DynamicMeetingActions({ dateTime, meetingId }: { dateTime: string, meetingId: string }) {
+export async function DynamicMeetingActions({ dateTime, meetingId, status }: { dateTime: string, meetingId: string, status?: string }) {
   await connection();
   const { isArrived } = calculateMeetingStatus(dateTime);
 
   return (
     <div className="flex w-full sm:w-auto items-center gap-2 flex-shrink-0">
       <div className="flex w-full sm:flex-initial gap-2">
-        {isArrived ? (
-          <StartMeetingForm meetingId={meetingId} />
+        {isArrived || status === "LIVE" ? (
+          <StartMeetingForm meetingId={meetingId} status={status} />
         ) : (
           <Button variant="outline" className="w-full sm:w-auto text-muted-foreground opacity-50 cursor-not-allowed">
             Starting Soon

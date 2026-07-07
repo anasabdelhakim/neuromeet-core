@@ -1,5 +1,4 @@
 import { Meeting, Group } from "../types";
-
 export const todayMeetings: Meeting[] = [
   {
     id: "m1",
@@ -26,7 +25,6 @@ export const todayMeetings: Meeting[] = [
     courseTag: "GP500",
   },
 ];
-
 export const instructorGroups: Group[] = [
   { id: 1, name: "System Design Cohort", members: 45, color: "bg-brand-cyan" },
   { id: 2, name: "Web Dev Bootcamp", members: 32, color: "bg-brand-purple" },

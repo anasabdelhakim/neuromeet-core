@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-
 /**
  * WorkerPoolService
  *
@@ -21,32 +20,25 @@ interface WorkerInstance {
   load: number;
   maxLoad: number;
 }
-
 @Injectable()
 export class WorkerPoolService {
   private readonly logger = new Logger(WorkerPoolService.name);
   private readonly workers: WorkerInstance[];
-
   constructor(private readonly config: ConfigService) {
     const urlsRaw = this.config.get<string>(
       'AI_WORKER_URLS',
       'http://ai-worker:8080',
     );
     const maxLoad = this.config.get<number>('AI_WORKER_MAX_LOAD', 15);
-
     this.workers = urlsRaw.split(',').map((url) => ({
       url: url.trim(),
       load: 0,
       maxLoad,
     }));
-
     this.logger.log(
       `Worker pool initialized: ${this.workers.length} instance(s), maxLoad=${maxLoad}`,
     );
   }
-
-  // ─── Public API ──────────────────────────────────────────────────────────────
-
   /**
    * Return the least-loaded worker that still has capacity.
    * Returns null if all workers are at maximum load.
@@ -58,7 +50,6 @@ export class WorkerPoolService {
         .sort((a, b) => a.load - b.load)[0] ?? null
     );
   }
-
   /**
    * Dispatch a room to the least-loaded worker.
    * Increments that worker's load counter.
@@ -69,21 +60,17 @@ export class WorkerPoolService {
     if (!worker) {
       throw new Error('All AI workers are at capacity — cannot dispatch bot');
     }
-
     await fetch(`${worker.url}/api/dispatch`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ room_name: roomId, token }),
     });
-
     worker.load++;
     this.logger.log(
       `Room "${roomId}" dispatched to ${worker.url} (load: ${worker.load}/${worker.maxLoad})`,
     );
-
     return worker.url;
   }
-
   /**
    * Decrement a worker's load after a room ends.
    * @param workerUrl URL of the worker that was handling the room
@@ -95,7 +82,6 @@ export class WorkerPoolService {
       this.logger.log(`Released slot on ${workerUrl} (load: ${w.load}/${w.maxLoad})`);
     }
   }
-
   /** Return current load status for all workers (useful for health checks). */
   getPoolStatus() {
     return this.workers.map(({ url, load, maxLoad }) => ({ url, load, maxLoad }));

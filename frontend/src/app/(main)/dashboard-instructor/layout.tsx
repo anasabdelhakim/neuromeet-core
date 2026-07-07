@@ -3,12 +3,10 @@ import { InstructorSidebar } from "@/src/features/dashboard-instructor/layout/In
 import { InstructorTopbar } from "@/src/features/dashboard-instructor/layout/InstructorTopbar";
 import { DashboardBackground } from "@/src/features/dashboard-instructor/wrappers/DashboardBackground";
 import type { Metadata } from "next";
-
 export const metadata: Metadata = {
   title: "Neuro Meeting",
   description: "NeuroMeet is a platform for communication and collaboration",
 };
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -22,14 +20,12 @@ export default function RootLayout({
         <div className="hidden md:block md:static md:sticky md:top-0 md:h-screen md:bg-transparent shrink-0">
           <InstructorSidebar />
         </div>
-
         {/* Right Side Column (Holds Topbar + Scrolling Main Content) */}
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           {/* Topbar (Completely locked at the top of the column, outside the scroll area) */}
           <div className="z-30 bg-black-soft-subtle backdrop-blur-md border-b shrink-0">
             <InstructorTopbar />
           </div>
-
           {/* Main Scrolling Content Area */}
           <main
             id="main-scroll-container"
@@ -38,7 +34,6 @@ export default function RootLayout({
             {children}
           </main>
         </div>
-
         {/* Mobile Bottom Navigation (Locked at the bottom of the flex column, completely outside the scroll area) */}
         <div className="md:hidden shrink-0 bg-card border-t border-border w-full z-50">
           <InstructorSidebar />

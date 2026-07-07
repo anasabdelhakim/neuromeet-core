@@ -1,12 +1,10 @@
 import { TooltipProvider } from "@/src/components/ui/tooltip";
 import { DashboardBackground } from "@/src/features/dashboard-instructor/wrappers/DashboardBackground";
-
 interface DashboardLayoutProps {
   children: React.ReactNode;
   sidebar: React.ReactNode;
   topbar: React.ReactNode;
 }
-
 export function DashboardLayout({
   children,
   sidebar,
@@ -24,7 +22,6 @@ export function DashboardLayout({
             <div className="sticky top-0 z-30 bg-black-soft-subtle backdrop-blur-md border-b">
               {topbar}
             </div>
-
             <main
               id="main-scroll-container"
               className="flex-1 p-4 md:p-6 flex flex-col gap-5 transform-gpu"

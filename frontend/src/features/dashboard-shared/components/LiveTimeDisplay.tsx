@@ -23,10 +23,9 @@ export function ServerTimeDisplay() {
   const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {
-    // Set initial time on client side to avoid hydration mismatch
+
     setNow(new Date());
 
-    // Update the clock every minute
     const interval = setInterval(() => {
       setNow(new Date());
     }, 60000);

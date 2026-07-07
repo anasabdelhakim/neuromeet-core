@@ -1,5 +1,4 @@
 "use client";
-
 import { ReactNode } from "react";
 import { Button } from "@/src/components/ui/button";
 import {
@@ -7,8 +6,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/src/components/ui/tooltip";
-
-// 1. Ensure children is explicitly defined here
 interface TooltipButtonProps {
   children: ReactNode;
   label: string;
@@ -21,7 +18,6 @@ interface TooltipButtonProps {
     | "link";
   className?: string;
 }
-
 export function TooltipButton({
   children,
   label,

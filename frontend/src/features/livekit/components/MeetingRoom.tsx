@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import {
   GridLayout,
@@ -12,15 +11,14 @@ import { Track } from "livekit-client";
 import { X, Users, Copy, Check } from "lucide-react";
 import { EngagementDashboard } from "./EngagementDashboard";
 import { useEngagementData } from "@/src/hooks/useEngagementData";
+import { useCopyFeedback } from "@/src/hooks/useCopyFeedback";
 import { ParticipantList } from "./ParticipantList";
 import { MeetingControls } from "./MeetingControls";
 import { cn } from "@/src/lib/utils";
 import type { ActiveSidebarTab } from "../types/meeting-types";
-
 function InstructorBadgedTile(props: any) {
   const trackRef = props.trackRef;
   const participant = trackRef?.participant;
-
   let isInstructor = false;
   try {
     if (participant?.metadata) {
@@ -28,7 +26,6 @@ function InstructorBadgedTile(props: any) {
       isInstructor = meta.role === "INSTRUCTOR";
     }
   } catch (_) {}
-
   return (
     <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-card border border-border transition-all duration-300 shadow-lg">
       <ParticipantTile {...props} className="w-full h-full" />
@@ -41,7 +38,6 @@ function InstructorBadgedTile(props: any) {
     </div>
   );
 }
-
 interface SidebarProps {
   activeTab: ActiveSidebarTab;
   isInstructor: boolean;
@@ -50,17 +46,14 @@ interface SidebarProps {
   meetingPasscode?: string;
   meetingId?: string;
 }
-
 function Sidebar({ activeTab, isInstructor, onClose, meetingTitle, meetingPasscode, meetingId }: SidebarProps) {
   const tabLabels: Record<NonNullable<ActiveSidebarTab>, string> = {
     chat: "In-call messages",
     participants: "People",
     engagement: "Live Engagement",
   };
-
   const participants = useParticipants();
   const participantCount = participants.length;
-
   return (
     <aside className="absolute md:relative inset-y-0 right-0 z-50 w-full md:w-[360px] h-full bg-background/95 backdrop-blur-xl border-l border-border flex flex-col shadow-[-4px_0_24px_rgba(0,0,0,0.15)] transition-all duration-300">
       {/* Header */}
@@ -76,7 +69,6 @@ function Sidebar({ activeTab, isInstructor, onClose, meetingTitle, meetingPassco
           <X size={18} />
         </button>
       </div>
-
       {/* Participant List Extra Actions */}
       {activeTab === "participants" && (
         <div className="p-4 flex items-center justify-between bg-muted/30 border-b border-border select-none">
@@ -91,7 +83,6 @@ function Sidebar({ activeTab, isInstructor, onClose, meetingTitle, meetingPassco
           )}
         </div>
       )}
-
       {/* Main Panel Content */}
       <div className="flex-1 overflow-hidden flex flex-col bg-card">
         {activeTab === "chat" && (
@@ -109,14 +100,10 @@ function Sidebar({ activeTab, isInstructor, onClose, meetingTitle, meetingPassco
     </aside>
   );
 }
-
-// Invisible component to keep engagement sync running in the background for instructors
-// without causing the entire MeetingRoom to re-render on every data packet
 function EngagementSync({ meetingId }: { meetingId: string }) {
   useEngagementData(meetingId);
   return null;
 }
-
 interface MeetingRoomProps {
   isInstructor: boolean;
   room: string;
@@ -125,14 +112,10 @@ interface MeetingRoomProps {
   meetingId?: string;
   isGuest?: boolean;
 }
-
 export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Session", meetingPasscode = "443451", meetingId = room, isGuest = false }: MeetingRoomProps) {
   const [activeTab, setActiveTab] = useState<ActiveSidebarTab>(null);
   const [showJoiningInfoModal, setShowJoiningInfoModal] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [copiedLink, setCopiedLink] = useState(false);
-  const [copiedPasscode, setCopiedPasscode] = useState(false);
-
+  const { copiedKey, copy } = useCopyFeedback(2000);
   useEffect(() => {
     if (isInstructor && meetingId) {
       const storageKey = `dismissed_joining_info_${meetingId}`;
@@ -143,26 +126,22 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
       }
     }
   }, [isInstructor, meetingId]);
-
   const handleDismissJoiningInfo = () => {
     if (meetingId) {
       sessionStorage.setItem(`dismissed_joining_info_${meetingId}`, "true");
     }
     setShowJoiningInfoModal(false);
   };
-
   const tracks = useTracks(
     [
       { source: Track.Source.Camera, withPlaceholder: false },
       { source: Track.Source.ScreenShare, withPlaceholder: false },
     ],
-    { updateOnlyOn: [], onlySubscribed: false }
+    { updateOnlyOn: [], onlySubscribed: true }
   );
-
   const toggleTab = (tab: NonNullable<ActiveSidebarTab>) => {
     setActiveTab((prev) => (prev === tab ? null : tab));
   };
-
   return (
     <div className="flex flex-col h-[100dvh] w-screen bg-background text-foreground overflow-hidden font-sans relative">
       {isInstructor && meetingId && <EngagementSync meetingId={meetingId} />}
@@ -173,16 +152,13 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
             /* Dynamic Grid Layout matching Google Meet */
             "[&_.lk-grid-layout]:w-full [&_.lk-grid-layout]:h-full [&_.lk-grid-layout]:grid [&_.lk-grid-layout]:grid-cols-[repeat(var(--lk-col-count,1),minmax(0,1fr))] [&_.lk-grid-layout]:grid-rows-[repeat(var(--lk-row-count,1),minmax(0,1fr))] [&_.lk-grid-layout]:gap-4 [&_.lk-grid-layout]:p-2",
             "[&_.lk-focus-layout]:w-full [&_.lk-focus-layout]:h-full [&_.lk-focus-layout]:grid [&_.lk-focus-layout]:gap-4 [&_.lk-focus-layout]:p-2",
-            
             /* Participant Tile Styles */
             "[&_.lk-participant-tile]:w-full [&_.lk-participant-tile]:h-full [&_.lk-participant-tile]:relative [&_.lk-participant-tile]:flex [&_.lk-participant-tile]:items-center [&_.lk-participant-tile]:justify-center [&_.lk-participant-tile]:overflow-hidden [&_.lk-participant-tile]:bg-black [&_.lk-participant-tile]:transition-all [&_.lk-participant-tile]:duration-300 [&_.lk-participant-tile]:rounded-2xl",
             "[&_.lk-participant-tile[data-speaking='true']]:border-primary [&_.lk-participant-tile[data-speaking='true']]:ring-2 [&_.lk-participant-tile[data-speaking='true']]:ring-primary/50",
             "[&_.lk-participant-tile_video]:w-full [&_.lk-participant-tile_video]:h-full [&_.lk-participant-tile_video]:!object-contain",
-            
             /* Tile Metadata (Name/Badges) */
             "[&_.lk-participant-metadata]:absolute [&_.lk-participant-metadata]:bottom-0 [&_.lk-participant-metadata]:inset-x-0 [&_.lk-participant-metadata]:bg-gradient-to-t [&_.lk-participant-metadata]:from-black/90 [&_.lk-participant-metadata]:to-transparent [&_.lk-participant-metadata]:p-4 [&_.lk-participant-metadata]:flex [&_.lk-participant-metadata]:items-center [&_.lk-participant-metadata]:gap-2 [&_.lk-participant-metadata]:z-10",
             "[&_.lk-participant-name]:text-sm [&_.lk-participant-name]:font-semibold [&_.lk-participant-name]:text-white [&_.lk-participant-name]:tracking-wide",
-            
             /* Placeholders */
             "[&_.lk-placeholder]:bg-card [&_.lk-placeholder]:w-full [&_.lk-placeholder]:h-full [&_.lk-placeholder]:flex [&_.lk-placeholder]:items-center [&_.lk-placeholder]:justify-center"
           )}>
@@ -190,7 +166,6 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
               <InstructorBadgedTile />
             </GridLayout>
           </div>
-
           {/* Google Meet style bottom-left joining info modal */}
           {showJoiningInfoModal && (
             <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-40 w-[calc(100vw-32px)] max-w-[320px] sm:max-w-[340px] bg-card/95 border border-border rounded-xl p-4 shadow-[0_8px_32px_rgba(0,0,0,0.4)] backdrop-blur-xl animate-in fade-in-50 slide-in-from-bottom-5 duration-300 select-text">
@@ -219,14 +194,12 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
                     </span>
                     <button
                       onClick={() => {
-                        navigator.clipboard.writeText(`${window.location.origin}/meeting/join/${meetingId}`);
-                        setCopiedLink(true);
-                        setTimeout(() => setCopiedLink(false), 2000);
+                        copy(`${window.location.origin}/meeting/join/${meetingId}`, "link");
                       }}
                       title="Copy Link"
                       className="flex-shrink-0 w-6 h-6 rounded flex items-center justify-center bg-muted/50 group-hover/link:bg-muted text-muted-foreground hover:!text-white transition-colors cursor-pointer"
                     >
-                      {copiedLink ? <Check size={12} className="text-status-success" /> : <Copy size={12} />}
+                      {copiedKey === "link" ? <Check size={12} className="text-status-success" /> : <Copy size={12} />}
                     </button>
                   </div>
                 </div>
@@ -238,33 +211,28 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
                     </span>
                     <button
                       onClick={() => {
-                        navigator.clipboard.writeText(meetingPasscode);
-                        setCopiedPasscode(true);
-                        setTimeout(() => setCopiedPasscode(false), 2000);
+                        copy(meetingPasscode, "passcode");
                       }}
                       title="Copy Passcode"
                       className="flex-shrink-0 w-6 h-6 rounded flex items-center justify-center bg-muted/50 group-hover/passcode:bg-muted text-muted-foreground hover:!text-white transition-colors cursor-pointer"
                     >
-                      {copiedPasscode ? <Check size={12} className="text-status-success" /> : <Copy size={12} />}
+                      {copiedKey === "passcode" ? <Check size={12} className="text-status-success" /> : <Copy size={12} />}
                     </button>
                   </div>
                 </div>
               </div>
               <button
                 onClick={() => {
-                  navigator.clipboard.writeText(`Join my meeting: ${meetingTitle}\nLink: ${window.location.origin}/meeting/join/${meetingId}\nPasscode: ${meetingPasscode}`);
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 2000);
+                  copy(`Join my meeting: ${meetingTitle}\nLink: ${window.location.origin}/meeting/join/${meetingId}\nPasscode: ${meetingPasscode}`, "all");
                 }}
                 className="w-full flex items-center justify-center gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-2 rounded-lg text-xs transition-all shadow-sm mt-1"
               >
-                {copied ? <Check size={14} className="text-status-success" /> : <Copy size={14} />}
-                <span>{copied ? "Copied Joining Info!" : "Copy Joining Info"}</span>
+                {copiedKey === "all" ? <Check size={14} className="text-status-success" /> : <Copy size={14} />}
+                <span>{copiedKey === "all" ? "Copied Joining Info!" : "Copy Joining Info"}</span>
               </button>
             </div>
           )}
         </main>
-
         {/* Sidebar on the right */}
         {activeTab && (
           <Sidebar
@@ -277,7 +245,6 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
           />
         )}
       </div>
-
       {/* Bottom Control Bar */}
       <MeetingControls
         room={room}

@@ -7,6 +7,7 @@ import {
   Query,
   Body,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { AdminGuard } from './admin.guard';
@@ -35,15 +36,16 @@ export class AdminController {
   async updateUserRole(
     @Param('id') id: string,
     @Body('role') role: string,
+    @Req() req: any,
   ) {
     if (!role || typeof role !== 'string') {
       return { status: 'error', message: 'Role is required' };
     }
-    return this.adminService.updateUserRole(id, role);
+    return this.adminService.updateUserRole(id, role, req.user.id);
   }
 
   @Delete('users/:id')
-  async deleteUser(@Param('id') id: string) {
-    return this.adminService.deleteUser(id);
+  async deleteUser(@Param('id') id: string, @Req() req: any) {
+    return this.adminService.deleteUser(id, req.user.id);
   }
 }

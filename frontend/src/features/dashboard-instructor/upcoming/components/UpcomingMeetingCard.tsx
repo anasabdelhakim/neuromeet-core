@@ -47,7 +47,7 @@ export function UpcomingMeetingCard({ meeting, groups }: UpcomingMeetingCardProp
                 <span className="opacity-50 mx-1">•</span>
                 <span className="whitespace-nowrap">{meeting.time}</span>
               </div>
-              
+
               <Suspense fallback={<div className="w-12 h-5 bg-muted rounded animate-pulse" />}>
                 <DynamicMeetingBadge dateTime={meeting.dateTime} />
               </Suspense>
@@ -57,7 +57,7 @@ export function UpcomingMeetingCard({ meeting, groups }: UpcomingMeetingCardProp
           <div className="hidden sm:flex items-center gap-4 flex-shrink-0">
             <AvatarChain avatars={mappedAvatars} max={5} />
             <Suspense fallback={<div className="w-24 h-10 bg-muted rounded animate-pulse" />}>
-              <DynamicMeetingActions dateTime={meeting.dateTime} meetingId={meeting.id} />
+              <DynamicMeetingActions dateTime={meeting.dateTime} meetingId={meeting.id} status={(meeting as any).status} />
             </Suspense>
           </div>
         </div>
@@ -82,7 +82,7 @@ export function UpcomingMeetingCard({ meeting, groups }: UpcomingMeetingCardProp
 
       <div className="sm:hidden w-full pt-1">
         <Suspense fallback={<div className="w-full h-10 bg-muted rounded animate-pulse" />}>
-          <DynamicMeetingActions dateTime={meeting.dateTime} meetingId={meeting.id} />
+          <DynamicMeetingActions dateTime={meeting.dateTime} meetingId={meeting.id} status={(meeting as any).status} />
         </Suspense>
       </div>
 

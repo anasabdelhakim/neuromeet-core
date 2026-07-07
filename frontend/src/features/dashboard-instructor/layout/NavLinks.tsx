@@ -8,15 +8,12 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/src/components/ui/tooltip";
-
 export function SidebarNavLinks() {
   const pathname = usePathname();
-
   return (
     <>
       {navItems.map(({ icon: Icon, label, href, hideOnMobile }) => {
         const active = pathname === href;
-
         return (
           <Tooltip key={href}>
             <TooltipTrigger
@@ -42,7 +39,6 @@ export function SidebarNavLinks() {
               />
               <span className="md:max-lg:hidden block text-center md:text-left w-full truncate leading-tight">{label}</span>
             </TooltipTrigger>
-
             <TooltipContent
               side="right"
               sideOffset={7}

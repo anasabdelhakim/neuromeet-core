@@ -207,7 +207,7 @@ export default function InstructorAnalyticsClient({
               </CardContent>
             </Card>
           </div>
-          
+
           {/* Student List */}
           <Card className="bg-black-soft-subtle border-border rounded-soft shadow-none flex flex-col">
               <CardHeader>
@@ -256,5 +256,4 @@ export default function InstructorAnalyticsClient({
     </div>
   );
 }
-
 

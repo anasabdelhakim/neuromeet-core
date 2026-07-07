@@ -1,15 +1,12 @@
 "use client";
-
 import { useActionState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Loader } from "lucide-react";
-
 import { Button } from "@/src/components/ui/button";
 import { Card, CardContent } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
-
 import { forgetPasswordSchema } from "@/src/validations/zod";
 import { forgotPasswordAction } from "@/src/features/auth/actions/auth-actions";
 import type { ActionResult } from "@/src/features/auth/actions/auth-actions";
@@ -19,7 +16,6 @@ import {
   FieldError,
   FieldLabel,
 } from "@/src/components/ui/field";
-
 export default function ForgetPasswordPreview() {
   const {
     register,
@@ -32,22 +28,16 @@ export default function ForgetPasswordPreview() {
     mode: "onTouched",
     reValidateMode: "onChange",
   });
-
   const [state, action, pending] = useActionState<ActionResult, FormData>(
     forgotPasswordAction,
     { success: false, errorMessage: {} },
   );
-
   const handleAction = (formData: FormData) => {
     reset(getValues(), { keepValues: true });
     action(formData);
   };
-
   const showEmailError = !!errors.email && (isSubmitted || touchedFields.email);
-
-  // 2. ADDED: Extract register so we can safely wrap it
   const { onBlur: emailOnBlur, ...emailRest } = register("email");
-
   return (
     <Card variant="gradient">
       <CardContent>
@@ -60,7 +50,6 @@ export default function ForgetPasswordPreview() {
               </p>
             </div>
           )}
-
           {/* EMAIL FIELD */}
           <div>
             <Field>
@@ -92,7 +81,6 @@ export default function ForgetPasswordPreview() {
               </FieldDescription>
             </Field>
           </div>
-
           {/* SUBMIT BUTTON */}
           <div className="pt-2">
             <Button

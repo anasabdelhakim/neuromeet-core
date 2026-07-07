@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useParticipants, useRoomContext } from "@livekit/components-react";
 import { Mic, MicOff, Video, VideoOff, Copy, Check, ChevronDown, ChevronUp, Info, UserX } from "lucide-react";
 import { kickParticipantAction } from "../actions/livekit-actions";
+import { useCopyFeedback } from "@/src/hooks/useCopyFeedback";
 
 interface ParticipantListProps {
   meetingTitle?: string;
@@ -13,9 +14,7 @@ interface ParticipantListProps {
 
 export function ParticipantList({ meetingTitle = "Instant Session", meetingPasscode = "443451", meetingId = "test-room" }: ParticipantListProps) {
   const participants = useParticipants();
-  const [copied, setCopied] = useState(false);
-  const [copiedLink, setCopiedLink] = useState(false);
-  const [copiedPasscode, setCopiedPasscode] = useState(false);
+  const { copiedKey, copy } = useCopyFeedback(2000);
   const [isInfoExpanded, setIsInfoExpanded] = useState(false);
   const room = useRoomContext();
 
@@ -25,7 +24,6 @@ export function ParticipantList({ meetingTitle = "Instant Session", meetingPassc
     }
   };
 
-  // Determine if the local user (the person looking at this screen) is an instructor
   let localIsInstructor = false;
   try {
     if (room.localParticipant.metadata) {
@@ -60,14 +58,12 @@ export function ParticipantList({ meetingTitle = "Instant Session", meetingPassc
                   </span>
                   <button
                     onClick={() => {
-                      navigator.clipboard.writeText(`${window.location.origin}/meeting/join/${meetingId}`);
-                      setCopiedLink(true);
-                      setTimeout(() => setCopiedLink(false), 2000);
+                      copy(`${window.location.origin}/meeting/join/${meetingId}`, "link");
                     }}
                     title="Copy Link"
                     className="flex-shrink-0 w-6 h-6 rounded flex items-center justify-center bg-muted/50 group-hover/link:bg-muted text-muted-foreground hover:!text-white transition-colors cursor-pointer"
                   >
-                    {copiedLink ? <Check size={12} className="text-status-success" /> : <Copy size={12} />}
+                    {copiedKey === "link" ? <Check size={12} className="text-status-success" /> : <Copy size={12} />}
                   </button>
                 </div>
               </div>
@@ -79,28 +75,24 @@ export function ParticipantList({ meetingTitle = "Instant Session", meetingPassc
                   </span>
                   <button
                     onClick={() => {
-                      navigator.clipboard.writeText(meetingPasscode);
-                      setCopiedPasscode(true);
-                      setTimeout(() => setCopiedPasscode(false), 2000);
+                      copy(meetingPasscode, "passcode");
                     }}
                     title="Copy Passcode"
                     className="flex-shrink-0 w-6 h-6 rounded flex items-center justify-center bg-muted/50 group-hover/passcode:bg-muted text-muted-foreground hover:!text-white transition-colors cursor-pointer"
                   >
-                    {copiedPasscode ? <Check size={12} className="text-status-success" /> : <Copy size={12} />}
+                    {copiedKey === "passcode" ? <Check size={12} className="text-status-success" /> : <Copy size={12} />}
                   </button>
                 </div>
               </div>
             </div>
             <button
               onClick={() => {
-                navigator.clipboard.writeText(`Join my meeting: ${meetingTitle}\nLink: ${window.location.origin}/meeting/join/${meetingId}\nPasscode: ${meetingPasscode}`);
-                setCopied(true);
-                setTimeout(() => setCopied(false), 2000);
+                copy(`Join my meeting: ${meetingTitle}\nLink: ${window.location.origin}/meeting/join/${meetingId}\nPasscode: ${meetingPasscode}`, "all");
               }}
               className="w-full flex items-center justify-center gap-1.5 bg-secondary hover:bg-secondary/80 text-white border border-border font-bold py-2 rounded-lg text-xs transition-colors shadow-sm mt-1"
             >
-              {copied ? <Check size={14} className="text-status-success" /> : <Copy size={14} />}
-              <span>{copied ? "Copied Joining Info!" : "Copy Joining Info"}</span>
+              {copiedKey === "all" ? <Check size={14} className="text-status-success" /> : <Copy size={14} />}
+              <span>{copiedKey === "all" ? "Copied Joining Info!" : "Copy Joining Info"}</span>
             </button>
           </div>
         )}

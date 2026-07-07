@@ -1,22 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Brain } from "lucide-react";
+import { useClock } from "@/src/hooks/useClock";
 
 interface MeetingHeaderProps {
   room: string;
 }
 
 export function MeetingHeader({ room }: MeetingHeaderProps) {
-  const [currentTime, setCurrentTime] = useState("");
-
-  useEffect(() => {
-    const format = () =>
-      new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    setCurrentTime(format());
-    const id = setInterval(() => setCurrentTime(format()), 30_000);
-    return () => clearInterval(id);
-  }, []);
+  const currentTime = useClock();
 
   const readableRoom = room
     .replace(/-/g, " ")

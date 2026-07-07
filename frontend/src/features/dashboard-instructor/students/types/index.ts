@@ -10,7 +10,6 @@ export interface Student {
   totalMeetings: number;
   avgEngagement: number;
 }
-
 export interface StudentGroup {
   id: string;
   name: string;

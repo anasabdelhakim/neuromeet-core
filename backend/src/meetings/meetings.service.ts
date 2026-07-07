@@ -18,14 +18,13 @@ import { LiveKitBotService } from 'src/livekit/livekit-bot.service';
 import { EmailService } from 'src/emails/email.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotifType } from '../../lib/prisma/_generated';
-
-// ── Cache TTLs (seconds) ──────────────────────────────────────────────────────
+import * as crypto from 'crypto';
+import { RoomServiceClient } from 'livekit-server-sdk';
 const CACHE_TTL = {
   MEETING_LIST: 30,
   MEETING_DETAIL: 60,
   PARTICIPANTS: 15,
 } as const;
-
 @Injectable()
 export class MeetingsService {
   constructor(
@@ -35,16 +34,9 @@ export class MeetingsService {
     private emailService: EmailService,
     private notificationsService: NotificationsService,
   ) {}
-
-  // =========================
-  // MEETINGS — CRUD
-  // =========================
-
   async createMeeting(hostId: string, dto: CreateMeetingDto) {
-    const crypto = require('crypto');
     const rawPasscode = Math.floor(100000 + Math.random() * 900000).toString();
     const roomName = crypto.randomBytes(8).toString('hex');
-
     const meeting = await this.prisma.meeting.create({
       data: {
         hostId,
@@ -73,11 +65,7 @@ export class MeetingsService {
         },
       },
     });
-
-    // Invalidate caches
     await this.cache.del(`meetings:user:${hostId}`);
-
-    // Dispatch Notifications if assigned to a group
     if (dto.groupId) {
       this.prisma.enrollment.findMany({ where: { groupId: dto.groupId } }).then(enrollments => {
         enrollments.forEach(enrollment => {
@@ -92,17 +80,12 @@ export class MeetingsService {
         });
       });
     }
-
     return { status: 'success', data: { ...meeting, plainPasscode: rawPasscode } };
   }
-
   async getAllMeetings(userId: string) {
-    // ── Cache hit ──
     const cacheKey = `meetings:user:${userId}`;
     const cached = await this.cache.get(cacheKey);
     if (cached) return { status: 'success', data: cached };
-
-    // Returns meetings the user hosts OR participates in
     const meetings = await this.prisma.meeting.findMany({
       where: {
         OR: [
@@ -130,11 +113,9 @@ export class MeetingsService {
       },
       orderBy: { createdAt: 'desc' },
     });
-
     await this.cache.set(cacheKey, meetings, CACHE_TTL.MEETING_LIST);
     return { status: 'success', data: meetings };
   }
-
   async getUpcomingMeetings(userId: string) {
     const now = new Date();
     const meetings = await this.prisma.meeting.findMany({
@@ -168,13 +149,11 @@ export class MeetingsService {
     });
     return { status: 'success', data: meetings };
   }
-
   async getTodayMeetings(userId: string) {
     const start = new Date();
     start.setHours(0, 0, 0, 0);
     const end = new Date();
     end.setHours(23, 59, 59, 999);
-
     const meetings = await this.prisma.meeting.findMany({
       where: {
         hostId: userId,
@@ -204,7 +183,6 @@ export class MeetingsService {
     });
     return { status: 'success', data: meetings };
   }
-
   async getPreviousMeetings(userId: string) {
     const meetings = await this.prisma.meeting.findMany({
       where: {
@@ -235,7 +213,6 @@ export class MeetingsService {
       },
       orderBy: { scheduledAt: 'desc' },
     });
-
     const mappedMeetings = meetings.map(m => {
       let sum = 0;
       let count = 0;
@@ -250,10 +227,8 @@ export class MeetingsService {
       const { participants, ...rest } = m;
       return { ...rest, avgEngagement: avg };
     });
-
     return { status: 'success', data: mappedMeetings };
   }
-
   async getStudentUpcomingMeetings(userId: string) {
     const now = new Date();
     const meetings = await this.prisma.meeting.findMany({
@@ -275,13 +250,11 @@ export class MeetingsService {
     });
     return { status: 'success', data: meetings };
   }
-
   async getStudentTodayMeetings(userId: string) {
     const start = new Date();
     start.setHours(0, 0, 0, 0);
     const end = new Date();
     end.setHours(23, 59, 59, 999);
-
     const meetings = await this.prisma.meeting.findMany({
       where: {
         group: { enrollments: { some: { studentId: userId } } },
@@ -303,7 +276,6 @@ export class MeetingsService {
     });
     return { status: 'success', data: meetings };
   }
-
   async getStudentPreviousMeetings(userId: string) {
     const meetings = await this.prisma.meeting.findMany({
       where: {
@@ -323,13 +295,9 @@ export class MeetingsService {
     });
     return { status: 'success', data: meetings };
   }
-
   async getMeetingById(meetingId: string, userId: string) {
-    // ── Cache hit ──
     const cacheKey = `meeting:${meetingId}`;
     const cached = await this.cache.get<any>(cacheKey);
-
-    // Even on cache hit we must enforce authorization
     if (cached) {
       const isHost = cached.host.id === userId;
       const isParticipant = cached.participants.some((p: any) => p.user.id === userId);
@@ -338,7 +306,6 @@ export class MeetingsService {
       }
       return { status: 'success', data: cached };
     }
-
     const meeting = await this.prisma.meeting.findUnique({
       where: { id: meetingId },
       select: {
@@ -383,31 +350,24 @@ export class MeetingsService {
         },
       },
     });
-
     if (!meeting) throw new NotFoundException('Meeting not found');
-
-    // Only host or participant can see meeting details
     const isHost = meeting.host.id === userId;
     const isParticipant = meeting.participants.some((p) => p.user.id === userId);
     if (!isHost && !isParticipant) {
       throw new ForbiddenException('You are not part of this meeting');
     }
-
     await this.cache.set(cacheKey, meeting, CACHE_TTL.MEETING_DETAIL);
     return { status: 'success', data: meeting };
   }
-
   async updateMeeting(meetingId: string, hostId: string, dto: UpdateMeetingDto) {
     const meeting = await this.prisma.meeting.findUnique({
       where: { id: meetingId },
       select: { id: true, hostId: true, status: true },
     });
-
     if (!meeting) throw new NotFoundException('Meeting not found');
     if (meeting.hostId !== hostId) {
       throw new ForbiddenException('Only the host can update this meeting');
     }
-
     const updated = await this.prisma.meeting.update({
       where: { id: meetingId },
       data: {
@@ -420,7 +380,6 @@ export class MeetingsService {
         ...(dto.livekitRoomName && { livekitRoomName: dto.livekitRoomName }),
         ...(dto.livekitRoomSid && { livekitRoomSid: dto.livekitRoomSid }),
         ...(dto.joinToken && { joinToken: dto.joinToken }),
-        // Auto-set timestamps based on status changes
         ...(dto.status === 'LIVE' && { startedAt: new Date() }),
         ...(dto.status === 'ENDED' && { endedAt: new Date() }),
       },
@@ -435,14 +394,11 @@ export class MeetingsService {
         endedAt: true,
       },
     });
-
-    // Invalidate meeting + host list caches
     await Promise.all([
       this.cache.del(`meeting:${meetingId}`),
       this.cache.del(`meetings:user:${hostId}`),
       this.cache.del(`participants:${meetingId}`),
     ]);
-
     if (dto.status === 'ENDED' && meeting.status !== 'ENDED') {
       this.notificationsService.createNotification({
         userId: hostId,
@@ -453,80 +409,59 @@ export class MeetingsService {
         sendEmail: true,
       }).catch(e => console.error(e));
     }
-
     return { status: 'success', data: updated };
   }
-
   async deleteMeeting(meetingId: string, hostId: string) {
     const meeting = await this.prisma.meeting.findUnique({
       where: { id: meetingId },
       select: { id: true, hostId: true },
     });
-
     if (!meeting) throw new NotFoundException('Meeting not found');
     if (meeting.hostId !== hostId) {
       throw new ForbiddenException('Only the host can delete this meeting');
     }
-
     await this.prisma.meeting.delete({ where: { id: meetingId } });
-
-    // Invalidate all caches related to this meeting
     await Promise.all([
       this.cache.del(`meeting:${meetingId}`),
       this.cache.del(`meetings:user:${hostId}`),
       this.cache.del(`participants:${meetingId}`),
     ]);
-
     return { status: 'success', message: 'Meeting deleted successfully' };
   }
-
   async shareMeeting(meetingId: string, hostId: string, groupId: string) {
     const meeting = await this.prisma.meeting.findUnique({
       where: { id: meetingId },
       include: { host: true },
     });
-
     if (!meeting) throw new NotFoundException('Meeting not found');
     if (meeting.hostId !== hostId) {
       throw new ForbiddenException('Only the host can share this meeting');
     }
-
     const group = await this.prisma.group.findUnique({
       where: { id: groupId },
       include: { enrollments: { include: { student: true } } },
     });
-
     if (!group) throw new NotFoundException('Group not found');
-
-    // Use the existing plain text passcode so the email perfectly matches the dashboard card
     const rawPasscode = meeting.passcode || Math.floor(100000 + Math.random() * 900000).toString();
-
     await this.prisma.meeting.update({
       where: { id: meetingId },
       data: { passcode: rawPasscode, groupId },
     });
-
-    // Invalidate host and student caches to ensure instant dashboard synchronization
     const studentCachePromises = group.enrollments.map((e) => this.cache.del(`meetings:user:${e.student.id}`));
     await Promise.all([
       this.cache.del(`meeting:${meetingId}`),
       this.cache.del(`meetings:user:${hostId}`),
       ...studentCachePromises,
     ]);
-
-    // Extract students
     const students = group.enrollments.map((e) => ({
       email: e.student.email,
       name: e.student.name,
     }));
-
     if (students.length === 0) {
       return { status: 'success', message: 'Group has no students to notify', passcode: rawPasscode };
     }
-
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
     const joinUrl = `${frontendUrl}/meeting/join/${meeting.id}`;
-
     await this.emailService.sendMeetingInvitations(students, {
       meetingTitle: meeting.title,
       instructorName: meeting.host.name,
@@ -534,14 +469,8 @@ export class MeetingsService {
       passcode: rawPasscode,
       joinUrl,
     });
-
     return { status: 'success', message: 'Meeting shared successfully', passcode: rawPasscode };
   }
-
-  // =========================
-  // PARTICIPANTS
-  // =========================
-
   async joinMeeting(meetingIdOrRoom: string, userId: string, dto: JoinMeetingDto) {
     const meeting = await this.prisma.meeting.findFirst({
       where: {
@@ -552,15 +481,11 @@ export class MeetingsService {
       },
       select: { id: true, status: true, hostId: true, passcode: true, livekitRoomName: true, group: { select: { enrollments: { where: { studentId: userId } } } } },
     });
-
     if (!meeting) throw new NotFoundException('Meeting not found');
     const meetingId = meeting.id;
-
     if (meeting.status === 'ENDED' || meeting.status === 'CANCELLED') {
       throw new BadRequestException('This meeting is no longer active');
     }
-
-    // Check if already in the meeting (Seamless Reconnection)
     const existing = await this.prisma.meetingParticipant.findUnique({
       where: { meetingId_userId: { meetingId, userId } },
       select: {
@@ -571,36 +496,26 @@ export class MeetingsService {
         user: { select: { id: true, name: true, email: true } },
       },
     });
-
     const isGuest = meeting.hostId !== userId && (!meeting.group || meeting.group.enrollments.length === 0);
-
     if (existing) {
-      // If the user is already a recognized participant, let them back in seamlessly!
       return { status: 'success', data: { participant: existing, livekitRoomName: meeting.livekitRoomName, isGuest } };
     }
-
     if (meeting.hostId !== userId) {
-      // Validate Passcode
       let isValidPasscode = false;
       if (meeting.passcode) {
-        // Since we stopped hashing, we check plain text first
         if (meeting.passcode === dto.passcode) {
           isValidPasscode = true;
         } else {
-          // Fallback check if it was an older meeting with a hashed passcode
           try {
             isValidPasscode = await Bun.password.verify(dto.passcode, meeting.passcode);
           } catch (e) {}
         }
       }
-
       if (!isValidPasscode) {
         throw new ForbiddenException('Invalid passcode');
       }
     }
-
     const role = meeting.hostId === userId ? 'HOST' : 'PARTICIPANT';
-
     const participant = await this.prisma.meetingParticipant.create({
       data: {
         meetingId,
@@ -617,46 +532,36 @@ export class MeetingsService {
         user: { select: { id: true, name: true, email: true } },
       },
     });
-
-    // Invalidate participant + meeting caches
     await Promise.all([
       this.cache.del(`participants:${meetingId}`),
       this.cache.del(`meeting:${meetingId}`),
       this.cache.del(`meetings:user:${userId}`),
     ]);
-
     return { status: 'success', data: { participant, livekitRoomName: meeting.livekitRoomName, isGuest } };
   }
-
   async startMeeting(meetingId: string, userId: string) {
     const meeting = await this.prisma.meeting.findUnique({
       where: { id: meetingId },
       select: { id: true, hostId: true, livekitRoomName: true, status: true },
     });
-
     if (!meeting) throw new NotFoundException('Meeting not found');
     if (meeting.hostId !== userId) {
       throw new ForbiddenException('Only the host can start this meeting');
     }
-
     if (meeting.status === 'SCHEDULED') {
       await this.prisma.meeting.update({
         where: { id: meetingId },
         data: { status: 'LIVE', startedAt: new Date() },
       });
       await this.cache.del(`meeting:${meetingId}`);
-      
-      // Dispatch the AI bot to the room seamlessly
       if (meeting.livekitRoomName) {
         this.botService.dispatchBotToRoom(meeting.livekitRoomName).catch(err => {
           console.error("Failed to dispatch bot:", err);
         });
       }
     }
-
     return { status: 'success', data: { livekitRoomName: meeting.livekitRoomName } };
   }
-
   async endMeeting(meetingIdOrRoom: string, userId: string) {
     const meeting = await this.prisma.meeting.findFirst({
       where: {
@@ -667,33 +572,24 @@ export class MeetingsService {
       },
       select: { id: true, hostId: true, livekitRoomName: true },
     });
-
     if (!meeting) throw new NotFoundException('Meeting not found');
     const meetingId = meeting.id;
-
     if (meeting.hostId !== userId) {
       throw new ForbiddenException('Only the host can end this meeting');
     }
-
     await this.prisma.meeting.update({
       where: { id: meetingId },
       data: { status: 'ENDED', endedAt: new Date() },
     });
-
     await Promise.all([
       this.cache.del(`meeting:${meetingId}`),
       this.cache.del(`meetings:user:${userId}`),
       this.cache.del(`participants:${meetingId}`),
     ]);
-    
-    // Recall the AI bot to free GPU resources
     if (meeting.livekitRoomName) {
       this.botService.recallBotFromRoom(meeting.livekitRoomName).catch(err => {
         console.error("Failed to recall bot:", err);
       });
-
-      // Forcefully close the LiveKit room to kick all participants out
-      const { RoomServiceClient } = require('livekit-server-sdk');
       const roomService = new RoomServiceClient(
         process.env.LIVEKIT_URL || process.env.LIVEKIT_API_URL,
         process.env.LIVEKIT_API_KEY,
@@ -703,10 +599,8 @@ export class MeetingsService {
         console.error("Failed to delete LiveKit room:", err);
       });
     }
-
     return { status: 'success', message: 'Meeting ended successfully' };
   }
-
   async leaveMeeting(meetingIdOrRoom: string, userId: string) {
     const meeting = await this.prisma.meeting.findFirst({
       where: {
@@ -717,20 +611,16 @@ export class MeetingsService {
       },
       select: { id: true, hostId: true, livekitRoomName: true },
     });
-
     if (!meeting) throw new NotFoundException('Meeting not found');
     const meetingId = meeting.id;
-
     const participant = await this.prisma.meetingParticipant.findUnique({
       where: { meetingId_userId: { meetingId, userId } },
     });
-
     if (participant) {
       const leftAt = new Date();
       const secondsPresent = participant.joinedAt
         ? Math.floor((leftAt.getTime() - participant.joinedAt.getTime()) / 1000)
         : 0;
-
       await this.prisma.meetingParticipant.update({
         where: { meetingId_userId: { meetingId, userId } },
         data: {
@@ -739,8 +629,6 @@ export class MeetingsService {
         },
       });
     }
-
-    // Check if there are any remaining active human participants
     const activeParticipants = await this.prisma.meetingParticipant.findMany({
       where: {
         meetingId,
@@ -748,7 +636,6 @@ export class MeetingsService {
         user: { email: { not: { contains: 'bot' } } },
       },
     });
-
     if (activeParticipants.length === 0) {
       const endedMeeting = await this.prisma.meeting.update({
         where: { id: meetingId },
@@ -759,9 +646,6 @@ export class MeetingsService {
         this.botService.recallBotFromRoom(endedMeeting.livekitRoomName).catch(err => {
           console.error("Failed to recall bot:", err);
         });
-
-        // Forcefully close the LiveKit room to finalize recordings
-        const { RoomServiceClient } = require('livekit-server-sdk');
         const roomService = new RoomServiceClient(
           process.env.LIVEKIT_URL || process.env.LIVEKIT_API_URL,
           process.env.LIVEKIT_API_KEY,
@@ -772,17 +656,13 @@ export class MeetingsService {
         });
       }
     }
-
-    // Invalidate participant + meeting caches
     await Promise.all([
       this.cache.del(`participants:${meetingId}`),
       this.cache.del(`meeting:${meetingId}`),
       this.cache.del(`meetings:user:${userId}`),
     ]);
-
     return { status: 'success', message: 'Successfully left the meeting' };
   }
-
   async getMeetingParticipants(meetingId: string, userId: string) {
     const meeting = await this.prisma.meeting.findUnique({
       where: { id: meetingId },
@@ -792,21 +672,15 @@ export class MeetingsService {
         participants: { select: { userId: true } },
       },
     });
-
     if (!meeting) throw new NotFoundException('Meeting not found');
-
     const isHost = meeting.hostId === userId;
     const isParticipant = meeting.participants.some((p) => p.userId === userId);
-
     if (!isHost && !isParticipant) {
       throw new ForbiddenException('You are not part of this meeting');
     }
-
-    // ── Cache hit ──
     const cacheKey = `participants:${meetingId}`;
     const cached = await this.cache.get(cacheKey);
     if (cached) return { status: 'success', data: cached };
-
     const participants = await this.prisma.meetingParticipant.findMany({
       where: { meetingId },
       select: {
@@ -822,11 +696,9 @@ export class MeetingsService {
       },
       orderBy: { joinedAt: 'asc' },
     });
-
     await this.cache.set(cacheKey, participants, CACHE_TTL.PARTICIPANTS);
     return { status: 'success', data: participants };
   }
-
   async updateParticipant(
     meetingId: string,
     participantId: string,
@@ -837,14 +709,12 @@ export class MeetingsService {
       where: { id: meetingId },
       select: { id: true, hostId: true },
     });
-
     if (!meeting) throw new NotFoundException('Meeting not found');
     if (meeting.hostId !== hostId) {
       throw new ForbiddenException(
         'Only the host can update participant metrics',
       );
     }
-
     const updated = await this.prisma.meetingParticipant.update({
       where: { id: participantId },
       data: {
@@ -863,17 +733,9 @@ export class MeetingsService {
         adhdFlagged: true,
       },
     });
-
-    // Invalidate participant cache after metric update
     await this.cache.del(`participants:${meetingId}`);
-
     return { status: 'success', data: updated };
   }
-
-  // =========================
-  // MATERIALS
-  // =========================
-
   async addMaterial(
     meetingId: string,
     uploadedBy: string,
@@ -887,20 +749,16 @@ export class MeetingsService {
         participants: { select: { userId: true } },
       },
     });
-
     if (!meeting) throw new NotFoundException('Meeting not found');
-
     const isHost = meeting.hostId === uploadedBy;
     const isParticipant = meeting.participants.some(
       (p) => p.userId === uploadedBy,
     );
-
     if (!isHost && !isParticipant) {
       throw new ForbiddenException(
         'Only meeting members can upload materials',
       );
     }
-
     const material = await this.prisma.meetingMaterial.create({
       data: {
         meetingId,
@@ -922,10 +780,8 @@ export class MeetingsService {
         uploader: { select: { id: true, name: true } },
       },
     });
-
     return { status: 'success', data: material };
   }
-
   async getMeetingMaterials(meetingId: string, userId: string) {
     const meeting = await this.prisma.meeting.findUnique({
       where: { id: meetingId },
@@ -935,16 +791,12 @@ export class MeetingsService {
         participants: { select: { userId: true } },
       },
     });
-
     if (!meeting) throw new NotFoundException('Meeting not found');
-
     const isHost = meeting.hostId === userId;
     const isParticipant = meeting.participants.some((p) => p.userId === userId);
-
     if (!isHost && !isParticipant) {
       throw new ForbiddenException('You are not part of this meeting');
     }
-
     const materials = await this.prisma.meetingMaterial.findMany({
       where: { meetingId },
       select: {
@@ -959,10 +811,8 @@ export class MeetingsService {
       },
       orderBy: { uploadedAt: 'desc' },
     });
-
     return { status: 'success', data: materials };
   }
-
   async deleteMaterial(
     meetingId: string,
     materialId: string,
@@ -977,30 +827,20 @@ export class MeetingsService {
         meeting: { select: { hostId: true } },
       },
     });
-
     if (!material) throw new NotFoundException('Material not found');
     if (material.meetingId !== meetingId) {
       throw new BadRequestException('Material does not belong to this meeting');
     }
-
     const isHost = material.meeting.hostId === userId;
     const isOwner = material.uploadedBy === userId;
-
     if (!isHost && !isOwner) {
       throw new ForbiddenException(
         'Only the uploader or the host can delete this material',
       );
     }
-
     await this.prisma.meetingMaterial.delete({ where: { id: materialId } });
-
     return { status: 'success', message: 'Material deleted successfully' };
   }
-
-  // =========================
-  // ENGAGEMENT SYNC
-  // =========================
-  
   async syncEngagement(
     meetingId: string,
     stats: { participantIdentity: string; avgEngagementScore: number; adhdFlagged: boolean }[]
@@ -1009,17 +849,13 @@ export class MeetingsService {
       where: { id: meetingId },
       include: { participants: { include: { user: true } } }
     });
-    
     if (!meeting) return { success: false };
-
     for (const stat of stats) {
-      // Find the participant whose user name or email matches the LiveKit identity
       const p = meeting.participants.find(
         mp => mp.user.name === stat.participantIdentity || 
               mp.user.email === stat.participantIdentity || 
               mp.user.id === stat.participantIdentity
       );
-
       if (p) {
         await this.prisma.meetingParticipant.update({
           where: { id: p.id },
@@ -1030,8 +866,6 @@ export class MeetingsService {
         });
       }
     }
-    
-    // Invalidate caches
     await this.cache.del(`participants:${meetingId}`);
     return { success: true };
   }

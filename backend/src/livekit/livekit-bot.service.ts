@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { AccessToken } from 'livekit-server-sdk';
-
 /**
  * LiveKitBotService
  *
@@ -25,14 +24,10 @@ import { AccessToken } from 'livekit-server-sdk';
 @Injectable()
 export class LiveKitBotService {
   private readonly logger = new Logger(LiveKitBotService.name);
-
   constructor(
     private readonly config: ConfigService,
     private readonly http: HttpService,
   ) {}
-
-  // ─── Token Generation ────────────────────────────────────────────────────────
-
   /**
    * Generate a hidden-participant JWT for the AI bot.
    * Synchronous — livekit-server-sdk v2 toJwt() is sync on current backend.
@@ -53,7 +48,6 @@ export class LiveKitBotService {
         ttl: '6h',
       },
     );
-
     at.addGrant({
       roomJoin: true,
       room: roomId,
@@ -62,13 +56,8 @@ export class LiveKitBotService {
       canPublish: false,       // Bot doesn't publish audio/video
       hidden: true,            // Invisible in participant list
     });
-
-    // In livekit-server-sdk v2, toJwt() is async and returns a Promise<string>
     return await at.toJwt();
   }
-
-  // ─── Bot Lifecycle ───────────────────────────────────────────────────────────
-
   /**
    * Tell the Python AI Worker to dispatch a bot to this room.
    * Called when a meeting transitions to LIVE status.
@@ -76,7 +65,6 @@ export class LiveKitBotService {
   async dispatchBotToRoom(roomId: string): Promise<void> {
     const botToken = await this.generateBotToken(roomId);
     const workerUrl = this.config.get<string>('AI_WORKER_URL', 'http://ai-worker:8080');
-
     try {
       await firstValueFrom(
         this.http.post(`${workerUrl}/api/dispatch`, {
@@ -88,18 +76,14 @@ export class LiveKitBotService {
       this.logger.log(`Bot dispatched to room: ${roomId}`);
     } catch (err) {
       this.logger.warn(`⚠️ AI Worker is offline or unreachable (${workerUrl}). Meeting will start WITHOUT the AI bot.`);
-      // We do NOT throw the error here! 
-      // Throwing would crash the meeting creation. We just want to proceed without the bot.
     }
   }
-
   /**
    * Signal the Python Worker to recall the bot.
    * Called when the meeting ends so the bot exits cleanly.
    */
   async recallBotFromRoom(roomId: string): Promise<void> {
     const workerUrl = this.config.get<string>('AI_WORKER_URL', 'http://ai-worker:8080');
-
     await firstValueFrom(
       this.http.post(`${workerUrl}/api/recall`, { room_name: roomId }),
     ).catch((e) =>

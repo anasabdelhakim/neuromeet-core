@@ -1,6 +1,5 @@
 import { PreviousMeetingsList } from "@/src/features/dashboard-instructor/previous/components/PreviousMeetingsList";
 import { Suspense } from "react";
-
 function PreviousMeetingsSkeleton() {
   return (
     <div className="flex flex-col gap-4">
@@ -42,7 +41,6 @@ function PreviousMeetingsSkeleton() {
     </div>
   );
 }
-
 const PreviousMeetingsPage = () => {
   return (
     <div className="flex flex-col gap-6 animate-page-entrance">
@@ -52,5 +50,4 @@ const PreviousMeetingsPage = () => {
     </div>
   );
 };
-
 export default PreviousMeetingsPage;

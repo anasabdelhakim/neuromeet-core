@@ -1,12 +1,10 @@
 import { Suspense } from "react";
 import { RecordingsList } from "@/src/features/dashboard-instructor/recordings/components/RecordingList";
 import { getRecordingsAction } from "@/src/features/dashboard-instructor/recordings/actions/recordings-actions";
-
 async function StudentRecordingsContainer() {
   const recordings = await getRecordingsAction();
   return <RecordingsList recordings={recordings} isInstructor={false} />;
 }
-
 export default function StudentRecordingsPage() {
   return (
     <div className="flex flex-col gap-6 animate-page-entrance">

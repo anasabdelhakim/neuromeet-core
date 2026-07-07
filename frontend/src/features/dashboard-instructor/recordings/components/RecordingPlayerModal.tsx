@@ -1,19 +1,14 @@
 "use client";
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
 import { Info } from "lucide-react";
-
 interface RecordingPlayerModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
   gDriveViewLink: string;
 }
-
 export function RecordingPlayerModal({ isOpen, onClose, title, gDriveViewLink }: RecordingPlayerModalProps) {
-  // Convert standard webViewLink to preview link if needed (e.g., replacing /view with /preview)
   const embedUrl = gDriveViewLink.replace("/view", "/preview");
-
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-[95vw] sm:max-w-5xl md:max-w-[90vw] xl:max-w-[85vw] h-[85vh] flex flex-col p-4 rounded-soft border border-border bg-card backdrop-blur-2xl shadow-2xl">

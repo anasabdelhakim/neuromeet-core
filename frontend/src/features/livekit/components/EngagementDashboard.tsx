@@ -1,14 +1,10 @@
 "use client";
-
 import { useEngagementData, ParticipantScore } from "@/src/hooks/useEngagementData";
 import { TrendingUp, AlertCircle } from "lucide-react";
-
 const DISENGAGEMENT_THRESHOLD = 0.50;
-
 export function EngagementDashboard() {
   const { scores, disengagedCount, averageScore, totalParticipants } =
     useEngagementData();
-
   return (
     <div className="space-y-4 w-full">
       <div className="grid grid-cols-2 gap-2">
@@ -32,7 +28,6 @@ export function EngagementDashboard() {
           status={disengagedCount > 0 ? "error" : "success"}
         />
       </div>
-
       {disengagedCount > 0 && (
         <div className="flex items-center gap-2.5 bg-destructive-soft border border-destructive rounded-card px-3 py-2.5">
           <AlertCircle size={15} className="text-destructive flex-shrink-0" />
@@ -47,7 +42,6 @@ export function EngagementDashboard() {
           </div>
         </div>
       )}
-
       {scores.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-10 text-center">
           <TrendingUp size={28} className="text-muted-foreground mb-3 opacity-40" />
@@ -69,23 +63,19 @@ export function EngagementDashboard() {
     </div>
   );
 }
-
 type StatusType = "neutral" | "success" | "warning" | "error";
-
 const statusTextClass: Record<StatusType, string> = {
   neutral: "text-muted-foreground",
   success: "text-status-success",
   warning: "text-status-warning",
   error: "text-destructive",
 };
-
 interface SummaryCardProps {
   label: string;
   value: string;
   sublabel?: string;
   status: StatusType;
 }
-
 function SummaryCard({ label, value, sublabel, status }: SummaryCardProps) {
   return (
     <div className="bg-black-soft-muted border border-border rounded-card px-3 py-3">
@@ -97,14 +87,11 @@ function SummaryCard({ label, value, sublabel, status }: SummaryCardProps) {
     </div>
   );
 }
-
 function StudentRow({ score }: { score: ParticipantScore }) {
   const pct = Math.round(score.engagementScore * 100);
   const isAlert = score.isDisengaged;
-
   const barColor = isAlert ? "bg-destructive" : pct < 65 ? "bg-status-warning" : "bg-status-success";
   const textColor = isAlert ? "text-destructive" : pct < 65 ? "text-status-warning" : "text-status-success";
-
   return (
     <div
       className={`px-3 py-2.5 rounded-card border transition-colors duration-normal ${
@@ -122,14 +109,12 @@ function StudentRow({ score }: { score: ParticipantScore }) {
         </div>
         <span className={`text-xs font-bold tabular-nums flex-shrink-0 ${textColor}`}>{pct}%</span>
       </div>
-
       <div className="w-full bg-border rounded-full h-1 overflow-hidden">
         <div
           className={`h-1 rounded-full transition-all duration-slow ${barColor}`}
           style={{ width: `${pct}%` }}
         />
       </div>
-
       {score.history.length > 2 && (
         <div className="mt-2 flex items-end gap-px h-3">
           {score.history.map((v, i) => (

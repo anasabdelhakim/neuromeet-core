@@ -87,20 +87,18 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
 
   const handleInviteStudent = (studentId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    
-    // Optimistic UI update
+
     setPendingInvites(prev => new Set(prev).add(studentId));
-    
+
     startTransition(async () => {
       const result = await inviteStudentToGroup(group.id, studentId);
-      // Removed revert and alert to keep optimistic UI as requested
+
     });
   };
 
   const handleUndoInvite = (studentId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    
-    // Optimistic UI update
+
     setPendingInvites(prev => {
       const newSet = new Set(prev);
       newSet.delete(studentId);
@@ -109,7 +107,7 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
 
     startTransition(async () => {
       const result = await undoInvitationToGroup(group.id, studentId);
-      // Removed revert and alert to keep optimistic UI as requested
+
     });
   };
 
@@ -120,8 +118,6 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
       setActiveAlertId(null);
     });
   };
-
-
 
   const filteredEnrollments = useMemo(() => {
     if (!searchQuery.trim()) return group.enrollments;
@@ -248,7 +244,7 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
               filteredEnrollments.map((e: any) => {
                 const student = e.student;
                 if (!student) return null;
-                
+
                 const lastSessionDate = student.sessions?.[0]?.lastUsedAt ? new Date(student.sessions[0].lastUsedAt) : null;
                 const lastMeetingDate = student.meetingParticipants?.length > 0 
                   ? student.meetingParticipants.reduce((latest: Date | null, p: any) => {
@@ -257,9 +253,9 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
                       return joinedAt && joinedAt > latest ? joinedAt : latest;
                     }, null)
                   : null;
-                
+
                 const lastActiveDate = lastSessionDate || lastMeetingDate;
-                // Treat as "Active" if they were seen in the last 24 hours (like the Student List)
+
                 const isActive = lastActiveDate ? (new Date().getTime() - lastActiveDate.getTime() < 24 * 60 * 60 * 1000) : false;
 
                 return (
@@ -274,7 +270,7 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
                         <p className="text-sm font-semibold text-foreground truncate">{student.name}</p>
                       </div>
                     </TableCell>
-                    
+
                     <TableCell className="py-4 text-sm text-muted-foreground truncate max-w-[180px]">
                       {student.email}
                     </TableCell>
@@ -304,7 +300,7 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
                               <MoreHorizontal size={16} />
                             </Button>
                           } />
-                          
+
                           {activePopoverId === student.id && (
                             <PopoverContent align="end" className="w-44 p-1 flex flex-col gap-0.5">
                               <AlertDialogTrigger render={

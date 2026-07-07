@@ -87,7 +87,6 @@ export class GroupsService {
     return { status: 'success', data: enrollments };
   }
 
-
   async getGroupMembers(groupId: string, instructorId: string) {
     const group = await this.prisma.group.findUnique({
       where: { id: groupId },
@@ -119,7 +118,6 @@ export class GroupsService {
 
     return { status: 'success', data: members };
   }
-
 
   async updateGroup(groupId: string, instructorId: string, dto: any) {
     const group = await this.prisma.group.findUnique({
@@ -184,7 +182,7 @@ export class GroupsService {
 
     if (existingInvite) {
       if (existingInvite.status === 'PENDING') throw new ConflictException('Invitation already pending');
-      // If rejected/accepted previously, update it to pending
+
       await this.prisma.invitation.update({
         where: { id: existingInvite.id },
         data: { status: 'PENDING' }
@@ -290,8 +288,7 @@ export class GroupsService {
     if (!enrollment) throw new NotFoundException('Student is not enrolled');
 
     await this.prisma.enrollment.delete({ where: { id: enrollment.id } });
-    
-    // Cleanup any invites
+
     await this.prisma.invitation.deleteMany({
       where: { studentId, groupId }
     });

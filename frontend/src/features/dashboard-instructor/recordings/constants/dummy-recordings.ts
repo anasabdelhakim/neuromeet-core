@@ -1,5 +1,4 @@
 import { Recording } from "../types";
-
 export const dummyRecordings: Recording[] = [
   {
     id: "rec-1",

@@ -4,7 +4,6 @@ import { GoogleStrategy } from './strategies/google.strategy';
 import { OAuthService } from './oauth.service';
 import { PrismaService } from '../database/database.service';
 import { JwtConfigModule } from 'src/auth/jwt.config';
-
 @Module({
   imports: [JwtConfigModule],
   controllers: [OAuthController],

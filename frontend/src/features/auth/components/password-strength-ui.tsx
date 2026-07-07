@@ -2,19 +2,16 @@ import { Check, Circle } from "lucide-react";
 import { useWatch, type Control, type FieldError } from "react-hook-form";
 import { cn } from "@/src/lib/utils";
 import { passwordRules } from "@/src/validations/passwordRules";
-
 const PASSWORD_COLORS = [
   "var(--destructive)",
   "var(--status-warning)",
   "var(--action-join)",
   "var(--status-success)",
 ];
-
 interface PasswordStrengthUIProps {
   control: Control<any>;
   error?: FieldError;
 }
-
 export function PasswordStrengthUI({
   control,
   error,
@@ -24,16 +21,13 @@ export function PasswordStrengthUI({
     name: "password",
     defaultValue: "",
   });
-
   const passwordStatus = passwordRules.map((rule) => ({
     ...rule,
     passed: rule.test(passwordValue),
   }));
-
   const passwordStrength =
     (passwordStatus.filter((r) => r.passed).length / passwordRules.length) *
     100;
-
   return (
     <>
       {/* Strength Bar */}
@@ -74,7 +68,6 @@ export function PasswordStrengthUI({
                   : ""}
         </span>
       </div>
-
       {/* Rules List */}
       <div className="pt-2 grid grid-cols-2 gap-y-2">
         {passwordStatus.map((rule) => (

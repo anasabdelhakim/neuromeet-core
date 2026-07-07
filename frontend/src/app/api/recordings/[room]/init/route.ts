@@ -7,7 +7,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ roo
     const resolvedParams = await params;
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("access_token")?.value;
-    
+
     const backendRes = await fetch(`${BASE_URL}/drive/recording/init/${resolvedParams.room}`, {
       method: 'POST',
       headers: {
@@ -19,6 +19,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ roo
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error: any) {
     console.error("Init Proxy Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

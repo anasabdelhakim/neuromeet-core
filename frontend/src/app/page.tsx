@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import Image from "next/image";
 import { Avtar, Hero, Logo, QuickJoin,NeuroFooter,NeuroFeatures } from "@/src/features/landing";
-
 export default function ClarityConnectPage() {
   return (
     <div className="text-foreground flex flex-col relative antialiased">

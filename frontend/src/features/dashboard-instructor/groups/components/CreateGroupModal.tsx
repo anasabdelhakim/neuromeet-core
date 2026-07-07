@@ -33,7 +33,6 @@ export function CreateGroupModal() {
     mode: "onChange",
   });
 
-  // Close dialog on success without blocking future re-opens
   useEffect(() => {
     if (state.success) {
       reset();

@@ -1,6 +1,5 @@
 import { Button } from "@/src/components/ui/button";
 import Link from "next/link";
-
 export const Hero = () => {
   return (
     <section className="max-w-3xl mx-auto text-center mt-8 max-sm:mt-6 mb-16 max-sm:mb-12">

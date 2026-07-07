@@ -1,12 +1,10 @@
 import { Home, CalendarDays, History, Video, Sparkles, Users, Component, BarChart3 } from "lucide-react";
-
 export type NavItem = {
   icon: any;
   label: string;
   href: string;
   hideOnMobile?: boolean;
 };
-
 export const navItems: NavItem[] = [
   { icon: Home, label: "Home", href: "/dashboard-instructor" },
   {

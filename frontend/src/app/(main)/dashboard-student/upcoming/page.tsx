@@ -1,6 +1,5 @@
 import { StudentUpcomingList } from "@/src/features/dashboard-student/upcoming/components/StudentUpcomingList";
 import { Suspense } from "react";
-
 export default function StudentUpcomingPage() {
   return (
     <div className="flex flex-col gap-6 animate-page-entrance">

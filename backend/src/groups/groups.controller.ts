@@ -16,8 +16,6 @@ import { UpdateGroupDto } from './dto/update-group.dto';
 import { AuthGuard } from '../user/guard/auth.guard';
 import { Roles } from '../user/decorators/user.decorators';
 
-
-
 @Controller('groups')
 @UseGuards(AuthGuard)
 export class GroupsController {
@@ -38,7 +36,6 @@ export class GroupsController {
     return this.groupsService.findAllByInstructor(req.user.id);
   }
 
-
   @Get('my-groups')
   @Roles(['STUDENT'])
   getStudentGroups(@Req() req: any) {
@@ -50,8 +47,6 @@ export class GroupsController {
   getGroupMembers(@Param('id') id: string, @Req() req: any) {
     return this.groupsService.getGroupMembers(id, req.user.id);
   }
-
-
 
   @Patch(':id')
   @Roles(['INSTRUCTOR'])
@@ -146,7 +141,7 @@ export class GroupsController {
   rejectInvitation(@Param('invitationId') invitationId: string, @Req() req: any) {
     return this.groupsService.rejectInvitation(invitationId, req.user.id);
   }
-  
+
   @Delete(':id/students/:studentId')
   @Roles(['INSTRUCTOR'])
   removeStudent(@Param('id') id: string, @Param('studentId') studentId: string, @Req() req: any) {

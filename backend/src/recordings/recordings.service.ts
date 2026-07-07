@@ -1,18 +1,13 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../database/database.service';
-
 @Injectable()
 export class RecordingsService {
   constructor(private readonly prisma: PrismaService) {}
-
   async getAllRecordings(userId: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    
-    // Only fetch recordings that this specific user actually recorded
     const whereClause = {
       recordedById: userId
     };
-
     const recordings = await this.prisma.recording.findMany({
       where: whereClause,
       include: {
@@ -20,15 +15,12 @@ export class RecordingsService {
       },
       orderBy: { uploadedAt: 'desc' },
     });
-
     const data = recordings.map((rec) => {
       let status = 'PROCESSING';
       if (rec.status === 'UPLOADED') status = 'COMPLETED';
       else if (rec.status === 'FAILED') status = 'FAILED';
-
       return {
         id: rec.id,
-        // Send either livekitRoomName or meeting id so the frontend can easily connect to SSE progress!
         meetingId: rec.meeting?.livekitRoomName || rec.meeting?.id || 'unknown',
         title: rec.meeting?.title || 'Meeting Recording',
         description: rec.meeting?.description || '',
@@ -45,10 +37,8 @@ export class RecordingsService {
         }),
       };
     });
-
     return { data };
   }
-
   async saveThumbnail(meetingId: string, thumbnail: string, userId: string) {
     const meeting = await this.prisma.meeting.findFirst({
       where: {
@@ -58,7 +48,6 @@ export class RecordingsService {
         ],
       },
     });
-
     if (meeting) {
       const recording = await this.prisma.recording.findFirst({
         where: {
@@ -68,14 +57,12 @@ export class RecordingsService {
         },
         orderBy: { uploadedAt: 'desc' }
       });
-
       if (recording) {
         await this.prisma.recording.update({
           where: { id: recording.id },
           data: { r2Key: thumbnail },
         });
       } else {
-        // Fallback: update the latest UPLOADING recording
         const uploadingRecording = await this.prisma.recording.findFirst({
           where: {
             meetingId: meeting.id,
@@ -84,7 +71,6 @@ export class RecordingsService {
           },
           orderBy: { uploadedAt: 'desc' }
         });
-        
         if (uploadingRecording) {
           await this.prisma.recording.update({
             where: { id: uploadingRecording.id },
@@ -95,23 +81,18 @@ export class RecordingsService {
     }
     return { success: true };
   }
-
   async deleteRecording(id: string, userId: string) {
     const recording = await this.prisma.recording.findUnique({
       where: { id },
       include: { meeting: true },
     });
-
     if (!recording) throw new NotFoundException('Recording not found');
-
     if (recording.meeting?.hostId !== userId && recording.recordedById !== userId) {
       throw new ForbiddenException('Only the host or the recording owner can delete this recording');
     }
-
     await this.prisma.recording.delete({
       where: { id },
     });
-
     return { status: 'success', message: 'Recording deleted successfully' };
   }
 }

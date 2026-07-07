@@ -21,7 +21,7 @@ export function AvatarUploadControl({ error, disabled, initialUrl }: AvatarUploa
     if (!file) return;
     const objectUrl = URL.createObjectURL(file);
     setPreview(objectUrl);
-    // Sync dragged/dropped file into the hidden file input so it's in native FormData
+
     if (fileInputRef.current) {
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);

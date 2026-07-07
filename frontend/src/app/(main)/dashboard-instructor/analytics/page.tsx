@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 async function AnalyticsContent({ searchParams }: { searchParams: Promise<{ meetingId?: string }> }) {
   const sp = await searchParams;
   const meetings = await getInstructorMeetingsAction();
-  
+
   const selectedId = sp.meetingId || (meetings.length > 0 ? meetings[0].id : "");
   const data = selectedId ? await getMeetingAnalyticsAction(selectedId) : null;
 

@@ -84,10 +84,8 @@ export function MeetingActionsPopover({
       }
   };
 
-  // شيلنا الـ useEffect والـ Date.now() تماماً من هنا
   const isLive = status === "LIVE";
-  
-  // بنعتمد على الـ props الجاهزة بس عشان نعرض زرار End بدل Delete
+
   const isLiveOrActive = isLive || status === "STARTED" || status === "IN_PROGRESS" || participantsCount > 0 || (isPast && variant !== "previous") || variant === "history";
 
   const handleDeleteOrEnd = () => {
@@ -112,7 +110,7 @@ export function MeetingActionsPopover({
           >
             <MoreVertical size={18} />
           </Button>}>
-    
+
         </PopoverTrigger>
 
         <PopoverContent align="end" className="w-48 p-1 flex flex-col gap-0.5 z-50">

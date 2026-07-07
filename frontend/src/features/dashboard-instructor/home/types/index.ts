@@ -6,7 +6,6 @@ export interface Meeting {
   status: "Starting Soon" | "Live" | "Scheduled";
   courseTag: string;
 }
-
 export interface Group {
   id: number;
   name: string;

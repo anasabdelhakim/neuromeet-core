@@ -1,8 +1,6 @@
 "use server";
-
 import { revalidatePath } from "next/cache";
 import { apiGet, apiPatch, apiDelete, ApiError } from "@/src/lib/api-client";
-
 export interface AdminUser {
   id: string;
   name: string;
@@ -14,7 +12,6 @@ export interface AdminUser {
   reported?: boolean;
   reportDetails?: string;
 }
-
 export interface UsersResponse {
   status: string;
   data: {
@@ -27,7 +24,6 @@ export interface UsersResponse {
     };
   };
 }
-
 export async function getUsersAction(params: {
   search?: string;
   role?: string;
@@ -39,13 +35,10 @@ export async function getUsersAction(params: {
   if (params.role) query.set("role", params.role);
   if (params.page) query.set("page", params.page);
   if (params.limit) query.set("limit", params.limit);
-
   const qs = query.toString();
   const endpoint = `/admin/users${qs ? `?${qs}` : ""}`;
-
   return apiGet<UsersResponse>(endpoint);
 }
-
 export async function updateUserRoleAction(userId: string, role: string) {
   try {
     const res = await apiPatch<{ status: string; data: AdminUser }>(
@@ -64,7 +57,6 @@ export async function updateUserRoleAction(userId: string, role: string) {
     return { success: false, error: "Something went wrong" };
   }
 }
-
 export async function deleteUserAction(userId: string) {
   try {
     await apiDelete(`/admin/users/${userId}`);
@@ -77,13 +69,11 @@ export async function deleteUserAction(userId: string) {
     return { success: false, error: "Something went wrong" };
   }
 }
-
 export interface AdminStats {
   totalStudents: number;
   totalInstructors: number;
   totalMeetings: number;
 }
-
 export async function getAdminStatsAction() {
   try {
     const res = await apiGet<{ status: string; data: AdminStats }>('/admin/stats');

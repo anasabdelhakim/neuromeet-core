@@ -6,7 +6,6 @@ import { JwtConfigModule } from 'src/auth/jwt.config';
 import { CacheModule } from 'src/utils/cache.module';
 import { LivekitModule } from 'src/livekit/livekit.module';
 import { NotificationsModule } from '../notifications/notifications.module';
-
 @Module({
   imports: [PrismaModule, JwtConfigModule, CacheModule, LivekitModule, NotificationsModule],
   controllers: [MeetingsController],
@@ -14,4 +13,3 @@ import { NotificationsModule } from '../notifications/notifications.module';
   exports: [MeetingsService],
 })
 export class MeetingsModule {}
-
