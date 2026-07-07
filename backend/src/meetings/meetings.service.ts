@@ -591,9 +591,9 @@ export class MeetingsService {
         console.error("Failed to recall bot:", err);
       });
       const roomService = new RoomServiceClient(
-        process.env.LIVEKIT_URL || process.env.LIVEKIT_API_URL,
-        process.env.LIVEKIT_API_KEY,
-        process.env.LIVEKIT_API_SECRET,
+        process.env.LIVEKIT_URL || process.env.LIVEKIT_API_URL || '',
+        process.env.LIVEKIT_API_KEY || '',
+        process.env.LIVEKIT_API_SECRET || '',
       );
       roomService.deleteRoom(meeting.livekitRoomName).catch((err: any) => {
         console.error("Failed to delete LiveKit room:", err);
@@ -647,9 +647,9 @@ export class MeetingsService {
           console.error("Failed to recall bot:", err);
         });
         const roomService = new RoomServiceClient(
-          process.env.LIVEKIT_URL || process.env.LIVEKIT_API_URL,
-          process.env.LIVEKIT_API_KEY,
-          process.env.LIVEKIT_API_SECRET,
+          process.env.LIVEKIT_URL || process.env.LIVEKIT_API_URL || '',
+          process.env.LIVEKIT_API_KEY || '',
+          process.env.LIVEKIT_API_SECRET || '',
         );
         roomService.deleteRoom(endedMeeting.livekitRoomName).catch((err: any) => {
           console.error("Failed to delete LiveKit room on auto-end:", err);
