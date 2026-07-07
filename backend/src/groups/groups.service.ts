@@ -235,7 +235,10 @@ export class GroupsService {
 
   async acceptInvitation(invitationId: string, studentId: string) {
     return this.prisma.$transaction(async (prisma) => {
-      const invite = await prisma.invitation.findUnique({ where: { id: invitationId } });
+      const invite = await prisma.invitation.findUnique({ 
+        where: { id: invitationId },
+        include: { group: true, student: true }
+      });
       if (!invite || invite.studentId !== studentId || invite.status !== 'PENDING') {
         throw new NotFoundException('Invalid or expired invitation');
       }
@@ -248,6 +251,15 @@ export class GroupsService {
       const enrollment = await prisma.enrollment.create({
         data: { studentId: invite.studentId, groupId: invite.groupId }
       });
+
+      this.notificationsService.createNotification({
+        userId: invite.group.instructorId,
+        type: 'SYSTEM' as NotifType,
+        title: 'New Student Joined',
+        body: `${invite.student.name} has joined your group: ${invite.group.name}`,
+        actionUrl: `/dashboard-instructor/students`,
+        sendEmail: false,
+      }).catch(e => console.error(e));
 
       return { status: 'success', data: enrollment, message: 'Group joined successfully' };
     });

@@ -36,7 +36,7 @@ BUFFER_MAXLEN = 60           # Store 60 frames (captured at ~10 FPS = 6 seconds 
 INFERENCE_INTERVAL_S = 5.0   # Run inference every N seconds — set above CPU inference time to avoid queue buildup
 DISENGAGEMENT_THRESHOLD = 0.50  # Below this → is_disengaged=True
 MAX_CONCURRENT = 1 if DEVICE.type == "cpu" else 10  # CPU: serialize to avoid thread contention
-EMA_ALPHA_UP = 0.40          # Slower climb (smooths out noise when returning to engagement)
+EMA_ALPHA_UP = 0.55          # Slower climb (smooths out noise when returning to engagement)
 EMA_ALPHA_DOWN = 0.85        # Faster drop (catches disengagement instantly)
 
 

@@ -64,6 +64,7 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
   const [comboboxOpen, setComboboxOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activePopoverId, setActivePopoverId] = useState<string | null>(null);
+  const [activeAlertId, setActiveAlertId] = useState<string | null>(null);
 
   const [pendingInvites, setPendingInvites] = useState<Set<string>>(
     new Set((group.invitations || []).map((inv: any) => inv.studentId))
@@ -115,8 +116,8 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
   const handleRemoveStudent = (studentId: string) => {
     setActivePopoverId(null);
     startTransition(async () => {
-      const result = await removeStudentFromGroup(group.id, studentId);
-      // Removed revert and alert to keep optimistic UI as requested
+      await removeStudentFromGroup(group.id, studentId);
+      setActiveAlertId(null);
     });
   };
 
@@ -290,7 +291,10 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
                     </TableCell>
 
                     <TableCell className="py-4 pr-5 text-right">
-                      <AlertDialog>
+                      <AlertDialog 
+                        open={activeAlertId === student.id} 
+                        onOpenChange={(isOpen) => setActiveAlertId(isOpen ? student.id : null)}
+                      >
                         <Popover 
                           open={activePopoverId === student.id} 
                           onOpenChange={(isOpen) => setActivePopoverId(isOpen ? student.id : null)}
@@ -320,10 +324,15 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction variant="destructive" onClick={() => handleRemoveStudent(student.id)}>
+                            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+                            <Button 
+                              variant="destructive" 
+                              disabled={isPending}
+                              onClick={() => handleRemoveStudent(student.id)}
+                            >
+                              {isPending && <Loader className="w-4 h-4 mr-2 animate-spin" />}
                               Remove
-                            </AlertDialogAction>
+                            </Button>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
