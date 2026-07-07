@@ -226,7 +226,8 @@ export class MeetingsService {
           count++;
         }
       });
-      const avg = count > 0 ? Math.round((sum / count) * 100) : 0;
+      const rawAvg = count > 0 ? (sum / count) : 0;
+      const avg = rawAvg <= 1 && rawAvg > 0 ? Math.round(rawAvg * 100) : Math.round(rawAvg);
       const { participants, ...rest } = m;
       return { ...rest, avgEngagement: avg };
     });
