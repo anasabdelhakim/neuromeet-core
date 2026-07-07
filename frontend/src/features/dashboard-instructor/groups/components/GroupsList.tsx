@@ -68,10 +68,11 @@ export async function GroupsList() {
                       </div>
                     </div>
                     
-                    <Button className="shadow-soft hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer relative z-10">
-                      <Link href={`/dashboard-instructor/groups/${group.id}`}>
-                        Manage Group
-                      </Link>
+                    <Button 
+                      render={<Link href={`/dashboard-instructor/groups/${group.id}`} />} 
+                      className="shadow-soft hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer relative z-10"
+                    >
+                      Manage Group
                     </Button>
                   </div>
                 </CardContent>

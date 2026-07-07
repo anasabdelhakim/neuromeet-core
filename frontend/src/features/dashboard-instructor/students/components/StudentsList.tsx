@@ -91,7 +91,8 @@ export async function StudentsList() {
          const validMeetings = s.meetingParticipants.filter((p: any) => p.avgEngagementScore !== null);
          if (validMeetings.length > 0) {
            const sumEngagement = validMeetings.reduce((acc: number, p: any) => acc + p.avgEngagementScore, 0);
-           existing.avgEngagement = Math.round(sumEngagement / validMeetings.length);
+           const rawAvg = sumEngagement / validMeetings.length;
+           existing.avgEngagement = rawAvg <= 1 && rawAvg > 0 ? Math.round(rawAvg * 100) : Math.round(rawAvg);
          } else {
            existing.avgEngagement = 0; // Or keep it 0 if they have no valid meetings
          }

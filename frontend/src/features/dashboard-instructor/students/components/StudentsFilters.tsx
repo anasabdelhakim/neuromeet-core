@@ -120,6 +120,7 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
             value={searchQuery}
             onChange={handleSearch}
             placeholder="Search by name or email..."
+            maxLength={50}
             className="pl-9 h-12  rounded-soft focus-visible:ring-primary"
           />
         </div>
@@ -205,12 +206,17 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
                   
                   <TableCell className="py-4">
                     <div className="flex flex-wrap items-center gap-2 min-w-0">
-                      {student.groups.map(g => (
+                      {student.groups.slice(0, 2).map(g => (
                         <div key={g.name} className="flex items-center gap-1.5 bg-black-soft px-2 py-1 rounded-full border border-border">
                           <span className={cn("w-2 h-2 rounded-full shrink-0", g.color)} />
                           <span className="text-xs text-foreground whitespace-nowrap">{g.name}</span>
                         </div>
                       ))}
+                      {student.groups.length > 2 && (
+                        <div className="flex items-center bg-black-soft px-2 py-1 rounded-full border border-border">
+                          <span className="text-[10px] font-bold text-muted-foreground whitespace-nowrap">+{student.groups.length - 2} more</span>
+                        </div>
+                      )}
                     </div>
                   </TableCell>
 
@@ -386,12 +392,17 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
 
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
                 <div className="flex flex-wrap items-center gap-2 min-w-0">
-                  {student.groups.map(g => (
+                  {student.groups.slice(0, 2).map(g => (
                     <div key={g.name} className="flex items-center gap-1.5 bg-black-soft px-2 py-1 rounded-full border border-border">
                       <span className={cn("w-2 h-2 rounded-full shrink-0", g.color)} />
                       <span className="text-xs text-foreground whitespace-nowrap">{g.name}</span>
                     </div>
                   ))}
+                  {student.groups.length > 2 && (
+                    <div className="flex items-center bg-black-soft px-2 py-1 rounded-full border border-border">
+                      <span className="text-[10px] font-bold text-muted-foreground whitespace-nowrap">+{student.groups.length - 2} more</span>
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   <span className={cn("w-1.5 h-1.5 rounded-full", student.isActive ? "bg-status-success animate-pulse" : "bg-muted-foreground")} />

@@ -219,6 +219,7 @@ export function QuickActions() {
                       placeholder="e.g. Ad-hoc Q&A"
                       aria-invalid={!!errorsNew.title}
                       disabled={pending}
+                      maxLength={50}
                       className="bg-black-soft-muted focus-visible:ring-action-new-input focus-visible:border-action-new transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
                     />
                     <FieldError>{errorsNew.title?.message}</FieldError>
@@ -258,6 +259,7 @@ export function QuickActions() {
                     onChange={(e) => setJoinLink(e.target.value)}
                     disabled={joinPending}
                     aria-invalid={!joinState.success}
+                    maxLength={500}
                     className="bg-black-soft-muted focus-visible:ring-action-join-input focus-visible:border-action-join transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
                   />
                 </div>
@@ -287,6 +289,7 @@ export function QuickActions() {
                       placeholder="e.g. Advanced AI Architecture"
                       aria-invalid={!!errorsSchedule.title}
                       disabled={pending}
+                      maxLength={50}
                       className="bg-black-soft-muted focus-visible:ring-action-schedule-input focus-visible:border-action-schedule transition-all duration-fast ease-standard h-12 px-4 rounded-soft"
                     />
                     <FieldError>{errorsSchedule.title?.message}</FieldError>

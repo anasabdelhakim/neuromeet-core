@@ -13,7 +13,16 @@ interface PreviousMeetingCardProps {
 }
 
 export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
-  const engagementScore = meeting.avgEngagement ?? 0;
+  const rawScore = meeting.avgEngagement ?? 0;
+  const engagementScore = rawScore <= 1 && rawScore > 0 ? Math.round(rawScore * 100) : Math.round(rawScore);
+
+  const getEngagementDetails = (score: number) => {
+    if (score >= 85) return { text: "High", color: "text-status-success", bg: "bg-status-success" };
+    if (score >= 70) return { text: "Good", color: "text-status-warning", bg: "bg-status-warning" };
+    return { text: "Low", color: "text-destructive", bg: "bg-destructive" };
+  };
+
+  const engagementDetails = getEngagementDetails(engagementScore);
 
   const mappedAvatars = (meeting as any).group?.enrollments?.map((e: any) => ({
     alt: e.student?.name || "Unknown",
@@ -67,15 +76,15 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
         </div>
 
         {/* Score Value */}
-        <span className="text-status-success flex items-center gap-1">
-          {engagementScore}% <span className="hidden sm:inline-block">High</span>
+        <span className={`flex items-center gap-1 ${engagementDetails.color}`}>
+          {engagementScore}% <span className="hidden sm:inline-block">{engagementDetails.text}</span>
         </span>
       </div>
       
       {/* Progress Track */}
       <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-primary to-primary-light rounded-full transition-all duration-slow ease-standard"
+          className={`h-full rounded-full transition-all duration-slow ease-standard ${engagementDetails.bg}`}
           style={{ width: `${engagementScore}%` }}
         />
       </div>

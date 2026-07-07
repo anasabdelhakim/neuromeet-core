@@ -17,11 +17,13 @@ export default function StudentAnalyticsClient({ data }: { data: StudentAnalytic
     return data.timeline.map(t => ({
       ...t,
       displayDate: format(new Date(t.date), "MMM dd"),
-      percent: Math.round(t.engagement * 100)
+      percent: t.engagement <= 1 && t.engagement > 0 ? Math.round(t.engagement * 100) : Math.round(t.engagement)
     }));
   }, [data.timeline]);
 
-  const engagementPercent = Math.round(data.kpis.avgEngagement * 100);
+  const engagementPercent = data.kpis.avgEngagement <= 1 && data.kpis.avgEngagement > 0 
+    ? Math.round(data.kpis.avgEngagement * 100) 
+    : Math.round(data.kpis.avgEngagement);
 
   const totalMinutesDisplay = data?.kpis.totalMinutes !== undefined 
     ? data.kpis.totalMinutes 

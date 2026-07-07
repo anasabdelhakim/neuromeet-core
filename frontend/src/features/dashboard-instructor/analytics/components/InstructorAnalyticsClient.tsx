@@ -55,7 +55,7 @@ export default function InstructorAnalyticsClient({
   };
 
   const engagementPercent = data?.kpis.avgEngagement 
-    ? Math.round(data.kpis.avgEngagement * 100) 
+    ? (data.kpis.avgEngagement <= 1 && data.kpis.avgEngagement > 0 ? Math.round(data.kpis.avgEngagement * 100) : Math.round(data.kpis.avgEngagement))
     : 0;
 
   const totalMinutesDisplay = data?.kpis.totalMinutes !== undefined 
@@ -64,7 +64,7 @@ export default function InstructorAnalyticsClient({
 
   const formattedMatrix = data ? data.studentMatrix.map(s => ({
     ...s,
-    engagement: Math.round(s.avgEngagement * 100),
+    engagement: s.avgEngagement <= 1 && s.avgEngagement > 0 ? Math.round(s.avgEngagement * 100) : Math.round(s.avgEngagement),
     hours: Math.round(s.totalSeconds / 60)
   })) : [];
 

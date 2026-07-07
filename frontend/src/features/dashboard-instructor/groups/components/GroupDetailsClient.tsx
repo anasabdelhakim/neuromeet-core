@@ -219,6 +219,7 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search members..."
+              maxLength={50}
               className="pl-9 h-9 bg-black-soft-muted border-border focus-visible:ring-primary"
             />
           </div>

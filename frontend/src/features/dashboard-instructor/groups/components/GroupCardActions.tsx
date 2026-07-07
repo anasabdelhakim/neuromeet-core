@@ -165,6 +165,7 @@ export function GroupCardActions({ group }: { group: Group }) {
                   aria-invalid={!!errors.name}
                   className="bg-black-soft-muted rounded-soft focus-visible:ring-primary h-11"
                   disabled={pending}
+                  maxLength={50}
                 />
                 <FieldError>{errors.name?.message}</FieldError>
               </Field>
@@ -179,6 +180,7 @@ export function GroupCardActions({ group }: { group: Group }) {
                   aria-invalid={!!errors.subject}
                   className="bg-black-soft-muted rounded-soft focus-visible:ring-primary h-11"
                   disabled={pending}
+                  maxLength={50}
                 />
                 <FieldError>{errors.subject?.message}</FieldError>
               </Field>
@@ -193,6 +195,7 @@ export function GroupCardActions({ group }: { group: Group }) {
                   aria-invalid={!!errors.description}
                   className="bg-black-soft-muted rounded-soft focus-visible:ring-primary h-11"
                   disabled={pending}
+                  maxLength={150}
                 />
                 <FieldError>{errors.description?.message}</FieldError>
               </Field>

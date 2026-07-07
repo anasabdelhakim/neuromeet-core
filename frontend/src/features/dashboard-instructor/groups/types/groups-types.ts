@@ -5,6 +5,7 @@ export interface Group {
   description: string | null;
 
   created_at?: string;
+  enrollments?: any[];
   _count?: {
     enrollments: number;
   };

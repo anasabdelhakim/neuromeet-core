@@ -113,6 +113,7 @@ export function EditMeetingModal({
                 {...register("title")}
                 aria-invalid={!!errors.title}
                 disabled={isLoading}
+                maxLength={50}
                 className="bg-black-soft-muted rounded-soft focus-visible:ring-primary h-11 w-full"
               />
               <FieldError>{errors.title?.message}</FieldError>
