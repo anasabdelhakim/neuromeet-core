@@ -4,6 +4,8 @@ import { Readable } from 'stream';
 import * as https from 'https';
 import { CacheService } from '../utils/cache.service';
 import { PrismaService } from '../database/database.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotifType } from '../../lib/prisma/_generated';
 
 // ─── HTTPS Keep-Alive Pool ────────────────────────────────────────────────────
 // Reuses TCP connections to googleapis.com across all chunk PUT requests.
@@ -73,6 +75,7 @@ export class DriveService implements OnModuleInit {
   constructor(
     private readonly cacheService: CacheService,
     private readonly prisma: PrismaService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────
@@ -340,6 +343,25 @@ export class DriveService implements OnModuleInit {
         status: 'complete',
         message: `Upload complete!`,
       }).catch(() => {});
+
+      // Fire notification to the meeting participants
+      if (meeting) {
+        this.prisma.meetingParticipant.findMany({
+          where: { meetingId: meeting.id },
+          select: { userId: true },
+        }).then(participants => {
+          participants.forEach(p => {
+            this.notificationsService.createNotification({
+              userId: p.userId,
+              type: NotifType.RECORDING_READY,
+              title: 'Recording Available',
+              body: `The recording for "${meeting.title}" is now available to watch.`,
+              actionUrl: `/dashboard-student/recordings`,
+              sendEmail: false, // In-app only
+            }).catch(e => this.logger.error(`Failed to send recording notification: ${e}`));
+          });
+        });
+      }
     }
 
     return result;

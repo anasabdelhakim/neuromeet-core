@@ -3,9 +3,10 @@ import { AnalyticsService } from './analytics.service';
 import { AnalyticsController } from './analytics.controller';
 import { PrismaModule } from '../database/database.module';
 import { UserModule } from '../user/user.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [PrismaModule, UserModule],
+  imports: [PrismaModule, UserModule, NotificationsModule],
   controllers: [AnalyticsController],
   providers: [AnalyticsService],
 })

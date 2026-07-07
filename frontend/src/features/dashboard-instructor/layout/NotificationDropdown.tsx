@@ -2,132 +2,29 @@
 
 import { useState, useMemo } from "react";
 import { createPortal } from "react-dom";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Bell, Search, AlertTriangle } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
+import useSWR from "swr";
+import { 
+  getNotificationsAction, 
+  markNotificationAsReadAction, 
+  markAllNotificationsAsReadAction 
+} from "@/src/features/dashboard-shared/actions/notification-actions";
 
-interface NotificationData {
+import { formatDistanceToNow } from "date-fns";
+
+export interface NotificationData {
   id: string;
   title: string;
-  description: string;
-  time: string;
+  body: string;
+  created_at: string;
   read: boolean;
-  group: string;
-  type: "join" | "schedule" | "system" | "alert" | string;
+  actionUrl?: string;
+  type: "GROUP_INVITE" | "MEETING_SCHEDULED" | "MEETING_STARTING" | "RECORDING_READY" | "ANALYTICS_READY" | "ENGAGEMENT_ALERT" | "SYSTEM" | string;
 }
-
-const MOCK_NOTIFICATIONS: NotificationData[] = [
-  {
-    id: "ai-alert-1",
-    title: "Low Engagement Alert",
-    description: "Student Anas Abdelhakim has been consistently disengaged for the past 2 minutes.",
-    time: "Just now",
-    read: false,
-    group: "Live Session Alerts",
-    type: "alert",
-  },
-  {
-    id: "ai-alert-2",
-    title: "Class Distraction Warning",
-    description: "Multiple students in 'System Design Cohort' appear to be away from their keyboards.",
-    time: "5 min ago",
-    read: false,
-    group: "Live Session Alerts",
-    type: "alert",
-  },
-  {
-    id: "ai-alert-3",
-    title: "Engagement Dropping",
-    description: "Overall class engagement has dropped below 40% in your current session.",
-    time: "15 min ago",
-    read: true,
-    group: "Live Session Alerts",
-    type: "alert",
-  },
-  {
-    id: "sys-1",
-    title: "Session Report Ready",
-    description: "The AI engagement analytics report for 'Machine Learning 101' is ready for review.",
-    time: "2 hours ago",
-    read: true,
-    group: "System Updates",
-    type: "system",
-  },
-  {
-    id: "sys-2",
-    title: "Platform Maintenance",
-    description: "NeuroMeet will undergo scheduled maintenance this Sunday at 2:00 AM EST.",
-    time: "Yesterday",
-    read: true,
-    group: "System Updates",
-    type: "system",
-  },
-  {
-    id: "sys-3",
-    title: "New AI Feature Unlocked",
-    description: "You can now export engagement graphs directly to PDF. Try it out in your analytics dashboard!",
-    time: "2 days ago",
-    read: true,
-    group: "System Updates",
-    type: "system",
-  },
-  {
-    id: "join-1",
-    title: "New Student Joined",
-    description: "Sarah Jenkins has successfully enrolled in 'Web Dev Bootcamp'.",
-    time: "3 hours ago",
-    read: false,
-    group: "Course Activity",
-    type: "join",
-  },
-  {
-    id: "join-2",
-    title: "New Student Joined",
-    description: "Michael Chang has successfully enrolled in 'Advanced Algorithms'.",
-    time: "Yesterday",
-    read: true,
-    group: "Course Activity",
-    type: "join",
-  },
-  {
-    id: "join-3",
-    title: "Waitlist Update",
-    description: "3 new students have joined the waitlist for your upcoming 'System Design Cohort'.",
-    time: "2 days ago",
-    read: true,
-    group: "Course Activity",
-    type: "join",
-  },
-  {
-    id: "sch-1",
-    title: "Meeting Starting Soon",
-    description: "Your session 'Capstone Project Review' starts in 15 minutes.",
-    time: "Just now",
-    read: false,
-    group: "Upcoming Meetings",
-    type: "schedule",
-  },
-  {
-    id: "sch-2",
-    title: "Schedule Conflict",
-    description: "A student requested a 1-on-1 that overlaps with your current office hours.",
-    time: "1 hour ago",
-    read: false,
-    group: "Upcoming Meetings",
-    type: "schedule",
-  },
-  {
-    id: "sch-3",
-    title: "Session Rescheduled",
-    description: "'Intro to Neural Networks' has been moved to Thursday at 3:00 PM.",
-    time: "Yesterday",
-    read: true,
-    group: "Upcoming Meetings",
-    type: "schedule",
-  }
-];
 
 function NotificationItem({
   data,
@@ -137,29 +34,39 @@ function NotificationItem({
   onRead: () => void;
 }) {
   const IconMap: Record<string, React.ReactNode> = {
-    join: (
+    GROUP_INVITE: (
       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-status-success-soft text-xs font-semibold text-status-success">
-        SJ
-      </div>
-    ),
-    schedule: (
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
         <Bell className="h-4 w-4" />
       </div>
     ),
-    system: (
+    MEETING_SCHEDULED: (
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-cyan/20 text-brand-cyan">
+        <Bell className="h-4 w-4" />
+      </div>
+    ),
+    RECORDING_READY: (
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-purple/20 text-brand-purple">
+        <Search className="h-4 w-4" />
+      </div>
+    ),
+    ANALYTICS_READY: (
       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-soft-subtle text-primary">
         <Search className="h-4 w-4" />
       </div>
     ),
-    alert: (
+    ENGAGEMENT_ALERT: (
       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-destructive-soft text-destructive">
         <AlertTriangle className="h-4 w-4" />
       </div>
     ),
+    SYSTEM: (
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-custom-gray text-foreground">
+        <Search className="h-4 w-4" />
+      </div>
+    ),
   };
 
-  const IconRender = IconMap[data.type] || IconMap["system"];
+  const IconRender = IconMap[data.type] || IconMap["SYSTEM"];
 
   return (
     <div
@@ -185,43 +92,74 @@ function NotificationItem({
             {data.title}
           </p>
           <span className="shrink-0 text-xs text-muted-foreground mb-1">
-            {data.time}
+            {formatDistanceToNow(new Date(data.created_at), { addSuffix: true })}
           </span>
         </div>
         <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground-soft-90">
-          {data.description}
+          {data.body}
         </p>
       </div>
     </div>
   );
 }
 
-export function NotificationDropdown() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<NotificationData[]>(MOCK_NOTIFICATIONS);
-  const [visibleCount, setVisibleCount] = useState(4);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+function useNotifications() {
+  const { data: notifications = [], mutate } = useSWR<NotificationData[]>(
+    'notifications',
+    () => getNotificationsAction(),
+    { 
+      refreshInterval: 30000,
+      revalidateOnFocus: true, // Instantly fetches when user comes back to tab
+    }
+  );
 
-  const handleMarkAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  const markAsRead = async (id: string) => {
+    // Optimistic UI update for instant feedback
+    mutate(notifications.map(n => n.id === id ? { ...n, read: true } : n), false);
+    
+    await markNotificationAsReadAction(id);
+    mutate(); // Revalidate in background
   };
 
-  const handleReadNotification = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    );
+  const markAllAsRead = async () => {
+    // Optimistic UI update
+    mutate(notifications.map(n => ({ ...n, read: true })), false);
+    
+    await markAllNotificationsAsReadAction();
+    mutate(); // Revalidate
+  };
+
+  return { notifications, unreadCount, markAsRead, markAllAsRead };
+}
+
+export function NotificationDropdown() {
+  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+  const [visibleCount, setVisibleCount] = useState(6);
+
+  const handleNotificationClick = (n: NotificationData) => {
+    markAsRead(n.id);
+    if (n.actionUrl) {
+      setIsOpen(false);
+      router.push(n.actionUrl);
+    }
   };
 
   const visibleNotifications = useMemo(() => {
     return notifications.slice(0, visibleCount);
   }, [notifications, visibleCount]);
 
+  // Optionally group them by date (e.g. Today, Yesterday) instead of hardcoded group
   const groupedNotifications = useMemo(() => {
     return visibleNotifications.reduce<Record<string, NotificationData[]>>(
       (acc, n) => {
-        if (!acc[n.group]) acc[n.group] = [];
-        acc[n.group].push(n);
+        const group = "Recent Alerts"; // Simplify grouping for now
+        if (!acc[group]) acc[group] = [];
+        acc[group].push(n);
         return acc;
       },
       {},
@@ -278,7 +216,7 @@ export function NotificationDropdown() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={handleMarkAllRead}
+                  onClick={markAllAsRead}
                   className="gap-1 border border-border text-primary hover:bg-primary hover:text-primary-foreground"
                 >
                   <Bell className="h-3.5 w-3.5" />
@@ -305,7 +243,7 @@ export function NotificationDropdown() {
                         <NotificationItem
                           key={n.id}
                           data={n}
-                          onRead={() => handleReadNotification(n.id)}
+                          onRead={() => handleNotificationClick(n)}
                         />
                       ))}
                     </div>

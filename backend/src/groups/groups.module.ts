@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { GroupsService } from './groups.service';
 import { GroupsController } from './groups.controller';
 import { PrismaModule } from '../database/database.module';
-
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, NotificationsModule],
   controllers: [GroupsController],
   providers: [GroupsService],
   exports: [GroupsService],

@@ -6,11 +6,14 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../database/database.service';
 import { CreateGroupDto } from './dto/create-group.dto';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotifType } from '../../lib/prisma/_generated';
 
 @Injectable()
 export class GroupsService {
   constructor(
     private prisma: PrismaService,
+    private notificationsService: NotificationsService,
   ) {}
 
   async createGroup(instructorId: string, dto: CreateGroupDto) {
@@ -192,6 +195,16 @@ export class GroupsService {
     await this.prisma.invitation.create({
       data: { groupId, studentId, status: 'PENDING' }
     });
+
+    this.notificationsService.createNotification({
+      userId: studentId,
+      type: NotifType.GROUP_INVITE,
+      title: 'New Group Invitation',
+      body: `Instructor has invited you to join ${group.name}`,
+      actionUrl: `/dashboard-student/groups`,
+      sendEmail: true,
+    }).catch(e => console.error(e));
+
     return { status: 'success', message: 'Invitation sent' };
   }
 

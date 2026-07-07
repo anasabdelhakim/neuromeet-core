@@ -16,6 +16,8 @@ import {
 } from './dto/meeting.dto';
 import { LiveKitBotService } from 'src/livekit/livekit-bot.service';
 import { EmailService } from 'src/emails/email.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotifType } from '../../lib/prisma/_generated';
 
 // ── Cache TTLs (seconds) ──────────────────────────────────────────────────────
 const CACHE_TTL = {
@@ -31,6 +33,7 @@ export class MeetingsService {
     private cache: CacheService,
     private botService: LiveKitBotService,
     private emailService: EmailService,
+    private notificationsService: NotificationsService,
   ) {}
 
   // =========================
@@ -73,6 +76,22 @@ export class MeetingsService {
 
     // Invalidate caches
     await this.cache.del(`meetings:user:${hostId}`);
+
+    // Dispatch Notifications if assigned to a group
+    if (dto.groupId) {
+      this.prisma.enrollment.findMany({ where: { groupId: dto.groupId } }).then(enrollments => {
+        enrollments.forEach(enrollment => {
+          this.notificationsService.createNotification({
+            userId: enrollment.studentId,
+            type: NotifType.MEETING_SCHEDULED,
+            title: 'New Meeting Scheduled',
+            body: `A new meeting "${dto.title}" has been scheduled for your group.`,
+            actionUrl: `/dashboard-student/upcoming`,
+            sendEmail: true,
+          }).catch(e => console.error(e));
+        });
+      });
+    }
 
     return { status: 'success', data: { ...meeting, plainPasscode: rawPasscode } };
   }
@@ -381,7 +400,7 @@ export class MeetingsService {
   async updateMeeting(meetingId: string, hostId: string, dto: UpdateMeetingDto) {
     const meeting = await this.prisma.meeting.findUnique({
       where: { id: meetingId },
-      select: { id: true, hostId: true },
+      select: { id: true, hostId: true, status: true },
     });
 
     if (!meeting) throw new NotFoundException('Meeting not found');
@@ -423,6 +442,17 @@ export class MeetingsService {
       this.cache.del(`meetings:user:${hostId}`),
       this.cache.del(`participants:${meetingId}`),
     ]);
+
+    if (dto.status === 'ENDED' && meeting.status !== 'ENDED') {
+      this.notificationsService.createNotification({
+        userId: hostId,
+        type: NotifType.ANALYTICS_READY,
+        title: 'Meeting Analytics Ready',
+        body: `The analytics report for "${updated.title}" is now available.`,
+        actionUrl: `/dashboard-instructor/analytics?meetingId=${meetingId}`,
+        sendEmail: true,
+      }).catch(e => console.error(e));
+    }
 
     return { status: 'success', data: updated };
   }

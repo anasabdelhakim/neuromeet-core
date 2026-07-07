@@ -12,7 +12,6 @@ import { OAuthModule } from 'src/oauth/oauth.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { EmailModule } from 'src/emails/email.module';
-
 import { MeetingsModule } from './meetings/meetings.module';
 import { UserModule } from './user/user.module';
 import { CacheModule } from './utils/cache.module';
@@ -20,6 +19,7 @@ import { AdminModule } from './admin/admin.module';
 import { GroupsModule } from './groups/groups.module';
 import { RecordingsModule } from './recordings/recordings.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -45,6 +45,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     AdminModule,
     RecordingsModule,
     AnalyticsModule,
+    NotificationsModule,
   ],
   controllers: [AppController, DriveController],
   providers: [AppService, DriveService],
