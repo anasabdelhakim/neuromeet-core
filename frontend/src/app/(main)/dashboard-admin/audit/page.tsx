@@ -1,4 +1,12 @@
+import { Metadata } from "next";
 import { Card, CardContent, CardDescription, CardTitle } from "@/src/components/ui/card";
+
+export const metadata: Metadata = {
+  title: "Audit Logs",
+  description: "View system audit logs.",
+};
+
+
 
 export default function AdminAuditPage() {
   return (

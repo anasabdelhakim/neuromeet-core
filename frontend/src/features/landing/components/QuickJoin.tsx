@@ -74,6 +74,7 @@ export const QuickJoin = () => {
               type="submit"
               className="bg-foreground text-background rounded-full px-3 md:px-4 max-sm:px-3 py-5 font-semibold shrink-0 text-sm gap-1.5"
               disabled={!meetingCode.trim() || isLoading}
+              aria-label={isLoading ? "Joining meeting..." : "Join Meeting"}
             >
               {isLoading ? (
                 <Loader className="w-5 h-5 animate-spin" />

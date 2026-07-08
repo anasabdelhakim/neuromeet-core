@@ -82,60 +82,63 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
     </div>
   );
   return (
-    <Card className="w-full rounded-soft p-4 sm:p-5 flex flex-col gap-4 border transition-all duration-normal ease-standard transform-gpu hover:border-primary-hover">
-      {/* Row 1: Content (Left) & Desktop Actions (Right) */}
-      <div className="flex items-start sm:items-center justify-between w-full gap-4">
-<div className="flex w-full justify-between">
-        {/* Left Side: Meeting Info */}
-        <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <CardTitle className="text-base sm:text-lg font-bold max-w-80 max-sm:max-w-60 text-foreground truncate">
-              {meeting.title}
-            </CardTitle>
-            <Badge className="bg-status-success-soft text-status-success border border-status-success-border hover:bg-status-success-hover uppercase tracking-wider font-bold text-[10px] sm:text-xs py-0.5 px-2 flex items-center gap-1">
-              <CheckCircle2 size={10} />
-              Completed
-            </Badge>
-            {meeting.hasRecording && (
-              <Badge className="bg-destructive-soft text-destructive border border-destructive-soft-hover uppercase tracking-wider font-bold text-[10px] sm:text-xs py-0.5 px-2 flex">
-                Recording Available
-              </Badge>
-            )}
+    <article className="w-full block">
+      <Card className="w-full rounded-soft p-4 sm:p-5 flex flex-col gap-4 border transition-all duration-normal ease-standard transform-gpu hover:border-primary-hover">
+        {/* Row 1: Content (Left) & Desktop Actions (Right) */}
+        <div className="flex items-start sm:items-center justify-between w-full gap-4">
+          <div className="flex w-full justify-between">
+            {/* Left Side: Meeting Info */}
+            <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                <CardTitle className="text-base sm:text-lg font-bold max-w-80 max-sm:max-w-60 text-foreground truncate">
+                  {meeting.title}
+                </CardTitle>
+                <Badge className="bg-status-success-soft text-status-success border border-status-success-border hover:bg-status-success-hover uppercase tracking-wider font-bold text-[10px] sm:text-xs py-0.5 px-2 flex items-center gap-1">
+                  <CheckCircle2 size={10} />
+                  Completed
+                </Badge>
+                {meeting.hasRecording && (
+                  <Badge className="bg-destructive-soft text-destructive border border-destructive-soft-hover uppercase tracking-wider font-bold text-[10px] sm:text-xs py-0.5 px-2 flex">
+                    Recording Available
+                  </Badge>
+                )}
+              </div>
+              <CardDescription className="text-sm font-medium text-muted-foreground flex flex-wrap items-center gap-3 sm:gap-4 mt-1">
+                <div className="flex items-center gap-1.5 whitespace-nowrap">
+                  <Clock size={16} className="text-primary-light" />
+                  <span>{meeting.dateTime}</span>
+                </div>
+                <div className="flex items-center gap-1.5 whitespace-nowrap">
+                  <span className="text-xs text-muted-foreground-muted hidden sm:inline-block">•</span>
+                  <span>{meeting.duration} Mins Duration</span>
+                </div>
+              </CardDescription>
+            </div>
+            {/* Right Side: Desktop Actions (Hidden on Mobile) */}
+            <div className="hidden sm:flex">
+              {ActionBlock}
+            </div>
           </div>
-          <CardDescription className="text-sm font-medium text-muted-foreground flex flex-wrap items-center gap-3 sm:gap-4 mt-1">
-            <div className="flex items-center gap-1.5 whitespace-nowrap">
-              <Clock size={16} className="text-primary-light" />
-              <span>{meeting.dateTime}</span>
-            </div>
-            <div className="flex items-center gap-1.5 whitespace-nowrap">
-              <span className="text-xs text-muted-foreground-muted hidden sm:inline-block">•</span>
-              <span>{meeting.duration} Mins Duration</span>
-            </div>
-          </CardDescription>
+          <MeetingActionsPopover
+            title={meeting.title}
+            dateTime={meeting.dateTime}
+            variant="previous"
+            meetingId={meeting.id}
+          />
         </div>
-        {/* Right Side: Desktop Actions (Hidden on Mobile) */}
-        <div className="hidden sm:flex">
+        {/* Mobile Only: Engagement Bar (Rendered above buttons) */}
+        <div className="sm:hidden w-full pt-1">
+          {EngagementBar}
+        </div>
+        {/* Mobile Only: Actions Block (Rendered at the bottom) */}
+        <div className="sm:hidden w-full pt-1">
           {ActionBlock}
         </div>
-</div>
-              <MeetingActionsPopover
-        title={meeting.title}
-        dateTime={meeting.dateTime}
-        variant="previous"
-meetingId={meeting.id}      />
-      </div>
-      {/* Mobile Only: Engagement Bar (Rendered above buttons) */}
-      <div className="sm:hidden w-full pt-1">
-        {EngagementBar}
-      </div>
-      {/* Mobile Only: Actions Block (Rendered at the bottom) */}
-      <div className="sm:hidden w-full pt-1">
-        {ActionBlock}
-      </div>
-      {/* Desktop Only: Engagement Bar (Rendered at the bottom) */}
-      <div className="hidden sm:block w-full pt-2">
-        {EngagementBar}
-      </div>
-    </Card>
+        {/* Desktop Only: Engagement Bar (Rendered at the bottom) */}
+        <div className="hidden sm:block w-full pt-2">
+          {EngagementBar}
+        </div>
+      </Card>
+    </article>
   );
 }

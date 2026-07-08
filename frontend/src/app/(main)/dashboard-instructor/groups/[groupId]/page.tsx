@@ -1,4 +1,10 @@
+import { Metadata } from "next";
 import { Suspense } from "react";
+
+export const metadata: Metadata = {
+  title: "Group Details",
+  description: "View group members and details.",
+};
 import { notFound } from "next/navigation";
 import { getDashboardData } from "@/src/features/dashboard-instructor/home/actions/home-actions";
 import { getAllStudents } from "@/src/features/dashboard-instructor/students/actions/students-actions";

@@ -16,7 +16,7 @@ RUN bunx prisma generate
 RUN bun run build
 
 # Prune dev dependencies for the production image
-RUN bun install --production
+RUN rm -f bun.lock && bun install --production
 
 # ── Stage 2: Production Runtime ───────────────────────────────────────────────
 FROM oven/bun:1 AS runtime

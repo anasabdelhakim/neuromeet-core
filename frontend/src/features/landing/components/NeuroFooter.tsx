@@ -8,14 +8,14 @@ export const NeuroFooter = () => {
           <Logo />
         </div>
         <div className="flex flex-col items-center gap-2 text-xs text-muted-foreground text-center">
-          <div className="flex gap-6">
+          <nav aria-label="Footer Navigation" className="flex gap-6">
             <Link href="#" className="hover:text-white transition-colors duration-normal">
               Privacy Policy
             </Link>
             <Link href="#" className="hover:text-white transition-colors duration-normal">
               Terms of Service
             </Link>
-          </div>
+          </nav>
           <p>© 2026 NeuroMeet Inc. All rights reserved.</p>
         </div>
         {/* Right: Social Accounts */}

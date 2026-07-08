@@ -1,4 +1,10 @@
+import { Metadata } from "next";
 import { Suspense } from "react";
+
+export const metadata: Metadata = {
+  title: "Instructor Home",
+  description: "Overview of your upcoming meetings and groups.",
+};
 import { TodaysMeetings } from "@/src/features/dashboard-instructor/home/components/TodaysMeetings";
 import { InstructorGroups, InstructorGroupsSkeleton } from "@/src/features/dashboard-instructor/home/components/InstructorGroups";
 import { HeroClock, HeroClockSkeleton } from "@/src/features/dashboard-shared/components/HeroClock";
@@ -12,6 +18,7 @@ async function InstructorHeroClockWrapper() {
   const nextMeeting = allMeetings[0];
   return <HeroClock upcomingMeeting={nextMeeting ? { time: nextMeeting.time, title: nextMeeting.title } : null} />;
 }
+
 
 export default function InstructorDashboardPage() {
   return (

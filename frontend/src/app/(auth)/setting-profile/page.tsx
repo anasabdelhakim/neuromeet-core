@@ -1,5 +1,11 @@
+import { Metadata } from "next";
 import AuthWrapper from "@/src/features/auth/providers/auth-wrapper";
 import ProfileCompletionForm from "./setting-profile";
+
+export const metadata: Metadata = {
+  title: "Complete Profile",
+  description: "Set up your NeuroMeet profile.",
+};
 
 export default function Page() {
   return (

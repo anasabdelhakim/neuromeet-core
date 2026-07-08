@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import { Suspense } from "react";
 import { HeroClock, HeroClockSkeleton } from "@/src/features/dashboard-shared/components/HeroClock";
 import { Card } from "@/src/components/ui/card";
@@ -5,6 +6,10 @@ import { Users, UserCheck, Video } from "lucide-react";
 import { AdminUsersClient } from "@/src/features/dashboard-admin/users/AdminUsersClient";
 import { getUsersAction, getAdminStatsAction } from "@/src/features/dashboard-admin/actions/admin-actions";
 
+export const metadata: Metadata = {
+  title: "Admin Home",
+  description: "NeuroMeet system overview.",
+};
 async function AdminUsersLoader() {
   const initialData = await getUsersAction({ page: "1", limit: "20" });
   return <AdminUsersClient initialData={initialData} />;

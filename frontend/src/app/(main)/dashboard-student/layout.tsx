@@ -2,6 +2,12 @@ import { TooltipProvider } from "@/src/components/ui/tooltip";
 import { StudentSidebar } from "@/src/features/dashboard-student/layout/StudentSidebar";
 import { StudentTopbar } from "@/src/features/dashboard-student/layout/StudentTopbar";
 import { DashboardBackground } from "@/src/features/dashboard-instructor/wrappers/DashboardBackground";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Student Dashboard",
+  description: "View your classes, join upcoming meetings, and review your performance.",
+};
 export default function StudentDashboardLayout({
   children,
 }: {

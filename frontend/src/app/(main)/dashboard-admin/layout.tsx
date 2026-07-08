@@ -1,6 +1,12 @@
 import { TooltipProvider } from "@/src/components/ui/tooltip";
 import { AdminTopbar } from "@/src/features/dashboard-admin/layout/AdminTopbar";
 import { DashboardBackground } from "@/src/features/dashboard-instructor/wrappers/DashboardBackground";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Admin Dashboard",
+  description: "Manage users, monitor system health, and configure NeuroMeet settings.",
+};
 
 export default function AdminDashboardLayout({
   children,

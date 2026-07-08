@@ -1,4 +1,10 @@
+import { Metadata } from "next";
 import { Video, Loader } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Join Meeting",
+  description: "Enter passcode to securely join your meeting.",
+};
 import { PasscodeForm } from "./PasscodeForm";
 import { Suspense } from "react";
 import { cookies } from "next/headers";
@@ -60,6 +66,7 @@ async function MeetingDataLoader({ paramsPromise }: { paramsPromise: Promise<{ m
     </div>
   );
 }
+
 
 export default function JoinMeetingPage({
   params,

@@ -2,8 +2,22 @@ import { Suspense } from "react";
 import Image from "next/image";
 import { Avtar, Hero, Logo, QuickJoin,NeuroFooter,NeuroFeatures } from "@/src/features/landing";
 export default function ClarityConnectPage() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "NeuroMeet",
+    "operatingSystem": "Web",
+    "applicationCategory": "BusinessApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "description": "AI-powered video conferencing with real-time transcriptions and ADHD-friendly engagement tracking."
+  };
   return (
     <div className="text-foreground flex flex-col relative antialiased">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Image
         src="/landingbg.webp"
         alt="Landing Background"

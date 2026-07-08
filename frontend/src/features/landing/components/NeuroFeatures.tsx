@@ -42,6 +42,7 @@ export const NeuroFeatures = () => {
 {features.map((feature, i) => (
   <button
     key={i}
+    aria-label={feature.title}
     className="relative overflow-hidden bg-black-soft-subtle border border-border/50 hover:border-primary/50 focus:border-primary/50 opacity-90 hover:opacity-100 focus:opacity-100 hover:-translate-y-1.5 focus:-translate-y-1.5 transition-all duration-normal ease-smooth transform-gpu flex flex-col p-4 sm:p-5 rounded-soft shadow-soft hover:shadow-glow-cyan focus:shadow-glow-cyan group text-left w-full"
   >
     {/* Top edge glowing line - Add focus-within state */}

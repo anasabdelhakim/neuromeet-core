@@ -1,6 +1,12 @@
+import { Metadata } from "next";
 import { Suspense } from "react";
 import { AdminUsersClient } from "@/src/features/dashboard-admin/users/AdminUsersClient";
 import { getUsersAction } from "@/src/features/dashboard-admin/actions/admin-actions";
+
+export const metadata: Metadata = {
+  title: "User Management",
+  description: "Manage NeuroMeet users.",
+};
 
 async function AdminUsersLoader() {
   const initialData = await getUsersAction({ page: "1", limit: "5" });

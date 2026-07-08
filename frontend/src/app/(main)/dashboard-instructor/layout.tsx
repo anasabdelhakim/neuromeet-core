@@ -4,8 +4,8 @@ import { InstructorTopbar } from "@/src/features/dashboard-instructor/layout/Ins
 import { DashboardBackground } from "@/src/features/dashboard-instructor/wrappers/DashboardBackground";
 import type { Metadata } from "next";
 export const metadata: Metadata = {
-  title: "Neuro Meeting",
-  description: "NeuroMeet is a platform for communication and collaboration",
+  title: "Instructor Dashboard",
+  description: "Manage your upcoming meetings, track student engagement, and review analytics.",
 };
 export default function RootLayout({
   children,

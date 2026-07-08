@@ -1,4 +1,10 @@
+import { Metadata } from "next";
 import { Suspense } from "react";
+
+export const metadata: Metadata = {
+  title: "My Classes",
+  description: "View your enrolled classes.",
+};
 import { StudentGroupsList } from "@/src/features/dashboard-student/groups/components/StudentGroupsList";
 import { StudentInvitationsList } from "@/src/features/dashboard-student/groups/components/StudentInvitationsList";
 
