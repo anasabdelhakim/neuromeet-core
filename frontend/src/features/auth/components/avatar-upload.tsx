@@ -15,6 +15,7 @@ interface AvatarUploadProps {
 export function AvatarUploadControl({ error, disabled, initialUrl }: AvatarUploadProps) {
   const [preview, setPreview] = React.useState<string | null>(initialUrl ?? null);
   const [isDragging, setIsDragging] = React.useState(false);
+  const [isHovered, setIsHovered] = React.useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleFile = (file: File) => {
@@ -49,6 +50,7 @@ export function AvatarUploadControl({ error, disabled, initialUrl }: AvatarUploa
   };
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsHovered(false); // Force reset hover after dialog closes
     const file = e.target.files?.[0];
     if (file) handleFile(file);
   };
@@ -64,8 +66,10 @@ export function AvatarUploadControl({ error, disabled, initialUrl }: AvatarUploa
         onDragLeave={onDragLeave}
         onDrop={onDrop}
         onClick={triggerFileDialog}
+        onMouseEnter={() => !disabled && setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         className={cn(
-          "group relative flex flex-col items-center justify-center cursor-pointer rounded-full p-1.5 transition-all duration-normal",
+          "relative flex flex-col items-center justify-center cursor-pointer rounded-full p-1.5 transition-all duration-normal",
           disabled && "opacity-50 cursor-not-allowed pointer-events-none"
         )}
       >
@@ -82,13 +86,13 @@ export function AvatarUploadControl({ error, disabled, initialUrl }: AvatarUploa
         <div className={cn(
           "absolute inset-0 rounded-full border-2 border-dashed transition-all duration-normal",
           isDragging ? "border-primary scale-105 bg-primary-soft-subtle opacity-100" : "border-transparent scale-100 opacity-0",
-          "group-hover:border-primary/30 group-hover:scale-105"
+          !isDragging && isHovered && "border-primary/30 scale-105"
         )} />
 
         <Avatar className={cn(
-          "h-32 w-32 border-4  shadow-hard ring-2 ring-offset-2 ring-offset-background transition-all duration-normal ease-out group-hover:shadow-brand-cyan-soft",
+          "h-32 w-32 border-4  shadow-hard ring-2 ring-offset-2 ring-offset-background transition-all duration-normal ease-out",
           error ? "ring-destructive" : isDragging ? "ring-primary" : "ring-border",
-          "group-hover:ring-primary/50"
+          isHovered && "shadow-brand-cyan-soft ring-primary/50"
         )}>
           <AvatarImage src={preview || ""} className="object-cover" />
           <AvatarFallback className="bg-gradient-to-br from-muted to-custom-gray flex flex-col items-center justify-center text-muted-foreground">
@@ -97,15 +101,21 @@ export function AvatarUploadControl({ error, disabled, initialUrl }: AvatarUploa
         </Avatar>
 
         {/* Hover Overlay */}
-        <div className="absolute inset-1.5 rounded-full bg-black/40 backdrop-blur-sm opacity-0 transition-all duration-normal flex items-center justify-center group-hover:opacity-100 scale-95 group-hover:scale-100">
+        <div className={cn(
+          "absolute inset-1.5 rounded-full bg-black/40 backdrop-blur-sm transition-all duration-normal flex items-center justify-center",
+          isHovered ? "opacity-100 scale-100" : "opacity-0 scale-95"
+        )}>
            {!isDragging &&
-             <ImagePlus className="h-8 w-8 text-white drop-shadow-md transform transition-transform duration-normal group-hover:-translate-y-1" />
+             <ImagePlus className={cn("h-8 w-8 text-white drop-shadow-md transform transition-transform duration-normal", isHovered ? "-translate-y-1" : "")} />
            }
         </div>
 
         {/* Edit Badge */}
         {!isDragging && (
-          <div className="absolute bottom-2 right-2 flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-brand-cyan to-brand-purple text-white shadow-hard ring-4 ring-background transition-transform duration-fast group-hover:scale-110 group-hover:rotate-12">
+          <div className={cn(
+            "absolute bottom-2 right-2 flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-brand-cyan to-brand-purple text-white shadow-hard ring-4 ring-background transition-transform duration-fast",
+            isHovered ? "scale-110 rotate-12" : ""
+          )}>
             <Camera className="h-4 w-4" />
           </div>
         )}
