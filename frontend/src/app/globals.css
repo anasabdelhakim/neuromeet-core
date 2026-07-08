@@ -436,7 +436,7 @@
   --white-soft-muted: oklch(1 0 0 / 10%);
   --white-soft-deep: oklch(1 0 0 / 50%); 
 
-  --header-gradient: linear-gradient(to right, #11184c,#0a0f27);
+  --header-gradient: linear-gradient(to right, #1a2050,#0a0f27);
 }
 
 /* ─── Base Layer ──────────────────────────────────────────────────────────── */

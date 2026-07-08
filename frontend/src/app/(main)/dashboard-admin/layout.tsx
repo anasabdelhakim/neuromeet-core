@@ -16,17 +16,19 @@ export default function AdminDashboardLayout({
   return (
     <TooltipProvider>
       <DashboardBackground>
-        <div className="flex min-h-screen w-full relative text-foreground flex-col">
-          <div className="flex-1 flex flex-col min-w-0">
-            <div className="sticky top-0 z-30 bg-black-soft-subtle backdrop-blur-md border-b">
+        <div className="flex h-full w-full relative text-foreground flex-col">
+          <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <div className="z-30 bg-black-soft-subtle backdrop-blur-md border-b shrink-0">
               <AdminTopbar />
             </div>
 
             <main
               id="main-scroll-container"
-              className="flex-1 p-4 md:p-6 lg:p-8 flex flex-col gap-5 transform-gpu max-w-7xl mx-auto w-full"
+              className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 flex flex-col gap-5 transform-gpu"
             >
-              {children}
+              <div className="max-w-7xl mx-auto w-full flex flex-col gap-5">
+                {children}
+              </div>
             </main>
           </div>
         </div>

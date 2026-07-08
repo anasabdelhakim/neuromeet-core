@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <TooltipProvider>
     <DashboardBackground>
-      <div className="flex h-[100dvh] w-full relative text-foreground flex-col md:flex-row overflow-hidden">
+      <div className="flex h-full w-full relative text-foreground flex-col md:flex-row overflow-hidden">
         {/* Desktop Sidebar */}
         <div className="hidden md:block md:static md:sticky md:top-0 md:h-screen md:bg-transparent shrink-0">
           <InstructorSidebar />
@@ -35,7 +35,7 @@ export default function RootLayout({
           </main>
         </div>
         {/* Mobile Bottom Navigation (Locked at the bottom of the flex column, completely outside the scroll area) */}
-        <div className="md:hidden shrink-0 bg-card border-t border-border w-full z-50">
+        <div className="md:hidden shrink-0 bg-card border-t border-border w-full z-50 pb-[env(safe-area-inset-bottom)]">
           <InstructorSidebar />
         </div>
       </div>
