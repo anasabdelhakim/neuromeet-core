@@ -44,13 +44,20 @@ interface IconButtonProps {
   active?: boolean;
   danger?: boolean;
   recording?: boolean;
+  optimistic?: boolean;
   onClick: () => void | Promise<void>;
 }
-function IconButton({ icon, label, active, danger, recording, onClick }: IconButtonProps) {
+function IconButton({ icon, label, active, danger, recording, optimistic, onClick }: IconButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClick = async () => {
     if (isLoading) return;
+    
+    if (optimistic) {
+      onClick(); // Fire instantly, parent handles optimistic UI
+      return;
+    }
+
     setIsLoading(true);
     try {
       await onClick();
@@ -103,6 +110,11 @@ export function MeetingControls({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showGuestAlert, setShowGuestAlert] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
+  
+  // Optimistic UI States for instant feedback
+  const [optimisticMic, setOptimisticMic] = useState<boolean | null>(null);
+  const [optimisticCam, setOptimisticCam] = useState<boolean | null>(null);
+
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -134,7 +146,17 @@ export function MeetingControls({
       window.removeEventListener("recordingPermissionChange", checkPermission);
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
     };
-  }, []);
+  }, [isGuest]);
+
+  // Sync optimistic states with actual hardware states once LiveKit catches up
+  useEffect(() => {
+    if (optimisticMic === isMicrophoneEnabled) setOptimisticMic(null);
+  }, [isMicrophoneEnabled, optimisticMic]);
+
+  useEffect(() => {
+    if (optimisticCam === isCameraEnabled) setOptimisticCam(null);
+  }, [isCameraEnabled, optimisticCam]);
+
   const toggleFullscreen = async () => {
     try {
       if (!document.fullscreenElement) {
@@ -297,10 +319,22 @@ export function MeetingControls({
     }
   };
   const toggleMicrophone = async () => {
-    await localParticipant.setMicrophoneEnabled(!isMicrophoneEnabled);
+    const nextState = !isMicrophoneEnabled;
+    setOptimisticMic(nextState); // Instant flip
+    try {
+      await localParticipant.setMicrophoneEnabled(nextState);
+    } catch (err) {
+      setOptimisticMic(null); // Revert on failure
+    }
   };
   const toggleCamera = async () => {
-    await localParticipant.setCameraEnabled(!isCameraEnabled);
+    const nextState = !isCameraEnabled;
+    setOptimisticCam(nextState); // Instant flip
+    try {
+      await localParticipant.setCameraEnabled(nextState);
+    } catch (err) {
+      setOptimisticCam(null); // Revert on failure
+    }
   };
   const toggleScreenShare = async () => {
     try {
@@ -329,6 +363,11 @@ export function MeetingControls({
   const readableRoom = room
     .replace(/-/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
+
+  // Determine effective display state (optimistic override if exists, else real hardware state)
+  const displayMic = optimisticMic !== null ? optimisticMic : isMicrophoneEnabled;
+  const displayCam = optimisticCam !== null ? optimisticCam : isCameraEnabled;
+
   return (
     <>
       <footer className="h-16 sm:h-20 bg-background/95 backdrop-blur-xl border-t border-border px-3 sm:px-6 flex items-center justify-between z-30 shrink-0 select-none overflow-hidden w-full">
@@ -344,15 +383,17 @@ export function MeetingControls({
       {/* Center Zone: Hardware Controls */}
       <div className="flex items-center gap-2 sm:gap-3.5 shrink-0 mx-auto md:mx-0 max-w-full overflow-x-auto flex-nowrap py-1 px-1 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <IconButton
-          icon={isMicrophoneEnabled ? <Mic size={16} className="sm:w-[19px] sm:h-[19px]" /> : <MicOff size={16} className="sm:w-[19px] sm:h-[19px]" />}
-          label={isMicrophoneEnabled ? "Mute Microphone" : "Unmute Microphone"}
-          danger={!isMicrophoneEnabled}
+          icon={displayMic ? <Mic size={16} className="sm:w-[19px] sm:h-[19px]" /> : <MicOff size={16} className="sm:w-[19px] sm:h-[19px]" />}
+          label={displayMic ? "Mute Microphone" : "Unmute Microphone"}
+          danger={!displayMic}
+          optimistic={true}
           onClick={toggleMicrophone}
         />
         <IconButton
-          icon={isCameraEnabled ? <Video size={16} className="sm:w-[19px] sm:h-[19px]" /> : <VideoOff size={16} className="sm:w-[19px] sm:h-[19px]" />}
-          label={isCameraEnabled ? "Stop Camera" : "Start Camera"}
-          danger={!isCameraEnabled}
+          icon={displayCam ? <Video size={16} className="sm:w-[19px] sm:h-[19px]" /> : <VideoOff size={16} className="sm:w-[19px] sm:h-[19px]" />}
+          label={displayCam ? "Stop Camera" : "Start Camera"}
+          danger={!displayCam}
+          optimistic={true}
           onClick={toggleCamera}
         />
         <IconButton
