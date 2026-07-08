@@ -14,7 +14,8 @@ import {
   Sparkles,
   Disc,
   Maximize,
-  Minimize
+  Minimize,
+  Loader
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import type { ActiveSidebarTab } from "../types/meeting-types";
@@ -43,16 +44,30 @@ interface IconButtonProps {
   active?: boolean;
   danger?: boolean;
   recording?: boolean;
-  onClick: () => void;
+  onClick: () => void | Promise<void>;
 }
 function IconButton({ icon, label, active, danger, recording, onClick }: IconButtonProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleClick = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
+    try {
+      await onClick();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
+      disabled={isLoading}
       aria-label={label}
       title={label}
       className={cn(
-        "relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full transition-all duration-normal shadow-sm hover:scale-[1.05] active:scale-[0.98] shrink-0",
+        "relative flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-full transition-all duration-normal shadow-sm shrink-0",
+        isLoading ? "opacity-70 cursor-not-allowed" : "hover:scale-[1.05] active:scale-[0.98]",
         recording
           ? "bg-destructive text-white hover:bg-destructive/90 animate-pulse ring-4 ring-destructive/30 shadow-[0_0_15px_rgba(239,68,68,0.5)]"
           : danger
@@ -62,7 +77,7 @@ function IconButton({ icon, label, active, danger, recording, onClick }: IconBut
             : "bg-white/10 text-white hover:bg-white/20 border border-white/5"
       )}
     >
-      {icon}
+      {isLoading ? <Loader size={18} className="animate-spin text-white" /> : icon}
     </button>
   );
 }
@@ -87,6 +102,7 @@ export function MeetingControls({
   const [isRecording, setIsRecording] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showGuestAlert, setShowGuestAlert] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -294,6 +310,8 @@ export function MeetingControls({
     }
   };
   const handleLeave = async () => {
+    if (isLeaving) return;
+    setIsLeaving(true);
     if (isRecording) {
       mediaRecorderRef.current?.stop();
       streamRef.current?.getTracks().forEach((t) => t.stop());
@@ -305,6 +323,7 @@ export function MeetingControls({
       await roomContext.disconnect();
     } catch (err) {
       console.error("Failed to disconnect:", err);
+      setIsLeaving(false);
     }
   };
   const readableRoom = room
@@ -358,10 +377,20 @@ export function MeetingControls({
         />
         <button
           onClick={handleLeave}
-          className="flex items-center justify-center gap-1.5 sm:gap-2 bg-white/10 hover:!bg-destructive border border-white/5 hover:border-status-error text-white rounded-full w-9 h-9 sm:w-auto sm:px-5 sm:h-11 transition-all duration-normal cursor-pointer font-bold text-xs sm:text-sm shadow-sm hover:scale-[1.02] active:scale-[0.98] shrink-0"
+          disabled={isLeaving}
+          className={cn(
+            "flex items-center justify-center gap-1.5 sm:gap-2 border rounded-full w-9 h-9 sm:w-auto sm:px-5 sm:h-11 transition-all duration-normal font-bold text-xs sm:text-sm shadow-sm shrink-0",
+            isLeaving 
+              ? "bg-destructive border-status-error text-white opacity-80 cursor-not-allowed"
+              : "bg-white/10 hover:!bg-destructive border-white/5 hover:border-status-error text-white hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+          )}
         >
-          <PhoneOff size={14} className="sm:w-[16px] sm:h-[16px]" />
-          <span className="hidden sm:inline">Leave</span>
+          {isLeaving ? (
+            <Loader size={14} className="sm:w-[16px] sm:h-[16px] animate-spin" />
+          ) : (
+            <PhoneOff size={14} className="sm:w-[16px] sm:h-[16px]" />
+          )}
+          <span className="hidden sm:inline">{isLeaving ? "Leaving..." : "Leave"}</span>
         </button>
         {/* Mobile-only Toggles to fit screen */}
         <div className="flex md:hidden items-center gap-2 border-l border-white/10 pl-2">

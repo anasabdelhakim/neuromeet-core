@@ -275,14 +275,14 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
                       {student.email}
                     </TableCell>
 
-                    <TableCell className="py-4 text-sm text-muted-foreground">
+                    <TableCell className="py-4 text-sm text-muted-foreground" suppressHydrationWarning>
                       {new Date(e.joinedAt).toLocaleDateString()}
                     </TableCell>
 
                     <TableCell className="py-4">
-                      <div className="flex items-center gap-2">
-                        <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", isActive ? "bg-status-success animate-pulse" : "bg-muted-foreground")} />
-                        <span className="text-sm text-muted-foreground whitespace-nowrap">{isActive ? "Active" : "Offline"}</span>
+                      <div className="flex items-center gap-2" suppressHydrationWarning>
+                        <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", isActive ? "bg-status-success animate-pulse" : "bg-muted-foreground")} suppressHydrationWarning />
+                        <span className="text-sm text-muted-foreground whitespace-nowrap" suppressHydrationWarning>{isActive ? "Active" : "Offline"}</span>
                       </div>
                     </TableCell>
 
