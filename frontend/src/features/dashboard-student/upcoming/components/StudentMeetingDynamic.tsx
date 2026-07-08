@@ -8,6 +8,7 @@ import { buttonVariants } from "@/src/components/ui/button";
 import { cn } from "@/src/lib/utils";
 import { JoinMeetingButton } from "./JoinMeetingButton";
 import { studentNavigateToJoinAction } from "../actions/student-meeting-actions";
+import { TargetedRevalidator } from "@/src/features/dashboard-shared/components/TargetedRevalidator";
 
 export async function DynamicStudentMeetingBadge({ dateTime }: { dateTime: string }) {
   await connection();
@@ -40,19 +41,22 @@ export async function DynamicStudentMeetingActions({ dateTime, meetingId }: { da
   const joinAction = studentNavigateToJoinAction.bind(null, meetingId);
 
   return (
-    <div className="flex w-full sm:w-auto items-center gap-2 flex-shrink-0">
-      <div className="flex w-full sm:flex-initial gap-2">
-        {isArrived ? (
-          <form action={joinAction} className="w-full sm:w-auto">
-            <JoinMeetingButton />
-          </form>
-        ) : (
-          <Button variant="outline" className="w-full sm:w-auto text-muted-foreground opacity-50 cursor-not-allowed" disabled>
-            Starting Soon
-          </Button>
-        )}
+    <>
+      {!isArrived && <TargetedRevalidator targetDateIso={dateTime} />}
+      <div className="flex w-full sm:w-auto items-center gap-2 flex-shrink-0">
+        <div className="flex w-full sm:flex-initial gap-2">
+          {isArrived ? (
+            <form action={joinAction} className="w-full sm:w-auto">
+              <JoinMeetingButton />
+            </form>
+          ) : (
+            <Button variant="outline" className="w-full sm:w-auto text-muted-foreground opacity-50 cursor-not-allowed" disabled>
+              Starting Soon
+            </Button>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

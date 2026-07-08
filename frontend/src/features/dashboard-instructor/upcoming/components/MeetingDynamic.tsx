@@ -6,6 +6,7 @@ import { StartMeetingForm } from "./StartMeetingButton";
 import { calculateMeetingStatus } from "../helper/time-calc";
 import { connection } from "next/server";
 import { startMeetingAction } from "../../home/actions/meeting-actions";
+import { TargetedRevalidator } from "@/src/features/dashboard-shared/components/TargetedRevalidator";
 
 export async function DynamicMeetingBadge({ dateTime }: { dateTime: string }) {
   await connection();
@@ -37,17 +38,20 @@ export async function DynamicMeetingActions({ dateTime, meetingId, status }: { d
   const { isArrived } = calculateMeetingStatus(dateTime);
 
   return (
-    <div className="flex w-full sm:w-auto items-center gap-2 flex-shrink-0">
-      <div className="flex w-full sm:flex-initial gap-2">
-        {isArrived || status === "LIVE" ? (
-          <StartMeetingForm meetingId={meetingId} status={status} />
-        ) : (
-          <Button variant="outline" className="w-full sm:w-auto text-muted-foreground opacity-50 cursor-not-allowed">
-            Starting Soon
-          </Button>
-        )}
+    <>
+      {!isArrived && status !== "LIVE" && <TargetedRevalidator targetDateIso={dateTime} />}
+      <div className="flex w-full sm:w-auto items-center gap-2 flex-shrink-0">
+        <div className="flex w-full sm:flex-initial gap-2">
+          {isArrived || status === "LIVE" ? (
+            <StartMeetingForm meetingId={meetingId} status={status} />
+          ) : (
+            <Button variant="outline" className="w-full sm:w-auto text-muted-foreground opacity-50 cursor-not-allowed">
+              Starting Soon
+            </Button>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
