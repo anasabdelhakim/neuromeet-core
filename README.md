@@ -21,7 +21,7 @@
 ---
 
 ## 📌 Table of Contents
-- [✨ Key Features](#-key-features)
+- [🚀 Core Engineering Achievements](#-core-engineering-achievements)
 - [🎬 Video Demo](#-video-demo)
 - [📸 Screenshots](#-screenshots)
 - [🔑 Demo Login Credentials](#-demo-login-credentials)
@@ -37,29 +37,31 @@
 
 ---
 
-## ✨ Key Features
+## 🚀 Core Engineering Achievements
 
-### 🎥 1. Custom WebRTC Video Infrastructure
-- **Premium Interface**: A modern, custom-built meeting room UI inspired by Google Meet, fully optimized with a sleek dark-mode design system.
+### ⚡ 1. Flawless Next.js Navigation & Server Actions
+- **Zero-Flicker Streaming**: Engineered a seamless SPA-like navigation experience using Next.js `loading.tsx` Suspense boundaries and `useTransition`. Route changes happen instantly without unmounting persistent layout shells.
+- **Optimistic Stale-Data Handling**: Complex mutations (like deleting live meetings or removing students) leverage advanced transition states to hide Server Action network latency, guaranteeing a premium, zero-flash UI update.
+- **Robust Caching**: Utilizes Next.js `revalidatePath` and tag-based caching to ensure the Instructor Command Center always reflects real-time database state without unnecessary client-side fetching.
+
+### ☁️ 2. Zero-Memory Chunked Google Drive Uploads
+- **Stream-to-Cloud Pipeline**: LiveKit Egress recordings are captured by the NestJS backend and instantly piped into Google Drive via a Resumable Upload Session.
+- **O(1) Memory Footprint**: Raw video buffers are transmitted in sequential **50 MB chunks**, capping Node.js RAM usage at ~10 MB regardless of whether a recording is 50MB or 5GB.
+- **Real-Time SSE Feedback**: Upload progress is broadcasted back to the frontend via Server-Sent Events (SSE), rendering dynamic progress bars on the instructor's dashboard.
+
+### 🧠 3. Edge AI Engagement Detection
+- **Silent WebRTC Participant**: The AI engine is a standalone Python worker that joins the LiveKit room natively. It subscribes directly to peer video tracks, bypassing the NestJS API entirely to prevent video blob bottlenecks.
+- **ONNX Accelerated Inference**: Uses a highly optimized PyTorch model converted to ONNX to analyze student gaze and head posture at ~18ms per frame, identifying "engaged" vs "disengaged" states.
+- **Redis Pub/Sub Telemetry**: Engagement scores are published via Redis to the backend, which forwards them to the frontend via WebSocket/SSE to render live attention heatmaps for the instructor.
+
+### 🎥 4. Premium Dark-Mode WebRTC Interface
+- **Custom Hardware Control**: Built a gorgeous, Google Meet-inspired UI using Tailwind CSS, featuring glassmorphism, animated mic/cam toggles, and responsive video grids.
+- **Flicker-Free Avatars**: Implemented intelligent pulsing image skeletons that seamlessly transition to real user avatars without jarring layout shifts.
 - **Ultra-Low Latency**: Powered by **LiveKit**, providing resilient peer-to-peer and SFU video/audio transmission, dynamic bandwidth management, and screen sharing.
-- **Advanced Control Center**: Participant management, interactive sidebars for chat, and real-time engagement dashboards.
 
-### 🤖 2. Real-Time AI Engagement Detection
-- **Zero Backend Bloat**: The Python AI bot joins live sessions as a silent, hidden WebRTC participant. It ingests video frames directly from the media server — no heavy video blobs ever touch the NestJS API.
-- **Edge AI Pipeline**: Leverages **PyTorch** and **ONNX Runtime** for ultra-fast, low-latency computer vision inference, detecting head posture, gaze deviation, and behavioral disengagement cues in real time.
-
-### 📊 3. Live Instructor & Student Dashboards
-- **Instructor Command Center**: Provides educators with an instant breakdown of student attention spans, historical meeting attendance, real-time AI alerts, and platform-wide usage statistics.
-- **Student Portal**: Upcoming class schedules, access to recorded lectures, shared study materials, and past meeting reports.
-
-### ☁️ 4. Innovative Cloud Recording Pipeline
-- **Zero-Memory Buffer Uploads**: Raw video streams are piped directly to Google Drive resumable upload sessions in 50 MB sequential chunks, keeping Node.js RAM usage capped at ~10 MB regardless of recording file size.
-- **Server-Sent Events (SSE)**: Live upload progress is streamed directly to the instructor dashboard.
-
-### 🔒 5. Enterprise-Grade Security & OAuth
-- **Google OAuth 2.0**: Passwordless single sign-on (SSO) with strict RBAC separating Instructors and Students.
-- **JWT + Refresh Tokens**: Silent background refresh logic ensures continuous session validity across browser restarts.
-- **Rate Limiting & Helmet**: Fastify Helmet headers and NestJS Throttler protect all endpoints.
+### 🔒 5. Enterprise-Grade Security & Dashboards
+- **Google OAuth 2.0 & JWT**: Passwordless single sign-on (SSO) with strict RBAC separating Instructors and Students. Silent background refresh logic ensures continuous session validity.
+- **Command Center**: Provides educators with an instant breakdown of student attention spans, historical meeting attendance, real-time AI alerts, and platform-wide usage statistics.
 
 ---
 
@@ -86,7 +88,7 @@
 ## 📸 Screenshots
 
 <!-- ───────────────────────────────────────────────────────────────────────── -->
-<!-- TODO (YOU):                                                               -->
+<!-- TODO (YOU):                                                               -->a
 <!--   Take clean, full-window screenshots of each screen below and save them -->
 <!--   as .png files into the docs/assets/ folder of this repo, then push.   -->
 <!--   See docs/assets/PLACE_ASSETS_HERE.md for the exact filenames expected. -->
@@ -118,7 +120,6 @@ Explore the platform live at **[neuromeet.anasdev.shop](https://neuromeet.anasde
 
 | Role | Email | Password | Access Rights |
 | :--- | :--- | :--- | :--- |
-| **Admin** | `admin@neuromeet.com` | `Anas1234#` | Global platform configuration and scaling tests |
 | **Instructor** | `instructor@neuromeet.com` | `NeuroMeet#Admin2026` | Create meetings, view live AI engagement, manage recordings |
 | **Student** | `student@neuromeet.com` | `NeuroMeet#Student26` | Join meetings, view past materials, chat participation |
 

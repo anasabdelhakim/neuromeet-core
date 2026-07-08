@@ -222,25 +222,7 @@ export function LoginForm() {
                     <br /><br />
                     <span className="font-medium text-foreground">Note:</span> If you sign in normally with Google, you will automatically be assigned the <b>Student</b> role by default.
                   </p>
-                  {/* Admin Credentials Fill */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-background/50 rounded-lg border border-border gap-3">
-                    <div>
-                      <p className="text-xs font-bold text-foreground">Admin</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        User: <code className="bg-muted px-1 py-0.5 rounded font-mono text-primary font-semibold">admin@neuromeet.com</code>
-                        <br />
-                        Pass: <code className="bg-muted px-1 py-0.5 rounded font-mono text-primary font-semibold">Anas1234#</code>
-                      </p>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => handleFillCredentials("admin")}
-                      className="text-xs bg-primary/10 hover:bg-primary/20 text-primary font-semibold py-1.5 px-3 rounded-md transition-colors border border-primary/20 h-9"
-                    >
-                      ⚡ Fill Admin
-                    </Button>
-                  </div>
+
                   {/* Instructor Credentials Fill */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-background/50 rounded-lg border border-border gap-3">
                     <div>
