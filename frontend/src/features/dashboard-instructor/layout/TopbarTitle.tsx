@@ -16,6 +16,13 @@ export function TopbarTitle() {
 
   if (pathname.includes("/analytics")) {
     title = "Analytics";
+  } else if (pathname.includes("/groups")) {
+    // Check if it's the root groups page or a specific group details page
+    if (pathname === "/dashboard-instructor/groups") {
+      title = "Groups";
+    } else {
+      title = "Group Details";
+    }
   }
 
   return <h1 className="text-2xl font-semibold">{title}</h1>;
