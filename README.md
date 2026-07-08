@@ -120,8 +120,8 @@ Explore the platform live at **[neuromeet.anasdev.shop](https://neuromeet.anasde
 
 | Role | Email | Password | Access Rights |
 | :--- | :--- | :--- | :--- |
-| **Instructor** | `instructor@neuromeet.com` | `NeuroMeet#Admin2026` | Create meetings, view live AI engagement, manage recordings |
-| **Student** | `student@neuromeet.com` | `NeuroMeet#Student26` | Join meetings, view past materials, chat participation |
+| **Instructor** | `instructor@neuromeet.anasdev.shop` | `NeuroMeet#Admin2026` | Create meetings, view live AI engagement, manage recordings |
+| **Student** | `student@neuromeet.anasdev.shop` | `NeuroMeet#Student26` | Join meetings, view past materials, chat participation |
 
 > **Note:** These accounts are read-only demo accounts. Data may be reset periodically.
 

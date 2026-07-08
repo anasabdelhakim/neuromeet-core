@@ -10,13 +10,13 @@ async function main() {
   console.log('🌱 Seeding database...');
 
   // Create ADMIN account
-  const adminPassword = await Bun.password.hash('Anas1234#');
+  const adminPassword = await Bun.password.hash('NeuroAdmin$#2026!');
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@neuromeet.com' },
+    where: { email: 'admin@neuromeet.anasdev.shop' },
     update: {},
     create: {
       name: 'Admin',
-      email: 'admin@neuromeet.com',
+      email: 'admin@neuromeet.anasdev.shop',
       password: adminPassword,
       role: 'ADMIN',
       isProfileComplete: true,
@@ -27,11 +27,11 @@ async function main() {
   // Create INSTRUCTOR demo account
   const instructorPassword = await Bun.password.hash('NeuroMeet#Admin2026');
   const instructor = await prisma.user.upsert({
-    where: { email: 'instructor@neuromeet.com' },
+    where: { email: 'instructor@neuromeet.anasdev.shop' },
     update: {},
     create: {
       name: 'Demo Instructor',
-      email: 'instructor@neuromeet.com',
+      email: 'instructor@neuromeet.anasdev.shop',
       password: instructorPassword,
       role: 'INSTRUCTOR',
       isProfileComplete: true,
@@ -42,11 +42,11 @@ async function main() {
   // Create STUDENT demo account
   const studentDemoPassword = await Bun.password.hash('NeuroMeet#Student26');
   const studentDemo = await prisma.user.upsert({
-    where: { email: 'student@neuromeet.com' },
+    where: { email: 'student@neuromeet.anasdev.shop' },
     update: {},
     create: {
       name: 'Demo Student',
-      email: 'student@neuromeet.com',
+      email: 'student@neuromeet.anasdev.shop',
       password: studentDemoPassword,
       role: 'STUDENT',
       isProfileComplete: true,

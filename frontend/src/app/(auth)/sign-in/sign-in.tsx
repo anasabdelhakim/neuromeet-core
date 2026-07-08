@@ -57,12 +57,12 @@ export function LoginForm() {
         setFocus(focusNext);
       }
     };
-  const handleFillCredentials = (role: "admin" | "instructor") => {
-    if (role === "admin") {
-      setValue("email", "admin@neuromeet.com", { shouldValidate: true, shouldDirty: true, shouldTouch: true });
-      setValue("password", "Anas1234#", { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+  const handleFillCredentials = (role: "student" | "instructor") => {
+    if (role === "student") {
+      setValue("email", "student@neuromeet.anasdev.shop", { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+      setValue("password", "NeuroMeet#Student26", { shouldValidate: true, shouldDirty: true, shouldTouch: true });
     } else {
-      setValue("email", "instructor@neuromeet.com", { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+      setValue("email", "instructor@neuromeet.anasdev.shop", { shouldValidate: true, shouldDirty: true, shouldTouch: true });
       setValue("password", "NeuroMeet#Admin2026", { shouldValidate: true, shouldDirty: true, shouldTouch: true });
     }
     setIsDemoDialogOpen(false); // Close dialog after filling
@@ -228,7 +228,7 @@ export function LoginForm() {
                     <div>
                       <p className="text-xs font-bold text-foreground">Instructor</p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        User: <code className="bg-muted px-1 py-0.5 rounded font-mono text-primary font-semibold">instructor@neuromeet.com</code>
+                        User: <code className="bg-muted px-1 py-0.5 rounded font-mono text-primary font-semibold">instructor@neuromeet.anasdev.shop</code>
                         <br />
                         Pass: <code className="bg-muted px-1 py-0.5 rounded font-mono text-primary font-semibold">NeuroMeet#Admin2026</code>
                       </p>
