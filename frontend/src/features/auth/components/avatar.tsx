@@ -99,15 +99,18 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
               : "",
           )}
         >
-          <Avatar className="h-10 w-10">
+          <Avatar className="h-10 w-10 overflow-hidden">
             <AvatarImage
               src={avatarSrc}
               alt={displayName}
               className="object-cover"
               referrerPolicy="no-referrer"
             />
-            <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-semibold flex items-center justify-center">
-              {initials}
+            <AvatarFallback className={cn(
+              "text-primary-foreground font-semibold flex items-center justify-center w-full h-full",
+              avatarSrc ? "bg-muted animate-pulse" : "bg-primary text-lg"
+            )}>
+              {!avatarSrc && initials}
             </AvatarFallback>
           </Avatar>
         </PopoverTrigger>
@@ -120,10 +123,13 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
           <span className="absolute w-3 h-3 bg-card border-t border-l border-border rotate-45 -top-1.5 right-3.5 z-20"></span>
           {/* User Info */}
           <div className="flex items-center gap-3 mb-1">
-            <Avatar className="h-12 w-12">
-              <AvatarImage src={avatarSrc} alt={displayName} referrerPolicy="no-referrer" />
-              <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-semibold flex items-center justify-center">
-                {initials}
+            <Avatar className="h-12 w-12 overflow-hidden">
+              <AvatarImage src={avatarSrc} alt={displayName} className="object-cover" referrerPolicy="no-referrer" />
+              <AvatarFallback className={cn(
+                "text-primary-foreground font-semibold flex items-center justify-center w-full h-full",
+                avatarSrc ? "bg-muted animate-pulse" : "bg-primary text-xl"
+              )}>
+                {!avatarSrc && initials}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col min-w-0">
@@ -179,10 +185,13 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
           <div className="flex flex-col gap-4 border-b border-border pb-6">
             <h4 className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider text-left">Profile Information</h4>
             <div className="flex flex-col sm:flex-row items-start text-left gap-4">
-              <Avatar className="h-16 w-16 border border-border shrink-0">
-                <AvatarImage src={avatarSrc} alt={displayName} referrerPolicy="no-referrer" />
-                <AvatarFallback className="bg-primary text-primary-foreground text-3xl font-semibold flex items-center justify-center">
-                  {initials}
+              <Avatar className="h-16 w-16 border border-border shrink-0 overflow-hidden">
+                <AvatarImage src={avatarSrc} alt={displayName} className="object-cover" referrerPolicy="no-referrer" />
+                <AvatarFallback className={cn(
+                  "text-primary-foreground font-semibold flex items-center justify-center w-full h-full",
+                  avatarSrc ? "bg-muted animate-pulse" : "bg-primary text-3xl"
+                )}>
+                  {!avatarSrc && initials}
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col items-start min-w-0">

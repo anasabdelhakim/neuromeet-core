@@ -8,9 +8,7 @@ export function InstructorTopbar() {
       <TopbarTitle />
       <div className="flex items-center gap-3 sm:gap-6">
         <NotificationDropdown />
-        <Suspense fallback={<div className="w-10 h-10 rounded-full bg-muted animate-pulse border border-border flex-shrink-0" />}>
-          <UserProfile />
-        </Suspense>
+        <UserProfile />
       </div>
     </header>
   );

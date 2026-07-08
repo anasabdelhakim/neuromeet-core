@@ -17,16 +17,16 @@ export function StudentInvitationsClient({ invitations }: StudentInvitationsClie
   const handleAccept = (id: string) => {
     setLoadingAction({ id, type: 'accept' });
     startTransition(async () => {
-      await acceptInvitationAction(id);
-      setLoadingAction(null);
+      const res = await acceptInvitationAction(id);
+      if (!res?.success) setLoadingAction(null);
     });
   };
 
   const handleReject = (id: string) => {
     setLoadingAction({ id, type: 'reject' });
     startTransition(async () => {
-      await rejectInvitationAction(id);
-      setLoadingAction(null);
+      const res = await rejectInvitationAction(id);
+      if (!res?.success) setLoadingAction(null);
     });
   };
 

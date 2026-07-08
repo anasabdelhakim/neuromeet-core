@@ -96,8 +96,10 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
   }, [currentStatus, recording.meetingId]);
   const handleDelete = () => {
     startDeleteTransition(async () => {
-      await deleteRecordingAction(recording.id);
-      setIsDeleteDialogOpen(false);
+      const res = await deleteRecordingAction(recording.id);
+      if (!res?.success) {
+        setIsDeleteDialogOpen(false);
+      }
     });
   };
   const formatDuration = (totalSeconds: number) => {

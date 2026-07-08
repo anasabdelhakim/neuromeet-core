@@ -114,8 +114,10 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
   const handleRemoveStudent = (studentId: string) => {
     setActivePopoverId(null);
     startTransition(async () => {
-      await removeStudentFromGroup(group.id, studentId);
-      setActiveAlertId(null);
+      const res = await removeStudentFromGroup(group.id, studentId);
+      if (!res?.success) {
+        setActiveAlertId(null);
+      }
     });
   };
 

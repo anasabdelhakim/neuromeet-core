@@ -69,8 +69,10 @@ export function GroupCardActions({ group }: { group: Group }) {
 
   const handleDelete = () => {
     startDeleteTransition(async () => {
-      await deleteGroupAction(group.id);
-      setIsDeleteDialogOpen(false);
+      const res = await deleteGroupAction(group.id);
+      if (!res?.success) {
+        setIsDeleteDialogOpen(false);
+      }
     });
   };
 

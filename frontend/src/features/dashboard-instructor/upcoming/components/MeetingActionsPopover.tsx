@@ -90,13 +90,15 @@ export function MeetingActionsPopover({
 
   const handleDeleteOrEnd = () => {
     startDeleteTransition(async () => {
+      let res;
       if (isLiveOrActive) {
-        await endMeetingAction(meetingId);
+        res = await endMeetingAction(meetingId);
       } else {
-        await deleteMeetingAction(meetingId);
+        res = await deleteMeetingAction(meetingId);
       }
-      setIsDeleteDialogOpen(false);
-      router.refresh();
+      if (!res?.success) {
+        setIsDeleteDialogOpen(false);
+      }
     });
   };
 
