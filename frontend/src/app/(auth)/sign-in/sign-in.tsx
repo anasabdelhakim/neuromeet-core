@@ -242,6 +242,25 @@ export function LoginForm() {
                       ⚡ Fill Instructor
                     </Button>
                   </div>
+                  {/* Student Credentials Fill */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-background/50 rounded-lg border border-border gap-3">
+                    <div>
+                      <p className="text-xs font-bold text-foreground">Student</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        User: <code className="bg-muted px-1 py-0.5 rounded font-mono text-primary font-semibold">student@neuromeet.anasdev.shop</code>
+                        <br />
+                        Pass: <code className="bg-muted px-1 py-0.5 rounded font-mono text-primary font-semibold">NeuroMeet#Student26</code>
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => handleFillCredentials("student")}
+                      className="text-xs bg-primary/10 hover:bg-primary/20 text-primary font-semibold py-1.5 px-3 rounded-md transition-colors border border-primary/20 h-9"
+                    >
+                      ⚡ Fill Student
+                    </Button>
+                  </div>
                 </div>
               </DialogContent>
             </Dialog>
