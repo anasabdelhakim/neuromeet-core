@@ -1,4 +1,4 @@
-import { Button } from "@/src/components/ui/button";
+import { Button, buttonVariants } from "@/src/components/ui/button";
 import Link from "next/link";
 export const Hero = () => {
   return (
@@ -11,15 +11,12 @@ export const Hero = () => {
         Experience the future of video conferencing. Seamless, high-definition,
         and secure meetings for everyone, everywhere.
       </p>
-      <Button
-        render={<Link href="/sign-up" />}
-        nativeButton={false}
-        variant="effect"
-        size="lg"
-        className="rounded-full px-10 py-6 text-base"
+      <Link
+        href="/sign-up"
+        className={buttonVariants({ variant: "effect", size: "lg", className: "rounded-full px-10 py-6 text-base" })}
       >
         Get Started for Free
-      </Button>
+      </Link>
     </section>
   );
 };

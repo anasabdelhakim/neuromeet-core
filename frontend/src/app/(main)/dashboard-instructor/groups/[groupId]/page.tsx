@@ -9,7 +9,6 @@ import { notFound } from "next/navigation";
 import { getDashboardData } from "@/src/features/dashboard-instructor/home/actions/home-actions";
 import { getAllStudents } from "@/src/features/dashboard-instructor/students/actions/students-actions";
 import { GroupDetailsClient } from "@/src/features/dashboard-instructor/groups/components/GroupDetailsClient";
-import { Loader } from "lucide-react";
 
 type Props = {
   params: Promise<{ groupId: string }>;
@@ -69,7 +68,7 @@ function GroupDetailsSkeleton() {
 
       {/* Table Mock */}
       <div className="w-full bg-black-soft-subtle border border-border rounded-soft p-5 flex flex-col gap-4">
-         <div className="flex items-center justify-between border-b border-border pb-4">
+         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-4">
             <div className="h-6 w-24 bg-white-soft-muted rounded-medium" />
             <div className="h-10 w-full sm:max-w-md bg-white-soft-muted rounded-soft" />
          </div>

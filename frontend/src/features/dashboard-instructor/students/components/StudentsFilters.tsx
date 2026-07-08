@@ -2,7 +2,7 @@
 import { useState, useMemo } from "react";
 import { Student, StudentGroup } from "../types";
 import { Card } from "@/src/components/ui/card";
-import { Button } from "@/src/components/ui/button";
+import { Button, buttonVariants } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Avatar, AvatarFallback } from "@/src/components/ui/avatar";
 import Link from "next/link";
@@ -234,9 +234,9 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
                             )}
                             {messagingId === student.id ? "Opening Mail..." : "Message Student"}
                           </Button>
-                          <Button render={<Link href={`/dashboard-instructor/students/${student.id}/analytics`} />} nativeButton={false} variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
+                          <Link href={`/dashboard-instructor/students/${student.id}/analytics`} className={buttonVariants({ variant: "ghost", className: "w-full justify-start h-8 px-2 text-sm font-normal" })}>
                             <LineChart size={14} className="text-status-success mr-2" /> View Analytics
-                          </Button>
+                          </Link>
                         </PopoverContent>
                       )}
                     </Popover>
@@ -337,9 +337,9 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
                         )}
                         {messagingId === `mobile-${student.id}` ? "Opening Mail..." : "Message Student"}
                       </Button>
-                      <Button render={<Link href={`/dashboard-instructor/students/${student.id}/analytics`} />} nativeButton={false} variant="ghost" className="w-full justify-start h-8 px-2 text-sm font-normal">
+                      <Link href={`/dashboard-instructor/students/${student.id}/analytics`} className={buttonVariants({ variant: "ghost", className: "w-full justify-start h-8 px-2 text-sm font-normal" })}>
                         <LineChart size={14} className="text-status-success mr-2" /> View Analytics
-                      </Button>
+                      </Link>
                     </PopoverContent>
                   )}
                 </Popover>

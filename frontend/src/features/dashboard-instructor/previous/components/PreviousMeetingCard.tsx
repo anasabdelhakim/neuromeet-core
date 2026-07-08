@@ -3,7 +3,7 @@ import { AvatarChain } from "@/src/features/dashboard-instructor/constants/avata
 import { Clock, CheckCircle2, BarChart3, Play, Info } from "lucide-react";
 import { PreviousMeeting } from "../types";
 import { Badge } from "@/src/components/ui/badge";
-import { Button } from "@/src/components/ui/button";
+import { Button, buttonVariants } from "@/src/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { MeetingActionsPopover } from "../../upcoming/components/MeetingActionsPopover";
 import Link from "next/link";
@@ -35,15 +35,15 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
         <AvatarChain avatars={mappedAvatars} max={5} />
       </div>
       <div className="flex flex-1 sm:flex-initial gap-2 w-full">
-        <Button variant="outline" render={<Link href={`/dashboard-instructor/analytics?meetingId=${meeting.id}`} />} nativeButton={false} className="flex-1 sm:w-auto border rounded-medium">
+        <Link href={`/dashboard-instructor/analytics?meetingId=${meeting.id}`} className={buttonVariants({ variant: "outline", className: "flex-1 sm:w-auto border rounded-medium" })}>
           <BarChart3 size={16} className="text-primary-light mr-2" />
           Report
-        </Button>
+        </Link>
         {meeting.hasRecording && (
-          <Button render={<Link href={meeting.recordingUrl || "/dashboard-instructor/recordings"} />} nativeButton={false} className="flex-1 sm:w-auto rounded-medium">
+          <Link href={meeting.recordingUrl || "/dashboard-instructor/recordings"} className={buttonVariants({ className: "flex-1 sm:w-auto rounded-medium" })}>
             <Play size={16} fill="currentColor" className="mr-2" />
             Play
-          </Button>
+          </Link>
         )}
       </div>
     </div>

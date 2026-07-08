@@ -2,7 +2,7 @@ import { getGroupsAction } from "../actions/groups-actions";
 import { GROUP_COLORS } from "../constants/groups-constants";
 import { Group } from "../types/groups-types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
-import { Button } from "@/src/components/ui/button";
+import {buttonVariants } from "@/src/components/ui/button";
 import { CreateGroupModal } from "./CreateGroupModal";
 import { GroupCardActions } from "./GroupCardActions";
 import { Users, BookOpen } from "lucide-react";
@@ -68,13 +68,15 @@ export async function GroupsList() {
                       </div>
                     </div>
 
-                    <Button 
-                      render={<Link href={`/dashboard-instructor/groups/${group.id}`} />} 
-                      className="shadow-soft hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer relative z-10"
-                      nativeButton={false}
+                    <Link 
+                      href={`/dashboard-instructor/groups/${group.id}`}
+                      className={buttonVariants({ 
+                        variant: "default", 
+                        className: "shadow-soft hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer relative z-10" 
+                      })}
                     >
                       Manage Group
-                    </Button>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>

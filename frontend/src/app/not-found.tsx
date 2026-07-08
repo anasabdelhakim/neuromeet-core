@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button } from "@/src/components/ui/button";
+import { buttonVariants } from "@/src/components/ui/button";
 import { SearchX } from "lucide-react";
 import { DashboardBackground } from "@/src/features/dashboard-instructor/wrappers/DashboardBackground";
 
@@ -20,9 +20,9 @@ export default function NotFound() {
               We couldn't find the page you were looking for. It might have been moved or doesn't exist.
             </p>
           </div>
-          <Button render={<Link href="/sign-in" />} nativeButton={false} className="w-full bg-primary hover:bg-primary-hover text-white h-11 rounded-soft font-medium transition-all shadow-hard">
+          <Link href="/sign-in" className={buttonVariants({ className: "w-full bg-primary hover:bg-primary-hover text-white h-11 rounded-soft font-medium transition-all shadow-hard" })}>
             Return to Dashboard
-          </Button>
+          </Link>
         </div>
       </div>
     </DashboardBackground>

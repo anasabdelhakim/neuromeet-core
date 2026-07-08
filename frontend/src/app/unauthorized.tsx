@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button } from "@/src/components/ui/button";
+import { buttonVariants } from "@/src/components/ui/button";
 import { LockKeyhole } from "lucide-react";
 
 export default function Unauthorized() {
@@ -18,9 +18,9 @@ export default function Unauthorized() {
             You must be logged in to view this page. Please sign in to continue accessing NeuroMeet.
           </p>
         </div>
-        <Button render={<Link href="/sign-in" />} nativeButton={false} className="w-full bg-primary hover:bg-primary-hover text-white h-11 rounded-soft font-medium transition-all shadow-hard">
+        <Link href="/sign-in" className={buttonVariants({ className: "w-full bg-primary hover:bg-primary-hover text-white h-11 rounded-soft font-medium transition-all shadow-hard" })}>
           Sign In
-        </Button>
+        </Link>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button } from "@/src/components/ui/button";
+import { buttonVariants } from "@/src/components/ui/button";
 import { ShieldAlert } from "lucide-react";
 
 export default function Forbidden() {
@@ -18,9 +18,9 @@ export default function Forbidden() {
             You do not have the necessary permissions to view this page. If you believe this is an error, please contact your administrator.
           </p>
         </div>
-        <Button render={<Link href="/sign-in" />} nativeButton={false} className="w-full bg-primary hover:bg-primary-hover text-white h-11 rounded-soft font-medium transition-all shadow-hard">
+        <Link href="/sign-in" className={buttonVariants({ className: "w-full bg-primary hover:bg-primary-hover text-white h-11 rounded-soft font-medium transition-all shadow-hard" })}>
           Return to Login
-        </Button>
+        </Link>
       </div>
     </div>
   );
