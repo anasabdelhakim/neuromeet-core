@@ -390,8 +390,6 @@ export class AuthService {
           email: true,
           role: true,
           name: true,
-          phone: true,
-          dateOfBirth: true,
           active: true,
           refreshToken: true,
           created_at: true,

@@ -13,8 +13,6 @@ export class UserService {
         name: true,
         email: true,
         role: true,
-        phone: true,
-        dateOfBirth: true,
         active: true,
         created_at: true,
         avatarUrl: true,
