@@ -13,7 +13,7 @@ export const Hero = () => {
       </p>
       <Link
         href="/sign-up"
-        className={buttonVariants({ variant: "effect", size: "lg", className: "rounded-full px-10 py-6 text-base" })}
+        className={buttonVariants({ variant: "effect", size: "lg", className: "!rounded-full px-10 py-6 text-base" })}
       >
         Get Started for Free
       </Link>
