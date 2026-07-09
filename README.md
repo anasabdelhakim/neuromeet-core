@@ -1,67 +1,95 @@
-# 🧠 NeuroMeet — AI-Powered e-Learning & Real-Time Engagement Detection Platform
+# 🎯 Quiz Mastro — Modern Interactive Quiz & Assessment Dashboard Platform
 
 <div align="center">
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-neuromeet.anasdev.shop-7C3AED?style=for-the-badge&logo=vercel&logoColor=white)](https://neuromeet.anasdev.shop)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
-![Next.js](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
-![NestJS](https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white)
-![Fastify](https://img.shields.io/badge/fastify-%23000000.svg?style=for-the-badge&logo=fastify&logoColor=white)
-![LiveKit](https://img.shields.io/badge/LiveKit-WebRTC-blue?style=for-the-badge&logo=webrtc&logoColor=white)
-![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=for-the-badge&logo=pytorch&logoColor=white)
-![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
-![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
-![Bun](https://img.shields.io/badge/Bun-000000?style=for-the-badge&logo=bun&logoColor=white)
-![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Angular](https://img.shields.io/badge/Angular-19.2-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![RxJS](https://img.shields.io/badge/RxJS-B7178C?style=for-the-badge&logo=reactivex&logoColor=white)
+![Zod](https://img.shields.io/badge/Zod-Validation-3068b7?style=for-the-badge&logo=zod&logoColor=white)
+![Spartan-ng](https://img.shields.io/badge/Spartan--ng-Helm-000000?style=for-the-badge&logo=angular&logoColor=white)
+![OpenRouter AI](https://img.shields.io/badge/OpenRouter-AI%20Integration-FF6B35?style=for-the-badge&logo=openai&logoColor=white)
 
-> **NeuroMeet** is a production-grade, AI-enhanced virtual classroom platform engineered to solve the challenge of student disengagement in online learning. Combining custom WebRTC video conferencing with real-time computer vision inference, NeuroMeet empowers educators with live engagement analytics, seamless Google Drive integrations, and intuitive, dark-mode-first instructor dashboards.
+> **Quiz Mastro** is a production-grade, full-lifecycle quiz management and assessment platform built for educators and students. Engineered with **Angular 19 Standalone Components**, **Spartan-ng (Helm)**, and **Tailwind CSS v4**, the platform covers every stage of the academic assessment pipeline — from AI-assisted quiz generation and time-locked student examination, to per-student manual grading with MCQ auto-correction, and a post-exam student review portal. The platform implements a **three-tier role system** (Super Admin, Teacher, Student) with separate layouts, isolated route guards, and connection-scoped data visibility.
 
 </div>
 
 ---
 
+## 🚀 What Makes This Project Stand Out — A Reviewer's Hook
+
+> **Skip to the code that matters.** These are the technically complex, non-trivial engineering decisions baked into Quiz Mastro. Each item below is implemented in real code — not described as a concept.
+
+### ⚡ 1. AI-Powered Quiz Generation (OpenRouter + Custom JSON Pipeline)
+The `AiService` integrates with the **OpenRouter API** (`openrouter/free` model) to allow teachers to specify exact counts of MCQ and written questions by **difficulty tier** (easy / medium / hard) and **custom point allocations per tier**. The AI returns raw JSON, which is defensively parsed in `QuizFormComponent.createQuizByAI()` — stripping markdown wrappers, extracting JSON array bounds, and iterating questions to programmatically drive Angular `FormArray` controls. This is not a simple API call; it bridges a live AI response directly into the reactive form state.
+
+### ⚡ 2. Multi-Phase Quiz Lifecycle State Machine
+Quizzes don't have a single status — they move through a carefully engineered state machine: `unpublished → published → grading → finished`, with **role-specific derived status overlays** for students: `scheduled → active → expired → grading → finished`. The `QuizDataService.evaluateQuizStatus()` method applies time-based transitions automatically. The teacher dashboard polls `checkAllQuizStatuses()` every 30 seconds via `setInterval`, and individual quiz statuses are re-evaluated on every retrieval to ensure consistency across refreshes and LocalStorage revivals.
+
+### ⚡ 3. Connection-Scoped Quiz Visibility
+Students do **not** see all quizzes — only those created by teachers they are explicitly **connected** to. The `ConnectionService` manages a persistent `student ↔ teacher` graph stored in LocalStorage. `QuizDataService.getQuizzes('student')` cross-references the authenticated student's connection set against each quiz's `teacherId` before returning the filtered list. This creates a real enrollment model without a backend database.
+
+### ⚡ 4. Per-Student Submission & Grading Engine
+Every student's quiz attempt is tracked independently in a nested `submissions` map keyed by `quizId → studentId`. The grading engine (`GradingQuizComponent`) supports: **auto-grading MCQs** by comparing submitted option IDs against the stored `correctAnswer`, **manual score override** for written questions, and **per-question teacher explanations**. Final grades are written back per-student via `gradeQuizForStudent()`, and the quiz transitions to `finished` only when all connected students are marked as graded — enforced by `checkQuizCompletionStatus()`.
+
+### ⚡ 5. Time-Locked Exam with Audio Warning & Auto-Submit
+The `AttemptQuizComponent` computes the remaining time by diffing `Date.now()` against `startTime + duration * 60000` — accounting for mid-session page loads. When `timeLeft <= 8` seconds, a **clock-ticking audio effect** fires once via the Web Audio API. At `timeLeft === 0`, `autoSubmit()` is called, which calculates actual time spent from the `startedAt` timestamp, persists the submission, and navigates the student away — all without teacher intervention.
+
+### ⚡ 6. Three-Tier Role System with Isolated Layouts
+The router defines **three fully isolated layout shells** (`LayoutComponent` for Super Admin, `LayoutTeacherComponent` for Teacher, `LayoutStudentComponent` for Student), each protected by `authGuard` with a `data: { role }` configuration. The guard reads the role from `AuthService` and redirects unauthorized access. The Super Admin portal includes a global `SearchService` that searches across students, teachers, and connections with **live term highlighting** via regex injection into result titles and descriptions.
+
+---
+
 ## 📌 Table of Contents
-- [🚀 Core Engineering Achievements](#-core-engineering-achievements)
+- [🚀 What Makes This Project Stand Out](#-what-makes-this-project-stand-out--a-reviewers-hook)
+- [✨ Key Features](#-key-features)
 - [🎬 Video Demo](#-video-demo)
 - [📸 Screenshots](#-screenshots)
 - [🔑 Demo Login Credentials](#-demo-login-credentials)
 - [🏛️ System Architecture](#️-system-architecture)
 - [💻 Comprehensive Tech Stack](#-comprehensive-tech-stack)
-- [🤖 AI Engagement Detection Model](#-ai-engagement-detection-model)
-- [🌐 Core API Reference](#-core-api-reference)
+- [🌐 Core Route & Navigation Reference](#-core-route--navigation-reference)
 - [🚀 Getting Started & Installation](#-getting-started--installation)
-- [☁️ Google Drive Streaming & Recording](#️-google-drive-streaming--recording)
-- [📦 Deployment](#-deployment)
-- [👨‍💻 Contributors](#-contributors)
+- [👨💻 Author & Connect](#-author--connect)
 - [📄 License](#-license)
 
 ---
 
-## 🚀 Core Engineering Achievements
+## ✨ Key Features
 
-### ⚡ 1. Flawless Next.js Navigation & Server Actions
-- **Zero-Flicker Streaming**: Engineered a seamless SPA-like navigation experience using Next.js `loading.tsx` Suspense boundaries and `useTransition`. Route changes happen instantly without unmounting persistent layout shells.
-- **Optimistic Stale-Data Handling**: Complex mutations (like deleting live meetings or removing students) leverage advanced transition states to hide Server Action network latency, guaranteeing a premium, zero-flash UI update.
-- **Robust Caching**: Utilizes Next.js `revalidatePath` and tag-based caching to ensure the Instructor Command Center always reflects real-time database state without unnecessary client-side fetching.
+### 🤖 1. AI-Assisted Quiz Builder
+- **OpenRouter AI Integration**: Teachers can auto-generate full quizzes by specifying a topic, description, and exact question counts broken down by type (MCQ / Written) and difficulty (Easy / Medium / Hard) — each with a custom point value.
+- **Resilient JSON Parsing**: The AI response pipeline defensively strips markdown code fences and extracts valid JSON arrays before injecting them into Angular's reactive `FormArray`, ensuring no broken form states from malformed AI output.
 
-### ☁️ 2. Zero-Memory Chunked Google Drive Uploads
-- **Stream-to-Cloud Pipeline**: LiveKit Egress recordings are captured by the NestJS backend and instantly piped into Google Drive via a Resumable Upload Session.
-- **O(1) Memory Footprint**: Raw video buffers are transmitted in sequential **50 MB chunks**, capping Node.js RAM usage at ~10 MB regardless of whether a recording is 50MB or 5GB.
-- **Real-Time SSE Feedback**: Upload progress is broadcasted back to the frontend via Server-Sent Events (SSE), rendering dynamic progress bars on the instructor's dashboard.
+### 🛠️ 2. Three-Tier Role Architecture & Route Isolation
+- **Super Admin, Teacher, Student**: Three independent layout shells and navigation trees, each mounted as a separate router outlet group guarded by `authGuard` with role-level data checking.
+- **Quiz Guard**: A dedicated `QuizGuard` enforces context — students can only enter `attempt-quiz` when the quiz status is `active`, and teachers can only access `grading-quiz` when status is `grading`. Direct URL access is blocked at the guard level.
 
-### 🧠 3. Edge AI Engagement Detection
-- **Silent WebRTC Participant**: The AI engine is a standalone Python worker that joins the LiveKit room natively. It subscribes directly to peer video tracks, bypassing the NestJS API entirely to prevent video blob bottlenecks.
-- **ONNX Accelerated Inference**: Uses a highly optimized PyTorch model converted to ONNX to analyze student gaze and head posture at ~18ms per frame, identifying "engaged" vs "disengaged" states.
-- **Redis Pub/Sub Telemetry**: Engagement scores are published via Redis to the backend, which forwards them to the frontend via WebSocket/SSE to render live attention heatmaps for the instructor.
+### 📋 3. Full Quiz Lifecycle Management
+- **Multi-Phase State Machine**: Quizzes progress through `unpublished → published → grading → finished` automatically. The teacher dashboard polls quiz statuses every 30 seconds, and student-facing statuses (`scheduled`, `active`, `expired`) are computed in real-time from start time and duration.
+- **Manual & AI Quiz Creation**: Teachers can build quizzes manually question-by-question via a reactive `FormArray`-backed builder, or generate an entire question set through the AI dialog — both paths feed into the same quiz model.
 
-### 🎥 4. Premium Dark-Mode WebRTC Interface
-- **Custom Hardware Control**: Built a gorgeous, Google Meet-inspired UI using Tailwind CSS, featuring glassmorphism, animated mic/cam toggles, and responsive video grids.
-- **Flicker-Free Avatars**: Implemented intelligent pulsing image skeletons that seamlessly transition to real user avatars without jarring layout shifts.
-- **Ultra-Low Latency**: Powered by **LiveKit**, providing resilient peer-to-peer and SFU video/audio transmission, dynamic bandwidth management, and screen sharing.
+### 🎯 4. Timed Student Examination Interface
+- **Countdown Timer with Audio**: The exam interface calculates remaining time from the quiz's scheduled `startTime`, plays a **clock-ticking audio cue** in the final 8 seconds, and automatically submits the exam when time expires.
+- **Progressive Answer Persistence**: Each answer selection immediately calls `updateStudentAnswerForStudent()`, persisting partial answers to LocalStorage in real-time — protecting against accidental navigation or page refresh.
+- **Question Navigation Panel**: Students can jump directly to any question by index, with answered/unanswered visual indicators per question slot.
 
-### 🔒 5. Enterprise-Grade Security & Dashboards
-- **Google OAuth 2.0 & JWT**: Passwordless single sign-on (SSO) with strict RBAC separating Instructors and Students. Silent background refresh logic ensures continuous session validity.
-- **Command Center**: Provides educators with an instant breakdown of student attention spans, historical meeting attendance, real-time AI alerts, and platform-wide usage statistics.
+### 📊 5. Per-Student Grading Engine
+- **MCQ Auto-Grading**: The grading view automatically detects correct MCQ answers by comparing the student's submitted option ID against the stored `correctAnswer` and awards full points.
+- **Written Question Manual Scoring**: Teachers can assign custom scores to written responses with a per-question input. Manual scores take precedence over any auto-computed values.
+- **Grade Completion Gate**: A quiz only transitions to `finished` after all connected students have been reviewed — enforced by `checkQuizCompletionStatus()` which compares submitted vs. graded student counts.
+
+### 🔗 6. Student–Teacher Connection Graph
+- **Enrollment Model**: Students are only shown quizzes from teachers they are connected to. The `ConnectionService` maintains a persistent graph in LocalStorage and exposes filtered query methods (`getConnectionsByStudent`, `getConnectionsByTeacher`).
+- **Admin Relationship Map**: The Super Admin portal renders a computed signal-based relationship visualizer (`RelashionMapComponent`) showing which students are enrolled under which teachers, with live search filtering.
+
+### 🔍 7. Global Cross-Entity Search (Super Admin)
+- **Multi-Type Search Engine**: The `SearchService` queries students, teachers, connections, and navigation pages in a single pass, returning a unified result set with **inline term highlighting** applied via regex injection into both title and description fields.
+- **Real-Time Term Highlight**: Matched substrings are wrapped in `<mark>` tags for immediate visual feedback as the admin types.
+
+### 🔒 8. Zod-Validated Authentication
+- **Schema-First Login**: The sign-in form uses **Zod** to validate credentials before submission, surfacing field-level error messages reactively as the user types and suppressing duplicate errors intelligently.
+- **Three-Path Role Routing**: On successful login, `AuthService` resolves the user against the student or teacher registry (or the hardcoded super admin), persists the session to LocalStorage, and routes to the correct role portal automatically.
 
 ---
 
@@ -70,16 +98,19 @@
 <!-- ───────────────────────────────────────────────────────────────────────── -->
 <!-- TODO (YOU):                                                               -->
 <!--   1. Record a 30–60 second screen walkthrough:                           -->
-<!--      - Login via Google OAuth                                            -->
-<!--      - Instructor creates and starts a meeting                           -->
-<!--      - Student joins → camera activates                                  -->
-<!--      - AI engagement score updates live in instructor sidebar            -->
-<!--      - Instructor views recordings page                                  -->
+<!--      - Landing page experience & preloader animation                      -->
+<!--      - Login via Super Admin credentials                                  -->
+<!--      - Admin explores overview, relationship map, and connection graph    -->
+<!--      - Login via Teacher demo credentials                                 -->
+<!--      - Teacher creates a quiz manually and via AI generation              -->
+<!--      - Teacher publishes quiz, views student submissions, grades them     -->
+<!--      - Login via Student demo credentials                                 -->
+<!--      - Student navigates dashboard, attempts a live quiz, reviews result  -->
 <!--   2. Upload to YouTube as "Unlisted"                                     -->
 <!--   3. Replace YOUR_VIDEO_ID below with your actual YouTube video ID       -->
 <!-- ───────────────────────────────────────────────────────────────────────── -->
 
-[![NeuroMeet Demo Video](https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
+[![Quiz Mastro Demo Video](https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
 
 *▶ Click the thumbnail above to watch the full walkthrough on YouTube.*
 
@@ -88,312 +119,195 @@
 ## 📸 Screenshots
 
 <!-- ───────────────────────────────────────────────────────────────────────── -->
-<!-- TODO (YOU):                                                               -->a
+<!-- TODO (YOU):                                                               -->
 <!--   Take clean, full-window screenshots of each screen below and save them -->
 <!--   as .png files into the docs/assets/ folder of this repo, then push.   -->
-<!--   See docs/assets/PLACE_ASSETS_HERE.md for the exact filenames expected. -->
 <!-- ───────────────────────────────────────────────────────────────────────── -->
 
-### 1. Live Virtual Classroom
-![Meeting Room](./docs/assets/meeting-room.png)
-*The fully custom LiveKit video interface — hardware toggles, chat sidebar, and live engagement indicators.*
+### 1. Immersive Landing Page & Hero Section
+![Landing Page](./docs/assets/landing-page.png)
+*The modern hero presentation featuring clear value propositions, dual-role overview, and seamless sign-in access.*
 
-### 2. Instructor Analytics Dashboard
-![Instructor Dashboard](./docs/assets/instructor-dashboard.png)
-*Real-time command center showing platform statistics, active student engagement scores, and upcoming schedules.*
+### 2. Teacher Command Center & AI Quiz Builder
+![Teacher Dashboard](./docs/assets/teacher-dashboard.png)
+*Educator portal for managing published quizzes, monitoring student submission status, grading queues, and launching the AI quiz generation dialog.*
 
-### 3. Student Hub & Recordings
-![Student Hub](./docs/assets/student-hub.png)
-*Clean, structured student view for accessing past lecture recordings and class materials.*
+### 3. Student Assessment Portal & Exam Interface
+![Student Portal](./docs/assets/student-portal.png)
+*Connection-scoped student view showing only quizzes from enrolled teachers, with a timed exam interface featuring real-time answer persistence and auto-submit.*
 
 ---
 
 ## 🔑 Demo Login Credentials
 
-Explore the platform live at **[neuromeet.anasdev.shop](https://neuromeet.anasdev.shop)** without any local setup:
+Explore the platform live at **[quiz-mastro.vercel.app](https://quiz-mastro.vercel.app)** or in your local development environment using the following pre-configured credentials:
 
-<!-- ───────────────────────────────────────────────────────────────────────── -->
-<!-- TODO (YOU):                                                               -->
-<!--   Ensure these two accounts are pre-seeded in your production database   -->
-<!--   via your Prisma seed script before publishing this README.             -->
-<!-- ───────────────────────────────────────────────────────────────────────── -->
-
-| Role | Email | Password | Access Rights |
+| Role | Username | Password | Access Rights |
 | :--- | :--- | :--- | :--- |
-| **Instructor** | `instructor@neuromeet.anasdev.shop` | `NeuroMeet#Admin2026` | Create meetings, view live AI engagement, manage recordings |
-| **Student** | `student@neuromeet.anasdev.shop` | `NeuroMeet#Student26` | Join meetings, view past materials, chat participation |
+| **Super Admin** | `super@admin` | `super#admin` | Full platform overview, student/teacher management, relationship map, global search |
+| **Teacher** | `teacher@demo` | `teacher#demo` | Teacher dashboard, AI quiz builder, quiz publishing, student grading panel |
+| **Student** | `student@demo` | `student#demo` | Student dashboard, connection-scoped quiz list, timed exam interface, grade review |
 
-> **Note:** These accounts are read-only demo accounts. Data may be reset periodically.
+> **Note:** The Super Admin account is hardcoded for security. Teacher and Student accounts are resolved against the `DataStoreService` registry, with session state persisted to LocalStorage.
 
 ---
 
 ## 🏛️ System Architecture
 
-NeuroMeet operates on a highly decoupled, modern 3-tier microservice architecture:
+Quiz Mastro is structured around a modular, reactive Angular 19 architecture with three isolated portal shells:
 
 ```mermaid
 graph TD
-    Client[Next.js Client / Bun] -->|OAuth & REST via Server Actions| BFF[Next.js BFF / Proxy]
-    Client -->|WebRTC Video & Audio| LiveKit[LiveKit Media SFU Server]
-    BFF -->|Fastify HTTP REST| Backend[NestJS Core Backend]
-    Backend -->|Prisma ORM| DB[(PostgreSQL 18)]
-    Backend -->|Pub/Sub & Cache| Redis[(Redis)]
-    LiveKit -->|WebRTC Stream| AIBot[Python AI Worker / FastAPI]
-    AIBot -->|Engagement Alerts| Backend
-    Backend -->|Resumable Chunk Stream| GDrive[Google Drive Cloud Storage]
+    Client[Angular 19 Standalone App] -->|Route Navigation| Router[Angular Router]
+    Router -->|Unauthenticated| Public[Landing Page & Sign-In / Zod Validation]
+    Router -->|role: super| AdminView[Super Admin Portal - LayoutComponent]
+    Router -->|role: teacher| TeacherView[Teacher Portal - LayoutTeacherComponent]
+    Router -->|role: student| StudentView[Student Portal - LayoutStudentComponent]
+
+    Public -->|AuthService.login| Auth[AuthService / LocalStorage Session]
+    Auth -->|Role resolved| Router
+
+    TeacherView -->|QuizDataService BehaviorSubject| QuizState[Quiz State Engine]
+    StudentView -->|Connection-scoped filter| QuizState
+    QuizState -->|Status machine evaluation| StatusEngine[evaluateQuizStatus / checkAllQuizStatuses]
+    QuizState -->|Per-student submissions map| GradingEngine[gradeQuizForStudent / checkQuizCompletionStatus]
+
+    TeacherView -->|OpenRouter HTTP POST| AIService[AiService / AI Quiz Generation]
+    AIService -->|JSON parse pipeline| QuizFormArray[ReactiveForm FormArray injection]
+
+    AdminView -->|SearchService multi-type query| SearchEngine[Global Search - Students / Teachers / Connections]
+    AdminView -->|Computed signals| RelationMap[RelashionMapComponent - Enrollment Graph]
 ```
 
-**Key Design Decisions:**
-- **The AI bot is a WebRTC participant**, not a video proxy — it subscribes to media directly from the LiveKit SFU, eliminating any video bandwidth going through NestJS.
-- **NestJS uses Fastify** (not Express) for significantly lower HTTP overhead and native async streaming support.
-- **Resumable Drive uploads** prevent data loss on network interruptions and keep memory usage constant at ~10 MB regardless of recording size.
+**Key Architectural Decisions:**
+- **Standalone Components**: Every component is declared as standalone, enabling fine-grained lazy loading and eliminating NgModule boilerplate entirely.
+- **BehaviorSubject-Driven State**: `QuizDataService` exposes `quizzes$` as a `BehaviorSubject`, allowing the teacher dashboard to reactively subscribe and re-render on any quiz state mutation without manual change detection.
+- **Computed Signals in Admin**: The relationship map uses Angular 19's `computed()` signals to derive the filtered student–teacher graph reactively from `search()` signal input — no manual subscription management.
+- **Spartan-ng / Helm**: Headless UI primitives (Brain layer) combined with Helm-styled components give full accessibility compliance with zero custom dialog or select implementations.
 
 ---
 
 ## 💻 Comprehensive Tech Stack
 
-### 🖥️ Frontend
+### 🖥️ Core Application
 | Technology | Purpose |
 | :--- | :--- |
-| Next.js 16.2 (App Router) | Full-stack React framework with Server Actions |
-| React 19 + TypeScript 5 | UI rendering & type safety |
-| Bun + Turbopack | Ultra-fast dev runtime & bundler |
-| LiveKit Client + React Components | WebRTC video/audio in the browser |
-| Tailwind CSS v4 + shadcn + Base UI | Design system & component library |
-| React Hook Form + Zod | Form state management & schema validation |
-| Next Themes | Dark/Light mode management |
+| Angular 19.2 | Core frontend framework utilizing Standalone Components throughout |
+| TypeScript 5.7 | Static typing with strict mode across all services, models, and guards |
+| RxJS 7.8 | BehaviorSubject-driven quiz state, reactive subscriptions, and observable pipelines |
+| Zod v4 | TypeScript-first schema validation for the authentication sign-in form |
+| OpenRouter API | AI backend for topic-to-quiz generation with difficulty-tiered question output |
 
-### ⚙️ Backend
+### 🎨 Styling & UI Ecosystem
 | Technology | Purpose |
 | :--- | :--- |
-| NestJS v11 + Fastify | Core REST API with modular architecture |
-| Bun Runtime | High-performance JavaScript/TypeScript execution |
-| Prisma ORM v7.8 | Type-safe database access layer |
-| PostgreSQL 18 (Alpine) | Primary relational database |
-| Redis (ioredis) | Caching, pub/sub for SSE events, rate limiting |
-| LiveKit Server SDK | Room management & JWT token generation |
-| Google Drive API (googleapis) | Cloud recording storage with resumable upload |
-| Passport Google OAuth 2.0 + JWT | Authentication & session management |
-| Resend | Transactional email delivery |
-| NestJS Schedule | Background cron job management |
+| Tailwind CSS v4 | Utility-first design system with responsive layouts and dark-mode ready tokens |
+| Spartan-ng (Brain & Helm) | Headless UI primitives (dialogs, selects, inputs) with Tailwind-styled Helm layer |
+| Lucide Angular | Consistent, lightweight SVG iconography across all portals |
+| ngx-sonner | Non-blocking toast notification system for grading, submission, and auth feedback |
 
-### 🤖 AI Bot Worker
+### ⚙️ Build & Tooling
 | Technology | Purpose |
 | :--- | :--- |
-| Python 3 + FastAPI + Uvicorn | Dispatch server for bot lifecycle management |
-| LiveKit Python Agents | WebRTC participant joining & video frame subscription |
-| PyTorch 2.0 + torchvision | Deep learning model training & inference |
-| OpenCV (headless) | Real-time video frame processing |
-| ONNX + ONNX Runtime | Optimized production model inference |
-| NumPy | Numerical array processing for frame data |
-
-### 🐳 DevOps
-| Technology | Purpose |
-| :--- | :--- |
-| Docker + Docker Compose | Multi-service container orchestration |
-| PostgreSQL (Alpine Docker image) | Containerized database with tuned memory config |
-| Windows Batch Scripts | Automated zero-downtime deployment |
+| Angular CLI 19.2 | Project scaffolding, component generation, and build pipeline orchestration |
+| esbuild | Ultra-fast bundling for local development and optimized production output |
+| Karma & Jasmine | Unit testing framework with spec files co-located alongside each service |
 
 ---
 
-## 🤖 AI Engagement Detection Model
+## 🌐 Core Route & Navigation Reference
 
-The NeuroMeet AI pipeline classifies student engagement in real time from live video feed frames.
-
-### How It Works
-1. The **Python LiveKit Agent** (`bot.py`) joins the meeting room as a hidden participant using a server-generated token.
-2. It subscribes to each student's video track and samples frames at a configured interval.
-3. Each frame is passed through the **ONNX-optimized inference pipeline** — a custom CNN trained on engagement/disengagement behavioral patterns.
-4. A score (`0.0 – 1.0`) is computed per student and emitted to the NestJS backend via HTTP.
-5. NestJS stores the score and publishes it via **Redis pub/sub** to the instructor's live engagement dashboard.
-
-### Model Details
-
-<!-- ───────────────────────────────────────────────────────────────────────── -->
-<!-- TODO (YOU):                                                               -->
-<!--   Fill in your actual model details below:                               -->
-<!--   - Architecture name (e.g. ResNet-18, MobileNetV3, custom CNN)         -->
-<!--   - Dataset used for training (name, size, source)                       -->
-<!--   - Training accuracy / validation accuracy / F1 score                   -->
-<!--   - Detection categories (e.g. Engaged, Disengaged, Distracted)         -->
-<!-- ───────────────────────────────────────────────────────────────────────── -->
-
-| Attribute | Value |
-| :--- | :--- |
-| **Architecture** | Vision Transformer (ViT-Base 16) + LSTM temporal model (Sequence Length: 24) |
-| **Training Dataset** | DAiSEE (Dataset for Affective States in E-Environments) / Custom Frames |
-| **Classes** | Binary Classification (Engaged vs. Disengaged) |
-| **Validation Accuracy** | ~89.4% (F1 Score: 0.88) |
-| **Inference Format** | ONNX (exported from PyTorch via `export_onnx.py`) |
-| **Avg. Inference Time** | ~18ms per frame sequence on CPU |
-
----
-
-## 🌐 Core API Reference
-
-Base URL: `http://localhost:4000/api/v1` (dev) | `https://api.neuromeet.anasdev.shop/api/v1` (prod)
-
-### 🔐 Authentication
-| Method | Endpoint | Description |
+### 🚪 Public & Authentication Routes
+| Path | Component | Description |
 | :--- | :--- | :--- |
-| `GET` | `/oauth/google` | Initiates Google OAuth 2.0 flow |
-| `GET` | `/oauth/google/callback` | Handles OAuth callback, sets JWT cookies |
-| `POST` | `/auth/refresh` | Silently refreshes access token using refresh token |
-| `POST` | `/auth/logout` | Invalidates session and clears cookies |
+| `/index` | `IndexComponent` | Landing page with hero section and platform feature overview |
+| `/sign-in` | `SignInComponent` | Zod-validated login form with three-role routing on success |
 
-### 📅 Meetings
-| Method | Endpoint | Description |
+### 🛡️ Super Admin Portal (Protected: `role: 'super'`)
+| Path | Component | Description |
 | :--- | :--- | :--- |
-| `POST` | `/meetings` | Create a new scheduled or instant meeting |
-| `GET` | `/meetings` | List all meetings for the authenticated user |
-| `GET` | `/meetings/:id` | Get full meeting details including participants |
-| `PATCH` | `/meetings/:id` | Update meeting title, time, or status |
-| `DELETE` | `/meetings/:id` | Cancel a meeting |
-| `GET` | `/meetings/:id/token` | Generate a LiveKit JWT for joining a room |
+| `/home` | `OverviewComponent` | Platform-wide metrics and activity feed |
+| `/student` | `StudentComponent` | Student registry management |
+| `/teacher` | `TeacherComponent` | Teacher registry management |
+| `/connections` | `ConnectionsComponent` | Student–teacher connection management panel |
+| `/relashion-map` | `RelashionMapComponent` | Signal-computed enrollment relationship visualizer |
 
-### 🎬 Recordings & Drive
-| Method | Endpoint | Description |
+### 👨🏫 Teacher Portal (Protected: `role: 'teacher'`)
+| Path | Component | Description |
 | :--- | :--- | :--- |
-| `POST` | `/drive/recording/stream/:meetingId` | LiveKit Egress webhook — streams raw video to Google Drive |
-| `GET` | `/drive/recording/progress/:meetingId` | SSE endpoint — live upload progress for instructor dashboard |
-| `GET` | `/drive/recording/status/:meetingId` | One-shot status check (polling fallback) |
-| `POST` | `/drive/upload-material` | Upload course material (PDF, slides) — multipart |
+| `/teacher-dashboard` | `TeacherDashboardComponent` | Quiz overview with status-based action controls and grading queue |
+| `/create-quiz` | `QuizFormComponent` | Reactive FormArray quiz builder + AI generation dialog |
+| `/student-to-teacher` | `StudentToTeacherComponent` | View enrolled students for this teacher |
+| `/view-detailes/:id` | `ViewDetailesComponent` | Detailed quiz view with connected student status list |
+| `/grading-quiz/:id` | `GradingQuizComponent` | Per-student grading interface with MCQ auto-grade and manual score override |
+| `/view-student-grades/:id` | `ViewStudentGradesComponent` | Grade summary for all students on a specific quiz |
 
-### 👥 Groups & Enrollment
-| Method | Endpoint | Description |
+### 🎓 Student Portal (Protected: `role: 'student'`)
+| Path | Component | Description |
 | :--- | :--- | :--- |
-| `POST` | `/groups` | Instructor creates a student group |
-| `GET` | `/groups` | List instructor's groups or student's enrollments |
-| `POST` | `/groups/:id/invite` | Send invitation to a student |
-| `POST` | `/groups/:id/enroll` | Student accepts group invitation |
+| `/student-dashboard` | `StudentDashboardComponent` | Connection-scoped quiz list with lifecycle status badges |
+| `/attempt-quiz/:id` | `AttemptQuizComponent` | Timed exam interface with real-time answer persistence and audio cue |
+| `/review-quiz/:id` | `ReviewQuizComponent` | Post-submission review showing answers, scores, and teacher explanations |
+| `/connect-student` | `ConnectStudentsComponent` | Student self-enrollment by connecting to a teacher |
+| `/teacher-to-student` | `TeacherToStudentComponent` | View assigned teachers and connection details |
 
 ---
 
 ## 🚀 Getting Started & Installation
 
 ### Prerequisites
-- [Bun](https://bun.sh/) v1.1+
-- [Docker & Docker Compose](https://www.docker.com/)
-- [Python 3.10+](https://www.python.org/) with pip
+- [Node.js](https://nodejs.org/) v20+ or [Bun](https://bun.sh/) v1.1+
+- [Angular CLI](https://angular.dev/tools/cli) v19.2+
 - [Git](https://git-scm.com/)
-- A [LiveKit Cloud](https://cloud.livekit.io) account (free tier available)
-- A [Google Cloud](https://console.cloud.google.com/) project with OAuth 2.0 credentials and Drive API enabled
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/anasabdelhakim/neuromeet-core.git
-cd neuromeet-core
+git clone https://github.com/anasabdelhakim/Quiz_Mastro.git
+cd Quiz_Mastro
 ```
 
-### 2. Configure Environment Variables
+### 2. Install Dependencies
+Using npm:
 ```bash
-# Backend
-cp backend/.env.example backend/.env
-
-# Frontend
-cp frontend/.env.example frontend/.env
-
-# AI Bot
-cp ai_bot/.env.example ai_bot/.env
+npm install
 ```
-
-> Open each `.env` file and fill in your credentials. See the comments inside each file for where to obtain each value.
-
-### 3. Start All Services via Docker (Recommended)
+Or using Bun (recommended for maximum speed):
 ```bash
-docker compose up -d
-```
-This starts PostgreSQL, the NestJS backend, and the Python AI worker in isolated containers.
-
-### 4. Run Database Migrations
-```bash
-cd backend
-bun run prisma migrate dev
-bun run prisma db seed     # (optional) seeds demo accounts
-```
-
-### 5. Local Development (Without Docker)
-
-**Backend (NestJS / Bun):**
-```bash
-cd backend
 bun install
-bun run start:dev
-# → API running at http://localhost:4000
 ```
 
-**Frontend (Next.js / Bun):**
-```bash
-cd frontend
-bun install
-bun run dev
-# → App running at http://localhost:3000
+### 3. (Optional) Configure AI Quiz Generation
+To enable the AI quiz builder, open `src/app/main-app/ai.service.ts` and replace the placeholder with your free OpenRouter API key:
+```typescript
+private apiKey = 'sk-or-v1-YOUR_KEY_HERE'; // Get a free key at openrouter.ai/keys
 ```
 
-**AI Worker (Python / FastAPI):**
+### 4. Start the Development Server
 ```bash
-cd ai_bot
-pip install -r requirements.txt
-python dispatch_server.py
-# → Dispatch server running at http://localhost:8080
+ng serve
+# Or using Bun: bun run start
+```
+> The application will start immediately. Open your browser and navigate to `http://localhost:4200/`.
+
+### 5. Build for Production
+```bash
+ng build
+```
+> This will compile the Angular application using the high-performance esbuild pipeline, producing optimized static artifacts in the `dist/` directory.
+
+### 6. Running Unit Tests
+```bash
+ng test
 ```
 
 ---
 
-## ☁️ Google Drive Streaming & Recording
-
-NeuroMeet implements a custom **sequential chunk pipeline** for zero-memory Google Drive uploads.
-
-```
-LiveKit Egress → POST /drive/recording/stream/:meetingId
-                        ↓
-               NestJS reads raw HTTP stream
-                        ↓
-         Accumulate 50 MB chunk in memory (~10 MB ceiling)
-                        ↓
-            PUT chunk to Drive resumable session
-                        ↓ (308 Resume Incomplete → next chunk)
-                        ↓ (200/201 → upload complete)
-                        ↓
-         Persist Recording record to PostgreSQL
-                        ↓
-           Publish "complete" event via Redis → SSE → Dashboard
-```
-
-Key engineering guarantees:
-- **No memory bloat**: RAM usage stays at ~10 MB regardless of file size.
-- **Exponential backoff retries**: Transient Drive errors (503, 429, ECONNRESET) are retried up to 3 times with 1s → 2s → 4s delays.
-- **TLS keep-alive pool**: A single HTTPS agent with `keepAlive: true` reuses TCP connections, saving ~200ms per chunk.
-
----
-
-## 📦 Deployment
-
-NeuroMeet ships with Windows batch scripts for automated deployment:
-
-```bat
-# Deploy the NestJS backend
-deploy-backend.bat
-
-# Deploy the Python AI worker
-deploy-ai.bat
-```
-
-For Linux/Ubuntu production servers:
-```bash
-docker compose build --no-cache
-docker compose up -d --remove-orphans
-docker compose logs -f
-```
-
----
-
-## 👨‍💻 Author & Connect
+## 👨💻 Author & Connect
 
 **Anas Abdelhakim**  
 *Full Stack & AI Engineer | Senior CS Student at Nile University*
 
-Passionate about building scalable, high-performance systems and modular architectures. Always eager to discuss complex system design, performance-driven backend solutions, or agentic AI development.
+Passionate about building scalable, high-performance systems and modular architectures. Always eager to discuss complex system design, performance-driven frontend architecture, or agentic AI development.
 
 <div align="left">
   <a href="https://linkedin.com/in/anasabdelhakim"><img src="https://img.shields.io/badge/LinkedIn-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>
