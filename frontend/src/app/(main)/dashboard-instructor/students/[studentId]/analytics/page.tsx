@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { getStudentAnalyticsAction } from "@/src/features/dashboard-instructor/analytics/actions/analytics-actions";
 import StudentAnalyticsClient from "@/src/features/dashboard-instructor/analytics/components/StudentAnalyticsClient";
 import { Suspense } from "react";
+import { connection } from "next/server";
 
 export const metadata: Metadata = {
   title: "Student Analytics | NeuroMeet",
@@ -13,6 +14,7 @@ export async function generateStaticParams() {
 }
 
 async function StudentAnalyticsContent({ params }: { params: Promise<{ studentId: string }> }) {
+  await connection();
   const { studentId } = await params;
   const data = await getStudentAnalyticsAction(studentId);
   return <StudentAnalyticsClient data={data!} />;

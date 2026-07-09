@@ -4,6 +4,7 @@ import InstructorAnalyticsClient from "@/src/features/dashboard-instructor/analy
 
 import { Suspense } from "react";
 import { Loader } from "lucide-react";
+import { connection } from "next/server";
 
 export const metadata: Metadata = {
   title: "Analytics | NeuroMeet",
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
 };
 
 async function AnalyticsContent({ searchParams }: { searchParams: Promise<{ meetingId?: string }> }) {
+  await connection();
   const sp = await searchParams;
   const meetings = await getInstructorMeetingsAction();
 

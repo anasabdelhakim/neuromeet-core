@@ -1,7 +1,10 @@
 import { Suspense } from "react";
 import { RecordingsList } from "@/src/features/dashboard-instructor/recordings";
 import { getRecordingsAction } from "@/src/features/dashboard-instructor/recordings/actions/recordings-actions";
+import { connection } from "next/server";
+
 async function RecordingsContainer() {
+  await connection();
   const recordings = await getRecordingsAction();
   return <RecordingsList recordings={recordings} isInstructor={true} />;
 }

@@ -7,7 +7,10 @@ export const metadata: Metadata = {
   description: "Access past recordings and notes.",
 };
 import { getRecordingsAction } from "@/src/features/dashboard-instructor/recordings/actions/recordings-actions";
+import { connection } from "next/server";
+
 async function StudentRecordingsContainer() {
+  await connection();
   const recordings = await getRecordingsAction();
   return <RecordingsList recordings={recordings} isInstructor={false} />;
 }
