@@ -1,13 +1,28 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { decodeJwtPayload } from "@/src/lib/jwt";
+import { jwtVerify } from "jose";
+
+async function verifyToken(token: string): Promise<{ role?: string; exp?: number } | null> {
+  try {
+    const secretKey = process.env.JWT_SECRET;
+    if (!secretKey) {
+      console.warn("[Proxy] JWT_SECRET is not defined in frontend environment");
+      return null;
+    }
+    const secret = new TextEncoder().encode(secretKey);
+    const { payload } = await jwtVerify(token, secret);
+    return payload as { role?: string; exp?: number };
+  } catch (error) {
+    return null;
+  }
+}
 
 export default async function proxy(request: NextRequest) {
   let accessToken = request.cookies.get("access_token")?.value;
   let refreshToken = request.cookies.get("refresh_token")?.value;
   const { pathname } = request.nextUrl;
 
-  let payload = accessToken ? decodeJwtPayload(accessToken) : null;
+  let payload = accessToken ? await verifyToken(accessToken) : null;
   let role = payload?.role; 
   let isAccessValid = !!payload && payload.exp ? payload.exp * 1000 > Date.now() : false;
 
@@ -34,7 +49,7 @@ export default async function proxy(request: NextRequest) {
         accessToken = data.access_token;
         refreshToken = data.refresh_token || refreshToken;
 
-        payload = decodeJwtPayload(accessToken!);
+        payload = await verifyToken(accessToken!);
         role = payload?.role;
         isAccessValid = true;
 
