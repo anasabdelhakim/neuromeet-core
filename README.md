@@ -3,18 +3,19 @@
 <div align="center">
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-neuromeet.anasdev.shop-7C3AED?style=for-the-badge&logo=vercel&logoColor=white)](https://neuromeet.anasdev.shop)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)
-![Fastify](https://img.shields.io/badge/Fastify-000000?style=for-the-badge&logo=fastify&logoColor=white)
-![LiveKit](https://img.shields.io/badge/LiveKit-WebRTC-1A7FBF?style=for-the-badge&logo=webrtc&logoColor=white)
+![Fastify](https://img.shields.io/badge/Fastify-202020?style=for-the-badge&logo=fastify&logoColor=white)
+![LiveKit](https://img.shields.io/badge/LiveKit_WebRTC-1F2937?style=for-the-badge&logo=webrtc&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
-![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
-![Postgres](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![Bun](https://img.shields.io/badge/Bun-000000?style=for-the-badge&logo=bun&logoColor=fbf0df)
-![Docker](https://img.shields.io/badge/Docker-0db7ed?style=for-the-badge&logo=docker&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
+![ONNX](https://img.shields.io/badge/ONNX-005CED?style=for-the-badge&logo=onnx&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=Prisma&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-FF4438?style=for-the-badge&logo=redis&logoColor=white)
+![Bun](https://img.shields.io/badge/Bun-1A1A1A?style=for-the-badge&logo=bun&logoColor=fbf0df)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
 > **NeuroMeet** is a production-grade, AI-enhanced virtual classroom platform engineered to solve the critical challenge of student disengagement in online learning. Combining custom WebRTC video conferencing with real-time computer vision inference, NeuroMeet empowers educators with live engagement analytics, zero-memory chunked Google Drive recording pipelines, and a dark-mode-first instructor command center — all running on the Bun runtime for maximum throughput.
 
