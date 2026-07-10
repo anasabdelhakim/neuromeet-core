@@ -14,10 +14,6 @@ type Props = {
   params: Promise<{ groupId: string }>;
 };
 
-export async function generateStaticParams() {
-  return [{ groupId: "dummy" }];
-}
-
 async function GroupDetailsData({ groupId }: { groupId: string }) {
   const [dashboardRes, studentsRes] = await Promise.all([
     getDashboardData(),
