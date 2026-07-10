@@ -14,9 +14,6 @@ type Props = {
   params: Promise<{ groupId: string }>;
 };
 
-export async function generateStaticParams() {
-  return [{ groupId: "dummy" }];
-}
 
 export default async function GroupDetailsPage({ params }: Props) {
   const resolvedParams = await params;

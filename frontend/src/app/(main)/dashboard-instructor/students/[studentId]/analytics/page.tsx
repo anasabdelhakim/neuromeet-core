@@ -9,9 +9,7 @@ export const metadata: Metadata = {
   description: "View specific student engagement metrics.",
 };
 
-export async function generateStaticParams() {
-  return [{ studentId: "dummy" }];
-}
+
 
 async function StudentAnalyticsContent({ params }: { params: Promise<{ studentId: string }> }) {
   await connection();
