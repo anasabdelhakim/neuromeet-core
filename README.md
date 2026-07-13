@@ -6,20 +6,6 @@
 
 ---
 
-## ⚡ Why NeuroMeet Is Different — 30-Second Hook
-
-If you are reviewing this project, these are the five hard engineering problems it solves that most projects don't touch:
-
-| Challenge                                  | What Most Apps Do                                              | What NeuroMeet Does                                                                                                        |
-| ------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| **Recording large video files**             | Load entire file into RAM → Server crashes on large recordings   | **30 MB Chunked Stream Pipeline** — RAM stays at ~10 MB regardless of file size                                               |
-| **Auth security**                           | Decode JWT in middleware to check roles                          | **Dual-Layer JWT Verification**: `jose` cryptographic verify in Next.js Edge + NestJS AuthGuard signature check in backend    |
-| **Brute-force protection**                  | Basic password check                                              | **5-attempt lockout** with `Bun.password.verify` + `timingSafeEqual` to prevent timing attacks                               |
-| **Session invalidation**                    | Store raw refresh tokens in DB                                    | **Hashed refresh tokens** (bcrypt, cost 10) in DB + **token reuse detection** → all sessions revoked on replay attack         |
-| **AI feature without a bottleneck**         | Proxy video blobs through the backend API                        | **Optional analysis worker joins as a silent WebRTC peer** — subscribes to LiveKit tracks directly, fully isolated from the NestJS request path |
-
----
-
 ## 📌 Table of Contents
 
 - [⚡ Why NeuroMeet Is Different](#-why-neuromeet-is-different--30-second-hook)
@@ -36,6 +22,21 @@ If you are reviewing this project, these are the five hard engineering problems 
 - [📦 Deployment](#-deployment)
 - [👨‍💻 Author & Connect](#-author--connect)
 - [📄 License](#-license)
+
+---
+
+
+## ⚡ Why NeuroMeet Is Different — 30-Second Hook
+
+If you are reviewing this project, these are the five hard engineering problems it solves that most projects don't touch:
+
+| Challenge                                  | What Most Apps Do                                              | What NeuroMeet Does                                                                                                        |
+| ------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **Recording large video files**             | Load entire file into RAM → Server crashes on large recordings   | **30 MB Chunked Stream Pipeline** — RAM stays at ~10 MB regardless of file size                                               |
+| **Auth security**                           | Decode JWT in middleware to check roles                          | **Dual-Layer JWT Verification**: `jose` cryptographic verify in Next.js Edge + NestJS AuthGuard signature check in backend    |
+| **Brute-force protection**                  | Basic password check                                              | **5-attempt lockout** with `Bun.password.verify` + `timingSafeEqual` to prevent timing attacks                               |
+| **Session invalidation**                    | Store raw refresh tokens in DB                                    | **Hashed refresh tokens** (bcrypt, cost 10) in DB + **token reuse detection** → all sessions revoked on replay attack         |
+| **AI feature without a bottleneck**         | Proxy video blobs through the backend API                        | **Optional analysis worker joins as a silent WebRTC peer** — subscribes to LiveKit tracks directly, fully isolated from the NestJS request path |
 
 ---
 
