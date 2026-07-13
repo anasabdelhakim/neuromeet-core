@@ -49,7 +49,9 @@ describe('AuthGuard — Security Tests', () => {
   });
   it('should throw 401 for invalid/tampered JWT', async () => {
     const context = createMockContext('Bearer invalid.jwt.token', ['STUDENT']);
-    jest.spyOn(jwtService, 'verifyAsync').mockRejectedValue(new Error('invalid'));
+    jest
+      .spyOn(jwtService, 'verifyAsync')
+      .mockRejectedValue(new Error('invalid'));
     await expect(guard.canActivate(context)).rejects.toThrow(
       UnauthorizedException,
     );
@@ -82,7 +84,10 @@ describe('AuthGuard — Security Tests', () => {
       email: 'student@test.com',
       role: 'STUDENT',
     };
-    const context = createMockContext('Bearer valid-token', ['STUDENT', 'INSTRUCTOR']);
+    const context = createMockContext('Bearer valid-token', [
+      'STUDENT',
+      'INSTRUCTOR',
+    ]);
     jest.spyOn(jwtService, 'verifyAsync').mockResolvedValue(mockPayload);
     const result = await guard.canActivate(context);
     expect(result).toBe(true);
@@ -90,7 +95,10 @@ describe('AuthGuard — Security Tests', () => {
     expect(request.user).toEqual(mockPayload);
   });
   it('should NOT have an admin bypass using payload._id', async () => {
-    const context = createMockContext('Bearer valid-token', ['STUDENT', 'INSTRUCTOR']);
+    const context = createMockContext('Bearer valid-token', [
+      'STUDENT',
+      'INSTRUCTOR',
+    ]);
     jest.spyOn(jwtService, 'verifyAsync').mockResolvedValue({
       _id: 'attacker-id',
       id: 'attacker-id',

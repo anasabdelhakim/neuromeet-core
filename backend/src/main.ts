@@ -9,25 +9,25 @@ import fastifyMultipart from '@fastify/multipart';
 import fastifyCookie from '@fastify/cookie';
 import helmet from '@fastify/helmet';
 import { ValidationPipe } from '@nestjs/common';
-const MAX_BODY_BYTES = 8 * 1024 * 1024 * 1024; 
+const MAX_BODY_BYTES = 8 * 1024 * 1024 * 1024;
 const MULTIPART_LIMITS = {
-  fieldNameSize: 200, 
-  fieldSize: 1024 * 1024, 
-  fields: 20, 
-  fileSize: 500 * 1024 * 1024, 
-  files: 5, 
+  fieldNameSize: 200,
+  fieldSize: 1024 * 1024,
+  fields: 20,
+  fileSize: 500 * 1024 * 1024,
+  files: 5,
   headerPairs: 2000,
 };
 async function bootstrap() {
   const isProduction = process.env.NODE_ENV === 'production';
   const fastifyAdapter = new FastifyAdapter({
     bodyLimit: MAX_BODY_BYTES,
-    keepAliveTimeout: 620_000, 
-    connectionTimeout: 0, 
+    keepAliveTimeout: 620_000,
+    connectionTimeout: 0,
     logger: {
       level: isProduction ? 'warn' : 'info',
     },
-    disableRequestLogging: isProduction, 
+    disableRequestLogging: isProduction,
   });
   await fastifyAdapter.register(fastifyMultipart as any, {
     limits: MULTIPART_LIMITS,

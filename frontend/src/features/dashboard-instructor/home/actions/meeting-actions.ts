@@ -28,11 +28,19 @@ export async function startMeetingAction(meetingId: string, prevState: any, form
     roomName = res.data?.livekitRoomName;
   } catch (error: any) {
     console.error("Failed to start meeting:", error.message);
+    // Smoothly revalidate only the specific tabs where meetings are shown
+    revalidatePath("/dashboard-instructor");          // Today's meetings
+    revalidatePath("/dashboard-instructor/upcoming"); // Upcoming meetings
+    
+    if (error.message && error.message.toLowerCase().includes("ended")) {
+       // Return a silent failure so the form stops spinning, and the revalidation smoothly removes the card
+       return { success: false, errorMessage: "" };
+    }
+
     return { success: false, errorMessage: error.message || "Failed to start meeting" };
   }
 
   if (roomName) {
-
     redirect(`/livekit?room=${roomName}`);
   }
 

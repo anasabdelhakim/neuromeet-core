@@ -18,7 +18,6 @@ export class NotificationsService {
   constructor(private prisma: PrismaService) {}
 
   async createNotification(dto: CreateNotificationDto) {
-
     const notification = await this.prisma.notification.create({
       data: {
         userId: dto.userId,
@@ -30,9 +29,8 @@ export class NotificationsService {
     });
 
     if (dto.sendEmail) {
-
-      this.dispatchEmail(dto).catch(e => {
-         this.logger.error(`Error in async email dispatch: ${e.message}`);
+      this.dispatchEmail(dto).catch((e) => {
+        this.logger.error(`Error in async email dispatch: ${e.message}`);
       });
     }
 
@@ -41,13 +39,15 @@ export class NotificationsService {
 
   private async dispatchEmail(dto: CreateNotificationDto) {
     try {
-      const user = await this.prisma.user.findUnique({ 
-        where: { id: dto.userId }, 
-        select: { email: true, name: true } 
+      const user = await this.prisma.user.findUnique({
+        where: { id: dto.userId },
+        select: { email: true, name: true },
       });
       if (!user) return;
 
-      this.logger.log(`[EMAIL DISPATCH] To: ${user.email} | Subject: ${dto.title}`);
+      this.logger.log(
+        `[EMAIL DISPATCH] To: ${user.email} | Subject: ${dto.title}`,
+      );
     } catch (e) {
       this.logger.error(`Failed to dispatch email to user ${dto.userId}`, e);
     }

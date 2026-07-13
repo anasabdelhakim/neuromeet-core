@@ -1,4 +1,3 @@
-
 export const AUTH_CONSTANTS = {
   /** Access token lifetime (JWT `expiresIn` format) */
   ACCESS_TOKEN_EXPIRY: '1h',

@@ -31,10 +31,16 @@ export class AuthService {
       throw new HttpException('User already exists', 400);
     }
     const [hashedPassword, code] = await Promise.all([
-      (Bun.password as any).hash(signUpDto.password, { algorithm: 'bcrypt', cost: 10 }),
+      (Bun.password as any).hash(signUpDto.password, {
+        algorithm: 'bcrypt',
+        cost: 10,
+      }),
       Promise.resolve(randomInt(0, 1000000).toString().padStart(6, '0')),
     ]);
-    const hashedCode = await (Bun.password as any).hash(code, { algorithm: 'bcrypt', cost: 4 });
+    const hashedCode = await (Bun.password as any).hash(code, {
+      algorithm: 'bcrypt',
+      cost: 4,
+    });
     const otpExpire = new Date(Date.now() + AUTH_CONSTANTS.OTP_EXPIRY_MS);
     const user = await this.prisma.user.create({
       data: {
@@ -75,7 +81,10 @@ export class AuthService {
       };
     }
     const code = randomInt(0, 1000000).toString().padStart(6, '0');
-    const hashedCode = await (Bun.password as any).hash(code, { algorithm: 'bcrypt', cost: 4 });
+    const hashedCode = await (Bun.password as any).hash(code, {
+      algorithm: 'bcrypt',
+      cost: 4,
+    });
     const otpExpire = new Date(Date.now() + AUTH_CONSTANTS.OTP_EXPIRY_MS);
     await this.prisma.user.update({
       where: { email: dto.email },
@@ -119,7 +128,10 @@ export class AuthService {
         'Verification code has expired. Please request a new one.',
       );
     }
-    const isCodeValid = await Bun.password.verify(data.code, user.verificationCode || '');
+    const isCodeValid = await Bun.password.verify(
+      data.code,
+      user.verificationCode || '',
+    );
     if (!isCodeValid) {
       throw new UnauthorizedException('Invalid verification code');
     }
@@ -142,7 +154,10 @@ export class AuthService {
         expiresIn: AUTH_CONSTANTS.REFRESH_TOKEN_EXPIRY,
       },
     );
-    const hashedRefreshToken = await (Bun.password as any).hash(refreshToken, { algorithm: 'bcrypt', cost: 10 });
+    const hashedRefreshToken = await (Bun.password as any).hash(refreshToken, {
+      algorithm: 'bcrypt',
+      cost: 10,
+    });
     await this.prisma.user.update({
       where: { email: data.email },
       data: {
@@ -234,7 +249,10 @@ export class AuthService {
         expiresIn: AUTH_CONSTANTS.REFRESH_TOKEN_EXPIRY,
       },
     );
-    const hashedRefreshToken = await (Bun.password as any).hash(refreshToken, { algorithm: 'bcrypt', cost: 10 });
+    const hashedRefreshToken = await (Bun.password as any).hash(refreshToken, {
+      algorithm: 'bcrypt',
+      cost: 10,
+    });
     await this.prisma.user.update({
       where: { id: user.id },
       data: { refreshToken: hashedRefreshToken },
@@ -264,7 +282,10 @@ export class AuthService {
       };
     }
     const code = randomInt(0, 1000000).toString().padStart(6, '0');
-    const hashedCode = await (Bun.password as any).hash(code, { algorithm: 'bcrypt', cost: 4 });
+    const hashedCode = await (Bun.password as any).hash(code, {
+      algorithm: 'bcrypt',
+      cost: 4,
+    });
     const otpExpire = new Date(Date.now() + AUTH_CONSTANTS.OTP_EXPIRY_MS);
     await this.prisma.user.update({
       where: { email: dto.email },
@@ -304,7 +325,10 @@ export class AuthService {
         'Verification code has expired. Please request a new one.',
       );
     }
-    const isCodeValid = await Bun.password.verify(data.code, user.verificationCode || '');
+    const isCodeValid = await Bun.password.verify(
+      data.code,
+      user.verificationCode || '',
+    );
     if (!isCodeValid) {
       throw new UnauthorizedException('Invalid verification code');
     }
@@ -357,7 +381,10 @@ export class AuthService {
         'Reset token has expired. Please request a new code.',
       );
     }
-    const hashedPassword = await (Bun.password as any).hash(dto.password, { algorithm: 'bcrypt', cost: 10 });
+    const hashedPassword = await (Bun.password as any).hash(dto.password, {
+      algorithm: 'bcrypt',
+      cost: 10,
+    });
     await this.prisma.user.update({
       where: { email: dto.email },
       data: {
@@ -431,7 +458,10 @@ export class AuthService {
           expiresIn: AUTH_CONSTANTS.REFRESH_TOKEN_EXPIRY,
         },
       );
-      const hashedNewRefresh = await (Bun.password as any).hash(newRefreshToken, { algorithm: 'bcrypt', cost: 10 });
+      const hashedNewRefresh = await (Bun.password as any).hash(
+        newRefreshToken,
+        { algorithm: 'bcrypt', cost: 10 },
+      );
       await this.prisma.user.update({
         where: { id: user.id },
         data: { refreshToken: hashedNewRefresh },

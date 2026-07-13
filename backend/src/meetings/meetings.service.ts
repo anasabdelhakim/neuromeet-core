@@ -67,20 +67,27 @@ export class MeetingsService {
     });
     await this.cache.del(`meetings:user:${hostId}`);
     if (dto.groupId) {
-      this.prisma.enrollment.findMany({ where: { groupId: dto.groupId } }).then(enrollments => {
-        enrollments.forEach(enrollment => {
-          this.notificationsService.createNotification({
-            userId: enrollment.studentId,
-            type: NotifType.MEETING_SCHEDULED,
-            title: 'New Meeting Scheduled',
-            body: `A new meeting "${dto.title}" has been scheduled for your group.`,
-            actionUrl: `/dashboard-student/upcoming`,
-            sendEmail: true,
-          }).catch(e => console.error(e));
+      this.prisma.enrollment
+        .findMany({ where: { groupId: dto.groupId } })
+        .then((enrollments) => {
+          enrollments.forEach((enrollment) => {
+            this.notificationsService
+              .createNotification({
+                userId: enrollment.studentId,
+                type: NotifType.MEETING_SCHEDULED,
+                title: 'New Meeting Scheduled',
+                body: `A new meeting "${dto.title}" has been scheduled for your group.`,
+                actionUrl: `/dashboard-student/upcoming`,
+                sendEmail: true,
+              })
+              .catch((e) => console.error(e));
+          });
         });
-      });
     }
-    return { status: 'success', data: { ...meeting, plainPasscode: rawPasscode } };
+    return {
+      status: 'success',
+      data: { ...meeting, plainPasscode: rawPasscode },
+    };
   }
   async getAllMeetings(userId: string) {
     const cacheKey = `meetings:user:${userId}`;
@@ -88,10 +95,7 @@ export class MeetingsService {
     if (cached) return { status: 'success', data: cached };
     const meetings = await this.prisma.meeting.findMany({
       where: {
-        OR: [
-          { hostId: userId },
-          { participants: { some: { userId } } },
-        ],
+        OR: [{ hostId: userId }, { participants: { some: { userId } } }],
       },
       select: {
         id: true,
@@ -136,11 +140,11 @@ export class MeetingsService {
             name: true,
             enrollments: {
               select: {
-                student: { select: { name: true, avatarUrl: true } }
+                student: { select: { name: true, avatarUrl: true } },
               },
-              take: 5
-            }
-          }
+              take: 5,
+            },
+          },
         },
         livekitRoomName: true,
         passcode: true, // we'll need this for instructor to see
@@ -171,11 +175,11 @@ export class MeetingsService {
             name: true,
             enrollments: {
               select: {
-                student: { select: { name: true, avatarUrl: true } }
+                student: { select: { name: true, avatarUrl: true } },
               },
-              take: 5
-            }
-          }
+              take: 5,
+            },
+          },
         },
         livekitRoomName: true,
       },
@@ -201,29 +205,32 @@ export class MeetingsService {
             name: true,
             enrollments: {
               select: {
-                student: { select: { name: true, avatarUrl: true } }
+                student: { select: { name: true, avatarUrl: true } },
               },
-              take: 5
-            }
-          }
+              take: 5,
+            },
+          },
         },
         participants: {
-          select: { avgEngagementScore: true }
-        }
+          select: { avgEngagementScore: true },
+        },
       },
       orderBy: { scheduledAt: 'desc' },
     });
-    const mappedMeetings = meetings.map(m => {
+    const mappedMeetings = meetings.map((m) => {
       let sum = 0;
       let count = 0;
-      m.participants.forEach(p => {
+      m.participants.forEach((p) => {
         if (p.avgEngagementScore !== null) {
           sum += p.avgEngagementScore;
           count++;
         }
       });
-      const rawAvg = count > 0 ? (sum / count) : 0;
-      const avg = rawAvg <= 1 && rawAvg > 0 ? Math.round(rawAvg * 100) : Math.round(rawAvg);
+      const rawAvg = count > 0 ? sum / count : 0;
+      const avg =
+        rawAvg <= 1 && rawAvg > 0
+          ? Math.round(rawAvg * 100)
+          : Math.round(rawAvg);
       const { participants, ...rest } = m;
       return { ...rest, avgEngagement: avg };
     });
@@ -300,7 +307,9 @@ export class MeetingsService {
     const cached = await this.cache.get<any>(cacheKey);
     if (cached) {
       const isHost = cached.host.id === userId;
-      const isParticipant = cached.participants.some((p: any) => p.user.id === userId);
+      const isParticipant = cached.participants.some(
+        (p: any) => p.user.id === userId,
+      );
       if (!isHost && !isParticipant) {
         throw new ForbiddenException('You are not part of this meeting');
       }
@@ -352,14 +361,20 @@ export class MeetingsService {
     });
     if (!meeting) throw new NotFoundException('Meeting not found');
     const isHost = meeting.host.id === userId;
-    const isParticipant = meeting.participants.some((p) => p.user.id === userId);
+    const isParticipant = meeting.participants.some(
+      (p) => p.user.id === userId,
+    );
     if (!isHost && !isParticipant) {
       throw new ForbiddenException('You are not part of this meeting');
     }
     await this.cache.set(cacheKey, meeting, CACHE_TTL.MEETING_DETAIL);
     return { status: 'success', data: meeting };
   }
-  async updateMeeting(meetingId: string, hostId: string, dto: UpdateMeetingDto) {
+  async updateMeeting(
+    meetingId: string,
+    hostId: string,
+    dto: UpdateMeetingDto,
+  ) {
     const meeting = await this.prisma.meeting.findUnique({
       where: { id: meetingId },
       select: { id: true, hostId: true, status: true },
@@ -400,14 +415,16 @@ export class MeetingsService {
       this.cache.del(`participants:${meetingId}`),
     ]);
     if (dto.status === 'ENDED' && meeting.status !== 'ENDED') {
-      this.notificationsService.createNotification({
-        userId: hostId,
-        type: NotifType.ANALYTICS_READY,
-        title: 'Meeting Analytics Ready',
-        body: `The analytics report for "${updated.title}" is now available.`,
-        actionUrl: `/dashboard-instructor/analytics?meetingId=${meetingId}`,
-        sendEmail: true,
-      }).catch(e => console.error(e));
+      this.notificationsService
+        .createNotification({
+          userId: hostId,
+          type: NotifType.ANALYTICS_READY,
+          title: 'Meeting Analytics Ready',
+          body: `The analytics report for "${updated.title}" is now available.`,
+          actionUrl: `/dashboard-instructor/analytics?meetingId=${meetingId}`,
+          sendEmail: true,
+        })
+        .catch((e) => console.error(e));
     }
     return { status: 'success', data: updated };
   }
@@ -442,12 +459,16 @@ export class MeetingsService {
       include: { enrollments: { include: { student: true } } },
     });
     if (!group) throw new NotFoundException('Group not found');
-    const rawPasscode = meeting.passcode || Math.floor(100000 + Math.random() * 900000).toString();
+    const rawPasscode =
+      meeting.passcode ||
+      Math.floor(100000 + Math.random() * 900000).toString();
     await this.prisma.meeting.update({
       where: { id: meetingId },
       data: { passcode: rawPasscode, groupId },
     });
-    const studentCachePromises = group.enrollments.map((e) => this.cache.del(`meetings:user:${e.student.id}`));
+    const studentCachePromises = group.enrollments.map((e) =>
+      this.cache.del(`meetings:user:${e.student.id}`),
+    );
     await Promise.all([
       this.cache.del(`meeting:${meetingId}`),
       this.cache.del(`meetings:user:${hostId}`),
@@ -458,28 +479,46 @@ export class MeetingsService {
       name: e.student.name,
     }));
     if (students.length === 0) {
-      return { status: 'success', message: 'Group has no students to notify', passcode: rawPasscode };
+      return {
+        status: 'success',
+        message: 'Group has no students to notify',
+        passcode: rawPasscode,
+      };
     }
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
     const joinUrl = `${frontendUrl}/meeting/join/${meeting.id}`;
     await this.emailService.sendMeetingInvitations(students, {
       meetingTitle: meeting.title,
       instructorName: meeting.host.name,
-      scheduledAt: meeting.scheduledAt ? meeting.scheduledAt.toLocaleString() : 'TBD',
+      scheduledAt: meeting.scheduledAt
+        ? meeting.scheduledAt.toLocaleString()
+        : 'TBD',
       passcode: rawPasscode,
       joinUrl,
     });
-    return { status: 'success', message: 'Meeting shared successfully', passcode: rawPasscode };
+    return {
+      status: 'success',
+      message: 'Meeting shared successfully',
+      passcode: rawPasscode,
+    };
   }
-  async joinMeeting(meetingIdOrRoom: string, userId: string, dto: JoinMeetingDto) {
+  async joinMeeting(
+    meetingIdOrRoom: string,
+    userId: string,
+    dto: JoinMeetingDto,
+  ) {
     const meeting = await this.prisma.meeting.findFirst({
       where: {
-        OR: [
-          { id: meetingIdOrRoom },
-          { livekitRoomName: meetingIdOrRoom },
-        ],
+        OR: [{ id: meetingIdOrRoom }, { livekitRoomName: meetingIdOrRoom }],
       },
-      select: { id: true, status: true, hostId: true, passcode: true, livekitRoomName: true, group: { select: { enrollments: { where: { studentId: userId } } } } },
+      select: {
+        id: true,
+        status: true,
+        hostId: true,
+        passcode: true,
+        livekitRoomName: true,
+        group: { select: { enrollments: { where: { studentId: userId } } } },
+      },
     });
     if (!meeting) throw new NotFoundException('Meeting not found');
     const meetingId = meeting.id;
@@ -496,9 +535,18 @@ export class MeetingsService {
         user: { select: { id: true, name: true, email: true } },
       },
     });
-    const isGuest = meeting.hostId !== userId && (!meeting.group || meeting.group.enrollments.length === 0);
+    const isGuest =
+      meeting.hostId !== userId &&
+      (!meeting.group || meeting.group.enrollments.length === 0);
     if (existing) {
-      return { status: 'success', data: { participant: existing, livekitRoomName: meeting.livekitRoomName, isGuest } };
+      return {
+        status: 'success',
+        data: {
+          participant: existing,
+          livekitRoomName: meeting.livekitRoomName,
+          isGuest,
+        },
+      };
     }
     if (meeting.hostId !== userId) {
       let isValidPasscode = false;
@@ -507,7 +555,10 @@ export class MeetingsService {
           isValidPasscode = true;
         } else {
           try {
-            isValidPasscode = await Bun.password.verify(dto.passcode, meeting.passcode);
+            isValidPasscode = await Bun.password.verify(
+              dto.passcode,
+              meeting.passcode,
+            );
           } catch (e) {}
         }
       }
@@ -537,7 +588,10 @@ export class MeetingsService {
       this.cache.del(`meeting:${meetingId}`),
       this.cache.del(`meetings:user:${userId}`),
     ]);
-    return { status: 'success', data: { participant, livekitRoomName: meeting.livekitRoomName, isGuest } };
+    return {
+      status: 'success',
+      data: { participant, livekitRoomName: meeting.livekitRoomName, isGuest },
+    };
   }
   async startMeeting(meetingId: string, userId: string) {
     const meeting = await this.prisma.meeting.findUnique({
@@ -548,6 +602,9 @@ export class MeetingsService {
     if (meeting.hostId !== userId) {
       throw new ForbiddenException('Only the host can start this meeting');
     }
+    if (meeting.status === 'ENDED' || meeting.status === 'CANCELLED') {
+      throw new BadRequestException('This meeting has already ended');
+    }
     if (meeting.status === 'SCHEDULED') {
       await this.prisma.meeting.update({
         where: { id: meetingId },
@@ -555,20 +612,22 @@ export class MeetingsService {
       });
       await this.cache.del(`meeting:${meetingId}`);
       if (meeting.livekitRoomName) {
-        this.botService.dispatchBotToRoom(meeting.livekitRoomName).catch(err => {
-          console.error("Failed to dispatch bot:", err);
-        });
+        this.botService
+          .dispatchBotToRoom(meeting.livekitRoomName)
+          .catch((err) => {
+            console.error('Failed to dispatch bot:', err);
+          });
       }
     }
-    return { status: 'success', data: { livekitRoomName: meeting.livekitRoomName } };
+    return {
+      status: 'success',
+      data: { livekitRoomName: meeting.livekitRoomName },
+    };
   }
   async endMeeting(meetingIdOrRoom: string, userId: string) {
     const meeting = await this.prisma.meeting.findFirst({
       where: {
-        OR: [
-          { id: meetingIdOrRoom },
-          { livekitRoomName: meetingIdOrRoom },
-        ],
+        OR: [{ id: meetingIdOrRoom }, { livekitRoomName: meetingIdOrRoom }],
       },
       select: { id: true, hostId: true, livekitRoomName: true },
     });
@@ -587,16 +646,18 @@ export class MeetingsService {
       this.cache.del(`participants:${meetingId}`),
     ]);
     if (meeting.livekitRoomName) {
-      this.botService.recallBotFromRoom(meeting.livekitRoomName).catch(err => {
-        console.error("Failed to recall bot:", err);
-      });
+      this.botService
+        .recallBotFromRoom(meeting.livekitRoomName)
+        .catch((err) => {
+          console.error('Failed to recall bot:', err);
+        });
       const roomService = new RoomServiceClient(
         process.env.LIVEKIT_URL || process.env.LIVEKIT_API_URL || '',
         process.env.LIVEKIT_API_KEY || '',
         process.env.LIVEKIT_API_SECRET || '',
       );
       roomService.deleteRoom(meeting.livekitRoomName).catch((err: any) => {
-        console.error("Failed to delete LiveKit room:", err);
+        console.error('Failed to delete LiveKit room:', err);
       });
     }
     return { status: 'success', message: 'Meeting ended successfully' };
@@ -604,12 +665,9 @@ export class MeetingsService {
   async leaveMeeting(meetingIdOrRoom: string, userId: string) {
     const meeting = await this.prisma.meeting.findFirst({
       where: {
-        OR: [
-          { id: meetingIdOrRoom },
-          { livekitRoomName: meetingIdOrRoom },
-        ],
+        OR: [{ id: meetingIdOrRoom }, { livekitRoomName: meetingIdOrRoom }],
       },
-      select: { id: true, hostId: true, livekitRoomName: true },
+      select: { id: true, hostId: true, livekitRoomName: true, status: true },
     });
     if (!meeting) throw new NotFoundException('Meeting not found');
     const meetingId = meeting.id;
@@ -636,24 +694,52 @@ export class MeetingsService {
         user: { email: { not: { contains: 'bot' } } },
       },
     });
-    if (activeParticipants.length === 0) {
+
+    let remainingCount = activeParticipants.length;
+    if (meeting.livekitRoomName) {
+      try {
+        const roomService = new RoomServiceClient(
+          process.env.LIVEKIT_URL || process.env.LIVEKIT_API_URL || '',
+          process.env.LIVEKIT_API_KEY || '',
+          process.env.LIVEKIT_API_SECRET || '',
+        );
+        const lkParticipants = await roomService.listParticipants(
+          meeting.livekitRoomName,
+        );
+        const actualUsers = lkParticipants.filter(
+          (p) =>
+            p.identity !== userId &&
+            !p.identity.includes('bot') &&
+            p.identity !== 'engagement-bot',
+        );
+        remainingCount = actualUsers.length;
+      } catch (err) {
+        remainingCount = 0;
+      }
+    }
+
+    if (meeting.status === 'LIVE' && (remainingCount === 0 || activeParticipants.length === 0)) {
       const endedMeeting = await this.prisma.meeting.update({
         where: { id: meetingId },
         data: { status: 'ENDED', endedAt: new Date() },
       });
       await this.cache.del(`meetings:user:${endedMeeting.hostId}`);
       if (endedMeeting.livekitRoomName) {
-        this.botService.recallBotFromRoom(endedMeeting.livekitRoomName).catch(err => {
-          console.error("Failed to recall bot:", err);
-        });
+        this.botService
+          .recallBotFromRoom(endedMeeting.livekitRoomName)
+          .catch((err) => {
+            console.error('Failed to recall bot:', err);
+          });
         const roomService = new RoomServiceClient(
           process.env.LIVEKIT_URL || process.env.LIVEKIT_API_URL || '',
           process.env.LIVEKIT_API_KEY || '',
           process.env.LIVEKIT_API_SECRET || '',
         );
-        roomService.deleteRoom(endedMeeting.livekitRoomName).catch((err: any) => {
-          console.error("Failed to delete LiveKit room on auto-end:", err);
-        });
+        roomService
+          .deleteRoom(endedMeeting.livekitRoomName)
+          .catch((err: any) => {
+            console.error('Failed to delete LiveKit room on auto-end:', err);
+          });
       }
     }
     await Promise.all([
@@ -755,9 +841,7 @@ export class MeetingsService {
       (p) => p.userId === uploadedBy,
     );
     if (!isHost && !isParticipant) {
-      throw new ForbiddenException(
-        'Only meeting members can upload materials',
-      );
+      throw new ForbiddenException('Only meeting members can upload materials');
     }
     const material = await this.prisma.meetingMaterial.create({
       data: {
@@ -813,11 +897,7 @@ export class MeetingsService {
     });
     return { status: 'success', data: materials };
   }
-  async deleteMaterial(
-    meetingId: string,
-    materialId: string,
-    userId: string,
-  ) {
+  async deleteMaterial(meetingId: string, materialId: string, userId: string) {
     const material = await this.prisma.meetingMaterial.findUnique({
       where: { id: materialId },
       select: {
@@ -843,26 +923,31 @@ export class MeetingsService {
   }
   async syncEngagement(
     meetingId: string,
-    stats: { participantIdentity: string; avgEngagementScore: number; adhdFlagged: boolean }[]
+    stats: {
+      participantIdentity: string;
+      avgEngagementScore: number;
+      adhdFlagged: boolean;
+    }[],
   ) {
     const meeting = await this.prisma.meeting.findUnique({
       where: { id: meetingId },
-      include: { participants: { include: { user: true } } }
+      include: { participants: { include: { user: true } } },
     });
     if (!meeting) return { success: false };
     for (const stat of stats) {
       const p = meeting.participants.find(
-        mp => mp.user.name === stat.participantIdentity || 
-              mp.user.email === stat.participantIdentity || 
-              mp.user.id === stat.participantIdentity
+        (mp) =>
+          mp.user.name === stat.participantIdentity ||
+          mp.user.email === stat.participantIdentity ||
+          mp.user.id === stat.participantIdentity,
       );
       if (p) {
         await this.prisma.meetingParticipant.update({
           where: { id: p.id },
           data: {
             avgEngagementScore: stat.avgEngagementScore,
-            adhdFlagged: stat.adhdFlagged
-          }
+            adhdFlagged: stat.adhdFlagged,
+          },
         });
       }
     }

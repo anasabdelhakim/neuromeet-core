@@ -14,9 +14,9 @@ __pycache__/
 # OS Files
 .DS_Store
 
-# AI Models
+# AI Models — DO NOT IGNORE: tracked via Git LFS
 *.pth
 *.onnx
 *.onnx.data
-ai_bot/models/
+backend/ai_bot/models/
 ai_bot/__pycache__/

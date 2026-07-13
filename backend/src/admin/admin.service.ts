@@ -27,13 +27,18 @@ export class AdminService {
     };
   }
 
-  async getUsers(query: { search?: string; role?: string; page?: string; limit?: string }) {
+  async getUsers(query: {
+    search?: string;
+    role?: string;
+    page?: string;
+    limit?: string;
+  }) {
     const page = Math.max(1, parseInt(query.page || '1', 10));
     const limit = Math.min(100, Math.max(1, parseInt(query.limit || '20', 10)));
     const skip = (page - 1) * limit;
 
     const where: any = {
-      role: { not: 'ADMIN' }
+      role: { not: 'ADMIN' },
     };
 
     if (query.search) {
@@ -83,7 +88,11 @@ export class AdminService {
     };
   }
 
-  async updateUserRole(userId: string, newRole: string, requestingAdminId: string) {
+  async updateUserRole(
+    userId: string,
+    newRole: string,
+    requestingAdminId: string,
+  ) {
     const validRoles = ['INSTRUCTOR', 'STUDENT', 'ADMIN'];
     const role = newRole.toUpperCase();
 
@@ -109,9 +118,11 @@ export class AdminService {
       const activeGroups = await this.prisma.group.count({
         where: { instructorId: userId },
       });
-      
+
       if (activeGroups > 0) {
-        throw new BadRequestException('Cannot downgrade: User owns active groups. Delete or reassign them first.');
+        throw new BadRequestException(
+          'Cannot downgrade: User owns active groups. Delete or reassign them first.',
+        );
       }
     }
 
@@ -119,9 +130,11 @@ export class AdminService {
       const activeEnrollments = await this.prisma.enrollment.count({
         where: { studentId: userId },
       });
-      
+
       if (activeEnrollments > 0) {
-        throw new BadRequestException('Cannot upgrade: User is currently enrolled in groups. Remove enrollments first.');
+        throw new BadRequestException(
+          'Cannot upgrade: User is currently enrolled in groups. Remove enrollments first.',
+        );
       }
     }
 

@@ -6,7 +6,14 @@ export function getMeetingInviteEmailHtml(params: {
   passcode: string;
   joinUrl: string;
 }) {
-  const { studentName, meetingTitle, instructorName, scheduledAt, passcode, joinUrl } = params;
+  const {
+    studentName,
+    meetingTitle,
+    instructorName,
+    scheduledAt,
+    passcode,
+    joinUrl,
+  } = params;
 
   return `
 <!DOCTYPE html>

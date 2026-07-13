@@ -5,16 +5,16 @@ import { LiveKitBotService } from './livekit-bot.service';
 export class LivekitController {
   constructor(
     private readonly livekitService: LivekitService,
-    private readonly liveKitBotService: LiveKitBotService
+    private readonly liveKitBotService: LiveKitBotService,
   ) {}
   @Get('token')
   async getToken(
-    @Query('room') room: string, 
+    @Query('room') room: string,
     @Query('user') user: string,
-    @Query('role') role: string = 'STUDENT'
+    @Query('role') role: string = 'STUDENT',
   ) {
     if (role === 'INSTRUCTOR') {
-      this.liveKitBotService.dispatchBotToRoom(room).catch(err => {
+      this.liveKitBotService.dispatchBotToRoom(room).catch((err) => {
         console.error('Failed to dispatch bot:', err);
       });
     }

@@ -79,11 +79,17 @@ export class WorkerPoolService {
     const w = this.workers.find((w) => w.url === workerUrl);
     if (w) {
       w.load = Math.max(0, w.load - 1);
-      this.logger.log(`Released slot on ${workerUrl} (load: ${w.load}/${w.maxLoad})`);
+      this.logger.log(
+        `Released slot on ${workerUrl} (load: ${w.load}/${w.maxLoad})`,
+      );
     }
   }
   /** Return current load status for all workers (useful for health checks). */
   getPoolStatus() {
-    return this.workers.map(({ url, load, maxLoad }) => ({ url, load, maxLoad }));
+    return this.workers.map(({ url, load, maxLoad }) => ({
+      url,
+      load,
+      maxLoad,
+    }));
   }
 }

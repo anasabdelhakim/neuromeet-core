@@ -1,4 +1,13 @@
-import { Controller, Get, Delete, Post, Param, Body, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Delete,
+  Post,
+  Param,
+  Body,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { RecordingsService } from './recordings.service';
 import { AuthGuard } from '../user/guard/auth.guard';
 import { Roles } from '../user/decorators/user.decorators';
@@ -13,8 +22,16 @@ export class RecordingsController {
     return this.recordingsService.getAllRecordings(req.user.id);
   }
   @Post(':meetingId/thumbnail')
-  async saveThumbnail(@Param('meetingId') meetingId: string, @Body() body: { thumbnail: string }, @Req() req: any) {
-    return this.recordingsService.saveThumbnail(meetingId, body.thumbnail, req.user.id);
+  async saveThumbnail(
+    @Param('meetingId') meetingId: string,
+    @Body() body: { thumbnail: string },
+    @Req() req: any,
+  ) {
+    return this.recordingsService.saveThumbnail(
+      meetingId,
+      body.thumbnail,
+      req.user.id,
+    );
   }
   @Delete(':id')
   deleteRecording(@Param('id') id: string, @Req() req: any) {

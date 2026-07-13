@@ -26,7 +26,6 @@
         "class-validator": "^0.15.1",
         "dotenv": "^17.4.2",
         "googleapis": "^171.4.0",
-        "ioredis": "^5.10.1",
         "livekit-server-sdk": "^2.15.2",
         "passport-google-oauth2": "^0.2.0",
         "pg": "^8.20.0",
@@ -44,7 +43,6 @@
         "@nestjs/testing": "^11.0.1",
         "@swc/cli": "^0.8.1",
         "@swc/core": "^1.15.33",
-        "@types/ioredis": "^5.0.0",
         "@types/jest": "^30.0.0",
         "@types/node": "^24.0.0",
         "@types/pg": "^8.20.0",
@@ -627,8 +625,6 @@
     "@types/estree": ["@types/estree@1.0.8", "", {}, "sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w=="],
 
     "@types/http-cache-semantics": ["@types/http-cache-semantics@4.2.0", "", {}, "sha512-L3LgimLHXtGkWikKnsPg0/VFx9OGZaC+eN1u4r+OB1XRqH3meBIAVC2zr1WdMH+RHmnRkqliQAOHNJ/E0j/e0Q=="],
-
-    "@types/ioredis": ["@types/ioredis@5.0.0", "", { "dependencies": { "ioredis": "5.10.1" } }, "sha512-zJbJ3FVE17CNl5KXzdeSPtdltc4tMT3TzC6fxQS0sQngkbFZ6h+0uTafsRqu+eSLIugf6Yb0Ea0SUuRr42Nk9g=="],
 
     "@types/istanbul-lib-coverage": ["@types/istanbul-lib-coverage@2.0.6", "", {}, "sha512-2QF/t/auWm0lsy8XtKVPG19v3sSOQlJe/YHZgfjb/KBBHOGSV+J2q/S671rcq9uTBrLAXmZpqJiaQbMT+zNU1w=="],
 

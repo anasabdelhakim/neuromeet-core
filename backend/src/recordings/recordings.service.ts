@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../database/database.service';
 @Injectable()
 export class RecordingsService {
@@ -6,7 +10,7 @@ export class RecordingsService {
   async getAllRecordings(userId: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     const whereClause = {
-      recordedById: userId
+      recordedById: userId,
     };
     const recordings = await this.prisma.recording.findMany({
       where: whereClause,
@@ -42,10 +46,7 @@ export class RecordingsService {
   async saveThumbnail(meetingId: string, thumbnail: string, userId: string) {
     const meeting = await this.prisma.meeting.findFirst({
       where: {
-        OR: [
-          { id: meetingId },
-          { livekitRoomName: meetingId },
-        ],
+        OR: [{ id: meetingId }, { livekitRoomName: meetingId }],
       },
     });
     if (meeting) {
@@ -55,7 +56,7 @@ export class RecordingsService {
           recordedById: userId,
           status: 'PROCESSING',
         },
-        orderBy: { uploadedAt: 'desc' }
+        orderBy: { uploadedAt: 'desc' },
       });
       if (recording) {
         await this.prisma.recording.update({
@@ -69,7 +70,7 @@ export class RecordingsService {
             recordedById: userId,
             status: 'UPLOADING',
           },
-          orderBy: { uploadedAt: 'desc' }
+          orderBy: { uploadedAt: 'desc' },
         });
         if (uploadingRecording) {
           await this.prisma.recording.update({
@@ -87,8 +88,13 @@ export class RecordingsService {
       include: { meeting: true },
     });
     if (!recording) throw new NotFoundException('Recording not found');
-    if (recording.meeting?.hostId !== userId && recording.recordedById !== userId) {
-      throw new ForbiddenException('Only the host or the recording owner can delete this recording');
+    if (
+      recording.meeting?.hostId !== userId &&
+      recording.recordedById !== userId
+    ) {
+      throw new ForbiddenException(
+        'Only the host or the recording owner can delete this recording',
+      );
     }
     await this.prisma.recording.delete({
       where: { id },

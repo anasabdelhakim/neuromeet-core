@@ -50,14 +50,14 @@ export class GroupsService {
         enrollments: {
           select: {
             student: {
-              select: { id: true, name: true, avatarUrl: true }
-            }
-          }
+              select: { id: true, name: true, avatarUrl: true },
+            },
+          },
         },
         invitations: {
           where: { status: 'PENDING' },
-          select: { studentId: true }
-        }
+          select: { studentId: true },
+        },
       },
       orderBy: { created_at: 'desc' },
     });
@@ -109,7 +109,11 @@ export class GroupsService {
             name: true,
             email: true,
             avatarUrl: true,
-            sessions: { select: { lastUsedAt: true }, orderBy: { lastUsedAt: 'desc' }, take: 1 },
+            sessions: {
+              select: { lastUsedAt: true },
+              orderBy: { lastUsedAt: 'desc' },
+              take: 1,
+            },
           },
         },
       },
@@ -146,7 +150,11 @@ export class GroupsService {
       },
     });
 
-    return { status: 'success', data: updated, message: 'Group updated successfully' };
+    return {
+      status: 'success',
+      data: updated,
+      message: 'Group updated successfully',
+    };
   }
 
   async deleteGroup(groupId: string, instructorId: string) {
@@ -166,55 +174,74 @@ export class GroupsService {
     return { status: 'success', message: 'Group deleted successfully' };
   }
 
-  async inviteStudent(groupId: string, instructorId: string, studentId: string) {
-    const group = await this.prisma.group.findUnique({ where: { id: groupId } });
+  async inviteStudent(
+    groupId: string,
+    instructorId: string,
+    studentId: string,
+  ) {
+    const group = await this.prisma.group.findUnique({
+      where: { id: groupId },
+    });
     if (!group) throw new NotFoundException('Group not found');
-    if (group.instructorId !== instructorId) throw new ForbiddenException('Only the instructor can send invites');
+    if (group.instructorId !== instructorId)
+      throw new ForbiddenException('Only the instructor can send invites');
 
     const existingEnrollment = await this.prisma.enrollment.findUnique({
-      where: { studentId_groupId: { studentId, groupId } }
+      where: { studentId_groupId: { studentId, groupId } },
     });
-    if (existingEnrollment) throw new ConflictException('Student is already enrolled');
+    if (existingEnrollment)
+      throw new ConflictException('Student is already enrolled');
 
     const existingInvite = await this.prisma.invitation.findUnique({
-      where: { studentId_groupId: { studentId, groupId } }
+      where: { studentId_groupId: { studentId, groupId } },
     });
 
     if (existingInvite) {
-      if (existingInvite.status === 'PENDING') throw new ConflictException('Invitation already pending');
+      if (existingInvite.status === 'PENDING')
+        throw new ConflictException('Invitation already pending');
 
       await this.prisma.invitation.update({
         where: { id: existingInvite.id },
-        data: { status: 'PENDING' }
+        data: { status: 'PENDING' },
       });
       return { status: 'success', message: 'Invitation sent' };
     }
 
     await this.prisma.invitation.create({
-      data: { groupId, studentId, status: 'PENDING' }
+      data: { groupId, studentId, status: 'PENDING' },
     });
 
-    this.notificationsService.createNotification({
-      userId: studentId,
-      type: NotifType.GROUP_INVITE,
-      title: 'New Group Invitation',
-      body: `Instructor has invited you to join ${group.name}`,
-      actionUrl: `/dashboard-student/groups`,
-      sendEmail: true,
-    }).catch(e => console.error(e));
+    this.notificationsService
+      .createNotification({
+        userId: studentId,
+        type: NotifType.GROUP_INVITE,
+        title: 'New Group Invitation',
+        body: `Instructor has invited you to join ${group.name}`,
+        actionUrl: `/dashboard-student/groups`,
+        sendEmail: true,
+      })
+      .catch((e) => console.error(e));
 
     return { status: 'success', message: 'Invitation sent' };
   }
 
-  async undoInvitation(groupId: string, instructorId: string, studentId: string) {
-    const group = await this.prisma.group.findUnique({ where: { id: groupId } });
+  async undoInvitation(
+    groupId: string,
+    instructorId: string,
+    studentId: string,
+  ) {
+    const group = await this.prisma.group.findUnique({
+      where: { id: groupId },
+    });
     if (!group) throw new NotFoundException('Group not found');
-    if (group.instructorId !== instructorId) throw new ForbiddenException('Not authorized');
+    if (group.instructorId !== instructorId)
+      throw new ForbiddenException('Not authorized');
 
     const invite = await this.prisma.invitation.findUnique({
-      where: { studentId_groupId: { studentId, groupId } }
+      where: { studentId_groupId: { studentId, groupId } },
     });
-    if (!invite || invite.status !== 'PENDING') throw new NotFoundException('No pending invitation found');
+    if (!invite || invite.status !== 'PENDING')
+      throw new NotFoundException('No pending invitation found');
 
     await this.prisma.invitation.delete({ where: { id: invite.id } });
     return { status: 'success', message: 'Invitation undone' };
@@ -224,73 +251,102 @@ export class GroupsService {
     const invites = await this.prisma.invitation.findMany({
       where: { studentId, status: 'PENDING' },
       include: {
-        group: { select: { id: true, name: true, instructor: { select: { name: true } } } }
+        group: {
+          select: {
+            id: true,
+            name: true,
+            instructor: { select: { name: true } },
+          },
+        },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
     return { status: 'success', data: invites };
   }
 
   async acceptInvitation(invitationId: string, studentId: string) {
     return this.prisma.$transaction(async (prisma) => {
-      const invite = await prisma.invitation.findUnique({ 
+      const invite = await prisma.invitation.findUnique({
         where: { id: invitationId },
-        include: { group: true, student: true }
+        include: { group: true, student: true },
       });
-      if (!invite || invite.studentId !== studentId || invite.status !== 'PENDING') {
+      if (
+        !invite ||
+        invite.studentId !== studentId ||
+        invite.status !== 'PENDING'
+      ) {
         throw new NotFoundException('Invalid or expired invitation');
       }
 
       await prisma.invitation.update({
         where: { id: invitationId },
-        data: { status: 'ACCEPTED' }
+        data: { status: 'ACCEPTED' },
       });
 
       const enrollment = await prisma.enrollment.create({
-        data: { studentId: invite.studentId, groupId: invite.groupId }
+        data: { studentId: invite.studentId, groupId: invite.groupId },
       });
 
-      this.notificationsService.createNotification({
-        userId: invite.group.instructorId,
-        type: 'SYSTEM' as NotifType,
-        title: 'New Student Joined',
-        body: `${invite.student.name} has joined your group: ${invite.group.name}`,
-        actionUrl: `/dashboard-instructor/students`,
-        sendEmail: false,
-      }).catch(e => console.error(e));
+      this.notificationsService
+        .createNotification({
+          userId: invite.group.instructorId,
+          type: 'SYSTEM' as NotifType,
+          title: 'New Student Joined',
+          body: `${invite.student.name} has joined your group: ${invite.group.name}`,
+          actionUrl: `/dashboard-instructor/students`,
+          sendEmail: false,
+        })
+        .catch((e) => console.error(e));
 
-      return { status: 'success', data: enrollment, message: 'Group joined successfully' };
+      return {
+        status: 'success',
+        data: enrollment,
+        message: 'Group joined successfully',
+      };
     });
   }
 
   async rejectInvitation(invitationId: string, studentId: string) {
-    const invite = await this.prisma.invitation.findUnique({ where: { id: invitationId } });
-    if (!invite || invite.studentId !== studentId || invite.status !== 'PENDING') {
+    const invite = await this.prisma.invitation.findUnique({
+      where: { id: invitationId },
+    });
+    if (
+      !invite ||
+      invite.studentId !== studentId ||
+      invite.status !== 'PENDING'
+    ) {
       throw new NotFoundException('Invalid or expired invitation');
     }
 
     await this.prisma.invitation.update({
       where: { id: invitationId },
-      data: { status: 'REJECTED' }
+      data: { status: 'REJECTED' },
     });
 
     return { status: 'success', message: 'Invitation rejected' };
   }
 
-  async removeStudent(groupId: string, instructorId: string, studentId: string) {
-    const group = await this.prisma.group.findUnique({ where: { id: groupId } });
+  async removeStudent(
+    groupId: string,
+    instructorId: string,
+    studentId: string,
+  ) {
+    const group = await this.prisma.group.findUnique({
+      where: { id: groupId },
+    });
     if (!group) throw new NotFoundException('Group not found');
-    if (group.instructorId !== instructorId) throw new ForbiddenException('Not authorized');
+    if (group.instructorId !== instructorId)
+      throw new ForbiddenException('Not authorized');
 
     const enrollment = await this.prisma.enrollment.findUnique({
-      where: { studentId_groupId: { studentId, groupId } }
+      where: { studentId_groupId: { studentId, groupId } },
     });
     if (!enrollment) throw new NotFoundException('Student is not enrolled');
 
     await this.prisma.enrollment.delete({ where: { id: enrollment.id } });
 
     await this.prisma.invitation.deleteMany({
-      where: { studentId, groupId }
+      where: { studentId, groupId },
     });
 
     return { status: 'success', message: 'Student removed from group' };

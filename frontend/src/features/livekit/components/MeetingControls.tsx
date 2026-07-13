@@ -122,6 +122,10 @@ export function MeetingControls({
     };
   }, [isGuest]);
 
+  useEffect(() => {
+    setIsLeaving(false);
+  }, [room, meetingId]);
+
   const toggleFullscreen = async () => {
     try {
       if (!document.fullscreenElement) {

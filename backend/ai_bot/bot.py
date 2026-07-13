@@ -6,7 +6,6 @@ import os
 import time
 from collections import deque
 from typing import Dict
-
 import cv2
 import numpy as np
 import torch
@@ -32,12 +31,12 @@ logger = logging.getLogger("engagement-bot")
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 SEQ_LEN = 24                 # MUST match the SEQ_LEN used during training and ONNX export
-BUFFER_MAXLEN = 60           # Store 60 frames (captured at ~10 FPS = 6 seconds context)
+BUFFER_MAXLEN = 30           # 30 frames at 10 FPS = 3s window — matches ~4s training clips from DAiSEE
 INFERENCE_INTERVAL_S = 5.0   # Run inference every N seconds — set above CPU inference time to avoid queue buildup
 DISENGAGEMENT_THRESHOLD = 0.50  # Below this → is_disengaged=True
 MAX_CONCURRENT = 1 if DEVICE.type == "cpu" else 10  # CPU: serialize to avoid thread contention
-EMA_ALPHA_UP = 0.55          # Slower climb (smooths out noise when returning to engagement)
-EMA_ALPHA_DOWN = 0.85        # Faster drop (catches disengagement instantly)
+EMA_ALPHA_UP = 0.70          # Allow scores to climb at a reasonable pace (was 0.55 — too slow to recover)
+EMA_ALPHA_DOWN = 0.75        # Keep disengagement detection responsive but not punishing (was 0.85)
 
 
 # ─── Model Singleton ──────────────────────────────────────────────────────────
@@ -92,8 +91,31 @@ def get_model():
                 else:
                     state_dict = ckpt # Assume it's the raw state_dict
                 
-                _model.load_state_dict(state_dict)
-                logger.info(f"[bot] PyTorch model loaded successfully from {model_path} on {DEVICE} 🚀")
+                # ── DIAGNOSTIC: Log checkpoint keys summary ──
+                logger.info(f"[DIAG] Checkpoint type: {type(ckpt)}")
+                if isinstance(ckpt, dict):
+                    logger.info(f"[DIAG] Checkpoint top-level keys: {list(ckpt.keys())}")
+                logger.info(f"[DIAG] State dict has {len(state_dict)} keys")
+                logger.info(f"[DIAG] First 5 state_dict keys: {list(state_dict.keys())[:5]}")
+                
+                # Check if ViT backbone weights are actually present
+                backbone_keys = [k for k in state_dict.keys() if 'backbone' in k]
+                head_keys = [k for k in state_dict.keys() if 'head' in k]
+                logger.info(f"[DIAG] backbone keys count={len(backbone_keys)}, head keys count={len(head_keys)}")
+                if len(backbone_keys) == 0:
+                    logger.error("❌ [DIAG] NO BACKBONE KEYS IN CHECKPOINT! ViT will use random weights → expect 15-30% scores!")
+                
+                # Use strict=False so we can detect missing keys without crashing
+                load_result = _model.load_state_dict(state_dict, strict=False)
+                if load_result.missing_keys:
+                    logger.warning(f"⚠️ [DIAG] Missing keys (will use random init): {load_result.missing_keys[:10]}")
+                if load_result.unexpected_keys:
+                    logger.warning(f"⚠️ [DIAG] Unexpected keys (ignored): {load_result.unexpected_keys[:10]}")
+                
+                if not load_result.missing_keys and not load_result.unexpected_keys:
+                    logger.info(f"[bot] ✅ PyTorch model loaded PERFECTLY from {model_path} on {DEVICE} 🚀")
+                else:
+                    logger.warning(f"[bot] ⚠️ Model loaded with mismatches — scores will be degraded!")
                 
             except FileNotFoundError:
                 logger.warning(f"⚠️ [bot] WARNING: '{model_path}' not found! Running with randomly initialized weights for testing. ⚠️")
@@ -164,10 +186,15 @@ def run_batch_inference(frame_lists: list) -> list:
             clips.append(torch.stack(tensors))
 
         batch = torch.stack(clips).to(DEVICE)  # (B, SEQ_LEN, 3, 224, 224)
+        
+        logger.info(f"[DIAG] Batch shape: {batch.shape}, Min val: {batch.min().item():.3f}, Max val: {batch.max().item():.3f}, Mean: {batch.mean().item():.3f}")
 
         with torch.no_grad():
             logits = model(batch)              # (B,)
+            logit_vals = logits.cpu().numpy().flatten()
             probs = torch.sigmoid(logits).cpu().numpy().flatten()
+            # DIAGNOSTIC: log raw logits to confirm model is actually responding
+            logger.info(f"[DIAG] raw_logits={[round(float(l),3) for l in logit_vals]} -> probs={[round(float(p),3) for p in probs]}")
 
     return [{"raw_score": float(p)} for p in probs]
 
@@ -215,14 +242,14 @@ async def consume_video_track(
             np_frame = np_frame[:expected].reshape(height, width, 3)
             
         # CRITICAL ML FIX: Never squish the aspect ratio!
-        # Center-crop the image to a perfect square first, then resize down to 224x224.
-        # This ensures faces remain proportional (not tall/thin), exactly like the training data.
+        # Center-crop the image to a perfect square first, then let val_transform resize it.
+        # This ensures faces remain proportional (not tall/thin) across different laptops.
         sz = min(width, height)
         y = (height - sz) // 2
         x = (width - sz) // 2
         square_frame = np_frame[y:y+sz, x:x+sz]
         
-        return cv2.resize(square_frame, (224, 224))
+        return square_frame
 
     try:
         async for frame_event in video_stream:
@@ -231,8 +258,10 @@ async def consume_video_track(
 
             now_t = time.monotonic()
 
-            # Throttle to ~5 FPS. This rate gives 60 frames in ~12 seconds.
-            if now_t - buf.last_frame_time < 0.2:
+            # Throttle to ~10 FPS to match training clip temporal density.
+            # Training: 24 frames from ~4s clips at 30 FPS ≈ 1 sample per 0.17s (6 FPS seen by LSTM).
+            # At 10 FPS capture + 30-frame buffer: 24 from 30 ≈ 1 sample per 0.13s — much closer match.
+            if now_t - buf.last_frame_time < 0.1:
                 continue
             buf.last_frame_time = now_t
 
@@ -245,9 +274,10 @@ async def consume_video_track(
             decoded = await loop.run_in_executor(None, _decode_frame, data_bytes, w, h)
             buf.frames.append(decoded)
 
-            # Queue for inference when buffer is full and interval has elapsed
+            # Queue for inference as soon as we have SEQ_LEN real frames (not waiting for
+            # the full BUFFER_MAXLEN). This prevents the 12-second frozen-face startup bias.
             if (
-                len(buf.frames) == BUFFER_MAXLEN
+                len(buf.frames) >= SEQ_LEN
                 and (now_t - buf.last_inference) >= INFERENCE_INTERVAL_S
                 and not buf.is_inferring
             ):
@@ -295,7 +325,7 @@ async def inference_worker(
         
         for p in pids:
             buf = buffers.get(p)
-            if buf is None or not buf.active or len(buf.frames) < BUFFER_MAXLEN:
+            if buf is None or not buf.active or len(buf.frames) < SEQ_LEN:
                 round_robin_queue.task_done()
                 if buf:
                     buf.is_inferring = False

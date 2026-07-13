@@ -51,10 +51,10 @@ export class LiveKitBotService {
     at.addGrant({
       roomJoin: true,
       room: roomId,
-      canSubscribe: true,      // Must subscribe to student tracks
-      canPublishData: true,    // Must publish engagement scores
-      canPublish: false,       // Bot doesn't publish audio/video
-      hidden: true,            // Invisible in participant list
+      canSubscribe: true, // Must subscribe to student tracks
+      canPublishData: true, // Must publish engagement scores
+      canPublish: false, // Bot doesn't publish audio/video
+      hidden: true, // Invisible in participant list
     });
     return await at.toJwt();
   }
@@ -64,7 +64,10 @@ export class LiveKitBotService {
    */
   async dispatchBotToRoom(roomId: string): Promise<void> {
     const botToken = await this.generateBotToken(roomId);
-    const workerUrl = this.config.get<string>('AI_WORKER_URL', 'http://ai-worker:8080');
+    const workerUrl = this.config.get<string>(
+      'AI_WORKER_URL',
+      'http://127.0.0.1:8080',
+    );
     try {
       await firstValueFrom(
         this.http.post(`${workerUrl}/api/dispatch`, {
@@ -75,7 +78,9 @@ export class LiveKitBotService {
       );
       this.logger.log(`Bot dispatched to room: ${roomId}`);
     } catch (err) {
-      this.logger.warn(`⚠️ AI Worker is offline or unreachable (${workerUrl}). Meeting will start WITHOUT the AI bot.`);
+      this.logger.warn(
+        `⚠️ AI Worker is offline or unreachable (${workerUrl}). Meeting will start WITHOUT the AI bot.`,
+      );
     }
   }
   /**
@@ -83,7 +88,10 @@ export class LiveKitBotService {
    * Called when the meeting ends so the bot exits cleanly.
    */
   async recallBotFromRoom(roomId: string): Promise<void> {
-    const workerUrl = this.config.get<string>('AI_WORKER_URL', 'http://ai-worker:8080');
+    const workerUrl = this.config.get<string>(
+      'AI_WORKER_URL',
+      'http://127.0.0.1:8080',
+    );
     await firstValueFrom(
       this.http.post(`${workerUrl}/api/recall`, { room_name: roomId }),
     ).catch((e) =>

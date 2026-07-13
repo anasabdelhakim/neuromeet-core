@@ -127,7 +127,14 @@ export class MeetingsController {
   @Roles(['INSTRUCTOR', 'ADMIN'])
   syncEngagement(
     @Param('id') id: string,
-    @Body() body: { stats: { participantIdentity: string; avgEngagementScore: number; adhdFlagged: boolean }[] }
+    @Body()
+    body: {
+      stats: {
+        participantIdentity: string;
+        avgEngagementScore: number;
+        adhdFlagged: boolean;
+      }[];
+    },
   ) {
     return this.meetingsService.syncEngagement(id, body.stats);
   }

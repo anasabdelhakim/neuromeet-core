@@ -42,7 +42,7 @@ export class EmailService {
       const htmlContent = getVerificationEmailHtml(code);
       const { data, error } = await this.resend.emails.send({
         from: this.defaultFrom, // ✅ التعديل هنا
-        to: email, 
+        to: email,
         subject: 'Your Verification Code',
         html: htmlContent,
       });
@@ -99,7 +99,7 @@ export class EmailService {
       scheduledAt: string;
       passcode: string;
       joinUrl: string;
-    }
+    },
   ) {
     try {
       const promises = students.map((student) => {

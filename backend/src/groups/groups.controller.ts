@@ -80,17 +80,24 @@ export class GroupsController {
                 name: true,
                 email: true,
                 avatarUrl: true,
-                sessions: { select: { lastUsedAt: true }, orderBy: { lastUsedAt: 'desc' }, take: 1 },
-                meetingParticipants: { where: { meeting: { hostId: instructorId } }, select: { avgEngagementScore: true, joinedAt: true } }
-              }
-            }
-          }
+                sessions: {
+                  select: { lastUsedAt: true },
+                  orderBy: { lastUsedAt: 'desc' },
+                  take: 1,
+                },
+                meetingParticipants: {
+                  where: { meeting: { hostId: instructorId } },
+                  select: { avgEngagementScore: true, joinedAt: true },
+                },
+              },
+            },
+          },
         },
         invitations: {
           where: { status: 'PENDING' },
-          select: { studentId: true }
-        }
-      }
+          select: { studentId: true },
+        },
+      },
     });
     return { status: 'success', data: groups };
   }
@@ -100,27 +107,39 @@ export class GroupsController {
   async getAllStudents() {
     const students = await this.groupsService['prisma'].user.findMany({
       where: { role: 'STUDENT' },
-      select: { 
-        id: true, 
-        name: true, 
-        email: true, 
+      select: {
+        id: true,
+        name: true,
+        email: true,
         avatarUrl: true,
-        sessions: { select: { lastUsedAt: true }, orderBy: { lastUsedAt: 'desc' }, take: 1 }
+        sessions: {
+          select: { lastUsedAt: true },
+          orderBy: { lastUsedAt: 'desc' },
+          take: 1,
+        },
       },
-      orderBy: { name: 'asc' }
+      orderBy: { name: 'asc' },
     });
     return { status: 'success', data: students };
   }
 
   @Post(':id/invitations')
   @Roles(['INSTRUCTOR'])
-  inviteStudent(@Param('id') id: string, @Req() req: any, @Body() dto: { studentId: string }) {
+  inviteStudent(
+    @Param('id') id: string,
+    @Req() req: any,
+    @Body() dto: { studentId: string },
+  ) {
     return this.groupsService.inviteStudent(id, req.user.id, dto.studentId);
   }
 
   @Delete(':id/invitations/:studentId')
   @Roles(['INSTRUCTOR'])
-  undoInvitation(@Param('id') id: string, @Param('studentId') studentId: string, @Req() req: any) {
+  undoInvitation(
+    @Param('id') id: string,
+    @Param('studentId') studentId: string,
+    @Req() req: any,
+  ) {
     return this.groupsService.undoInvitation(id, req.user.id, studentId);
   }
 
@@ -132,19 +151,29 @@ export class GroupsController {
 
   @Post('invitations/:invitationId/accept')
   @Roles(['STUDENT'])
-  acceptInvitation(@Param('invitationId') invitationId: string, @Req() req: any) {
+  acceptInvitation(
+    @Param('invitationId') invitationId: string,
+    @Req() req: any,
+  ) {
     return this.groupsService.acceptInvitation(invitationId, req.user.id);
   }
 
   @Post('invitations/:invitationId/reject')
   @Roles(['STUDENT'])
-  rejectInvitation(@Param('invitationId') invitationId: string, @Req() req: any) {
+  rejectInvitation(
+    @Param('invitationId') invitationId: string,
+    @Req() req: any,
+  ) {
     return this.groupsService.rejectInvitation(invitationId, req.user.id);
   }
 
   @Delete(':id/students/:studentId')
   @Roles(['INSTRUCTOR'])
-  removeStudent(@Param('id') id: string, @Param('studentId') studentId: string, @Req() req: any) {
+  removeStudent(
+    @Param('id') id: string,
+    @Param('studentId') studentId: string,
+    @Req() req: any,
+  ) {
     return this.groupsService.removeStudent(id, req.user.id, studentId);
   }
 }

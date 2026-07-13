@@ -138,7 +138,10 @@ export class DriveController {
   }
   @Post('recording/init/:meetingId')
   @HttpCode(HttpStatus.OK)
-  async initRecordingUpload(@Param('meetingId') meetingId: string, @Req() req: any) {
+  async initRecordingUpload(
+    @Param('meetingId') meetingId: string,
+    @Req() req: any,
+  ) {
     if (!meetingId || meetingId.trim() === '') {
       throw new BadRequestException('meetingId parameter is required');
     }
@@ -163,7 +166,9 @@ export class DriveController {
     }
     const chunkBuffer = await new Promise<Buffer>((resolve, reject) => {
       const chunks: Buffer[] = [];
-      req.raw.on('data', (chunk) => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
+      req.raw.on('data', (chunk) =>
+        chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)),
+      );
       req.raw.on('end', () => resolve(Buffer.concat(chunks)));
       req.raw.on('error', reject);
     });
@@ -217,8 +222,7 @@ export class DriveController {
         if (parsed.status === 'complete' || parsed.status === 'error') {
           cleanup();
         }
-      } catch {
-      }
+      } catch {}
     };
     this.cacheService.events.on(channel, onMessage);
     const cleanup = () => {

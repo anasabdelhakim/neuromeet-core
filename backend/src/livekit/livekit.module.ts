@@ -6,9 +6,7 @@ import { LiveKitBotService } from './livekit-bot.service';
 import { LiveKitBotController } from './livekit-bot.controller';
 import { WorkerPoolService } from './worker-pool.service';
 @Module({
-  imports: [
-    HttpModule,
-  ],
+  imports: [HttpModule],
   controllers: [LivekitController, LiveKitBotController],
   providers: [LivekitService, LiveKitBotService, WorkerPoolService],
   exports: [LiveKitBotService, WorkerPoolService],

@@ -14,8 +14,10 @@ echo 3. Initializing fresh Git repository (removing old history)...
 cd deploy_temp
 git init >nul
 git checkout -b main >nul
+git config user.email "deploy@neuromeet.com" >nul
+git config user.name "NeuroMeet Deploy" >nul
 git add . >nul
-git commit -m "Deploy Backend to Hugging Face" >nul
+git commit -m "Deploy Backend and AI Bot to Hugging Face" >nul
 
 echo 4. Force pushing directly to Hugging Face...
 git push https://huggingface.co/spaces/forgien5252/neuromeet-api main --force

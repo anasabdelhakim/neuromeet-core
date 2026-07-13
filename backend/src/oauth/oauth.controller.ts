@@ -1,4 +1,12 @@
-import { Controller, Get, Req, Res, UseGuards, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Req,
+  Res,
+  UseGuards,
+  Post,
+  Body,
+} from '@nestjs/common';
 import { ThrottlerGuard, Throttle } from '@nestjs/throttler';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { OAuthService } from './oauth.service';
@@ -25,13 +33,23 @@ export class OAuthController {
       userId: userObj.profile.id,
       email: userObj.profile.emails[0].value,
       name: userObj.profile.displayName,
-      photo: userObj.profile.picture || userObj.profile.photos?.[0]?.value || userObj.profile._json?.picture || '',
+      photo:
+        userObj.profile.picture ||
+        userObj.profile.photos?.[0]?.value ||
+        userObj.profile._json?.picture ||
+        '',
     };
     try {
       const result = await this.authService.validateUser(user);
-      const handoffToken = await this.authService.generateHandoffToken(result.data.id);
+      const handoffToken = await this.authService.generateHandoffToken(
+        result.data.id,
+      );
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-      return res.status(302).redirect(`${frontendUrl}/api/auth/oauth-callback?token=${handoffToken}`);
+      return res
+        .status(302)
+        .redirect(
+          `${frontendUrl}/api/auth/oauth-callback?token=${handoffToken}`,
+        );
     } catch (error) {
       console.error('Google OAuth Callback Error:', error);
       return res.status(500).send({

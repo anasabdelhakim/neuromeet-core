@@ -13,7 +13,7 @@ export class AnalyticsService {
         title: true,
         startedAt: true,
       },
-      orderBy: { startedAt: 'desc' }
+      orderBy: { startedAt: 'desc' },
     });
     return meetings;
   }
@@ -23,9 +23,9 @@ export class AnalyticsService {
       where: { id: meetingId, hostId: instructorId, status: 'ENDED' },
       include: {
         participants: {
-          include: { user: true }
-        }
-      }
+          include: { user: true },
+        },
+      },
     });
 
     if (!meeting) return null;
@@ -37,7 +37,7 @@ export class AnalyticsService {
 
     const studentMatrix: any[] = [];
 
-    meeting.participants.forEach(p => {
+    meeting.participants.forEach((p) => {
       if (p.userId === instructorId) return;
 
       if (p.avgEngagementScore !== null) {
@@ -53,33 +53,36 @@ export class AnalyticsService {
         name: p.user.name,
         avgEngagement: p.avgEngagementScore || 0,
         totalSeconds: p.secondsPresent,
-        adhdFlags: p.adhdFlagged ? 1 : 0
+        adhdFlags: p.adhdFlagged ? 1 : 0,
       });
     });
 
-    const avgEngagement = totalParticipantsCount > 0 ? (totalEngagementSum / totalParticipantsCount) : 0;
+    const avgEngagement =
+      totalParticipantsCount > 0
+        ? totalEngagementSum / totalParticipantsCount
+        : 0;
 
     return {
       kpis: {
         totalParticipants: studentMatrix.length,
         avgEngagement,
         totalAdhdFlags,
-        totalMinutes: Math.round(totalSeconds / 60)
+        totalMinutes: Math.round(totalSeconds / 60),
       },
-      studentMatrix
+      studentMatrix,
     };
   }
 
   async getStudentAnalytics(studentId: string) {
     const student = await this.prisma.user.findUnique({
       where: { id: studentId },
-      select: { name: true }
+      select: { name: true },
     });
 
     const participations = await this.prisma.meetingParticipant.findMany({
       where: { userId: studentId, meeting: { status: 'ENDED' } },
       include: { meeting: true },
-      orderBy: { meeting: { startedAt: 'asc' } }
+      orderBy: { meeting: { startedAt: 'asc' } },
     });
 
     let totalSeconds = 0;
@@ -89,7 +92,7 @@ export class AnalyticsService {
 
     const timeline: any[] = [];
 
-    participations.forEach(p => {
+    participations.forEach((p) => {
       totalSeconds += p.secondsPresent;
       if (p.avgEngagementScore !== null) {
         engagementSum += p.avgEngagementScore;
@@ -101,20 +104,21 @@ export class AnalyticsService {
         meetingId: p.meetingId,
         title: p.meeting.title,
         date: p.meeting.startedAt,
-        engagement: p.avgEngagementScore || 0
+        engagement: p.avgEngagementScore || 0,
       });
     });
 
-    const avgEngagement = engagementCount > 0 ? (engagementSum / engagementCount) : 0;
+    const avgEngagement =
+      engagementCount > 0 ? engagementSum / engagementCount : 0;
 
     return {
-      studentName: student?.name || "Unknown Student",
+      studentName: student?.name || 'Unknown Student',
       kpis: {
         totalMinutes: Math.round(totalSeconds / 60),
         avgEngagement,
-        totalAdhdFlags
+        totalAdhdFlags,
       },
-      timeline
+      timeline,
     };
   }
 }

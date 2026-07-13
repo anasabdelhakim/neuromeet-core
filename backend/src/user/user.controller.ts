@@ -58,7 +58,10 @@ export class UserMeController {
       .toBuffer();
     const base64Str = safeImageBuffer.toString('base64');
     const avatarUrl = `data:image/webp;base64,${base64Str}`;
-    return this.userService.updateMe(req.user, { avatarUrl, isProfileComplete: true });
+    return this.userService.updateMe(req.user, {
+      avatarUrl,
+      isProfileComplete: true,
+    });
   }
   @Delete()
   @Roles(['INSTRUCTOR', 'STUDENT'])

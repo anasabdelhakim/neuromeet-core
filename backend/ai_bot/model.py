@@ -21,8 +21,9 @@ class ViTBackbone(nn.Module):
     """Wrapper to match the exact 'backbone.vit' key structure in best_model.pth"""
     def __init__(self):
         super().__init__()
-        # Load standard ViT-Base 16
-        self.vit = models.vit_b_16(weights=None)
+        # CRITICAL: Must use the exact same weights used during training!
+        # The training notebook specifically used ViT_B_16_Weights.DEFAULT
+        self.vit = models.vit_b_16(weights=models.ViT_B_16_Weights.DEFAULT)
         # Remove the classification head because we only want the raw 768-dim features
         self.vit.heads = nn.Identity()
         

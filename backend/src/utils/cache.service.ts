@@ -72,7 +72,9 @@ export class CacheService {
         }
       }
     } catch (err) {
-      this.logger.warn(`Cache invalidatePattern error for "${pattern}": ${err}`);
+      this.logger.warn(
+        `Cache invalidatePattern error for "${pattern}": ${err}`,
+      );
     }
   }
 }

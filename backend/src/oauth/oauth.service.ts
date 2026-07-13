@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { randomBytes } from 'crypto';
-import { AUTH_CONSTANTS } from 'src/auth/auth.constants'; 
+import { AUTH_CONSTANTS } from 'src/auth/auth.constants';
 import { PrismaService } from 'src/database/database.service';
 type UserData = {
   userId: string;
@@ -25,32 +25,53 @@ export class OAuthService {
       select: { id: true, email: true, name: true, role: true, password: true },
     });
     if (!user) {
-      const password = await (Bun.password as any).hash(generateRandomPassword(), {
-        algorithm: 'bcrypt',
-        cost: 4,
-      });
+      const password = await (Bun.password as any).hash(
+        generateRandomPassword(),
+        {
+          algorithm: 'bcrypt',
+          cost: 4,
+        },
+      );
       const newUser = await this.prisma.user.create({
         data: {
           email: userData.email,
           name: userData.name,
           password,
-          role: 'STUDENT', 
-          avatarUrl: userData.photo, 
+          role: 'STUDENT',
+          avatarUrl: userData.photo,
         },
-        select: { id: true, email: true, name: true, role: true, created_at: true },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          created_at: true,
+        },
       });
-      return { status: 200, message: 'User created successfully', data: newUser };
+      return {
+        status: 200,
+        message: 'User created successfully',
+        data: newUser,
+      };
     }
-    this.prisma.user.update({
-      where: { id: user.id },
-      data: { avatarUrl: userData.photo },
-    }).catch(err => this.logger.error(`Avatar update failed: ${err.message}`));
+    this.prisma.user
+      .update({
+        where: { id: user.id },
+        data: { avatarUrl: userData.photo },
+      })
+      .catch((err) =>
+        this.logger.error(`Avatar update failed: ${err.message}`),
+      );
     const { password: _, ...safeUser } = user;
-    return { status: 200, message: 'User logged in successfully', data: safeUser };
+    return {
+      status: 200,
+      message: 'User logged in successfully',
+      data: safeUser,
+    };
   }
   async generateHandoffToken(userId: string): Promise<string> {
     return this.jwtService.signAsync(
-      { id: userId, purpose: 'handoff' }, 
+      { id: userId, purpose: 'handoff' },
       {
         secret: process.env.JWT_SECRET,
         expiresIn: AUTH_CONSTANTS.OAUTH_HANDOFF_TOKEN_EXPIRY, // Should be ~1 minute
@@ -84,10 +105,13 @@ export class OAuthService {
           },
         ),
       ]);
-      const hashedRefreshToken = await (Bun.password as any).hash(refresh_token, {
-        algorithm: 'bcrypt',
-        cost: 10,
-      });
+      const hashedRefreshToken = await (Bun.password as any).hash(
+        refresh_token,
+        {
+          algorithm: 'bcrypt',
+          cost: 10,
+        },
+      );
       await this.prisma.user.update({
         where: { id: user.id },
         data: { refreshToken: hashedRefreshToken },

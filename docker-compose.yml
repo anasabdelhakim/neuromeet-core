@@ -27,7 +27,6 @@ services:
       timeout: 5s
       retries: 5
 
-
   # 3. NeuroMeet Backend (Bun + NestJS + Fastify)
   backend:
     build: ./backend
