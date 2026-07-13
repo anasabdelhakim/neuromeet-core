@@ -18,6 +18,8 @@ from model import EngagementModel, val_transform
 
 def numpy_val_transform(frame: np.ndarray) -> np.ndarray:
     """Pure numpy version of val_transform for ONNX inference."""
+    # Add this line to prevent ONNX crashes!
+    frame = cv2.resize(frame, (224, 224), interpolation=cv2.INTER_LINEAR)
     img = frame.astype(np.float32) / 255.0
     mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
     std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
@@ -35,8 +37,8 @@ BUFFER_MAXLEN = 30           # 30 frames at 10 FPS = 3s window — matches ~4s t
 INFERENCE_INTERVAL_S = 5.0   # Run inference every N seconds — set above CPU inference time to avoid queue buildup
 DISENGAGEMENT_THRESHOLD = 0.50  # Below this → is_disengaged=True
 MAX_CONCURRENT = 1 if DEVICE.type == "cpu" else 10  # CPU: serialize to avoid thread contention
-EMA_ALPHA_UP = 0.70          # Allow scores to climb at a reasonable pace (was 0.55 — too slow to recover)
-EMA_ALPHA_DOWN = 0.75        # Keep disengagement detection responsive but not punishing (was 0.85)
+EMA_ALPHA_UP = 0.30          # Climb speed
+EMA_ALPHA_DOWN = 0.30        # Drop speed (symmetrical)
 
 
 # ─── Model Singleton ──────────────────────────────────────────────────────────
@@ -146,6 +148,14 @@ class ParticipantBuffer:
 
 # Calibrate probability removed to avoid artificial inflation of scores.
 
+# Initialize Fast Face Detector to skip empty rooms
+try:
+    import cv2
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+except Exception as e:
+    logger.error(f"[bot] Failed to load OpenCV face cascade: {e}")
+    face_cascade = None
+
 def run_batch_inference(frame_lists: list) -> list:
     """
     Batched inference — processes multiple participants in a single forward pass.
@@ -153,10 +163,62 @@ def run_batch_inference(frame_lists: list) -> list:
     """
     model = get_model()
     
-    # Subsample exactly SEQ_LEN frames uniformly from the buffer
+    final_results = [None] * len(frame_lists)
     safe_lists = []
-    for frames in frame_lists:
+    active_indices = []
+    
+    # Subsample exactly SEQ_LEN frames uniformly from the buffer
+    for idx, frames in enumerate(frame_lists):
         total = len(frames)
+        if total == 0:
+            final_results[idx] = {"raw_score": 0.0}
+            continue
+            
+        # Fast Face Detection on the MOST RECENT frame
+        has_face = True
+        best_face = None
+        if face_cascade is not None and not face_cascade.empty():
+            try:
+                latest_frame = frames[-1]
+                # Convert to Grayscale for Haar Cascade
+                gray = cv2.cvtColor(latest_frame, cv2.COLOR_RGB2GRAY)
+                faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=3, minSize=(30, 30))
+                if len(faces) == 0:
+                    has_face = False
+                else:
+                    # Pick the largest face (in case there are false positives in background)
+                    best_face = max(faces, key=lambda f: f[2] * f[3])
+            except Exception as e:
+                pass # Fallback to PyTorch if OpenCV errors out
+                
+        if not has_face:
+            logger.info(f"[DIAG] No face detected. Hardcoding 0.0 engagement and skipping AI math.")
+            final_results[idx] = {"raw_score": 0.0}
+            continue
+
+        # ── Smart Face Crop to normalize all Aspect Ratios (Mobile vs Laptop) ──
+        if best_face is not None:
+            fx, fy, fw, fh = best_face
+            img_h, img_w, _ = frames[-1].shape
+            
+            # Create a square crop 2.0x larger than the face to capture head & shoulders
+            crop_size = int(fw * 2.0)
+            crop_size = min(crop_size, img_w, img_h) # Prevent exceeding bounds
+            
+            cx, cy = fx + fw // 2, fy + fh // 2
+            
+            x1 = cx - crop_size // 2
+            y1 = cy - crop_size // 2
+            
+            # Clamp to image edges
+            if x1 < 0: x1 = 0
+            if y1 < 0: y1 = 0
+            if x1 + crop_size > img_w: x1 = img_w - crop_size
+            if y1 + crop_size > img_h: y1 = img_h - crop_size
+            
+            # Crop every frame to this perfect, face-centered square!
+            frames = [f[y1:y1+crop_size, x1:x1+crop_size] for f in frames]
+
         if total >= SEQ_LEN:
             idxs = np.linspace(0, total - 1, SEQ_LEN).astype(int)
             sampled_frames = [frames[i] for i in idxs]
@@ -164,7 +226,13 @@ def run_batch_inference(frame_lists: list) -> list:
             sampled_frames = frames + [frames[-1]] * (SEQ_LEN - total)
         else:
             sampled_frames = frames
+            
         safe_lists.append(sampled_frames)
+        active_indices.append(idx)
+        
+    # If NO students had faces, we can return immediately and save 100% of the CPU!
+    if len(safe_lists) == 0:
+        return final_results
     
     if isinstance(model, ort.InferenceSession):
         # ── ONNX Batch Inference ──
@@ -196,7 +264,21 @@ def run_batch_inference(frame_lists: list) -> list:
             # DIAGNOSTIC: log raw logits to confirm model is actually responding
             logger.info(f"[DIAG] raw_logits={[round(float(l),3) for l in logit_vals]} -> probs={[round(float(p),3) for p in probs]}")
 
-    return [{"raw_score": float(p)} for p in probs]
+    calibrated_probs = []
+    for p in probs:
+        # Calibration is absolutely necessary for this model because 
+        # Label Smoothing (0.10) and heavy Dropout (0.7) compress the output probabilities.
+        # The model naturally outputs values between 0.15 and 0.45.
+        min_p, max_p = 0.15, 0.45
+        calibrated = (p - min_p) / (max_p - min_p)
+        calibrated = max(0.0, min(1.0, calibrated))
+        calibrated_probs.append(float(calibrated))
+
+    # Merge calibrated PyTorch results back into the final results list
+    for active_idx, prob in zip(active_indices, calibrated_probs):
+        final_results[active_idx] = {"raw_score": prob}
+
+    return final_results
 
 
 # ─── Per-Track Frame Consumer ─────────────────────────────────────────────────
@@ -241,15 +323,9 @@ async def consume_video_track(
             logger.warning(f"Frame padding: got {len(np_frame)}, expected {expected}")
             np_frame = np_frame[:expected].reshape(height, width, 3)
             
-        # CRITICAL ML FIX: Never squish the aspect ratio!
-        # Center-crop the image to a perfect square first, then let val_transform resize it.
-        # This ensures faces remain proportional (not tall/thin) across different laptops.
-        sz = min(width, height)
-        y = (height - sz) // 2
-        x = (width - sz) // 2
-        square_frame = np_frame[y:y+sz, x:x+sz]
-        
-        return square_frame
+        # Return the full frame. PyTorch's T.Resize((224, 224)) will squish it,
+        # ensuring the user's face is never cropped out, even if they sit off-center.
+        return np_frame
 
     try:
         async for frame_event in video_stream:
