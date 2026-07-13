@@ -273,9 +273,16 @@ export class AuthService {
   async resetPassword(dto: ResetPasswordDto) {
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
-      select: { id: true, email: true },
+      select: { id: true, email: true, role: true },
     });
     if (!user) {
+      return {
+        status: 'success',
+        message: 'If this email exists, a verification code has been sent.',
+      };
+    }
+    // SECURITY: Admin accounts cannot reset their password via email flow.
+    if (user.role === 'ADMIN') {
       return {
         status: 'success',
         message: 'If this email exists, a verification code has been sent.',

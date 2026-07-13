@@ -24,3 +24,11 @@ ai_bot/__pycache__/
 # Scripts
 *.bat
 backend/prisma/seed.ts
+backend/prisma/update-admin.ts
+
+# Secrets & Credentials
+**/google-credentials.json
+**/service-account*.json
+
+# Scratch / Dev-only scripts
+backend/ai_bot/scratch_test.py
