@@ -92,7 +92,7 @@ Explore the platform live at **[neuromeet.anasdev.shop](https://neuromeet.anasde
 
 | Role           | Email                               | Password              | Access Rights                                                                |
 | -------------- | ------------------------------------ | ----------------------- | -------------------------------------------------------------------------------- |
-| **Instructor** | `instructor@neuromeet.anasdev.shop`  | `NeuroMeet#Instructor26`   | Create meetings, view live AI engagement, manage recordings, invite students     |
+| **Instructor** | `instructor@neuromeet.anasdev.shop`  | `NuMeet#Inst@26`   | Create meetings, view live AI engagement, manage recordings, invite students     |
 | **Student**    | `student@neuromeet.anasdev.shop`     | `NeuroMeet#Student26`   | Join meetings, view past materials, participate in chat                          |
 
 > **Note:** These are seeded demo accounts for evaluation purposes only and are rotated periodically — not representative of production secret policy.
