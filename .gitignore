@@ -20,3 +20,6 @@ __pycache__/
 *.onnx.data
 backend/ai_bot/models/
 ai_bot/__pycache__/
+
+# Scripts
+*.bat
