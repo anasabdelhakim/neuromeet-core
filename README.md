@@ -6,14 +6,6 @@
 
 ---
 
-# 🧠 NeuroMeet — Real-Time Meeting Platform with Custom WebRTC & High-Throughput Backend
-
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-neuromeet.anasdev.shop-7C3AED?style=for-the-badge&logo=vercel&logoColor=white)](https://neuromeet.anasdev.shop) [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](#) [![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)](#) [![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)](#) [![Bun](https://img.shields.io/badge/Bun-1A1A1A?style=for-the-badge&logo=bun&logoColor=fbf0df)](#) [![LiveKit](https://img.shields.io/badge/LiveKit_WebRTC-1F2937?style=for-the-badge&logo=webrtc&logoColor=white)](#) [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](#) [![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](#)
-
-> **NeuroMeet** is a real-time video meeting platform engineered around a custom WebRTC interface, a high-throughput NestJS backend running on Bun, and a zero-memory chunked upload pipeline for cloud recording storage. It also integrates an optional AI engagement-analysis module for instructors — built as a fully decoupled service that never touches the core video/API path.
-
----
-
 ## 🎬 See It In Action
 
 <table>
