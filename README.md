@@ -23,9 +23,7 @@
 **Full Platform Walkthrough**
 Meeting creation, joining, live video, and recording.
 
-[![NeuroMeet Full Walkthrough](https://img.youtube.com/vi/VOSwixXPdg0/maxresdefault.jpg)](https://youtu.be/VOSwixXPdg0)
-
-[![Watch on YouTube](https://img.shields.io/badge/▶_Watch_on-YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/VOSwixXPdg0)
+[![Watch on Vimeo](https://img.shields.io/badge/▶_Watch_on-Vimeo-1AB7EA?style=for-the-badge&logo=vimeo&logoColor=white)](https://vimeo.com/1209809120)
 
 </td>
 <td width="50%" align="center">
@@ -33,9 +31,7 @@ Meeting creation, joining, live video, and recording.
 **Authentication & Security Flow**
 Dual-layer JWT verification and OAuth login in action.
 
-[![NeuroMeet Auth Demo](https://img.youtube.com/vi/UNacYgGZYt4/maxresdefault.jpg)](https://youtu.be/UNacYgGZYt4)
-
-[![Watch on YouTube](https://img.shields.io/badge/▶_Watch_on-YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/UNacYgGZYt4)
+[![Watch on Drive](https://img.shields.io/badge/▶_Watch_on-Google_Drive-4285F4?style=for-the-badge&logo=googledrive&logoColor=white)](https://drive.google.com/file/d/1VUQ-Ik6CyfK_se-jlMNsMkXBOayBVBmO/view?usp=drive_link)
 
 </td>
 </tr>
