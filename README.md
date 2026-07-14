@@ -25,6 +25,19 @@
 
 ---
 
+## 🎬 Video Demo
+
+### Full Platform Walkthrough
+Meeting creation, joining, live video, and recording — end to end.
+
+[![NeuroMeet Full Walkthrough](https://img.youtube.com/vi/VOSwixXPdg0/maxresdefault.jpg)](https://youtu.be/VOSwixXPdg0)
+
+### Authentication & Security Flow
+Dual-layer JWT verification, OAuth login, and session handling in action.
+
+[![NeuroMeet Auth Demo](https://img.youtube.com/vi/UNacYgGZYt4/maxresdefault.jpg)](https://youtu.be/UNacYgGZYt4)
+
+---
 
 ## ⚡ Why NeuroMeet Is Different — 30-Second Hook
 
@@ -49,20 +62,6 @@ If you are reviewing this project, these are the five hard engineering problems 
 | **🎥 Custom WebRTC Interface**    | Uses the Web Audio API to mix display and microphone streams before uploading via local 2 MB chunks.           | Delivers a fully custom Google Meet-style UI with hardware controls and strict permission enforcement.     |
 | **⚡ Server-First Architecture**  | Combines Next.js Edge Middleware, a Fastify-based NestJS backend, and a custom in-memory TTL caching service.  | Achieves sub-millisecond hot-path data retrieval and zero-flicker role-based routing.                      |
 | **🧠 Optional AI Engagement Module** | A decoupled Python worker joins as a silent WebRTC participant and runs an ONNX-optimized ViT+LSTM model.   | Live attention scoring for instructors, entirely isolated from the core backend's request path.            |
-
----
-
-## 🎬 Video Demo
-
-### Full Platform Walkthrough
-Meeting creation, joining, live video, and recording — end to end.
-
-[![NeuroMeet Full Walkthrough](https://img.youtube.com/vi/VOSwixXPdg0/maxresdefault.jpg)](https://youtu.be/VOSwixXPdg0)
-
-### Authentication & Security Flow
-Dual-layer JWT verification, OAuth login, and session handling in action.
-
-[![NeuroMeet Auth Demo](https://img.youtube.com/vi/UNacYgGZYt4/maxresdefault.jpg)](https://youtu.be/UNacYgGZYt4)
 
 ---
 
