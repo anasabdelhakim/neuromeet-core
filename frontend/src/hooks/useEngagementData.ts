@@ -94,7 +94,6 @@ export function useEngagementData(meetingId?: string) {
     }, 15000);
     return () => clearInterval(interval);
   }, [meetingId]);
-  /** Sorted ascending by score — lowest engagement first (most urgent) */
   const sortedScores = Object.values(scores).sort(
     (a, b) => a.engagementScore - b.engagementScore,
   );
