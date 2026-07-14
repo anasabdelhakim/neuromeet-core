@@ -85,31 +85,37 @@ If you are reviewing this project, these are the five hard engineering problems 
 | **🎥 Custom WebRTC Interface**    | Uses the Web Audio API to mix display and microphone streams before uploading via local 2 MB chunks.           | Delivers a fully custom Google Meet-style UI with hardware controls and strict permission enforcement.     |
 | **⚡ Server-First Architecture**  | Combines Next.js Edge Middleware, a Fastify-based NestJS backend, and a custom in-memory TTL caching service.  | Achieves sub-millisecond hot-path data retrieval and zero-flicker role-based routing.                      |
 | **🧠 Optional AI Engagement Module** | A decoupled Python worker joins as a silent WebRTC participant and runs an ONNX-optimized ViT+LSTM model.   | Live attention scoring for instructors, entirely isolated from the core backend's request path.            |
-
 ---
-
 ## 📸 Screenshots
 
-<!-- 📌 TODO: Add screenshots to /docs/assets/ and confirm these three filenames match, 
-     or add more sections below following the same pattern. -->
-
-### 1. Live Virtual Classroom
-
-![Meeting Room](./docs/assets/meeting-room.png)
-*Custom LiveKit video interface — hardware toggles, Web Audio mixed recording, live engagement sidebar, and guest detection.*
-
-### 2. Instructor Analytics Dashboard
-
-![Instructor Dashboard](./docs/assets/instructor-dashboard.png)
-*Real-time command center: platform statistics, per-student AI attention scores, and upcoming schedule management.*
-
-### 3. Student Hub & Recordings
-
-![Student Hub](./docs/assets/student-hub.png)
-*Clean student portal for joining meetings, accessing Drive-hosted lecture recordings, and reviewing class materials.*
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <b>1. Instructor Dashboard</b><br>
+      <img src="./docs/assets/instructor-dashboard.png" alt="Instructor Dashboard"><br>
+      <i>Real-time command center: manage upcoming schedules, start immediate LiveKit sessions, and monitor student engagement.</i>
+    </td>
+    <td width="50%" align="center">
+      <b>2. Student Hub</b><br>
+      <img src="./docs/assets/student-dashboard.png" alt="Student Dashboard"><br>
+      <i>Clean student portal for tracking enrolled groups, upcoming meetings, and accessing lecture materials.</i>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <b>3. Admin Control Panel</b><br>
+      <img src="./docs/assets/admin-dashboard.png" alt="Admin Dashboard"><br>
+      <i>Global platform statistics and user management interface for monitoring total students, instructors, and meetings.</i>
+    </td>
+    <td width="50%" align="center">
+      <b>4. Recordings Archive</b><br>
+      <img src="./docs/assets/recordings-hub.png" alt="Recordings Hub"><br>
+      <i>Centralized hub for reviewing past sessions, featuring integrated playback for Google Drive-hosted class recordings.</i>
+    </td>
+  </tr>
+</table>
 
 ---
-
 ## 🔑 Demo Login Credentials
 
 Explore the platform live at **[neuromeet.anasdev.shop](https://neuromeet.anasdev.shop)** without any local setup:
