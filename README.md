@@ -13,7 +13,6 @@
 > **NeuroMeet** is a real-time video meeting platform engineered around a custom WebRTC interface, a high-throughput NestJS backend running on Bun, and a zero-memory chunked upload pipeline for cloud recording storage. It also integrates an optional AI engagement-analysis module for instructors — built as a fully decoupled service that never touches the core video/API path.
 
 ---
-
 ## 🎬 See It In Action
 
 <table>
@@ -25,6 +24,8 @@ Meeting creation, joining, live video, and recording.
 
 [![NeuroMeet Full Walkthrough](https://img.youtube.com/vi/VOSwixXPdg0/maxresdefault.jpg)](https://youtu.be/VOSwixXPdg0)
 
+[![Watch on YouTube](https://img.shields.io/badge/▶_Watch_on-YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/VOSwixXPdg0)
+
 </td>
 <td width="50%" align="center">
 
@@ -33,14 +34,14 @@ Dual-layer JWT verification and OAuth login in action.
 
 [![NeuroMeet Auth Demo](https://img.youtube.com/vi/UNacYgGZYt4/maxresdefault.jpg)](https://youtu.be/UNacYgGZYt4)
 
+[![Watch on YouTube](https://img.shields.io/badge/▶_Watch_on-YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/UNacYgGZYt4)
+
 </td>
 </tr>
 </table>
-
-**[→ Try the live demo yourself](https://neuromeet.anasdev.shop)** — see the [demo credentials](#-demo-login-credentials) below.
-
 ---
 
+**[→ Try the live demo yourself](https://neuromeet.anasdev.shop)** — see the [demo credentials](#-demo-login-credentials) below.
 
 ## 📌 Table of Contents
 
