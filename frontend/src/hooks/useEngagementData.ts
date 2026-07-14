@@ -4,43 +4,18 @@ import { useRoomContext } from '@livekit/components-react';
 import { RoomEvent, DataPacket_Kind } from 'livekit-client';
 export interface ParticipantScore {
   participantId: string;
-  participantName: string;        // Real display name from LiveKit
+  participantName: string;        
   engagementScore: number;
   isDisengaged: boolean;
   label: 'engaged' | 'disengaged';
   ts: number;
-  /** Rolling window of the last 12 scores (for sparkline) */
   history: number[];
-  /** Accumulated data for analytics syncing */
   cumulativeSum: number;
   cumulativeCount: number;
   totalFlips: number;
   wasDisengaged: boolean;
 }
-/**
- * useEngagementData
- *
- * Listens to LiveKit Data Channel messages published by the Python AI bot
- * on topic "engagement".
- *
- * Data flow:
- *   Python bot → room.local_participant.publish_data(payload, topic="engagement")
- *     → RoomEvent.DataReceived fires on every connected client
- *       → this hook decodes the JSON and updates React state
- *
- * NO WebSocket, NO NestJS round-trip after the initial bot dispatch.
- * Pure peer-level delivery via LiveKit's reliable data channel.
- *
- * Expected payload shape (from bot.py):
- * {
- *   type: "engagement_update",
- *   participant_id: string,
- *   engagement_score: number,   // 0–1 sigmoid output
- *   is_disengaged: boolean,     // score < 0.50
- *   label: "engaged" | "disengaged",
- *   ts: number                  // Unix ms
- * }
- */
+
 import { syncEngagementStatsAction } from '../features/dashboard-instructor/analytics/actions/analytics-actions';
 export function useEngagementData(meetingId?: string) {
   const room = useRoomContext();
