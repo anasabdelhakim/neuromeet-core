@@ -54,13 +54,15 @@ If you are reviewing this project, these are the five hard engineering problems 
 
 ## 🎬 Video Demo
 
-<!-- 📌 TODO: Replace this section once your walkthrough video is recorded. -->
-<!-- Suggested shot list: Google OAuth login → instructor creates meeting → student joins → 
-     live engagement panel updates → instructor opens recordings page. 
-     Upload as Unlisted on YouTube, then replace the line below with:
-     [![NeuroMeet Demo Video](https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID) -->
+### Full Platform Walkthrough
+Meeting creation, joining, live video, and recording — end to end.
 
-*A full walkthrough video is in progress — check back soon, or explore the [live demo](https://neuromeet.anasdev.shop) directly using the credentials below.*
+[![NeuroMeet Full Walkthrough](https://img.youtube.com/vi/VOSwixXPdg0/maxresdefault.jpg)](https://youtu.be/VOSwixXPdg0)
+
+### Authentication & Security Flow
+Dual-layer JWT verification, OAuth login, and session handling in action.
+
+[![NeuroMeet Auth Demo](https://img.youtube.com/vi/UNacYgGZYt4/maxresdefault.jpg)](https://youtu.be/UNacYgGZYt4)
 
 ---
 
