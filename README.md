@@ -6,6 +6,42 @@
 
 ---
 
+# 🧠 NeuroMeet — Real-Time Meeting Platform with Custom WebRTC & High-Throughput Backend
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-neuromeet.anasdev.shop-7C3AED?style=for-the-badge&logo=vercel&logoColor=white)](https://neuromeet.anasdev.shop) [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](#) [![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)](#) [![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)](#) [![Bun](https://img.shields.io/badge/Bun-1A1A1A?style=for-the-badge&logo=bun&logoColor=fbf0df)](#) [![LiveKit](https://img.shields.io/badge/LiveKit_WebRTC-1F2937?style=for-the-badge&logo=webrtc&logoColor=white)](#) [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](#) [![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](#)
+
+> **NeuroMeet** is a real-time video meeting platform engineered around a custom WebRTC interface, a high-throughput NestJS backend running on Bun, and a zero-memory chunked upload pipeline for cloud recording storage. It also integrates an optional AI engagement-analysis module for instructors — built as a fully decoupled service that never touches the core video/API path.
+
+---
+
+## 🎬 See It In Action
+
+<table>
+<tr>
+<td width="50%" align="center">
+
+**Full Platform Walkthrough**
+Meeting creation, joining, live video, and recording.
+
+[![NeuroMeet Full Walkthrough](https://img.youtube.com/vi/VOSwixXPdg0/maxresdefault.jpg)](https://youtu.be/VOSwixXPdg0)
+
+</td>
+<td width="50%" align="center">
+
+**Authentication & Security Flow**
+Dual-layer JWT verification and OAuth login in action.
+
+[![NeuroMeet Auth Demo](https://img.youtube.com/vi/UNacYgGZYt4/maxresdefault.jpg)](https://youtu.be/UNacYgGZYt4)
+
+</td>
+</tr>
+</table>
+
+**[→ Try the live demo yourself](https://neuromeet.anasdev.shop)** — see the [demo credentials](#-demo-login-credentials) below.
+
+---
+
+
 ## 📌 Table of Contents
 
 - [⚡ Why NeuroMeet Is Different](#-why-neuromeet-is-different--30-second-hook)
@@ -22,20 +58,6 @@
 - [📦 Deployment](#-deployment)
 - [👨‍💻 Author & Connect](#-author--connect)
 - [📄 License](#-license)
-
----
-
-## 🎬 Video Demo
-
-### Full Platform Walkthrough
-Meeting creation, joining, live video, and recording — end to end.
-
-[![NeuroMeet Full Walkthrough](https://img.youtube.com/vi/VOSwixXPdg0/maxresdefault.jpg)](https://youtu.be/VOSwixXPdg0)
-
-### Authentication & Security Flow
-Dual-layer JWT verification, OAuth login, and session handling in action.
-
-[![NeuroMeet Auth Demo](https://img.youtube.com/vi/UNacYgGZYt4/maxresdefault.jpg)](https://youtu.be/UNacYgGZYt4)
 
 ---
 
