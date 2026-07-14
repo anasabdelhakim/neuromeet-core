@@ -251,7 +251,17 @@ export class MeetingsService {
         scheduledAt: true,
         durationMinutes: true,
         groupId: true,
-        group: { select: { name: true } },
+        group: {
+          select: {
+            name: true,
+            enrollments: {
+              select: {
+                student: { select: { name: true, avatarUrl: true } },
+              },
+              take: 5,
+            },
+          },
+        },
       },
       orderBy: { scheduledAt: 'asc' },
     });
@@ -277,7 +287,17 @@ export class MeetingsService {
         startedAt: true,
         endedAt: true,
         groupId: true,
-        group: { select: { name: true } },
+        group: {
+          select: {
+            name: true,
+            enrollments: {
+              select: {
+                student: { select: { name: true, avatarUrl: true } },
+              },
+              take: 5,
+            },
+          },
+        },
       },
       orderBy: { scheduledAt: 'asc' },
     });
@@ -296,7 +316,17 @@ export class MeetingsService {
         scheduledAt: true,
         durationMinutes: true,
         groupId: true,
-        group: { select: { name: true } },
+        group: {
+          select: {
+            name: true,
+            enrollments: {
+              select: {
+                student: { select: { name: true, avatarUrl: true } },
+              },
+              take: 5,
+            },
+          },
+        },
       },
       orderBy: { scheduledAt: 'desc' },
     });

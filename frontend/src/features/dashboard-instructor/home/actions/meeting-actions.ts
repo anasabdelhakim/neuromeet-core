@@ -173,7 +173,8 @@ export async function getUpcomingMeetings() {
       return {
         id: m.id,
         title: m.title,
-        group: m.group?.name || "General",
+        group: m.group,
+        groupName: m.group?.name || "General",
         date: format(d, "MMMM d, yyyy"),
         time: format(d, "h:mm a"),
         dateTime: m.scheduledAt,
@@ -204,7 +205,8 @@ export async function getTodayMeetings() {
       return {
         id: m.id,
         title: m.title,
-        group: m.group?.name || "General",
+        group: m.group,
+        groupName: m.group?.name || "General",
         date: format(d, "MMMM d, yyyy"),
         time: format(d, "h:mm a"),
         dateTime: m.scheduledAt,

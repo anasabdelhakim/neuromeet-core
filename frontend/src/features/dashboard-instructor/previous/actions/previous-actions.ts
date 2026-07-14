@@ -6,7 +6,7 @@ import { PreviousMeeting } from "../types";
 
 export async function getPreviousMeetingsAction(): Promise<PreviousMeeting[]> {
   try {
-    const res = await apiGet<any>("/meetings");
+    const res = await apiGet<any>("/meetings/previous");
     const allMeetings = res.data || [];
 
     const rawMeetings = allMeetings.filter((m: any) => {

@@ -24,6 +24,7 @@ export async function getStudentUpcomingMeetings() {
       return {
         id: m.id,
         title: m.title,
+        group: m.group,
         groupName: m.group?.name || "General",
         date: format(d, "MMMM d, yyyy"),
         time: format(d, "h:mm a"),
@@ -57,6 +58,7 @@ export async function getStudentTodayMeetings() {
       return {
         id: m.id,
         title: m.title,
+        group: m.group,
         groupName: m.group?.name || "General",
         date: format(d, "MMMM d, yyyy"),
         time: format(d, "h:mm a"),
