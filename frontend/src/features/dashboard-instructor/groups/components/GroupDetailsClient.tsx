@@ -181,9 +181,9 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
                         </div>
                         {pendingInvites.has(student.id) ? (
                           <Button 
-                            variant="outline" 
+                            variant="ghost" 
                             size="sm" 
-                            className="h-7 text-xs"
+                            className="h-7 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
                             onClick={(e) => handleUndoInvite(student.id, e as any)}
                           >
                             Undo
