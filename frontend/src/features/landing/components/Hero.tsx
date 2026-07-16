@@ -12,7 +12,7 @@ export const Hero = () => {
         and secure meetings for everyone, everywhere.
       </p>
       <Link
-        href="/sign-up"
+        href="/sign-in"
         className={buttonVariants({ variant: "effect", size: "lg", className: "!rounded-full px-10 py-6 text-base" })}
       >
         Get Started for Free
