@@ -183,7 +183,7 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
                           <Button 
                             variant="ghost" 
                             size="sm" 
-                            className="h-7 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
+                            className="h-7 text-xs text-destructive hover:text-destructive hover:bg-destructive-soft"
                             onClick={(e) => handleUndoInvite(student.id, e as any)}
                           >
                             Undo
