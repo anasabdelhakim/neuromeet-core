@@ -39,8 +39,8 @@ Dual-layer JWT verification and OAuth login in action.
 ## 📌 Table of Contents
 
 - [⚡ Why NeuroMeet Is Different](#-why-neuromeet-is-different--30-second-hook)
-- [🚀 Core Engineering Achievements](#-core-engineering-achievements)
 - [📈 Performance & Accessibility](#-performance--accessibility)
+- [🚀 Core Engineering Achievements](#-core-engineering-achievements)
 - [🎬 Video Demo](#-video-demo)
 - [📸 Screenshots](#-screenshots)
 - [🔑 Demo Login Credentials](#-demo-login-credentials)
@@ -70,18 +70,6 @@ If you are reviewing this project, these are the five hard engineering problems 
 
 ---
 
-## 🚀 Core Engineering Achievements
-
-| Engineering Domain                   | Technical Implementation                                                                                      | Key Benefit                                                                                            |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **🔒 Enterprise Authentication**     | Dual-layer JWT verification (Edge + Backend), hashed refresh tokens, and timing-safe token comparisons.       | Defends against brute-force, token replay, and timing oracle attacks natively on the Bun runtime.      |
-| **☁️ Zero-Memory Drive Uploads**     | Consumes streams in sequential 30 MB chunks using a TLS keep-alive connection pool and exponential backoff.   | Records massive video files directly to Google Drive while capping server RAM usage at ~10 MB.         |
-| **🎥 Custom WebRTC Interface**       | Uses the Web Audio API to mix display and microphone streams before uploading via local 2 MB chunks.          | Delivers a fully custom Google Meet-style UI with hardware controls and strict permission enforcement. |
-| **⚡ Server-First Architecture**     | Combines Next.js Edge Middleware, a Fastify-based NestJS backend, and a custom in-memory TTL caching service. | Achieves sub-millisecond hot-path data retrieval and zero-flicker role-based routing.                  |
-| **🧠 Optional AI Engagement Module** | A decoupled Python worker joins as a silent WebRTC participant and runs an ONNX-optimized ViT+LSTM model.     | Live attention scoring for instructors, entirely isolated from the core backend's request path.        |
-
----
-
 ## 📈 Performance & Accessibility
 
 NeuroMeet's Next.js frontend is highly optimized, achieving perfect or near-perfect scores on **Google PageSpeed Insights** despite running complex WebRTC connections and live WebSocket streams.
@@ -93,6 +81,18 @@ NeuroMeet's Next.js frontend is highly optimized, achieving perfect or near-perf
 *   **100 SEO:** Fully semantic HTML and dynamic Open Graph metadata routing.
 
 ![PageSpeed Score](./_docs/assests/report.png)
+
+---
+
+## 🚀 Core Engineering Achievements
+
+| Engineering Domain                   | Technical Implementation                                                                                      | Key Benefit                                                                                            |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **🔒 Enterprise Authentication**     | Dual-layer JWT verification (Edge + Backend), hashed refresh tokens, and timing-safe token comparisons.       | Defends against brute-force, token replay, and timing oracle attacks natively on the Bun runtime.      |
+| **☁️ Zero-Memory Drive Uploads**     | Consumes streams in sequential 30 MB chunks using a TLS keep-alive connection pool and exponential backoff.   | Records massive video files directly to Google Drive while capping server RAM usage at ~10 MB.         |
+| **🎥 Custom WebRTC Interface**       | Uses the Web Audio API to mix display and microphone streams before uploading via local 2 MB chunks.          | Delivers a fully custom Google Meet-style UI with hardware controls and strict permission enforcement. |
+| **⚡ Server-First Architecture**     | Combines Next.js Edge Middleware, a Fastify-based NestJS backend, and a custom in-memory TTL caching service. | Achieves sub-millisecond hot-path data retrieval and zero-flicker role-based routing.                  |
+| **🧠 Optional AI Engagement Module** | A decoupled Python worker joins as a silent WebRTC participant and runs an ONNX-optimized ViT+LSTM model.     | Live attention scoring for instructors, entirely isolated from the core backend's request path.        |
 
 ---
 
