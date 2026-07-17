@@ -40,6 +40,7 @@ Dual-layer JWT verification and OAuth login in action.
 
 - [⚡ Why NeuroMeet Is Different](#-why-neuromeet-is-different--30-second-hook)
 - [🚀 Core Engineering Achievements](#-core-engineering-achievements)
+- [📈 Performance & Accessibility](#-performance--accessibility)
 - [🎬 Video Demo](#-video-demo)
 - [📸 Screenshots](#-screenshots)
 - [🔑 Demo Login Credentials](#-demo-login-credentials)
@@ -78,6 +79,20 @@ If you are reviewing this project, these are the five hard engineering problems 
 | **🎥 Custom WebRTC Interface**       | Uses the Web Audio API to mix display and microphone streams before uploading via local 2 MB chunks.          | Delivers a fully custom Google Meet-style UI with hardware controls and strict permission enforcement. |
 | **⚡ Server-First Architecture**     | Combines Next.js Edge Middleware, a Fastify-based NestJS backend, and a custom in-memory TTL caching service. | Achieves sub-millisecond hot-path data retrieval and zero-flicker role-based routing.                  |
 | **🧠 Optional AI Engagement Module** | A decoupled Python worker joins as a silent WebRTC participant and runs an ONNX-optimized ViT+LSTM model.     | Live attention scoring for instructors, entirely isolated from the core backend's request path.        |
+
+---
+
+## 📈 Performance & Accessibility
+
+NeuroMeet's Next.js frontend is highly optimized, achieving perfect or near-perfect scores on **Google PageSpeed Insights** despite running complex WebRTC connections and live WebSocket streams.
+
+[![Performance 100](https://img.shields.io/badge/Performance-100-success?style=for-the-badge)](#) [![Accessibility 96](https://img.shields.io/badge/Accessibility-96-success?style=for-the-badge)](#) [![Best Practices 100](https://img.shields.io/badge/Best_Practices-100-success?style=for-the-badge)](#) [![SEO 100](https://img.shields.io/badge/SEO-100-success?style=for-the-badge)](#)
+
+*   **100 Performance:** Achieved via Server Components, Turbopack, and strict bundle size management.
+*   **100 Best Practices:** Strict TypeScript adherence, secure headers, and modern web APIs.
+*   **100 SEO:** Fully semantic HTML and dynamic Open Graph metadata routing.
+
+![PageSpeed Score](./_docs/assests/report.png)
 
 ---
 
