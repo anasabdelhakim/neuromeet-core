@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -7,7 +8,7 @@ import { LivekitModule } from './livekit/livekit.module';
 import { DriveController } from './Drive/drive.controller';
 import { DriveService } from './Drive/drive.service';
 import { AuthModule } from './auth/auth.module';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { OAuthModule } from 'src/oauth/oauth.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EventEmitterModule } from '@nestjs/event-emitter';
@@ -46,6 +47,10 @@ import { NotificationsModule } from './notifications/notifications.module';
     NotificationsModule,
   ],
   controllers: [AppController, DriveController],
-  providers: [AppService, DriveService],
+  providers: [
+    AppService,
+    DriveService,
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+  ],
 })
 export class AppModule {}
