@@ -27,7 +27,7 @@ Dual-layer JWT verification and OAuth login in action.
 
 [![Watch on Drive](https://img.shields.io/badge/▶_Watch_on-Google_Drive-4285F4?style=for-the-badge&logo=googledrive&logoColor=white)](https://drive.google.com/file/d/1Igg71kr-t4Znka_WhPKMYQFJzv8HyNDQ/view?usp=sharing)
 
-<br><sub>*(Note: Hosted on Google Drive because YouTube's automated bot incorrectly flagged the authentication demonstration.)*</sub>
+<br><sub>_(Note: Hosted on Google Drive because YouTube's automated bot incorrectly flagged the authentication demonstration.)_</sub>
 
 </td>
 </tr>
@@ -80,6 +80,7 @@ If you are reviewing this project, these are the five hard engineering problems 
 | **🧠 Optional AI Engagement Module** | A decoupled Python worker joins as a silent WebRTC participant and runs an ONNX-optimized ViT+LSTM model.     | Live attention scoring for instructors, entirely isolated from the core backend's request path.        |
 
 ---
+
 ## 📸 Screenshots
 
 <table>
@@ -110,6 +111,7 @@ If you are reviewing this project, these are the five hard engineering problems 
 </table>
 
 ---
+
 ## 🔑 Demo Login Credentials
 
 Explore the platform live at **[neuromeet.anasdev.shop](https://neuromeet.anasdev.shop)** without any local setup:
