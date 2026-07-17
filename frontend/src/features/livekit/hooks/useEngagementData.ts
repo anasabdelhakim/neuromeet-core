@@ -16,7 +16,7 @@ export interface ParticipantScore {
   wasDisengaged: boolean;
 }
 
-import { syncEngagementStatsAction } from '../features/dashboard-instructor/analytics/actions/analytics-actions';
+import { syncEngagementStatsAction } from '@/src/features/dashboard-instructor/analytics/actions/analytics-actions';
 export function useEngagementData(meetingId?: string) {
   const room = useRoomContext();
   const [scores, setScores] = useState<Record<string, ParticipantScore>>({});
