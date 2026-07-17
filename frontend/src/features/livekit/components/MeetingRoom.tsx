@@ -10,7 +10,7 @@ import {
 import { Track } from "livekit-client";
 import { X, Users, Copy, Check } from "lucide-react";
 import { EngagementDashboard } from "./EngagementDashboard";
-import { useEngagementData } from "@/src/hooks/useEngagementData";
+import { useEngagementData } from '@/src/features/livekit/hooks/useEngagementData';
 import { useCopyFeedback } from "@/src/hooks/useCopyFeedback";
 import { ParticipantList } from "./ParticipantList";
 import { MeetingControls } from "./MeetingControls";

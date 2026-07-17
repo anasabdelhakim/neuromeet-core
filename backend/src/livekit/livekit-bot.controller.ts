@@ -1,7 +1,7 @@
 import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { LiveKitBotService } from './livekit-bot.service';
-import { AuthGuard } from 'src/user/guard/auth.guard';
-import { Roles } from 'src/user/decorators/user.decorators';
+import { AuthGuard } from 'src/common/guards/auth.guard';
+import { Roles } from 'src/common/decorators/current-user.decorator';
 
 @Controller('meetings')
 @UseGuards(AuthGuard)

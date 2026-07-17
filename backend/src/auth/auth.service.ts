@@ -14,7 +14,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { EmailService } from '../emails/email.service';
 import { PrismaService } from '../database/database.service';
-import { AUTH_CONSTANTS } from './auth.constants'; // RESTORED: Centralized configs
+import { AUTH_CONSTANTS } from 'src/config/auth.constants'; // RESTORED: Centralized configs
 @Injectable()
 export class AuthService {
   constructor(

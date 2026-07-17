@@ -9,8 +9,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { RecordingsService } from './recordings.service';
-import { AuthGuard } from '../user/guard/auth.guard';
-import { Roles } from '../user/decorators/user.decorators';
+import { AuthGuard } from 'src/common/guards/auth.guard';
+import { Roles } from 'src/common/decorators/current-user.decorator';
 const ALL_ROLES = ['INSTRUCTOR', 'STUDENT', 'ADMIN'];
 @Controller('recordings')
 @Roles(ALL_ROLES)

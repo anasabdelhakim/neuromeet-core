@@ -14,8 +14,8 @@ import { type FastifyRequest, type FastifyReply } from 'fastify';
 import { DriveService } from './drive.service';
 import { CacheService } from '../utils/cache.service';
 import { UseGuards } from '@nestjs/common';
-import { AuthGuard } from '../user/guard/auth.guard';
-import { Roles } from '../user/decorators/user.decorators';
+import { AuthGuard } from 'src/common/guards/auth.guard';
+import { Roles } from 'src/common/decorators/current-user.decorator';
 import { SkipThrottle } from '@nestjs/throttler';
 @Controller('drive')
 @UseGuards(AuthGuard)

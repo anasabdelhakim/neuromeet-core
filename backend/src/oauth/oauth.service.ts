@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { randomBytes } from 'crypto';
-import { AUTH_CONSTANTS } from 'src/auth/auth.constants';
+import { AUTH_CONSTANTS } from 'src/config/auth.constants';
 import { PrismaService } from 'src/database/database.service';
 type UserData = {
   userId: string;

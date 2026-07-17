@@ -11,8 +11,8 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { MeetingsService } from './meetings.service';
-import { AuthGuard } from '../user/guard/auth.guard';
-import { Roles } from '../user/decorators/user.decorators';
+import { AuthGuard } from 'src/common/guards/auth.guard';
+import { Roles } from 'src/common/decorators/current-user.decorator';
 import {
   AddMaterialDto,
   CreateMeetingDto,

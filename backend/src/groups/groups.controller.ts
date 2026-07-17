@@ -13,8 +13,8 @@ import {
 import { GroupsService } from './groups.service';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
-import { AuthGuard } from '../user/guard/auth.guard';
-import { Roles } from '../user/decorators/user.decorators';
+import { AuthGuard } from 'src/common/guards/auth.guard';
+import { Roles } from 'src/common/decorators/current-user.decorator';
 
 @Controller('groups')
 @UseGuards(AuthGuard)

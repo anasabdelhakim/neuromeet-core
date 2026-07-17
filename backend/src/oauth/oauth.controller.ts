@@ -10,7 +10,7 @@ import {
 import { ThrottlerGuard, Throttle } from '@nestjs/throttler';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { OAuthService } from './oauth.service';
-import { GoogleAuthGuard } from './google-auth-gaurd';
+import { GoogleAuthGuard } from 'src/common/guards/google-auth.guard';
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class OAuthController {

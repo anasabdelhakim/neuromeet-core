@@ -1,6 +1,6 @@
 import { Body, Controller, Post, UseGuards, Req } from '@nestjs/common';
-import { Roles } from '../user/decorators/user.decorators';
-import { AuthGuard } from '../user/guard/auth.guard';
+import { Roles } from 'src/common/decorators/current-user.decorator';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 import { ThrottlerGuard, Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import {

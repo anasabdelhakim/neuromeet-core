@@ -10,7 +10,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
-import { AdminGuard } from './admin.guard';
+import { AdminGuard } from 'src/common/guards/admin.guard';
 
 @Controller('admin')
 @UseGuards(AdminGuard)

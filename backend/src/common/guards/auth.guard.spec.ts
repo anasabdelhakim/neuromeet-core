@@ -2,7 +2,7 @@ import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from './auth.guard';
-import { Roles } from '../decorators/user.decorators';
+import { Roles } from '../decorators/current-user.decorator';
 describe('AuthGuard — Security Tests', () => {
   let guard: AuthGuard;
   let jwtService: JwtService;

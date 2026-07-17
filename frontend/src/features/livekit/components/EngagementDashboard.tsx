@@ -1,5 +1,5 @@
 "use client";
-import { useEngagementData, ParticipantScore } from "@/src/hooks/useEngagementData";
+import { useEngagementData, ParticipantScore } from '@/src/features/livekit/hooks/useEngagementData';
 import { TrendingUp, AlertCircle } from "lucide-react";
 const DISENGAGEMENT_THRESHOLD = 0.50;
 export function EngagementDashboard() {

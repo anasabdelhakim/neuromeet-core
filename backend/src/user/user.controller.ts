@@ -12,8 +12,8 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from './guard/auth.guard';
-import { Roles } from './decorators/user.decorators';
+import { AuthGuard } from 'src/common/guards/auth.guard';
+import { Roles } from 'src/common/decorators/current-user.decorator';
 import sharp from 'sharp';
 @Controller('userMe')
 export class UserMeController {

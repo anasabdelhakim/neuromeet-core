@@ -1,7 +1,7 @@
 import { Controller, Get, Req, Param, UseGuards } from '@nestjs/common';
 import { AnalyticsService } from './analytics.service';
-import { AuthGuard } from '../user/guard/auth.guard';
-import { Roles } from '../user/decorators/user.decorators';
+import { AuthGuard } from 'src/common/guards/auth.guard';
+import { Roles } from 'src/common/decorators/current-user.decorator';
 
 @Controller('analytics')
 @UseGuards(AuthGuard)
