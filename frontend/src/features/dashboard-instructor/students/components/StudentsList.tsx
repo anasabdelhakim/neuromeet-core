@@ -95,9 +95,9 @@ export async function StudentsList() {
   };
   return (
     <>
-      {/* Stats */}
+      {}
       <StudentsStats stats={stats} />
-      {/* Client-side interactive filters */}
+      {}
       <StudentsFilters
         groups={studentGroups}
         students={students}

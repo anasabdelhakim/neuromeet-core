@@ -38,7 +38,7 @@ export default function StudentAnalyticsClient({ data }: { data: StudentAnalytic
         </div>
       </div>
 
-      {/* KPI Cards */}
+      {}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <DataCard
           icon={Clock}
@@ -71,7 +71,7 @@ export default function StudentAnalyticsClient({ data }: { data: StudentAnalytic
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Engagement Timeline Chart */}
+        {}
         <Card className="col-span-1 lg:col-span-3 bg-black-soft-subtle border-border rounded-soft shadow-none">
           <CardHeader>
             <CardTitle className="text-xl">Focus Timeline</CardTitle>

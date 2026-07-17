@@ -111,17 +111,17 @@ function AdminUsersSkeleton() {
 export default function AdminHomePage() {
   return (
     <div className="flex flex-col gap-6 animate-page-entrance">
-      {/* Hero — no upcoming badge for admin */}
+      {}
       <Suspense fallback={<HeroClockSkeleton />}>
         <HeroClock showUpcoming={false} />
       </Suspense>
 
-      {/* Stats */}
+      {}
       <Suspense fallback={<AdminStatsSkeleton />}>
         <AdminStatsLoader />
       </Suspense>
 
-      {/* User Management */}
+      {}
       <div className="flex flex-col gap-4 mt-2">
         <h2 className="text-lg font-semibold text-foreground">User Management</h2>
         <Suspense fallback={<AdminUsersSkeleton />}>

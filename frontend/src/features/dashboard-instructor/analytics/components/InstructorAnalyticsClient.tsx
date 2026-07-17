@@ -131,7 +131,7 @@ export default function InstructorAnalyticsClient({
         <div className="flex justify-center p-12 text-muted-foreground">Failed to load analytics for this meeting.</div>
       ) : (
         <>
-          {/* KPI Cards */}
+          {}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <DataCard
               icon={Users}
@@ -164,7 +164,7 @@ export default function InstructorAnalyticsClient({
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Student Matrix Scatter Plot */}
+            {}
             <Card className="col-span-1 lg:col-span-3 bg-black-soft-subtle border-border rounded-soft shadow-none">
               <CardHeader>
                 <CardTitle className="text-xl">Student Focus Matrix</CardTitle>
@@ -208,7 +208,7 @@ export default function InstructorAnalyticsClient({
             </Card>
           </div>
 
-          {/* Student List */}
+          {}
           <Card className="bg-black-soft-subtle border-border rounded-soft shadow-none flex flex-col">
               <CardHeader>
                 <CardTitle className="text-xl">Student Detail Report</CardTitle>

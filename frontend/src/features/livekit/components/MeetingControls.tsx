@@ -324,7 +324,7 @@ export function MeetingControls({
   return (
     <>
       <footer className="h-16 sm:h-20 bg-background/95 backdrop-blur-xl border-t border-border px-3 sm:px-6 flex items-center justify-between z-30 shrink-0 select-none overflow-hidden w-full">
-      {/* Left Zone: Time and Session Name */}
+      {}
       <div className="hidden md:flex flex-col justify-center min-w-[150px] max-w-[250px]">
         <div className="text-sm sm:text-base font-semibold text-foreground tracking-tight tabular-nums">
           {currentTime}
@@ -333,7 +333,7 @@ export function MeetingControls({
           {readableRoom}
         </div>
       </div>
-      {/* Center Zone: Hardware Controls */}
+      {}
       <div className="flex items-center gap-2 sm:gap-3.5 shrink-0 mx-auto md:mx-0 max-w-full overflow-x-auto flex-nowrap py-1 px-1 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <IconButton
           icon={isMicrophoneEnabled ? <Mic size={16} className="sm:w-[19px] sm:h-[19px]" /> : <MicOff size={16} className="sm:w-[19px] sm:h-[19px]" />}
@@ -384,7 +384,7 @@ export function MeetingControls({
           )}
           <span className="hidden sm:inline">{isLeaving ? "Leaving..." : "Leave"}</span>
         </button>
-        {/* Mobile-only Toggles to fit screen */}
+        {}
         <div className="flex md:hidden items-center gap-2 border-l border-white/10 pl-2">
           <div className="relative">
             <IconButton
@@ -413,7 +413,7 @@ export function MeetingControls({
           )}
         </div>
       </div>
-      {/* Right Zone: Sidebar Toggles (Desktop only) */}
+      {}
       <div className="hidden md:flex justify-end items-center gap-3 min-w-[150px] max-w-[250px]">
         <div className="relative">
           <IconButton

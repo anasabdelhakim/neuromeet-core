@@ -84,7 +84,7 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
     name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
   return (
     <div className="flex flex-col gap-6 w-full">
-      {/* Top Bar: Search */}
+      {}
       <div className="flex flex-col sm:flex-row justify-between gap-4 w-full">
         <div className="relative w-full sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -97,9 +97,9 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
           />
         </div>
       </div>
-      {/* Group Filter Pills (Horizontal Slider) */}
+      {}
       <div className="w-full overflow-hidden relative">
-        {/* CSS hides scrollbar but keeps scroll functionality */}
+        {}
         <div className="flex overflow-x-auto gap-2 pb-2 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <button
             onClick={() => handleGroupSelect(null)}
@@ -130,7 +130,7 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
           ))}
         </div>
       </div>
-      {/* ----------------- DESKTOP VIEW ----------------- */}
+      {}
       <div className="hidden md:block border border-border rounded-soft overflow-hidden bg-black-soft-subtle pt-2">
         <Table className="w-full min-w-max text-base">
           <TableHeader>
@@ -218,7 +218,7 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
                           </Button>
                         }
                       />
-                      {/* Only render content DOM if this specific popover is active */}
+                      {}
                       {activePopoverId === student.id && (
                         <PopoverContent align="end" className="w-48 p-1 flex flex-col gap-0.5">
                           <Button 
@@ -246,7 +246,7 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
             )}
           </TableBody>
         </Table>
-        {/* Desktop Pagination */}
+        {}
         <div className="flex items-center justify-between px-5 py-3 bg-black-soft-muted border-t border-border">
           <span className="text-sm text-muted-foreground font-medium">
             Showing <strong className="text-foreground">{Math.min(filteredStudents.length, (safePage - 1) * ITEMS_PER_PAGE + 1)}</strong> to <strong className="text-foreground">{Math.min(filteredStudents.length, safePage * ITEMS_PER_PAGE)}</strong> of <strong className="text-foreground">{filteredStudents.length}</strong> students
@@ -289,7 +289,7 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
           </div>
         </div>
       </div>
-      {/* ----------------- MOBILE VIEW ----------------- */}
+      {}
       <div className="md:hidden flex flex-col gap-4">
         {paginatedStudents.length === 0 ? (
            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border border-border rounded-soft bg-black-soft-subtle">
@@ -378,7 +378,7 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
             </Card>
           ))
         )}
-        {/* Mobile Pagination */}
+        {}
         <div className="flex flex-col gap-3 mt-2 pt-4 border-t border-border">
           <div className="text-center text-sm font-medium text-muted-foreground">
             Page {safePage} of {totalPages}

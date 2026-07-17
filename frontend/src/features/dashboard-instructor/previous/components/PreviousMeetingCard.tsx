@@ -51,7 +51,7 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
   const EngagementBar = (
     <div className="flex flex-col gap-2 w-full">
       <div className="flex justify-between items-center text-xs font-semibold">
-        {/* Label with Info Popover */}
+        {}
         <div className="flex items-center gap-1.5 text-muted-foreground">
           <span>Avg Engagement</span>
           <Popover>
@@ -67,12 +67,12 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
             </PopoverContent>
           </Popover>
         </div>
-        {/* Score Value */}
+        {}
         <span className={`flex items-center gap-1 ${engagementDetails.color}`}>
           {hasData ? `${engagementScore}%` : "—"} <span className="hidden sm:inline-block">{engagementDetails.text}</span>
         </span>
       </div>
-      {/* Progress Track */}
+      {}
       <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-slow ease-standard ${engagementDetails.bg}`}
@@ -84,10 +84,10 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
   return (
     <article className="w-full block">
       <Card className="w-full rounded-soft p-4 sm:p-5 flex flex-col gap-4 border transition-all duration-normal ease-standard transform-gpu hover:border-primary-hover">
-        {/* Row 1: Content (Left) & Desktop Actions (Right) */}
+        {}
         <div className="flex items-start sm:items-center justify-between w-full gap-4">
           <div className="flex w-full justify-between">
-            {/* Left Side: Meeting Info */}
+            {}
             <div className="flex flex-col gap-1.5 flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                 <CardTitle className="text-base sm:text-lg font-bold max-w-80 max-sm:max-w-60 text-foreground truncate">
@@ -114,7 +114,7 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
                 </div>
               </CardDescription>
             </div>
-            {/* Right Side: Desktop Actions (Hidden on Mobile) */}
+            {}
             <div className="hidden sm:flex">
               {ActionBlock}
             </div>
@@ -126,15 +126,15 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
             meetingId={meeting.id}
           />
         </div>
-        {/* Mobile Only: Engagement Bar (Rendered above buttons) */}
+        {}
         <div className="sm:hidden w-full pt-1">
           {EngagementBar}
         </div>
-        {/* Mobile Only: Actions Block (Rendered at the bottom) */}
+        {}
         <div className="sm:hidden w-full pt-1">
           {ActionBlock}
         </div>
-        {/* Desktop Only: Engagement Bar (Rendered at the bottom) */}
+        {}
         <div className="hidden sm:block w-full pt-2">
           {EngagementBar}
         </div>

@@ -18,8 +18,8 @@ export const NeuroFooter = () => {
           </nav>
           <p>© 2026 NeuroMeet Inc. All rights reserved.</p>
         </div>
-        {/* Right: Social Accounts */}
-        {/* Removed ghost opacity, made icons size 24x24 instead of 18x18 */}
+        {}
+        {}
         <div className="flex items-center gap-5 text-muted-foreground">
           <Link href="#" className="hover:text-brand-cyan transition-colors duration-normal" aria-label="Twitter">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

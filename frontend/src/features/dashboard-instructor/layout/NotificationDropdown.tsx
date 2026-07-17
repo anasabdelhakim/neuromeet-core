@@ -186,19 +186,19 @@ export function NotificationDropdown() {
 
       {isOpen && typeof document !== "undefined" && createPortal(
         <div className="fixed inset-0 z-[250]">
-          {/* Backdrop Overlay */}
+          {}
           <div 
             className="bg-overlay pointer-events-auto" 
             onClick={() => setIsOpen(false)} 
           />
 
-          {/* Dropdown Content */}
+          {}
           <div
             className="fixed top-16 right-2 sm:right-6 z-[300] w-[calc(100vw-1rem)] max-w-[97%] sm:w-96 sm:max-w-96 overflow-hidden rounded-soft border border-border bg-card p-0 shadow-hard animate-in fade-in-0 zoom-in-95 duration-100"
           >
             <span className="sm:absolute hidden -top-1.5 right-4.5 z-20 h-3 w-3 rotate-45 border-l border-t border-border bg-card"></span>
 
-            {/* Header */}
+            {}
             <div className="relative z-30 flex items-center justify-between border-b border-border bg-card px-4 py-3">
               <div className="flex items-center gap-2">
                 <h3 className="text-base font-semibold text-foreground">
@@ -223,7 +223,7 @@ export function NotificationDropdown() {
               )}
             </div>
 
-            {/* Notification List */}
+            {}
             <div className="max-h-96 overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent">
               {notifications.length === 0 ? (
                 <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground">
@@ -250,7 +250,7 @@ export function NotificationDropdown() {
               )}
             </div>
 
-            {/* Footer */}
+            {}
             <div className="border-t border-border bg-card p-2">
               {visibleCount < notifications.length ? (
                 <button

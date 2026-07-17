@@ -57,7 +57,7 @@ export default function ResetPasswordForm() {
     <Card variant="gradient">
       <CardContent>
         <form action={handleAction} className="space-y-4">
-          {/* SERVER ERROR */}
+          {}
           {state.errorMessage?.server && (
             <div className="animate-alert-entrance">
               <p className="text-destructive text-sm text-center bg-destructive-soft rounded-medium py-2 px-3">
@@ -65,7 +65,7 @@ export default function ResetPasswordForm() {
               </p>
             </div>
           )}
-          {/* PASSWORD FIELD */}
+          {}
           <div>
             <Field>
               <FieldLabel htmlFor="password">New Password</FieldLabel>
@@ -97,7 +97,7 @@ export default function ResetPasswordForm() {
               <PasswordStrengthUI control={control} error={errors.password} />
             </Field>
           </div>
-          {/* CONFIRM PASSWORD */}
+          {}
           <div>
             <Field>
               <FieldLabel htmlFor="confirmPassword">
@@ -124,7 +124,7 @@ export default function ResetPasswordForm() {
               </FieldError>
             </Field>
           </div>
-          {/* SUBMIT */}
+          {}
           <div className="pt-2">
             <Button
               type="submit"

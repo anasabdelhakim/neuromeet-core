@@ -72,7 +72,7 @@ export function LoginForm() {
       <AuthTabs activeTab="sign-in" />
       <CardContent>
         <form action={handleAction} className="space-y-4">
-          {/* SERVER ERROR */}
+          {}
           {state.errorMessage?.server && (
             <div className="animate-alert-entrance">
               <p className="text-destructive text-sm text-center bg-destructive-soft rounded-medium py-2 px-3">
@@ -135,7 +135,7 @@ export function LoginForm() {
               </Link>
             </div>
           </div>
-          {/* MAIN SUBMIT BUTTON */}
+          {}
           <div className="pt-2">
             <Button
               type="submit"
@@ -152,7 +152,7 @@ export function LoginForm() {
               )}
             </Button>
           </div>
-          {/* DIVIDER & SOCIAL LOGINS */}
+          {}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-border" />
@@ -198,7 +198,7 @@ export function LoginForm() {
               )}
             </Button>
           </div>
-          {/* DEMO CREDENTIALS POPUP */}
+          {}
           <div className="flex justify-center mt-6">
             <Dialog open={isDemoDialogOpen} onOpenChange={setIsDemoDialogOpen}>
               <DialogTrigger
@@ -223,7 +223,7 @@ export function LoginForm() {
                     <span className="font-medium text-foreground">Note:</span> If you sign in normally with Google, you will automatically be assigned the <b>Student</b> role by default.
                   </p>
 
-                  {/* Instructor Credentials Fill */}
+                  {}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-background/50 rounded-lg border border-border gap-3">
                     <div>
                       <p className="text-xs font-bold text-foreground">Instructor</p>
@@ -242,7 +242,7 @@ export function LoginForm() {
                       ⚡ Fill Instructor
                     </Button>
                   </div>
-                  {/* Student Credentials Fill */}
+                  {}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-background/50 rounded-lg border border-border gap-3">
                     <div>
                       <p className="text-xs font-bold text-foreground">Student</p>

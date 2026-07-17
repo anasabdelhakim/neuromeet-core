@@ -22,9 +22,7 @@ export class CacheService {
     this.logger.debug(`Cache periodic eviction complete`);
   }
 
-  /**
-   * Get a cached value. Returns null on miss or expiration.
-   */
+  
   async get<T>(key: string): Promise<T | null> {
     try {
       const entry = this.cache.get(key);
@@ -39,9 +37,7 @@ export class CacheService {
       return null;
     }
   }
-  /**
-   * Set a cache value with TTL in seconds.
-   */
+  
   async set(key: string, value: unknown, ttlSeconds: number): Promise<void> {
     try {
       const expiresAt = Date.now() + ttlSeconds * 1000;
@@ -50,9 +46,7 @@ export class CacheService {
       this.logger.warn(`Cache SET error for key "${key}": ${err}`);
     }
   }
-  /**
-   * Delete a specific key.
-   */
+  
   async del(key: string): Promise<void> {
     try {
       this.cache.delete(key);
@@ -60,9 +54,7 @@ export class CacheService {
       this.logger.warn(`Cache DEL error for key "${key}": ${err}`);
     }
   }
-  /**
-   * Invalidate all keys matching a pattern.
-   */
+  
   async invalidatePattern(pattern: string): Promise<void> {
     try {
       const regexPattern = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');

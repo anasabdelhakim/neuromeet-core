@@ -142,7 +142,7 @@ export function AdminUsersClient({ initialData }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Filters */}
+      {}
       <div className="flex flex-col sm:flex-row gap-4 h-13">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
@@ -169,7 +169,7 @@ export function AdminUsersClient({ initialData }: Props) {
         </Select>
       </div>
 
-      {/* Table */}
+      {}
       <div className="border border-border max-sm:mt-12 rounded-soft overflow-hidden bg-black-soft-subtle flex flex-col">
         <div className="p-2 overflow-x-auto">
           <Table className="w-full min-w-max text-base">
@@ -292,7 +292,7 @@ export function AdminUsersClient({ initialData }: Props) {
         </Table>
         </div>
 
-      {/* Pagination */}
+      {}
       {totalPages > 1 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-3 bg-black-soft-muted border-t border-border">
           <span className="text-sm text-muted-foreground font-medium">
@@ -341,7 +341,7 @@ export function AdminUsersClient({ initialData }: Props) {
       )}
       </div>
 
-      {/* Error Alert Dialog */}
+      {}
       <AlertDialog open={!!alertError} onOpenChange={(open) => !open && setAlertError(null)}>
         <AlertDialogContent className="border-destructive/20">
           <AlertDialogHeader>

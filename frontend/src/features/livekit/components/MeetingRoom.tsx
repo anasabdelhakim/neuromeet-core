@@ -56,7 +56,7 @@ function Sidebar({ activeTab, isInstructor, onClose, meetingTitle, meetingPassco
   const participantCount = participants.length;
   return (
     <aside className="absolute md:relative inset-y-0 right-0 z-50 w-full md:w-[360px] h-full bg-background/95 backdrop-blur-xl border-l border-border flex flex-col shadow-[-4px_0_24px_rgba(0,0,0,0.15)] transition-all duration-300">
-      {/* Header */}
+      {}
       <div className="p-4 flex items-center justify-between border-b border-border">
         <h2 className="text-base font-bold text-foreground">
           {activeTab ? tabLabels[activeTab] : ""}
@@ -69,7 +69,7 @@ function Sidebar({ activeTab, isInstructor, onClose, meetingTitle, meetingPassco
           <X size={18} />
         </button>
       </div>
-      {/* Participant List Extra Actions */}
+      {}
       {activeTab === "participants" && (
         <div className="p-4 flex items-center justify-between bg-muted/30 border-b border-border select-none">
           <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
@@ -83,7 +83,7 @@ function Sidebar({ activeTab, isInstructor, onClose, meetingTitle, meetingPassco
           )}
         </div>
       )}
-      {/* Main Panel Content */}
+      {}
       <div className="flex-1 overflow-hidden flex flex-col bg-card">
         {activeTab === "chat" && (
           <div className="flex-1 overflow-hidden flex flex-col bg-card ">
@@ -149,24 +149,24 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
         <main className="flex-1 flex items-center justify-center p-4 md:p-6 overflow-hidden relative bg-black select-none">
           <div className={cn(
             "w-full h-full max-w-[1600px] flex items-center justify-center transition-all duration-300",
-            /* Dynamic Grid Layout matching Google Meet */
+            
             "[&_.lk-grid-layout]:w-full [&_.lk-grid-layout]:h-full [&_.lk-grid-layout]:grid [&_.lk-grid-layout]:grid-cols-[repeat(var(--lk-col-count,1),minmax(0,1fr))] [&_.lk-grid-layout]:grid-rows-[repeat(var(--lk-row-count,1),minmax(0,1fr))] [&_.lk-grid-layout]:gap-4 [&_.lk-grid-layout]:p-2",
             "[&_.lk-focus-layout]:w-full [&_.lk-focus-layout]:h-full [&_.lk-focus-layout]:grid [&_.lk-focus-layout]:gap-4 [&_.lk-focus-layout]:p-2",
-            /* Participant Tile Styles */
+            
             "[&_.lk-participant-tile]:w-full [&_.lk-participant-tile]:h-full [&_.lk-participant-tile]:relative [&_.lk-participant-tile]:flex [&_.lk-participant-tile]:items-center [&_.lk-participant-tile]:justify-center [&_.lk-participant-tile]:overflow-hidden [&_.lk-participant-tile]:bg-black [&_.lk-participant-tile]:transition-all [&_.lk-participant-tile]:duration-300 [&_.lk-participant-tile]:rounded-2xl",
             "[&_.lk-participant-tile[data-speaking='true']]:border-primary [&_.lk-participant-tile[data-speaking='true']]:ring-2 [&_.lk-participant-tile[data-speaking='true']]:ring-primary/50",
             "[&_.lk-participant-tile_video]:w-full [&_.lk-participant-tile_video]:h-full [&_.lk-participant-tile_video]:!object-contain",
-            /* Tile Metadata (Name/Badges) */
+            
             "[&_.lk-participant-metadata]:absolute [&_.lk-participant-metadata]:bottom-0 [&_.lk-participant-metadata]:inset-x-0 [&_.lk-participant-metadata]:bg-gradient-to-t [&_.lk-participant-metadata]:from-black/90 [&_.lk-participant-metadata]:to-transparent [&_.lk-participant-metadata]:p-4 [&_.lk-participant-metadata]:flex [&_.lk-participant-metadata]:items-center [&_.lk-participant-metadata]:gap-2 [&_.lk-participant-metadata]:z-10",
             "[&_.lk-participant-name]:text-sm [&_.lk-participant-name]:font-semibold [&_.lk-participant-name]:text-white [&_.lk-participant-name]:tracking-wide",
-            /* Placeholders */
+            
             "[&_.lk-placeholder]:bg-card [&_.lk-placeholder]:w-full [&_.lk-placeholder]:h-full [&_.lk-placeholder]:flex [&_.lk-placeholder]:items-center [&_.lk-placeholder]:justify-center"
           )}>
             <GridLayout tracks={tracks} style={{ width: "100%", height: "100%" }}>
               <InstructorBadgedTile />
             </GridLayout>
           </div>
-          {/* Google Meet style bottom-left joining info modal */}
+          {}
           {showJoiningInfoModal && (
             <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-40 w-[calc(100vw-32px)] max-w-[320px] sm:max-w-[340px] bg-card/95 border border-border rounded-xl p-4 shadow-[0_8px_32px_rgba(0,0,0,0.4)] backdrop-blur-xl animate-in fade-in-50 slide-in-from-bottom-5 duration-300 select-text">
               <div className="flex items-center justify-between pb-2.5 border-b border-border">
@@ -233,7 +233,7 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
             </div>
           )}
         </main>
-        {/* Sidebar on the right */}
+        {}
         {activeTab && (
           <Sidebar
             activeTab={activeTab}
@@ -245,7 +245,7 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
           />
         )}
       </div>
-      {/* Bottom Control Bar */}
+      {}
       <MeetingControls
         room={room}
         activeTab={activeTab}

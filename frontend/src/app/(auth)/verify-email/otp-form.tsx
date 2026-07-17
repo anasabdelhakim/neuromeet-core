@@ -77,7 +77,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
       <CardContent>
         <form action={handleAction} className="space-y-4">
           <input type="hidden" name="flow" value={flow} />
-          {/* SERVER ERROR */}
+          {}
           {(state.errorMessage?.server || resendError) && (
             <div className="animate-alert-entrance">
               <p className="text-destructive text-sm text-center bg-destructive-soft rounded-medium py-2 px-3">
@@ -85,7 +85,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
               </p>
             </div>
           )}
-          {/* SUCCESS MESSAGE */}
+          {}
           {resendSuccess && !(state.errorMessage?.server || resendError) && (
             <div className="animate-alert-entrance">
               <p className="text-status-success text-sm text-center bg-status-success-soft rounded-medium py-2 px-3">
@@ -93,13 +93,13 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
               </p>
             </div>
           )}
-          {/* INFO */}
+          {}
           <div>
             <p className="text-sm text-muted-foreground text-center">
               Enter the 6-digit verification code sent to your email
             </p>
           </div>
-          {/* OTP FIELD */}
+          {}
           <div>
             <Field>
               <FieldLabel htmlFor="otp">Verification code</FieldLabel>
@@ -126,7 +126,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
               </FieldError>
             </Field>
           </div>
-          {/* VERIFY BUTTON */}
+          {}
           <div className="pt-2">
             <Button
               type="submit"
@@ -146,7 +146,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
               )}
             </Button>
           </div>
-          {/* RESEND & TIMER */}
+          {}
           <div className="text-center">
             <Button
               type="button"

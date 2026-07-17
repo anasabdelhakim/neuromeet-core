@@ -87,24 +87,24 @@ If you are reviewing this project, these are the five hard engineering problems 
   <tr>
     <td width="50%" align="center">
       <b>1. Instructor Dashboard</b><br>
-      <img src="./docs/assests/instructor-dash.png" alt="Instructor Dashboard"><br>
+      <img src="./_docs/assests/instructor-dash.png" alt="Instructor Dashboard"><br>
       <i>Real-time command center: manage upcoming schedules, start immediate LiveKit sessions, and monitor student engagement.</i>
     </td>
     <td width="50%" align="center">
       <b>2. Student Hub</b><br>
-      <img src="./docs/assests/student-dash.png" alt="Student Dashboard"><br>
+      <img src="./_docs/assests/student-dash.png" alt="Student Dashboard"><br>
       <i>Clean student portal for tracking enrolled groups, upcoming meetings, and accessing lecture materials.</i>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
       <b>3. Admin Control Panel</b><br>
-      <img src="./docs/assests/admin-dash.png" alt="Admin Dashboard"><br>
+      <img src="./_docs/assests/admin-dash.png" alt="Admin Dashboard"><br>
       <i>Global platform statistics and user management interface for monitoring total students, instructors, and meetings.</i>
     </td>
     <td width="50%" align="center">
       <b>4. Recordings Archive</b><br>
-      <img src="./docs/assests/recording.png" alt="Recordings Hub"><br>
+      <img src="./_docs/assests/recording.png" alt="Recordings Hub"><br>
       <i>Centralized hub for reviewing past sessions, featuring integrated playback for Google Drive-hosted class recordings.</i>
     </td>
   </tr>

@@ -34,7 +34,7 @@ export function ParticipantList({ meetingTitle = "Instant Session", meetingPassc
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      {/* Collapsible Joining Info Box */}
+      {}
       <div className="border-b border-border bg-black-soft-subtle/50 flex-shrink-0 select-text">
         <button
           onClick={() => setIsInfoExpanded(!isInfoExpanded)}
@@ -157,7 +157,7 @@ export function ParticipantList({ meetingTitle = "Instant Session", meetingPassc
                   {p.isCameraEnabled ? <Video size={14} /> : <VideoOff size={14} className="text-destructive" />}
                 </div>
 
-                {/* Only show kick button if local user is instructor AND the target is NOT an instructor */}
+                {}
                 {localIsInstructor && !isInstructor && p.identity !== room.localParticipant.identity && (
                   <button 
                     onClick={() => handleKick(p.identity)}

@@ -64,7 +64,7 @@ export function StudentHome() {
         <StudentHeroClockWrapper />
       </Suspense>
 
-      {/* Quick Stats using Shared DataCard */}
+      {}
       <Suspense
         fallback={
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -77,7 +77,7 @@ export function StudentHome() {
         <StudentStatsContainer />
       </Suspense>
 
-      {/* Upcoming Sessions Section (Styled Identically to Instructor TodaysMeetings) */}
+      {}
       <section className="mt-8 w-full">
         <div className="flex items-center justify-between mb-6">
           <div>

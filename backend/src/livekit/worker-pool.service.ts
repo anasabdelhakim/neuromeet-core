@@ -1,20 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-/**
- * WorkerPoolService
- *
- * Manages a pool of Python AI Worker instances for horizontal scaling.
- * NestJS routes each new room to the least-loaded worker that has capacity.
- *
- * Scaling guide:
- *  ≤ 15 students  → 1 bot instance + Semaphore(10) + Batched Inference(batch=8)
- *  ≤ 30 students  → 2 bot instances
- *  > 30 students  → Add instances; configure AI_WORKER_URLS in .env
- *
- * Configure via env:
- *   AI_WORKER_URLS=http://ai-worker-1:8080,http://ai-worker-2:8080
- *   AI_WORKER_MAX_LOAD=15   (rooms per worker instance)
- */
+
 interface WorkerInstance {
   url: string;
   load: number;
@@ -39,10 +25,7 @@ export class WorkerPoolService {
       `Worker pool initialized: ${this.workers.length} instance(s), maxLoad=${maxLoad}`,
     );
   }
-  /**
-   * Return the least-loaded worker that still has capacity.
-   * Returns null if all workers are at maximum load.
-   */
+  
   getLeastLoadedWorker(): WorkerInstance | null {
     return (
       this.workers
@@ -50,11 +33,7 @@ export class WorkerPoolService {
         .sort((a, b) => a.load - b.load)[0] ?? null
     );
   }
-  /**
-   * Dispatch a room to the least-loaded worker.
-   * Increments that worker's load counter.
-   * Throws if all workers are at capacity.
-   */
+  
   async dispatchToPool(roomId: string, token: string): Promise<string> {
     const worker = this.getLeastLoadedWorker();
     if (!worker) {
@@ -71,10 +50,7 @@ export class WorkerPoolService {
     );
     return worker.url;
   }
-  /**
-   * Decrement a worker's load after a room ends.
-   * @param workerUrl URL of the worker that was handling the room
-   */
+  
   releaseWorker(workerUrl: string): void {
     const w = this.workers.find((w) => w.url === workerUrl);
     if (w) {
@@ -84,7 +60,7 @@ export class WorkerPoolService {
       );
     }
   }
-  /** Return current load status for all workers (useful for health checks). */
+  
   getPoolStatus() {
     return this.workers.map(({ url, load, maxLoad }) => ({
       url,
