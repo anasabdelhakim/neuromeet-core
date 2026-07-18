@@ -67,6 +67,7 @@ export async function getPreviousMeetingsAction(): Promise<PreviousMeeting[]> {
       };
     });
   } catch (error) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to fetch previous meetings:", error);
     return [];
   }

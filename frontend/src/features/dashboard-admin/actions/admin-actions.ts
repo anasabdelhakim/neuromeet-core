@@ -51,6 +51,7 @@ export async function updateUserRoleAction(userId: string, role: string) {
     }
     return { success: false, error: "Invalid response from server" };
   } catch (err) {
+    if ((err as any)?.message === "NEXT_REDIRECT" || (err as any)?.digest?.startsWith("NEXT_REDIRECT")) throw err;
     if (err instanceof ApiError) {
       return { success: false, error: err.message };
     }
@@ -63,6 +64,7 @@ export async function deleteUserAction(userId: string) {
     revalidatePath("/dashboard-admin");
     return { success: true };
   } catch (err) {
+    if ((err as any)?.message === "NEXT_REDIRECT" || (err as any)?.digest?.startsWith("NEXT_REDIRECT")) throw err;
     if (err instanceof ApiError) {
       return { success: false, error: err.message };
     }
@@ -82,6 +84,7 @@ export async function getAdminStatsAction() {
     }
     return { success: false, error: "Invalid response" };
   } catch (err) {
+    if ((err as any)?.message === "NEXT_REDIRECT" || (err as any)?.digest?.startsWith("NEXT_REDIRECT")) throw err;
     return { success: false, error: "Failed to fetch admin stats" };
   }
 }

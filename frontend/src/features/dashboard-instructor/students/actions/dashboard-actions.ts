@@ -11,6 +11,7 @@ export async function getDashboardData() {
     });
     return { success: true, data: res.data };
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return { success: false, error: error.message || "Failed to fetch dashboard data" };
   }
 }
@@ -23,6 +24,7 @@ export async function getAllStudents() {
     });
     return { success: true, data: res.data };
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return { success: false, error: error.message || "Failed to fetch students" };
   }
 }
@@ -34,6 +36,7 @@ export async function removeStudentFromGroup(groupId: string, studentId: string)
     updateTag("dashboard");
     return { success: true };
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return { success: false, error: error.message || "Failed to remove student" };
   }
 }

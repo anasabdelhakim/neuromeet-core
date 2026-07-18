@@ -75,9 +75,23 @@ async function request<T>(
         ...fetchConfig, 
         headers: retryHeaders 
       });
+      if (retryRes.status === 401) {
+        const { redirect } = await import('next/navigation');
+        redirect('/sign-in');
+      }
       return handleResponse<T>(retryRes);
+    } else {
+      // Refresh failed, trigger Next.js redirect
+      const { redirect } = await import('next/navigation');
+      redirect('/sign-in');
     }
   }
+  
+  if (res.status === 401 && isRetry) {
+    const { redirect } = await import('next/navigation');
+    redirect('/sign-in');
+  }
+
   return handleResponse<T>(res);
 }
 async function handleResponse<T>(res: Response): Promise<T> {

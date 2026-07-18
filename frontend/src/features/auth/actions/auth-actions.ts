@@ -106,6 +106,7 @@ export async function signInAction(
     }
     redirect(redirectPath);
   } catch (err) {
+    if ((err as any)?.message === "NEXT_REDIRECT" || (err as any)?.digest?.startsWith("NEXT_REDIRECT")) throw err;
     if (err instanceof ApiError) {
       return {
         success: false,
@@ -145,6 +146,7 @@ export async function signUpAction(
     await setOtpSentAt();
     redirect("/verify-email?flow=signup");
   } catch (err:any) {
+    if ((err as any)?.message === "NEXT_REDIRECT" || (err as any)?.digest?.startsWith("NEXT_REDIRECT")) throw err;
     if (err instanceof ApiError) {
       return {
         success: false,
@@ -179,6 +181,7 @@ export async function forgotPasswordAction(
     await setOtpSentAt();
     redirect("/verify-email?flow=reset");
   } catch (err:any) {
+    if ((err as any)?.message === "NEXT_REDIRECT" || (err as any)?.digest?.startsWith("NEXT_REDIRECT")) throw err;
     if (err instanceof ApiError) {
       return {
         success: false,
@@ -236,6 +239,7 @@ export async function verifyCodeAction(
       redirectPath = "/reset-password";
     }
   } catch (err:any) {
+    if ((err as any)?.message === "NEXT_REDIRECT" || (err as any)?.digest?.startsWith("NEXT_REDIRECT")) throw err;
     if (err instanceof ApiError) {
       return {
         success: false,
@@ -275,6 +279,7 @@ export async function resendCodeAction(
     await setOtpSentAt();
     return { success: true, errorMessage: {}, secondsRemaining: 120 };
   } catch (err:any) {
+    if ((err as any)?.message === "NEXT_REDIRECT" || (err as any)?.digest?.startsWith("NEXT_REDIRECT")) throw err;
     console.error("resendCodeAction error:", err);
     if (err instanceof ApiError) {
       return {
@@ -333,6 +338,7 @@ export async function changePasswordAction(
     await clearResetData();
     redirect("/sign-in");
   } catch (err:any) {
+    if ((err as any)?.message === "NEXT_REDIRECT" || (err as any)?.digest?.startsWith("NEXT_REDIRECT")) throw err;
     if (err instanceof ApiError) {
       return {
         success: false,
@@ -352,6 +358,7 @@ export async function deleteMyAccountAction(): Promise<void> {
     await clearAuthCookies();
     redirect("/sign-in");
   } catch (err) {
+    if ((err as any)?.message === "NEXT_REDIRECT" || (err as any)?.digest?.startsWith("NEXT_REDIRECT")) throw err;
     if (isRedirectError(err)) throw err;
     console.error("Failed to delete account:", err);
     await clearAuthCookies();
@@ -408,6 +415,7 @@ export async function updateUserProfile(
     }
     redirect(redirectPath);
   } catch (err: any) {
+    if ((err as any)?.message === "NEXT_REDIRECT" || (err as any)?.digest?.startsWith("NEXT_REDIRECT")) throw err;
     if (isRedirectError(err)) {
       throw err;
     }
@@ -431,6 +439,7 @@ export async function skipProfileCompletion() {
     }
     redirect(redirectPath);
   } catch (err) {
+    if ((err as any)?.message === "NEXT_REDIRECT" || (err as any)?.digest?.startsWith("NEXT_REDIRECT")) throw err;
     if (isRedirectError(err)) throw err;
     redirect("/sign-in");
   }
@@ -448,6 +457,7 @@ export const getUserProfile = cache(async () => {
     const res = await apiGet<any>('/userMe', { cache: 'force-cache' });
     return res?.data?.user || null;
   } catch (err) {
+    if ((err as any)?.message === "NEXT_REDIRECT" || (err as any)?.digest?.startsWith("NEXT_REDIRECT")) throw err;
     return null;
   }
 });

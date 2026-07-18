@@ -8,6 +8,7 @@ export async function getNotificationsAction(): Promise<NotificationData[]> {
     const res = await apiGet<{ status: string; data: NotificationData[] }>('/notifications');
     return res.data || [];
   } catch (error) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to fetch notifications", error);
     return [];
   }
@@ -18,6 +19,7 @@ export async function markNotificationAsReadAction(id: string) {
     await apiPatch(`/notifications/${id}/read`, {});
     return { success: true };
   } catch (error) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error(`Failed to mark notification ${id} as read`, error);
     return { success: false };
   }
@@ -28,6 +30,7 @@ export async function markAllNotificationsAsReadAction() {
     await apiPatch(`/notifications/read-all`, {});
     return { success: true };
   } catch (error) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to mark all notifications as read", error);
     return { success: false };
   }

@@ -21,6 +21,7 @@ export async function getRecordingsAction(): Promise<RecordingDTO[]> {
     });
     return res.data || [];
   } catch (error) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to fetch recordings:", error);
     return [];
   }
@@ -32,6 +33,7 @@ export async function deleteRecordingAction(recordingId: string) {
     revalidatePath("/dashboard-student/recordings", "page");
     return { success: true };
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return { success: false, errorMessage: error.message || "Failed to delete recording" };
   }
 }

@@ -30,6 +30,7 @@ export async function getInstructorMeetingsAction(): Promise<MeetingListDTO[]> {
     });
     return res || [];
   } catch (error) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to fetch meetings for analytics:", error);
     return [];
   }
@@ -42,6 +43,7 @@ export async function getMeetingAnalyticsAction(meetingId: string): Promise<Meet
     });
     return res;
   } catch (error) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to fetch meeting analytics:", error);
     return null;
   }
@@ -69,6 +71,7 @@ export async function getStudentAnalyticsAction(studentId: string): Promise<Stud
     });
     return res;
   } catch (error) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to fetch specific student analytics:", error);
     return null;
   }
@@ -81,6 +84,7 @@ export async function syncEngagementStatsAction(
   try {
     await apiPost(`/meetings/${meetingId}/sync-engagement`, { stats });
   } catch (error) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to sync engagement stats:", error);
   }
 }

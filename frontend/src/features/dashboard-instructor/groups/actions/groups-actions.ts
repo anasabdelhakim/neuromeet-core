@@ -26,6 +26,7 @@ export async function createGroupAction(
     updateTag("instructor-groups");
     return { success: true, data: res.data };
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return { success: false, error: error.message || "Failed to create group" };
   }
 }
@@ -53,6 +54,7 @@ export async function updateGroupAction(
     updateTag("instructor-groups");
     return { success: true, data: res.data };
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return { success: false, error: error.message || "Failed to update group" };
   }
 }
@@ -65,6 +67,7 @@ export async function deleteGroupAction(groupId: string) {
     updateTag("instructor-groups");
     return { success: true };
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return { success: false, error: error.message || "Failed to delete group" };
   }
 }
@@ -74,6 +77,7 @@ export async function getGroupsAction() {
     const res = await apiGet<{ status: string; data: Group[] }>("/groups");
     return { success: true, data: res.data };
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return { success: false, error: error.message || "Failed to fetch groups" };
   }
 }
@@ -85,6 +89,7 @@ export async function inviteStudentToGroup(groupId: string, studentId: string) {
     updateTag("dashboard");
     return { success: true };
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return { success: false, error: error.message || "Failed to invite student" };
   }
 }
@@ -96,6 +101,7 @@ export async function undoInvitationToGroup(groupId: string, studentId: string) 
     updateTag("dashboard");
     return { success: true };
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return { success: false, error: error.message || "Failed to undo invitation" };
   }
 }
@@ -107,6 +113,7 @@ export async function removeStudentFromGroup(groupId: string, studentId: string)
     updateTag("dashboard");
     return { success: true };
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return { success: false, error: error.message || "Failed to remove student" };
   }
 }

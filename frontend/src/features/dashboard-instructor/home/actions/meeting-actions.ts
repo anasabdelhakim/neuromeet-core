@@ -27,6 +27,7 @@ export async function startMeetingAction(meetingId: string, prevState: any, form
     const res = await apiPost<any>(`/meetings/${meetingId}/start`, {});
     roomName = res.data?.livekitRoomName;
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to start meeting:", error.message);
     // Smoothly revalidate only the specific tabs where meetings are shown
     revalidatePath("/dashboard-instructor");          // Today's meetings
@@ -52,6 +53,7 @@ export async function shareMeetingAction(meetingId: string, groupId: string) {
     const res = await apiPost<any>(`/meetings/${meetingId}/share`, { groupId });
     return { success: true, passcode: res.data?.passcode };
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to share meeting:", error.message);
     return { success: false, errorMessage: error.message || "Failed to share meeting" };
   }
@@ -65,6 +67,7 @@ export async function deleteMeetingAction(meetingId: string) {
     revalidatePath("/dashboard-instructor/previous");
     return { success: true };
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return { success: false, errorMessage: error.message || "Failed to delete meeting" };
   }
 }
@@ -77,6 +80,7 @@ export async function endMeetingAction(meetingId: string) {
     revalidatePath("/dashboard-instructor/previous");
     return { success: true };
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return { success: false, errorMessage: error.message || "Failed to end meeting" };
   }
 }
@@ -88,6 +92,7 @@ export async function editMeetingAction(meetingId: string, data: { title: string
     revalidatePath("/dashboard-instructor/upcoming");
     return { success: true };
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return { success: false, errorMessage: error.message || "Failed to edit meeting" };
   }
 }
@@ -144,10 +149,12 @@ export async function createMeetingAction(prevState: any, formData: FormData) {
            finalRedirectUrl = `/livekit?room=${startRes.data.livekitRoomName}`;
          }
        } catch (e) {
+    if ((e as any)?.message === "NEXT_REDIRECT" || (e as any)?.digest?.startsWith("NEXT_REDIRECT")) throw e;
          console.error("Failed to auto-start instant meeting:", e);
        }
     }
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return { success: false, errorMessage: error.message || "Failed to create meeting" };
   }
 
@@ -185,6 +192,7 @@ export async function getUpcomingMeetings() {
       };
     });
   } catch (error) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to fetch upcoming meetings:", error);
     return [];
   }
@@ -217,6 +225,7 @@ export async function getTodayMeetings() {
       };
     });
   } catch (error) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to fetch today's meetings:", error);
     return [];
   }
@@ -247,6 +256,7 @@ export async function joinSessionAction(prevState: any, formData: FormData) {
       finalRedirectUrl = `/livekit?room=${roomCode}`;
     }
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return { success: false, errorMessage: error.message || "Invalid room code" };
   }
 
@@ -259,6 +269,7 @@ export async function leaveMeetingAction(meetingId: string) {
     revalidatePath("/dashboard-instructor", "layout");
     revalidatePath("/dashboard-student", "layout");
   } catch (error) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to leave meeting:", error);
   }
 }

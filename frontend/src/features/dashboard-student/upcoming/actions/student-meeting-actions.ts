@@ -34,6 +34,7 @@ export async function getStudentUpcomingMeetings() {
       };
     });
   } catch (error) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to fetch student upcoming meetings:", error);
     return [];
   }
@@ -68,6 +69,7 @@ export async function getStudentTodayMeetings() {
       };
     });
   } catch (error) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to fetch student today meetings:", error);
     return [];
   }
@@ -78,6 +80,7 @@ export async function getStudentPreviousMeetings() {
     const res = await apiGet<any>("/meetings/student/previous");
     return res.data || [];
   } catch (error) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to fetch student previous meetings:", error);
     return [];
   }
@@ -98,6 +101,7 @@ export async function joinMeetingAction(meetingId: string, passcode: string) {
       roomName += "&guest=true";
     }
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return { success: false, errorMessage: error.message || "Failed to join meeting" };
   }
 

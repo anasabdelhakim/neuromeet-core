@@ -10,6 +10,7 @@ export async function getStudentGroupsAction() {
     const res = await apiGet<{ status: string; data: any[] }>("/groups/my-groups");
     return { success: true, data: res.data };
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return {
       success: false,
       error: error.message || "Failed to load your groups",
@@ -22,6 +23,7 @@ export async function getPendingInvitationsAction() {
     const res = await apiGet<{ status: string; data: any[] }>("/groups/invitations/pending");
     return { success: true, data: res.data };
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return { success: false, error: error.message || "Failed to load invitations" };
   }
 }
@@ -34,6 +36,7 @@ export async function acceptInvitationAction(invitationId: string) {
     updateTag("dashboard");
     return { success: true, data: res.data };
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return { success: false, error: error.message || "Failed to accept invitation" };
   }
 }
@@ -44,6 +47,7 @@ export async function rejectInvitationAction(invitationId: string) {
     updateTag("student-invitations");
     return { success: true };
   } catch (error: any) {
+    if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     return { success: false, error: error.message || "Failed to reject invitation" };
   }
 }
