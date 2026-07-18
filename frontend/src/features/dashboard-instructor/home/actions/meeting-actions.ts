@@ -194,7 +194,7 @@ export async function getUpcomingMeetings() {
   } catch (error) {
     if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to fetch upcoming meetings:", error);
-    return [];
+    throw error;
   }
 }
 
@@ -227,7 +227,7 @@ export async function getTodayMeetings() {
   } catch (error) {
     if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to fetch today's meetings:", error);
-    return [];
+    throw error;
   }
 }
 

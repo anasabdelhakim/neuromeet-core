@@ -10,7 +10,10 @@ import { getGroupsAction } from "../../groups/actions/groups-actions";
 import { GROUP_COLORS } from "../../groups/constants/groups-constants";
 export async function InstructorGroups() {
   const result = await getGroupsAction();
-  const groups = result.success && result.data ? result.data.slice(0, 3) : []; // Show top 3
+  if (!result.success) {
+    throw new Error(result.errorMessage || result.error || "Failed to load groups");
+  }
+  const groups = result.data ? result.data.slice(0, 3) : []; // Show top 3
   return (
     <Card className="bg-card-gradient h-full p-5 flex flex-col border w-full">
       <CardHeader className="px-0 pt-0 pb-3 flex items-center justify-between">

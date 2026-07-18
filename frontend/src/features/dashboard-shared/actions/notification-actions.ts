@@ -10,7 +10,7 @@ export async function getNotificationsAction(): Promise<NotificationData[]> {
   } catch (error) {
     if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to fetch notifications", error);
-    return [];
+    throw error;
   }
 }
 

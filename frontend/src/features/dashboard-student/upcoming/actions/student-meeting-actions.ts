@@ -36,7 +36,7 @@ export async function getStudentUpcomingMeetings() {
   } catch (error) {
     if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to fetch student upcoming meetings:", error);
-    return [];
+    throw error;
   }
 }
 
@@ -71,7 +71,7 @@ export async function getStudentTodayMeetings() {
   } catch (error) {
     if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to fetch student today meetings:", error);
-    return [];
+    throw error;
   }
 }
 
@@ -82,7 +82,7 @@ export async function getStudentPreviousMeetings() {
   } catch (error) {
     if ((error as any)?.message === "NEXT_REDIRECT" || (error as any)?.digest?.startsWith("NEXT_REDIRECT")) throw error;
     console.error("Failed to fetch student previous meetings:", error);
-    return [];
+    throw error;
   }
 }
 
