@@ -25,7 +25,7 @@ export function SidebarNavLinks() {
                   href={href}
                   prefetch={true}
                   className={cn(
-                    "flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 px-0 md:px-3 py-0.5 md:py-2.5 rounded-soft text-[12px] sm:text-xs md:text-base transition-all duration-normal ease-standard flex-1 md:flex-none",
+                    "flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 px-0 md:px-3 py-0.5 md:py-2.5 rounded-soft text-[12px] sm:text-xs md:text-base transition-all duration-fast ease-standard flex-1 md:flex-none",
                     active
                       ? "text-primary md:bg-primary md:text-primary-foreground"
                       : "text-muted-foreground hover:text-foreground md:hover:bg-secondary",
