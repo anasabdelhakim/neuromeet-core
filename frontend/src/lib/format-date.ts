@@ -12,10 +12,16 @@ import { format } from "date-fns";
 export function formatEgyptTime(date: Date | string | number, formatStr: string): string {
   const d = new Date(date);
   
-  // Hardcoded offset: +3 hours (Egypt Summer Time)
+  // Vercel server is UTC (offset 0). Your laptop in Egypt has an offset of -180 (UTC+3).
+  const isServerUTC = d.getTimezoneOffset() === 0;
+
+  // If we are on your local laptop (Dev Mode), DO NOT add the 3 hours.
+  if (!isServerUTC) {
+    return format(d, formatStr);
+  }
+
+  // If we are on Vercel (Production Mode), manually add the +3 hours offset.
   const offsetMs = 3 * 60 * 60 * 1000;
-  
-  // Create a new Date object shifted forward by the offset
   const localD = new Date(d.getTime() + offsetMs);
   
   return format(localD, formatStr);
