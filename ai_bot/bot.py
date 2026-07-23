@@ -9,22 +9,11 @@ from typing import Dict
 import cv2
 import numpy as np
 import torch
-import onnxruntime as ort
 from livekit import agents, rtc
 from livekit.agents import JobContext, WorkerOptions, cli
 
 # model.py must be in the same directory — provides EngagementModel + val_transform
 from model import EngagementModel, val_transform
-
-def numpy_val_transform(frame: np.ndarray) -> np.ndarray:
-    """Pure numpy version of val_transform for ONNX inference."""
-    # Add this line to prevent ONNX crashes!
-    frame = cv2.resize(frame, (224, 224), interpolation=cv2.INTER_LINEAR)
-    img = frame.astype(np.float32) / 255.0
-    mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
-    std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
-    img = (img - mean) / std
-    return np.transpose(img, (2, 0, 1)) # HWC to CHW
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("engagement-bot")
@@ -34,7 +23,7 @@ logger = logging.getLogger("engagement-bot")
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 SEQ_LEN = 24                 # MUST match the SEQ_LEN used during training and ONNX export
 BUFFER_MAXLEN = 30           # 30 frames at 10 FPS = 3s window — matches ~4s training clips from DAiSEE
-INFERENCE_INTERVAL_S = 5.0   # Run inference every N seconds — set above CPU inference time to avoid queue buildup
+INFERENCE_INTERVAL_S = 2.5   # Run inference every N seconds — set above CPU inference time to avoid queue buildup
 DISENGAGEMENT_THRESHOLD = 0.50  # Below this → is_disengaged=True
 MAX_CONCURRENT = 1 if DEVICE.type == "cpu" else 10  # CPU: serialize to avoid thread contention
 EMA_ALPHA_UP = 0.30          # Climb speed
@@ -47,87 +36,43 @@ _model: EngagementModel = None
 
 
 def get_model():
-    """Load the model once per worker process and cache it. Supports PyTorch & ONNX."""
+    """Load the model once per worker process and cache it (PyTorch only)."""
     global _model
     if _model is None:
-        model_path = os.environ.get("MODEL_PATH", "/models/engagement.onnx")  # Default to ONNX for production speed
+        # We default to /models/best_model.pth which is the expected location 
+        # when we mount the models directory via docker-compose.
+        model_path = os.environ.get("MODEL_PATH", "/models/best_model.pth")
         
-        if model_path.endswith(".onnx"):
-            logger.info(f"[bot] Loading ONNX model from {model_path}...")
-            providers = ['CUDAExecutionProvider', 'CPUExecutionProvider'] if DEVICE.type == "cuda" else ['CPUExecutionProvider']
-            try:
-                # ── ONNX Runtime CPU Tuning ──
-                sess_options = ort.SessionOptions()
-                sess_options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
-                cpu_count = os.cpu_count() or 2
-                sess_options.intra_op_num_threads = cpu_count  # Parallelize within ops (matmul, conv)
-                sess_options.inter_op_num_threads = 1          # Serialize between ops (we handle concurrency ourselves)
-                sess_options.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
-                _model = ort.InferenceSession(model_path, sess_options=sess_options, providers=providers)
-                logger.info(f"[bot] ONNX model loaded with providers: {_model.get_providers()}, threads: intra={cpu_count}, inter=1")
-            except Exception as e:
-                logger.warning(f"⚠️ [bot] Failed to load ONNX model ({e}). Falling back to PyTorch best_model.pth...")
-                # Fallback to PyTorch instead of random weights
-                _model = EngagementModel(freeze_cnn=False)
-                try:
-                    ckpt = torch.load("models/best_model.pth", map_location=DEVICE)
-                    state_dict = ckpt["model_state"] if isinstance(ckpt, dict) and "model_state" in ckpt else (ckpt["state_dict"] if isinstance(ckpt, dict) and "state_dict" in ckpt else ckpt)
-                    _model.load_state_dict(state_dict)
-                    logger.info("[bot] Successfully loaded PyTorch fallback from models/best_model.pth!")
-                except Exception as p_err:
-                    logger.warning(f"⚠️ [bot] Failed to load PyTorch fallback ({p_err}). NOW using random weights as a last resort! ⚠️")
-                _model.to(DEVICE).eval()
-        else:
-            # We are running on CPU. Let PyTorch use all available threads
-            # to process the massive Vision Transformer quickly.
-            # (Removed set_num_threads(1) so it doesn't freeze the CPU)
-            _model = EngagementModel(freeze_cnn=False)
-            try:
-                ckpt = torch.load(model_path, map_location=DEVICE)
-                
-                # Kaggle models could be saved as a raw state_dict or inside a dictionary
-                if isinstance(ckpt, dict) and "model_state" in ckpt:
-                    state_dict = ckpt["model_state"]
-                elif isinstance(ckpt, dict) and "state_dict" in ckpt:
-                    state_dict = ckpt["state_dict"]
-                else:
-                    state_dict = ckpt # Assume it's the raw state_dict
-                
-                # ── DIAGNOSTIC: Log checkpoint keys summary ──
-                logger.info(f"[DIAG] Checkpoint type: {type(ckpt)}")
-                if isinstance(ckpt, dict):
-                    logger.info(f"[DIAG] Checkpoint top-level keys: {list(ckpt.keys())}")
-                logger.info(f"[DIAG] State dict has {len(state_dict)} keys")
-                logger.info(f"[DIAG] First 5 state_dict keys: {list(state_dict.keys())[:5]}")
-                
-                # Check if ViT backbone weights are actually present
-                backbone_keys = [k for k in state_dict.keys() if 'backbone' in k]
-                head_keys = [k for k in state_dict.keys() if 'head' in k]
-                logger.info(f"[DIAG] backbone keys count={len(backbone_keys)}, head keys count={len(head_keys)}")
-                if len(backbone_keys) == 0:
-                    logger.error("❌ [DIAG] NO BACKBONE KEYS IN CHECKPOINT! ViT will use random weights → expect 15-30% scores!")
-                
-                # Use strict=False so we can detect missing keys without crashing
-                load_result = _model.load_state_dict(state_dict, strict=False)
-                if load_result.missing_keys:
-                    logger.warning(f"⚠️ [DIAG] Missing keys (will use random init): {load_result.missing_keys[:10]}")
-                if load_result.unexpected_keys:
-                    logger.warning(f"⚠️ [DIAG] Unexpected keys (ignored): {load_result.unexpected_keys[:10]}")
-                
-                if not load_result.missing_keys and not load_result.unexpected_keys:
-                    logger.info(f"[bot] ✅ PyTorch model loaded PERFECTLY from {model_path} on {DEVICE} 🚀")
-                else:
-                    logger.warning(f"[bot] ⚠️ Model loaded with mismatches — scores will be degraded!")
-                
-            except FileNotFoundError:
-                logger.warning(f"⚠️ [bot] WARNING: '{model_path}' not found! Running with randomly initialized weights for testing. ⚠️")
-            except RuntimeError as e:
-                logger.error(f"❌ [bot] ERROR: Architecture mismatch between best_model.pth and model.py! Details: {e}")
-                logger.warning("Running with randomly initialized weights as a fallback.")
-            except Exception as e:
-                logger.error(f"❌ [bot] Unexpected error loading PyTorch model: {e}")
+        logger.info(f"[bot] Initializing and loading PyTorch model from {model_path}...")
+        _model = EngagementModel(freeze_cnn=False)
+        
+        try:
+            ckpt = torch.load(model_path, map_location=DEVICE)
+            
+            if isinstance(ckpt, dict) and "model_state" in ckpt:
+                state_dict = ckpt["model_state"]
+            elif isinstance(ckpt, dict) and "state_dict" in ckpt:
+                state_dict = ckpt["state_dict"]
+            else:
+                state_dict = ckpt
+            
+            load_result = _model.load_state_dict(state_dict, strict=False)
+            if load_result.missing_keys:
+                logger.warning(f"⚠️ [DIAG] Missing keys (will use random init): {load_result.missing_keys[:10]}")
+            if load_result.unexpected_keys:
+                logger.warning(f"⚠️ [DIAG] Unexpected keys (ignored): {load_result.unexpected_keys[:10]}")
+            
+            logger.info(f"[bot] ✅ PyTorch model loaded PERFECTLY from {model_path} on {DEVICE} 🚀")
+            
+        except FileNotFoundError:
+            logger.warning(f"⚠️ [bot] WARNING: '{model_path}' not found! Running with randomly initialized weights for testing. ⚠️")
+        except RuntimeError as e:
+            logger.error(f"❌ [bot] ERROR: Architecture mismatch between {model_path} and model.py! Details: {e}")
+            logger.warning("Running with randomly initialized weights as a fallback.")
+        except Exception as e:
+            logger.error(f"❌ [bot] Unexpected error loading PyTorch model: {e}")
 
-            _model.to(DEVICE).eval()
+        _model.to(DEVICE).eval()
     return _model
 
 
@@ -234,42 +179,29 @@ def run_batch_inference(frame_lists: list) -> list:
     if len(safe_lists) == 0:
         return final_results
     
-    if isinstance(model, ort.InferenceSession):
-        # ── ONNX Batch Inference ──
-        clips = []
-        for frames in safe_lists:
-            tensors = [numpy_val_transform(f) for f in frames]
-            clips.append(np.stack(tensors))
-            
-        batch = np.stack(clips).astype(np.float32) # (B, SEQ_LEN, 3, 224, 224)
-        ort_inputs = {model.get_inputs()[0].name: batch}
-        logits = model.run(None, ort_inputs)[0]
-        probs = 1.0 / (1.0 + np.exp(-logits))
-        probs = probs.flatten()
-    else:
-        # ── PyTorch Batch Inference ──
-        clips = []
-        for frames in safe_lists:
-            tensors = [val_transform(f) for f in frames]
-            clips.append(torch.stack(tensors))
+    # ── PyTorch Batch Inference ──
+    clips = []
+    for frames in safe_lists:
+        tensors = [val_transform(f) for f in frames]
+        clips.append(torch.stack(tensors))
 
-        batch = torch.stack(clips).to(DEVICE)  # (B, SEQ_LEN, 3, 224, 224)
-        
-        logger.info(f"[DIAG] Batch shape: {batch.shape}, Min val: {batch.min().item():.3f}, Max val: {batch.max().item():.3f}, Mean: {batch.mean().item():.3f}")
+    batch = torch.stack(clips).to(DEVICE)  # (B, SEQ_LEN, 3, 224, 224)
+    
+    logger.info(f"[DIAG] Batch shape: {batch.shape}, Min val: {batch.min().item():.3f}, Max val: {batch.max().item():.3f}, Mean: {batch.mean().item():.3f}")
 
-        with torch.no_grad():
-            logits = model(batch)              # (B,)
-            logit_vals = logits.cpu().numpy().flatten()
-            probs = torch.sigmoid(logits).cpu().numpy().flatten()
-            # DIAGNOSTIC: log raw logits to confirm model is actually responding
-            logger.info(f"[DIAG] raw_logits={[round(float(l),3) for l in logit_vals]} -> probs={[round(float(p),3) for p in probs]}")
+    with torch.no_grad():
+        logits = model(batch)              # (B,)
+        logit_vals = logits.cpu().numpy().flatten()
+        probs = torch.sigmoid(logits).cpu().numpy().flatten()
+        # DIAGNOSTIC: log raw logits to confirm model is actually responding
+        logger.info(f"[DIAG] raw_logits={[round(float(l),3) for l in logit_vals]} -> probs={[round(float(p),3) for p in probs]}")
 
     calibrated_probs = []
     for p in probs:
         # Calibration is absolutely necessary for this model because 
         # Label Smoothing (0.10) and heavy Dropout (0.7) compress the output probabilities.
-        # The model naturally outputs values between 0.15 and 0.45.
-        min_p, max_p = 0.15, 0.45
+        # The model naturally outputs values between 0.15 and 0.85 for your specific trained checkpoint.
+        min_p, max_p = 0.15, 0.85
         calibrated = (p - min_p) / (max_p - min_p)
         calibrated = max(0.0, min(1.0, calibrated))
         calibrated_probs.append(float(calibrated))
@@ -574,7 +506,13 @@ async def main():
                     )
                 )
 
-    # Keep bot alive until the room closes
+    @room.on("disconnected")
+    def on_room_disconnected():
+        logger.info("[bot] Room closed or disconnected. Shutting down to save LiveKit minutes!")
+        import sys
+        sys.exit(0)
+
+    # Keep bot alive until the room closes or it gets disconnected
     await asyncio.Event().wait()
 
 

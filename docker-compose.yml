@@ -29,7 +29,9 @@ services:
 
   # 3. NeuroMeet Backend (Bun + NestJS + Fastify)
   backend:
-    build: ./backend
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: neuromeet-backend
     restart: unless-stopped
     ports:
@@ -55,7 +57,7 @@ services:
     env_file:
       - ./backend/.env
     environment:
-      - MODEL_PATH=/models/engagement.onnx
+      - MODEL_PATH=/models/best_model.pth
 
 volumes:
   pgdata:

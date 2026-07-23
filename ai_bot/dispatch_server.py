@@ -21,6 +21,12 @@ from typing import Dict
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 app = FastAPI(title="NeuroMeet AI Worker Dispatch API", version="1.0")
 
 # roomId → subprocess.Popen handle
@@ -30,6 +36,7 @@ active_bots: Dict[str, subprocess.Popen] = {}
 class DispatchRequest(BaseModel):
     room_name: str
     token: str
+    livekit_url: str | None = None
 
 
 class RecallRequest(BaseModel):
@@ -53,6 +60,11 @@ def dispatch(req: DispatchRequest):
         # Ensure the model path is forwarded
         "MODEL_PATH": os.environ.get("MODEL_PATH", "/models/best_model.pth"),
     }
+    
+    # If the NestJS backend dynamically passes the LiveKit URL, use it!
+    # This ensures we don't have to manually update HF environments when API keys change.
+    if getattr(req, "livekit_url", None):
+        bot_env["LIVEKIT_URL"] = req.livekit_url
 
     proc = subprocess.Popen(
         [

@@ -3,11 +3,11 @@ FROM oven/bun:1 AS builder
 WORKDIR /app
 
 # Copy lockfile + manifest first for layer caching
-COPY package.json bun.lock ./
+COPY backend/package.json backend/bun.lock ./
 RUN bun install
 
 # Copy the rest of the source
-COPY . .
+COPY backend .
 
 # Generate Prisma client (CRITICAL — NestJS imports from lib/prisma/_generated)
 RUN bunx prisma generate
@@ -60,7 +60,7 @@ COPY --from=builder /app/lib/prisma/_generated ./lib/prisma/_generated
 COPY --from=builder /app/lib/prisma/_migrations ./lib/prisma/_migrations
 
 # 7. Copy startup script
-COPY start.sh ./start.sh
+COPY backend/start.sh ./start.sh
 RUN chmod +x start.sh
 
 # 8. Environment Variables
