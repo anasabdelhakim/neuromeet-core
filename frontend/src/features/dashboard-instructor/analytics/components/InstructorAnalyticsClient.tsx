@@ -5,7 +5,7 @@ import { MeetingListDTO, MeetingAnalyticsDTO, getMeetingAnalyticsAction } from "
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
 import { ScatterChart, Scatter, ZAxis, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Activity, Clock, Users, Lightbulb, AlertTriangle, ChevronsUpDown, Check } from "lucide-react";
-import { format } from "date-fns";
+import { formatEgyptTime } from "@/src/lib/format-date";
 import { DataCard } from "@/src/features/dashboard-shared/components/DataCard";
 import { cn } from "@/src/lib/utils";
 import {
@@ -86,7 +86,7 @@ export default function InstructorAnalyticsClient({
                 {selectedMeetingId
                   ? (() => {
                       const m = meetings.find((meeting) => meeting.id === selectedMeetingId);
-                      return m ? `${m.title} - ${format(new Date(m.startedAt), "MMM dd, yyyy")}` : "Select a meeting...";
+                      return m ? `${m.title} - ${formatEgyptTime(new Date(m.startedAt), "MMM dd, yyyy")}` : "Select a meeting...";
                     })()
                   : "Select a meeting..."}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -111,7 +111,7 @@ export default function InstructorAnalyticsClient({
                             selectedMeetingId === m.id ? "opacity-100" : "opacity-0"
                           )}
                         />
-                        {m.title} - {format(new Date(m.startedAt), "MMM dd, yyyy")}
+                        {m.title} - {formatEgyptTime(new Date(m.startedAt), "MMM dd, yyyy")}
                       </CommandItem>
                     ))}
                   </CommandGroup>

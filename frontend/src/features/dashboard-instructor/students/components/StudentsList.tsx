@@ -2,7 +2,7 @@ import { StudentsStats } from "./StudentsStats";
 import { StudentsFilters } from "./StudentsFilters";
 import { getDashboardData, getAllStudents } from "../actions/dashboard-actions";
 import { GROUP_COLORS } from "@/src/features/dashboard-instructor/groups/constants/groups-constants";
-import { format } from "date-fns";
+import { formatEgyptTime } from "@/src/lib/format-date";
 import { Student, StudentGroup } from "../types";
 export async function StudentsList() {
   const [dataRes, studentsRes] = await Promise.all([
@@ -52,7 +52,7 @@ export async function StudentsList() {
       }
       const existing = studentMap.get(s.id)!;
       if (existing.enrolledDate === "Not Enrolled") {
-        existing.enrolledDate = format(new Date(enrollment.joinedAt || g.created_at || new Date()), "MMM d, yyyy");
+        existing.enrolledDate = formatEgyptTime(new Date(enrollment.joinedAt || g.created_at || new Date()), "MMM d, yyyy");
       }
       const lastSession = s.sessions?.[0]?.lastUsedAt;
       const lastMeeting = s.meetingParticipants?.length > 0 
@@ -64,7 +64,7 @@ export async function StudentsList() {
         : null;
       const lastActiveDate = lastSession ? new Date(lastSession) : lastMeeting;
       if (lastActiveDate) {
-         existing.lastActive = format(lastActiveDate, "MMM d, h:mm a");
+         existing.lastActive = formatEgyptTime(lastActiveDate, "MMM d, h:mm a");
          existing.isActive = (new Date().getTime() - lastActiveDate.getTime() < 24 * 60 * 60 * 1000);
       }
       const totalMeetings = s.meetingParticipants?.length || 0;

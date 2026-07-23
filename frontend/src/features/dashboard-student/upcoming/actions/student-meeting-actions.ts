@@ -1,7 +1,7 @@
 "use server";
 
 import { apiGet, apiPost } from "@/src/lib/api-client";
-import { format } from "date-fns";
+import { formatEgyptTime } from "@/src/lib/format-date";
 import { redirect } from "next/navigation";
 
 export async function getStudentUpcomingMeetings() {
@@ -26,8 +26,8 @@ export async function getStudentUpcomingMeetings() {
         title: m.title,
         group: m.group,
         groupName: m.group?.name || "General",
-        date: format(d, "MMMM d, yyyy"),
-        time: format(d, "h:mm a"),
+        date: formatEgyptTime(d, "MMMM d, yyyy"),
+        time: formatEgyptTime(d, "h:mm a"),
         dateTime: m.scheduledAt,
         duration: realDuration,
         status: m.status,
@@ -61,8 +61,8 @@ export async function getStudentTodayMeetings() {
         title: m.title,
         group: m.group,
         groupName: m.group?.name || "General",
-        date: format(d, "MMMM d, yyyy"),
-        time: format(d, "h:mm a"),
+        date: formatEgyptTime(d, "MMMM d, yyyy"),
+        time: formatEgyptTime(d, "h:mm a"),
         dateTime: m.scheduledAt,
         duration: realDuration,
         status: m.status,

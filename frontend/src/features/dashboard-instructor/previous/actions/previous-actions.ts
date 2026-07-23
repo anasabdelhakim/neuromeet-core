@@ -1,7 +1,7 @@
 "use server";
 
 import { apiGet } from "@/src/lib/api-client";
-import { format } from "date-fns";
+import { formatEgyptTime } from "@/src/lib/format-date";
 import { PreviousMeeting } from "../types";
 
 export async function getPreviousMeetingsAction(): Promise<PreviousMeeting[]> {
@@ -56,7 +56,7 @@ export async function getPreviousMeetingsAction(): Promise<PreviousMeeting[]> {
       return {
         id: m.id,
         title: m.title || "Untitled Session",
-        dateTime: m.scheduledAt, // Send raw ISO string to client to fix UTC timezone shift
+        dateTime: formatEgyptTime(d, "MMMM d, yyyy 'at' h:mm a"),
         duration: realDuration,
         attendeesCount,
         totalStudents,

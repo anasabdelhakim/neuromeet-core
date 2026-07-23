@@ -15,7 +15,7 @@ import { editMeetingAction } from "../../home/actions/meeting-actions";
 import { Loader, ChevronDownIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { Calendar } from "@/src/components/ui/calendar";
-import { format } from "date-fns";
+import { formatEgyptTime } from "@/src/lib/format-date";
 import { cn } from "@/src/lib/utils";
 import { Card, CardContent } from "@/src/components/ui/card";
 import { Field, FieldLabel, FieldError } from "@/src/components/ui/field";
@@ -69,7 +69,7 @@ export function EditMeetingModal({
     if (!date) return;
     setIsLoading(true);
 
-    const dateStr = format(date, "yyyy-MM-dd");
+    const dateStr = formatEgyptTime(date, "yyyy-MM-dd");
     const scheduledAt = new Date(`${dateStr}T${time}`).toISOString();
 
     const res = await editMeetingAction(meetingId, {
@@ -132,7 +132,7 @@ export function EditMeetingModal({
                       !date && "text-muted-foreground",
                     )}
                   >
-                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                    {date ? formatEgyptTime(date, "PPP") : <span>Pick a date</span>}
                     <ChevronDownIcon className="h-4 w-4 opacity-50" />
                   </Button>}>
                 </PopoverTrigger>

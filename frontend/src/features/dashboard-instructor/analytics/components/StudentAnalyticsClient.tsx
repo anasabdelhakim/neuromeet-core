@@ -5,7 +5,7 @@ import { StudentAnalyticsDTO } from "../actions/analytics-actions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/src/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Activity, Clock, Trophy, Lightbulb } from "lucide-react";
-import { format } from "date-fns";
+import { formatEgyptTime } from "@/src/lib/format-date";
 import { DataCard } from "@/src/features/dashboard-shared/components/DataCard";
 
 export default function StudentAnalyticsClient({ data }: { data: StudentAnalyticsDTO }) {
@@ -16,7 +16,7 @@ export default function StudentAnalyticsClient({ data }: { data: StudentAnalytic
   const formattedTimeline = useMemo(() => {
     return data.timeline.map(t => ({
       ...t,
-      displayDate: format(new Date(t.date), "MMM dd"),
+      displayDate: formatEgyptTime(new Date(t.date), "MMM dd"),
       percent: t.engagement <= 1 && t.engagement > 0 ? Math.round(t.engagement * 100) : Math.round(t.engagement)
     }));
   }, [data.timeline]);

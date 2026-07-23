@@ -4,7 +4,7 @@ import { apiPost, apiGet, apiDelete, apiPatch } from "@/src/lib/api-client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { format } from "date-fns";
+import { formatEgyptTime } from "@/src/lib/format-date";
 
 const createMeetingSchema = z.object({
   title: z.string().optional().nullable(),
@@ -182,8 +182,8 @@ export async function getUpcomingMeetings() {
         title: m.title,
         group: m.group,
         groupName: m.group?.name || "General",
-        date: format(d, "MMMM d, yyyy"),
-        time: format(d, "h:mm a"),
+        date: formatEgyptTime(d, "MMMM d, yyyy"),
+        time: formatEgyptTime(d, "h:mm a"),
         dateTime: m.scheduledAt,
         duration: m.durationMinutes || 60,
         status: m.status,
@@ -215,8 +215,8 @@ export async function getTodayMeetings() {
         title: m.title,
         group: m.group,
         groupName: m.group?.name || "General",
-        date: format(d, "MMMM d, yyyy"),
-        time: format(d, "h:mm a"),
+        date: formatEgyptTime(d, "MMMM d, yyyy"),
+        time: formatEgyptTime(d, "h:mm a"),
         dateTime: m.scheduledAt,
         duration: m.durationMinutes || 60,
         status: m.status,

@@ -2,7 +2,7 @@ import { getStudentGroupsAction } from "../actions/student-groups-actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/components/ui/card";
 import { BookOpen, Users, GraduationCap, Calendar } from "lucide-react";
 import { GROUP_COLORS } from "@/src/features/dashboard-instructor/groups/constants/groups-constants";
-import { format } from "date-fns";
+import { formatEgyptTime } from "@/src/lib/format-date";
 
 type EnrolledGroup = {
   id: string;
@@ -69,7 +69,7 @@ export async function StudentGroupsList() {
                       </div>
                       <div className="flex items-center text-xs text-muted-foreground ">
                         <Calendar className="w-3.5 h-3.5 mr-1.5" />
-                        Joined {format(new Date(enrollment.joinedAt), "MMM d, yyyy")}
+                        Joined {formatEgyptTime(new Date(enrollment.joinedAt), "MMM d, yyyy")}
                       </div>
                     </div>
                   </div>

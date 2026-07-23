@@ -39,7 +39,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/src/components/ui/popover";
-import { format } from "date-fns";
+import { formatEgyptTime } from "@/src/lib/format-date";
 import { Calendar as CalendarIcon, Clock2Icon, ChevronDownIcon, Loader } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 function SubmitButton({ cta, btnClass, disabled }: { cta: string, btnClass: string, disabled?: boolean }) {
@@ -289,7 +289,7 @@ export function QuickActions() {
                             !date && "text-muted-foreground",
                           )}
                         >
-                          {date ? format(date, "PPP") : <span>Pick a date</span>}
+                          {date ? formatEgyptTime(date, "PPP") : <span>Pick a date</span>}
                           <ChevronDownIcon className="h-4 w-4 opacity-50" />
                         </Button>
                       } />
