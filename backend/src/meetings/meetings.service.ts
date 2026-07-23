@@ -198,6 +198,8 @@ export class MeetingsService {
         title: true,
         status: true,
         scheduledAt: true,
+        startedAt: true,
+        endedAt: true,
         durationMinutes: true,
         groupId: true,
         group: {
@@ -314,6 +316,8 @@ export class MeetingsService {
         title: true,
         status: true,
         scheduledAt: true,
+        startedAt: true,
+        endedAt: true,
         durationMinutes: true,
         groupId: true,
         group: {
