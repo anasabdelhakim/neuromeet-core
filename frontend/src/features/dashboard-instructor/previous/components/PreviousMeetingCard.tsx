@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardDescription, CardTitle } from "@/src/components/ui/card";
 import { AvatarChain } from "@/src/features/dashboard-instructor/constants/avatars";
 import { Clock, CheckCircle2, BarChart3, Play, Info } from "lucide-react";
@@ -7,10 +9,22 @@ import { Button, buttonVariants } from "@/src/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 import { MeetingActionsPopover } from "../../upcoming/components/MeetingActionsPopover";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { format } from "date-fns";
+
 interface PreviousMeetingCardProps {
   meeting: PreviousMeeting;
 }
 export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
+  // Client-side date formatting to avoid Vercel UTC hydration mismatch
+  const [formattedDate, setFormattedDate] = useState("Loading time...");
+  
+  useEffect(() => {
+    if (meeting.dateTime) {
+      setFormattedDate(format(new Date(meeting.dateTime), "MMMM d, yyyy 'at' h:mm a"));
+    }
+  }, [meeting.dateTime]);
+
   const rawScore = meeting.avgEngagement;
   const hasData = rawScore !== null && rawScore !== undefined;
   const engagementScore = hasData 
@@ -106,7 +120,7 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
               <CardDescription className="text-sm font-medium text-muted-foreground flex flex-wrap items-center gap-3 sm:gap-4 mt-1">
                 <div className="flex items-center gap-1.5 whitespace-nowrap">
                   <Clock size={16} className="text-primary-light" />
-                  <span>{meeting.dateTime}</span>
+                  <span>{formattedDate}</span>
                 </div>
                 <div className="flex items-center gap-1.5 whitespace-nowrap">
                   <span className="text-xs text-muted-foreground-muted hidden sm:inline-block">•</span>

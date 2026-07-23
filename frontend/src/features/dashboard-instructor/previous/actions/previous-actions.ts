@@ -56,7 +56,7 @@ export async function getPreviousMeetingsAction(): Promise<PreviousMeeting[]> {
       return {
         id: m.id,
         title: m.title || "Untitled Session",
-        dateTime: format(d, "MMMM d, yyyy 'at' h:mm a"),
+        dateTime: m.scheduledAt, // Send raw ISO string to client to fix UTC timezone shift
         duration: realDuration,
         attendeesCount,
         totalStudents,
