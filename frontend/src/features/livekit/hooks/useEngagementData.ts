@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef, startTransition } from 'react';
 import { useRoomContext } from '@livekit/components-react';
 import { RoomEvent, DataPacket_Kind } from 'livekit-client';
 export interface ParticipantScore {
@@ -20,47 +20,21 @@ import { syncEngagementStatsAction } from '@/src/features/dashboard-instructor/a
 export function useEngagementData(meetingId?: string) {
   const room = useRoomContext();
   const [scores, setScores] = useState<Record<string, ParticipantScore>>({});
+  const pendingRef = useRef<Record<string, any>>({});
+
   const handleData = useCallback(
     (
       payload: Uint8Array,
-      participant: unknown,
-      kind: DataPacket_Kind,
+      participant?: unknown,
+      kind?: DataPacket_Kind,
       topic?: string,
     ) => {
       if (topic !== 'engagement') return;
       try {
         const msg = JSON.parse(new TextDecoder().decode(payload));
         if (msg.type !== 'engagement_update') return;
-        setScores((prev) => {
-          const existing = prev[msg.participant_id] || {
-            cumulativeSum: 0,
-            cumulativeCount: 0,
-            totalFlips: 0,
-            wasDisengaged: false
-          };
-          const history = [
-            ...(existing?.history ?? []),
-            msg.engagement_score as number,
-          ].slice(-12);
-          const isDisengaged = msg.is_disengaged;
-          const newlyDisengaged = isDisengaged && !existing.wasDisengaged;
-          return {
-            ...prev,
-            [msg.participant_id]: {
-              participantId: msg.participant_id,
-              participantName: msg.participant_name || msg.participant_id,
-              engagementScore: msg.engagement_score,
-              isDisengaged,
-              label: msg.label,
-              ts: msg.ts,
-              history,
-              cumulativeSum: existing.cumulativeSum + msg.engagement_score,
-              cumulativeCount: existing.cumulativeCount + 1,
-              totalFlips: existing.totalFlips + (newlyDisengaged ? 1 : 0),
-              wasDisengaged: isDisengaged
-            },
-          };
-        });
+        // Accumulate — do NOT call setScores here (batched below)
+        pendingRef.current[msg.participant_id] = msg;
       } catch (e) {
         console.error('[useEngagementData] Failed to parse engagement payload', e);
       }
@@ -74,23 +48,51 @@ export function useEngagementData(meetingId?: string) {
       room.off(RoomEvent.DataReceived, handleData);
     };
   }, [room, handleData]);
+  // Flush pending messages into state once per second (batch all student updates)
+  useEffect(() => {
+    const flush = setInterval(() => {
+      const pending = pendingRef.current;
+      if (Object.keys(pending).length === 0) return;
+      pendingRef.current = {};
+      setScores(prev => {
+        const next = { ...prev };
+        for (const msg of Object.values(pending)) {
+          const existing = prev[msg.participant_id] || { cumulativeSum: 0, cumulativeCount: 0, totalFlips: 0, wasDisengaged: false, history: [] };
+          const history = [...(existing.history ?? []), msg.engagement_score as number].slice(-12);
+          const isDisengaged = msg.is_disengaged;
+          next[msg.participant_id] = {
+            participantId: msg.participant_id,
+            participantName: msg.participant_name || msg.participant_id,
+            engagementScore: msg.engagement_score,
+            isDisengaged,
+            label: msg.label,
+            ts: msg.ts,
+            history,
+            cumulativeSum: existing.cumulativeSum + msg.engagement_score,
+            cumulativeCount: existing.cumulativeCount + 1,
+            totalFlips: existing.totalFlips + (isDisengaged && !existing.wasDisengaged ? 1 : 0),
+            wasDisengaged: isDisengaged,
+          };
+        }
+        return next;
+      });
+    }, 1000);
+    return () => clearInterval(flush);
+  }, []);
+
+  const latestScoresRef = useRef(scores);
+  useEffect(() => { latestScoresRef.current = scores; }, [scores]);
+
   useEffect(() => {
     if (!meetingId) return;
     const interval = setInterval(() => {
-      setScores(currentScores => {
-        const stats = Object.values(currentScores).map(s => {
-          const avgScore = s.cumulativeCount > 0 ? s.cumulativeSum / s.cumulativeCount : 0;
-          return {
-            participantIdentity: s.participantName, // the name or email matching the DB
-            avgEngagementScore: avgScore,
-            adhdFlagged: s.totalFlips > 0 // if they flipped to disengaged at least once
-          };
-        });
-        if (stats.length > 0) {
-          syncEngagementStatsAction(meetingId, stats);
-        }
-        return currentScores;
+      const stats = Object.values(latestScoresRef.current).map(s => {
+        const avgScore = s.cumulativeCount > 0 ? s.cumulativeSum / s.cumulativeCount : 0;
+        return { participantIdentity: s.participantName, avgEngagementScore: avgScore, adhdFlagged: s.totalFlips > 0 };
       });
+      if (stats.length > 0) {
+        startTransition(() => { void syncEngagementStatsAction(meetingId, stats); });
+      }
     }, 15000);
     return () => clearInterval(interval);
   }, [meetingId]);

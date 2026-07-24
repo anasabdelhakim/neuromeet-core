@@ -15,7 +15,7 @@ interface ParticipantListProps {
 export function ParticipantList({ meetingTitle = "Instant Session", meetingPasscode = "443451", meetingId = "test-room" }: ParticipantListProps) {
   const participants = useParticipants();
   const { copiedKey, copy } = useCopyFeedback(2000);
-  const [isInfoExpanded, setIsInfoExpanded] = useState(false);
+  const [isInfoExpanded, setIsInfoExpanded] = useState(true);
   const room = useRoomContext();
 
   const handleKick = async (identity: string) => {
@@ -35,68 +35,70 @@ export function ParticipantList({ meetingTitle = "Instant Session", meetingPassc
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {}
-      <div className="border-b border-border bg-black-soft-subtle/50 flex-shrink-0 select-text">
-        <button
-          onClick={() => setIsInfoExpanded(!isInfoExpanded)}
-          className="w-full p-4 flex items-center justify-between text-xs font-bold text-muted-foreground uppercase tracking-wider hover:text-white transition-colors select-none cursor-pointer"
-        >
-          <span className="flex items-center gap-2">
-            <Info size={14} className="text-brand-cyan" />
-            Meeting Joining Info
-          </span>
-          {isInfoExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-        </button>
+      {localIsInstructor && (
+        <div className="border-b border-border bg-black-soft-subtle/50 flex-shrink-0 select-text">
+          <button
+            onClick={() => setIsInfoExpanded(!isInfoExpanded)}
+            className="w-full p-4 flex items-center justify-between text-xs font-bold text-muted-foreground uppercase tracking-wider hover:text-white transition-colors select-none cursor-pointer"
+          >
+            <span className="flex items-center gap-2">
+              <Info size={14} className="text-brand-cyan" />
+              Meeting Joining Info
+            </span>
+            {isInfoExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </button>
 
-        {isInfoExpanded && (
-          <div className="px-4 pb-4 pt-1 space-y-3 animate-in fade-in-50 duration-200">
-            <div className="space-y-3 text-xs">
-              <div>
-                <span className="text-muted-foreground font-medium">Link:</span>
-                <div className="mt-1 flex items-center justify-between gap-2 p-2 bg-black-soft-muted rounded-md border border-border group/link">
-                  <span className="font-mono text-primary-light truncate select-all">
-                    {`${typeof window !== "undefined" ? window.location.origin : ""}/meeting/join/${meetingId}`}
-                  </span>
-                  <button
-                    onClick={() => {
-                      copy(`${window.location.origin}/meeting/join/${meetingId}`, "link");
-                    }}
-                    title="Copy Link"
-                    className="flex-shrink-0 w-6 h-6 rounded flex items-center justify-center bg-muted/50 group-hover/link:bg-muted text-muted-foreground hover:!text-white transition-colors cursor-pointer"
-                  >
-                    {copiedKey === "link" ? <Check size={12} className="text-status-success" /> : <Copy size={12} />}
-                  </button>
+          {isInfoExpanded && (
+            <div className="px-4 pb-4 pt-1 space-y-3 animate-in fade-in-50 duration-200">
+              <div className="space-y-3 text-xs">
+                <div>
+                  <span className="text-muted-foreground font-medium">Link:</span>
+                  <div className="mt-1 flex items-center justify-between gap-2 p-2 bg-black-soft-muted rounded-md border border-border group/link">
+                    <span className="font-mono text-primary-light truncate select-all">
+                      {`${typeof window !== "undefined" ? window.location.origin : ""}/meeting/join/${meetingId}`}
+                    </span>
+                    <button
+                      onClick={() => {
+                        copy(`${window.location.origin}/meeting/join/${meetingId}`, "link");
+                      }}
+                      title="Copy Link"
+                      className="flex-shrink-0 w-6 h-6 rounded flex items-center justify-center bg-muted/50 group-hover/link:bg-muted text-muted-foreground hover:!text-white transition-colors cursor-pointer"
+                    >
+                      {copiedKey === "link" ? <Check size={12} className="text-status-success" /> : <Copy size={12} />}
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <span className="text-muted-foreground font-medium">Passcode:</span>
+                  <div className="mt-1 flex items-center justify-between gap-2 p-2 bg-black-soft-muted rounded-md border border-border group/passcode">
+                    <span className="font-mono font-bold text-white tracking-widest select-all">
+                      {meetingPasscode}
+                    </span>
+                    <button
+                      onClick={() => {
+                        copy(meetingPasscode, "passcode");
+                      }}
+                      title="Copy Passcode"
+                      className="flex-shrink-0 w-6 h-6 rounded flex items-center justify-center bg-muted/50 group-hover/passcode:bg-muted text-muted-foreground hover:!text-white transition-colors cursor-pointer"
+                    >
+                      {copiedKey === "passcode" ? <Check size={12} className="text-status-success" /> : <Copy size={12} />}
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div>
-                <span className="text-muted-foreground font-medium">Passcode:</span>
-                <div className="mt-1 flex items-center justify-between gap-2 p-2 bg-black-soft-muted rounded-md border border-border group/passcode">
-                  <span className="font-mono font-bold text-white tracking-widest select-all">
-                    {meetingPasscode}
-                  </span>
-                  <button
-                    onClick={() => {
-                      copy(meetingPasscode, "passcode");
-                    }}
-                    title="Copy Passcode"
-                    className="flex-shrink-0 w-6 h-6 rounded flex items-center justify-center bg-muted/50 group-hover/passcode:bg-muted text-muted-foreground hover:!text-white transition-colors cursor-pointer"
-                  >
-                    {copiedKey === "passcode" ? <Check size={12} className="text-status-success" /> : <Copy size={12} />}
-                  </button>
-                </div>
-              </div>
+              <button
+                onClick={() => {
+                  copy(`Join my meeting: ${meetingTitle}\nLink: ${window.location.origin}/meeting/join/${meetingId}\nPasscode: ${meetingPasscode}`, "all");
+                }}
+                className="w-full flex items-center justify-center gap-1.5 bg-secondary hover:bg-secondary/80 text-white border border-border font-bold py-2 rounded-lg text-xs transition-colors shadow-sm mt-1"
+              >
+                {copiedKey === "all" ? <Check size={14} className="text-status-success" /> : <Copy size={14} />}
+                <span>{copiedKey === "all" ? "Copied Joining Info!" : "Copy Joining Info"}</span>
+              </button>
             </div>
-            <button
-              onClick={() => {
-                copy(`Join my meeting: ${meetingTitle}\nLink: ${window.location.origin}/meeting/join/${meetingId}\nPasscode: ${meetingPasscode}`, "all");
-              }}
-              className="w-full flex items-center justify-center gap-1.5 bg-secondary hover:bg-secondary/80 text-white border border-border font-bold py-2 rounded-lg text-xs transition-colors shadow-sm mt-1"
-            >
-              {copiedKey === "all" ? <Check size={14} className="text-status-success" /> : <Copy size={14} />}
-              <span>{copiedKey === "all" ? "Copied Joining Info!" : "Copy Joining Info"}</span>
-            </button>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
 
       <div className="px-5 py-3 border-b border-border flex-shrink-0">
         <p className="text-xs text-muted-foreground font-medium">

@@ -45,19 +45,23 @@ interface SidebarProps {
   meetingTitle?: string;
   meetingPasscode?: string;
   meetingId?: string;
+  participantCount: number;
 }
-function Sidebar({ activeTab, isInstructor, onClose, meetingTitle, meetingPasscode, meetingId }: SidebarProps) {
+function Sidebar({ activeTab, isInstructor, onClose, meetingTitle, meetingPasscode, meetingId, participantCount }: SidebarProps) {
   const tabLabels: Record<NonNullable<ActiveSidebarTab>, string> = {
     chat: "In-call messages",
     participants: "People",
     engagement: "Live Engagement",
   };
-  const participants = useParticipants();
-  const participantCount = participants.length;
   return (
-    <aside className="absolute md:relative inset-y-0 right-0 z-50 w-full md:w-[360px] h-full bg-background/95 backdrop-blur-xl border-l border-border flex flex-col shadow-[-4px_0_24px_rgba(0,0,0,0.15)] transition-all duration-300">
-      {}
-      <div className="p-4 flex items-center justify-between border-b border-border">
+    <aside 
+      className={cn(
+        "absolute md:relative inset-y-0 right-0 z-50 h-full bg-background/95 backdrop-blur-xl border-border flex flex-col shadow-[-4px_0_24px_rgba(0,0,0,0.15)] transition-all duration-300", 
+        activeTab ? "w-full md:w-[360px] translate-x-0 border-l" : "w-0 translate-x-full border-l-0 opacity-0 overflow-hidden"
+      )}
+    >
+      {/* Header */}
+      <div className="p-4 flex items-center justify-between border-b border-border min-w-[360px]">
         <h2 className="text-base font-bold text-foreground">
           {activeTab ? tabLabels[activeTab] : ""}
         </h2>
@@ -69,30 +73,30 @@ function Sidebar({ activeTab, isInstructor, onClose, meetingTitle, meetingPassco
           <X size={18} />
         </button>
       </div>
-      {}
-      {activeTab === "participants" && (
-        <div className="p-4 flex items-center justify-between bg-muted/30 border-b border-border select-none">
-          <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
-            <Users size={18} />
-            <span>{participantCount} Participants</span>
-          </div>
-          {isInstructor && (
-            <button className="text-primary hover:bg-primary/10 hover:text-primary h-8 px-3 text-xs font-bold rounded-md transition-colors border border-primary/20">
-              Mute All
-            </button>
-          )}
+      
+      {/* Participants Header */}
+      <div className={cn("p-4 items-center justify-between bg-muted/30 border-b border-border select-none min-w-[360px]", activeTab === "participants" ? "flex" : "hidden")}>
+        <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
+          <Users size={18} />
+          <span>{participantCount} Participants</span>
         </div>
-      )}
-      {}
-      <div className="flex-1 overflow-hidden flex flex-col bg-card">
-        {activeTab === "chat" && (
-          <div className="flex-1 overflow-hidden flex flex-col bg-card ">
-            <Chat />
-          </div>
+        {isInstructor && (
+          <button className="text-primary hover:bg-primary/10 hover:text-primary h-8 px-3 text-xs font-bold rounded-md transition-colors border border-primary/20">
+            Mute All
+          </button>
         )}
-        {activeTab === "participants" && <ParticipantList meetingTitle={meetingTitle} meetingPasscode={meetingPasscode} meetingId={meetingId} />}
-        {activeTab === "engagement" && isInstructor && (
-          <div className="flex-1 overflow-y-auto p-3">
+      </div>
+
+      {/* Content Areas */}
+      <div className="flex-1 overflow-hidden flex flex-col bg-card min-w-[360px]">
+        <div className={cn("flex-1 overflow-hidden flex flex-col bg-card", activeTab !== "chat" && "hidden")}>
+          <Chat />
+        </div>
+        <div className={cn("flex-1 overflow-hidden flex flex-col", activeTab !== "participants" && "hidden")}>
+          <ParticipantList meetingTitle={meetingTitle} meetingPasscode={meetingPasscode} meetingId={meetingId} />
+        </div>
+        {isInstructor && (
+          <div className={cn("flex-1 overflow-y-auto p-3", activeTab !== "engagement" && "hidden")}>
             <EngagementDashboard />
           </div>
         )}
@@ -116,14 +120,11 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
   const [activeTab, setActiveTab] = useState<ActiveSidebarTab>(null);
   const [showJoiningInfoModal, setShowJoiningInfoModal] = useState(false);
   const { copiedKey, copy } = useCopyFeedback(2000);
+  const participantCount = useParticipants().length;
   useEffect(() => {
     if (isInstructor && meetingId) {
       const storageKey = `dismissed_joining_info_${meetingId}`;
-      if (!sessionStorage.getItem(storageKey)) {
-        setShowJoiningInfoModal(true);
-      } else {
-        setShowJoiningInfoModal(false);
-      }
+      setShowJoiningInfoModal(!sessionStorage.getItem(storageKey));
     }
   }, [isInstructor, meetingId]);
   const handleDismissJoiningInfo = () => {
@@ -134,10 +135,10 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
   };
   const tracks = useTracks(
     [
-      { source: Track.Source.Camera, withPlaceholder: false },
+      { source: Track.Source.Camera, withPlaceholder: true },
       { source: Track.Source.ScreenShare, withPlaceholder: false },
     ],
-    { updateOnlyOn: [], onlySubscribed: true }
+    { onlySubscribed: false }
   );
   const toggleTab = (tab: NonNullable<ActiveSidebarTab>) => {
     setActiveTab((prev) => (prev === tab ? null : tab));
@@ -233,17 +234,15 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
             </div>
           )}
         </main>
-        {}
-        {activeTab && (
-          <Sidebar
-            activeTab={activeTab}
-            isInstructor={isInstructor}
-            onClose={() => setActiveTab(null)}
-            meetingTitle={meetingTitle}
-            meetingPasscode={meetingPasscode}
-            meetingId={meetingId}
-          />
-        )}
+        <Sidebar
+          activeTab={activeTab}
+          isInstructor={isInstructor}
+          onClose={() => setActiveTab(null)}
+          meetingTitle={meetingTitle}
+          meetingPasscode={meetingPasscode}
+          meetingId={meetingId}
+          participantCount={participantCount}
+        />
       </div>
       {}
       <MeetingControls
@@ -253,6 +252,7 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
         onToggleTab={toggleTab}
         meetingId={meetingId}
         isGuest={isGuest}
+        participantCount={participantCount}
       />
     </div>
   );

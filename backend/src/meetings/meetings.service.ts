@@ -1,3 +1,4 @@
+import { Cron, CronExpression } from '@nestjs/schedule';
 import {
   Injectable,
   NotFoundException,
@@ -680,22 +681,47 @@ export class MeetingsService {
       this.cache.del(`participants:${meetingId}`),
     ]);
     if (meeting.livekitRoomName) {
-      this.botService
-        .recallBotFromRoom(meeting.livekitRoomName)
-        .catch((err) => {
-          console.error('Failed to recall bot:', err);
-        });
       const roomService = new RoomServiceClient(
         process.env.LIVEKIT_URL || process.env.LIVEKIT_API_URL || '',
         process.env.LIVEKIT_API_KEY || '',
         process.env.LIVEKIT_API_SECRET || '',
       );
-      roomService.deleteRoom(meeting.livekitRoomName).catch((err: any) => {
-        console.error('Failed to delete LiveKit room:', err);
-      });
+      // Recall bot first, then delete room — both awaited so errors surface clearly
+      try {
+        await this.botService.recallBotFromRoom(meeting.livekitRoomName);
+      } catch (err) {
+        console.error('[endMeeting] Failed to recall bot:', err);
+      }
+      try {
+        await roomService.deleteRoom(meeting.livekitRoomName);
+        console.log(`[endMeeting] LiveKit room deleted: ${meeting.livekitRoomName}`);
+      } catch (err) {
+        console.error('[endMeeting] CRITICAL: Failed to delete LiveKit room — ghost session may be active:', err);
+      }
     }
     return { status: 'success', message: 'Meeting ended successfully' };
   }
+
+  /** Called by the LiveKit webhook when a room empties — no userId check needed */
+  async endMeetingByRoomName(roomName: string): Promise<void> {
+    const meeting = await this.prisma.meeting.findFirst({
+      where: { livekitRoomName: roomName, status: 'LIVE' },
+      select: { id: true, hostId: true },
+    });
+    if (!meeting) return; // Already ended or not found — nothing to do
+
+    await this.prisma.meeting.update({
+      where: { id: meeting.id },
+      data: { status: 'ENDED', endedAt: new Date() },
+    });
+    await Promise.all([
+      this.cache.del(`meeting:${meeting.id}`),
+      this.cache.del(`meetings:user:${meeting.hostId}`),
+      this.cache.del(`participants:${meeting.id}`),
+    ]);
+    console.log(`[Webhook] ✅ DB meeting ended for room: ${roomName} (id: ${meeting.id})`);
+  }
+
   async leaveMeeting(meetingIdOrRoom: string, userId: string) {
     const meeting = await this.prisma.meeting.findFirst({
       where: {
@@ -987,5 +1013,78 @@ export class MeetingsService {
     }
     await this.cache.del(`participants:${meetingId}`);
     return { success: true };
+  }
+
+  @Cron(CronExpression.EVERY_5_MINUTES)
+  async cleanupGhostMeetings() {
+    const liveMeetings = await this.prisma.meeting.findMany({
+      where: { status: 'LIVE' },
+      select: { id: true, livekitRoomName: true, hostId: true },
+    });
+
+    console.log(`[Cron] cleanupGhostMeetings running. Found ${liveMeetings.length} LIVE meeting(s).`);
+    if (liveMeetings.length === 0) return;
+
+    const roomService = new RoomServiceClient(
+      process.env.LIVEKIT_URL || process.env.LIVEKIT_API_URL || '',
+      process.env.LIVEKIT_API_KEY || '',
+      process.env.LIVEKIT_API_SECRET || '',
+    );
+
+    for (const meeting of liveMeetings) {
+      if (!meeting.livekitRoomName) continue;
+      
+      let shouldEnd = false;
+      try {
+        const lkParticipants = await roomService.listParticipants(
+          meeting.livekitRoomName,
+        );
+        // Filter out any AI bot identities — they all follow the pattern ai-bot-*
+        const actualUsers = lkParticipants.filter(
+          (p) =>
+            !p.identity.startsWith('ai-bot-') &&
+            !p.identity.includes('bot') &&
+            p.identity !== 'engagement-bot',
+        );
+        
+        console.log(`[Cron] Room ${meeting.livekitRoomName}: ${lkParticipants.length} total, ${actualUsers.length} human(s).`);
+        
+        if (actualUsers.length === 0) {
+          shouldEnd = true;
+        }
+      } catch (err) {
+        // Room does not exist in LiveKit at all — definitely end it
+        console.log(`[Cron] Room ${meeting.livekitRoomName} not found in LiveKit (already gone). Marking as ENDED.`);
+        shouldEnd = true;
+      }
+
+      if (shouldEnd) {
+        await this.prisma.meeting.update({
+          where: { id: meeting.id },
+          data: { status: 'ENDED', endedAt: new Date() },
+        });
+
+        await Promise.all([
+          this.cache.del(`meeting:${meeting.id}`),
+          this.cache.del(`meetings:user:${meeting.hostId}`),
+          this.cache.del(`participants:${meeting.id}`),
+        ]);
+
+        // Force-kill the room in LiveKit (this disconnects the bot too)
+        try {
+          await roomService.deleteRoom(meeting.livekitRoomName);
+          console.log(`[Cron] ✅ LiveKit room force-deleted: ${meeting.livekitRoomName}`);
+        } catch (e) {
+          console.log(`[Cron] Room already gone from LiveKit: ${meeting.livekitRoomName}`);
+        }
+
+        // Also signal dispatch_server to terminate the bot process
+        this.botService.recallBotFromRoom(meeting.livekitRoomName).catch(() =>
+          console.log(`[Cron] Recall signal sent (bot may already be gone).`),
+        );
+        
+        console.log(`[Cron] ✅ Auto-cleaned ghost meeting: ${meeting.id}`);
+      }
+    }
   }
 }

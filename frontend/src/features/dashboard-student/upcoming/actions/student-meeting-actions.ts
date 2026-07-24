@@ -18,7 +18,9 @@ export async function getStudentUpcomingMeetings() {
       if (m.startedAt && m.endedAt) {
         const start = new Date(m.startedAt).getTime();
         const end = new Date(m.endedAt).getTime();
-        realDuration = Math.max(1, Math.round((end - start) / 60000));
+        const calculated = Math.max(1, Math.round((end - start) / 60000));
+        const maxReasonable = (m.durationMinutes || 60) * 3;
+        realDuration = calculated > maxReasonable ? (m.durationMinutes || 60) : calculated;
       }
 
       return {
@@ -53,7 +55,9 @@ export async function getStudentTodayMeetings() {
       if (m.startedAt && m.endedAt) {
         const start = new Date(m.startedAt).getTime();
         const end = new Date(m.endedAt).getTime();
-        realDuration = Math.max(1, Math.round((end - start) / 60000));
+        const calculated = Math.max(1, Math.round((end - start) / 60000));
+        const maxReasonable = (m.durationMinutes || 60) * 3;
+        realDuration = calculated > maxReasonable ? (m.durationMinutes || 60) : calculated;
       }
 
       return {

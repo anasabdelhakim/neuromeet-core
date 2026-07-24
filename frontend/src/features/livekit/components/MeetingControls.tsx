@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { useLocalParticipant, useParticipants, useRoomContext } from "@livekit/components-react";
+import { useLocalParticipant, useRoomContext } from "@livekit/components-react";
 import { 
   MessageSquare, 
   PhoneOff, 
@@ -19,8 +19,15 @@ import {
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import type { ActiveSidebarTab } from "../types/meeting-types";
-import { useClock } from "@/src/hooks/useClock";
 import { leaveMeetingAction } from "@/src/features/dashboard-instructor/home/actions/meeting-actions";
+function MeetingClock() {
+  const [time, setTime] = useState(() => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+  useEffect(() => {
+    const t = setInterval(() => setTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })), 1000);
+    return () => clearInterval(t);
+  }, []);
+  return <span>{time}</span>;
+}
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,6 +44,7 @@ interface MeetingControlsProps {
   onToggleTab: (tab: NonNullable<ActiveSidebarTab>) => void;
   meetingId?: string;
   isGuest?: boolean;
+  participantCount: number;
 }
 interface IconButtonProps {
   icon: React.ReactNode;
@@ -74,6 +82,7 @@ export function MeetingControls({
   onToggleTab,
   meetingId,
   isGuest = false,
+  participantCount,
 }: MeetingControlsProps) {
   const { 
     isMicrophoneEnabled, 
@@ -81,10 +90,7 @@ export function MeetingControls({
     isScreenShareEnabled, 
     localParticipant 
   } = useLocalParticipant();
-  const participants = useParticipants();
-  const participantCount = participants.length;
   const roomContext = useRoomContext();
-  const currentTime = useClock();
   const [isRecording, setIsRecording] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showGuestAlert, setShowGuestAlert] = useState(false);
@@ -182,7 +188,7 @@ export function MeetingControls({
     try {
       const videoTrack = stream.getVideoTracks()[0];
       if (!videoTrack) return;
-      const video = document.createElement("video");
+      let video: HTMLVideoElement | null = document.createElement("video");
       video.srcObject = new MediaStream([videoTrack]);
       video.autoplay = true;
       video.muted = true;
@@ -192,13 +198,13 @@ export function MeetingControls({
           canvas.width = 640;
           canvas.height = 360;
           const ctx = canvas.getContext("2d");
-          if (ctx) {
+          if (ctx && video) {
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
-            thumbnailRef.current = dataUrl;
+            thumbnailRef.current = canvas.toDataURL("image/jpeg", 0.7);
           }
-          video.srcObject = null;
-        }, 2000); // Wait 2 seconds for the screen content to fully render
+          // Clean up — allow GC to collect both elements
+          if (video) { video.srcObject = null; video = null; }
+        }, 2000);
       };
     } catch (err) {
       console.error("Failed to capture thumbnail:", err);
@@ -327,7 +333,7 @@ export function MeetingControls({
       {}
       <div className="hidden md:flex flex-col justify-center min-w-[150px] max-w-[250px]">
         <div className="text-sm sm:text-base font-semibold text-foreground tracking-tight tabular-nums">
-          {currentTime}
+          <MeetingClock />
         </div>
         <div className="text-xs text-muted-foreground truncate font-medium">
           {readableRoom}

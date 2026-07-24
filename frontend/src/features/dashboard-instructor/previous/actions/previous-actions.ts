@@ -50,7 +50,11 @@ export async function getPreviousMeetingsAction(): Promise<PreviousMeeting[]> {
       if (m.startedAt && m.endedAt) {
         const start = new Date(m.startedAt).getTime();
         const end = new Date(m.endedAt).getTime();
-        realDuration = Math.max(1, Math.round((end - start) / 60000));
+        const calculated = Math.max(1, Math.round((end - start) / 60000));
+        // Safety cap: if the calculated duration is absurdly large (e.g. ghost meeting),
+        // cap it at double the scheduled duration to avoid showing 500+ mins
+        const maxReasonable = (m.durationMinutes || 60) * 3;
+        realDuration = calculated > maxReasonable ? (m.durationMinutes || 60) : calculated;
       }
 
       return {

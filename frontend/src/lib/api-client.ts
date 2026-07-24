@@ -111,6 +111,6 @@ export async function apiPost<T>(endpoint: string, body: Record<string, unknown>
 export async function apiPatch<T>(endpoint: string, body: Record<string, unknown> | FormData): Promise<T> {
   return request<T>(endpoint, 'PATCH', body);
 }
-export async function apiDelete<T>(endpoint: string): Promise<T> {
-  return request<T>(endpoint, 'DELETE');
+export async function apiDelete<T>(endpoint: string, body?: Record<string, unknown> | FormData): Promise<T> {
+  return request<T>(endpoint, 'DELETE', body);
 }

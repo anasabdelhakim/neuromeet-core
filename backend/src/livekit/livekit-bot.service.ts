@@ -19,7 +19,7 @@ export class LiveKitBotService {
       {
         identity: `ai-bot-${roomId}`,
         name: 'EngagementBot',
-        ttl: '6h',
+        ttl: '2h', // Reduced from 6h — limits ghost bot lifetime
       },
     );
     at.addGrant({
@@ -35,16 +35,18 @@ export class LiveKitBotService {
   
   async dispatchBotToRoom(roomId: string): Promise<void> {
     const botToken = await this.generateBotToken(roomId);
-    const workerUrl = this.config.get<string>(
-      'AI_WORKER_URL',
-      'http://127.0.0.1:8080',
-    );
+    const workerUrl = this.config.get<string>('AI_WORKER_URL') || 'http://127.0.0.1:8080';
+
+    // Always pass the LiveKit URL so the bot knows which cluster to connect to.
+    // This also ensures if API keys change, the bot uses the correct URL.
+    const livekitUrl = this.config.get<string>('LIVEKIT_URL') ||
+      this.config.get<string>('LIVEKIT_API_URL') || '';
     try {
       await firstValueFrom(
         this.http.post(`${workerUrl}/api/dispatch`, {
           room_name: roomId,
           token: botToken,
-          metadata: { purpose: 'engagement_analysis' },
+          livekit_url: livekitUrl,
         }),
       );
       this.logger.log(`Bot dispatched to room: ${roomId}`);
@@ -56,10 +58,7 @@ export class LiveKitBotService {
   }
   
   async recallBotFromRoom(roomId: string): Promise<void> {
-    const workerUrl = this.config.get<string>(
-      'AI_WORKER_URL',
-      'http://127.0.0.1:8080',
-    );
+    const workerUrl = this.config.get<string>('AI_WORKER_URL') || 'http://127.0.0.1:8080';
     await firstValueFrom(
       this.http.post(`${workerUrl}/api/recall`, { room_name: roomId }),
     ).catch((e) =>

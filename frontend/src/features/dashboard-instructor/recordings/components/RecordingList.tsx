@@ -147,7 +147,7 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
             </div>
             <Button 
               className="rounded-medium gap-2" 
-              onClick={() => currentStatus !== "PROCESSING" && setIsPlayerOpen(true)}
+              onClick={(e) => { e.stopPropagation(); currentStatus !== "PROCESSING" && setIsPlayerOpen(true); }}
               disabled={currentStatus === "PROCESSING"}
             >
               {currentStatus === "PROCESSING" ? (

@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import {
   LiveKitRoom,
   RoomAudioRenderer,
@@ -32,7 +31,6 @@ export default function MeetingPage({
   const router = useRouter();
 
   const handleDisconnected = async () => {
-    router.refresh();
     router.replace(
       isInstructor ? "/dashboard-instructor" : "/dashboard-student"
     );
@@ -40,8 +38,8 @@ export default function MeetingPage({
 
   return (
     <LiveKitRoom
-      video={true}
-      audio={true}
+      video={false}
+      audio={false}
       token={token}
       serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
       data-lk-theme="default"
@@ -51,14 +49,15 @@ export default function MeetingPage({
         dynacast: true,
         publishDefaults: {
           simulcast: true,
-          videoCodec: "vp9",
+          audioPreset: { maxBitrate: 20_000 },
+          dtx: true,
           screenShareEncoding: {
-            maxBitrate: 1500000,
+            maxBitrate: 1_500_000,
             maxFramerate: 30,
           }
         },
         videoCaptureDefaults: {
-          resolution: { width: 640, height: 480, frameRate: 24 }, 
+          resolution: { width: 640, height: 480, frameRate: 24 },
         },
         audioCaptureDefaults: {
           autoGainControl: true,
