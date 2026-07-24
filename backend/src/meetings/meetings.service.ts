@@ -350,8 +350,8 @@ export class MeetingsService {
       }
       return { status: 'success', data: cached };
     }
-    const meeting = await this.prisma.meeting.findUnique({
-      where: { id: meetingId },
+    const meeting = await this.prisma.meeting.findFirst({
+      where: { OR: [{ id: meetingId }, { livekitRoomName: meetingId }] },
       select: {
         id: true,
         title: true,
@@ -646,13 +646,14 @@ export class MeetingsService {
         data: { status: 'LIVE', startedAt: new Date() },
       });
       await this.cache.del(`meeting:${meetingId}`);
-      if (meeting.livekitRoomName) {
-        this.botService
-          .dispatchBotToRoom(meeting.livekitRoomName)
-          .catch((err) => {
-            console.error('Failed to dispatch bot:', err);
-          });
-      }
+    }
+
+    if (meeting.livekitRoomName) {
+      this.botService
+        .dispatchBotToRoom(meeting.livekitRoomName)
+        .catch((err) => {
+          console.error('Failed to dispatch bot:', err);
+        });
     }
     return {
       status: 'success',

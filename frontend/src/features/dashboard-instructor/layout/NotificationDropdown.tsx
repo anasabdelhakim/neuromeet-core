@@ -109,7 +109,9 @@ function useNotifications() {
     () => getNotificationsAction(),
     { 
       refreshInterval: 30000,
-      revalidateOnFocus: true, // Instantly fetches when user comes back to tab
+      revalidateOnFocus: true,
+      dedupingInterval: 10000, 
+      focusThrottleInterval: 10000, 
     }
   );
 

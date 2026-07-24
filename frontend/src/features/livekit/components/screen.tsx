@@ -38,8 +38,8 @@ export default function MeetingPage({
 
   return (
     <LiveKitRoom
-      video={false}
-      audio={false}
+      video={true}
+      audio={true}
       token={token}
       serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
       data-lk-theme="default"
@@ -57,7 +57,7 @@ export default function MeetingPage({
           }
         },
         videoCaptureDefaults: {
-          resolution: { width: 640, height: 480, frameRate: 24 },
+          resolution: { width: 1280, height: 720, frameRate: 30 },
         },
         audioCaptureDefaults: {
           autoGainControl: true,
