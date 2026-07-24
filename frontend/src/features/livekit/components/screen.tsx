@@ -38,8 +38,8 @@ export default function MeetingPage({
 
   return (
     <LiveKitRoom
-      video={true}
-      audio={true}
+      video={false}
+      audio={false}
       token={token}
       serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
       data-lk-theme="default"

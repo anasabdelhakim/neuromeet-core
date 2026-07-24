@@ -22,6 +22,11 @@ export function useEngagementData(meetingId?: string) {
   const [scores, setScores] = useState<Record<string, ParticipantScore>>({});
   const pendingRef = useRef<Record<string, any>>({});
 
+  useEffect(() => {
+    setScores({});
+    pendingRef.current = {};
+  }, [meetingId]);
+
   const handleData = useCallback(
     (
       payload: Uint8Array,
