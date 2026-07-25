@@ -38,7 +38,7 @@ export function RecordingPlayerModal({ isOpen, onClose, title, gDriveViewLink }:
           <DialogTitle className="text-white font-semibold text-lg pr-16">{title}</DialogTitle>
           <button 
             onClick={toggleFullscreen}
-            className="absolute top-0 max-smL:end-6 end-10 text-muted-foreground hover:text-white transition-colors bg-black/50 hover:bg-black/80 h-8 w-8 rounded-md flex items-center justify-center border border-border/50 z-50"
+            className="absolute top-0 max-sm:end-6 end-10 text-muted-foreground hover:text-white transition-colors bg-black/50 hover:bg-black/80 h-8 w-8 rounded-md flex items-center justify-center border border-border/50 z-50"
             title="View Fullscreen"
           >
             <Maximize size={16} />
