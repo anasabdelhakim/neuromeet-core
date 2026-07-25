@@ -1,6 +1,7 @@
 "use client";
+import * as React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
-import { Info } from "lucide-react";
+import { Info, Maximize } from "lucide-react";
 interface RecordingPlayerModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -9,6 +10,18 @@ interface RecordingPlayerModalProps {
 }
 export function RecordingPlayerModal({ isOpen, onClose, title, gDriveViewLink }: RecordingPlayerModalProps) {
   const embedUrl = gDriveViewLink.replace("/view", "/preview");
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      containerRef.current?.requestFullscreen().catch(err => {
+        console.warn("Fullscreen error:", err);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
   return (
     <Dialog 
       open={isOpen} 
@@ -20,11 +33,18 @@ export function RecordingPlayerModal({ isOpen, onClose, title, gDriveViewLink }:
       }}
       disablePointerDismissal={true}
     >
-      <DialogContent className="w-[95vw] max-w-lg sm:max-w-3xl md:max-w-[80vw] lg:max-w-[75vw] xl:max-w-[70vw] h-auto md:h-[80vh] max-h-[90vh] flex flex-col p-3 sm:p-4 rounded-soft border border-border bg-card backdrop-blur-2xl shadow-2xl">
-        <DialogHeader>
+      <DialogContent className="max-w-[95vw] sm:max-w-5xl md:max-w-[90vw] xl:max-w-[85vw] h-[85vh] flex flex-col p-4 rounded-soft border border-border bg-card backdrop-blur-2xl shadow-2xl">
+        <DialogHeader className="flex flex-row items-center justify-between">
           <DialogTitle className="text-white font-semibold text-lg">{title}</DialogTitle>
+          <button 
+            onClick={toggleFullscreen}
+            className="text-muted-foreground hover:text-white transition-colors bg-black/50 p-1.5 rounded-md flex items-center justify-center border border-border/50"
+            title="Toggle Fullscreen"
+          >
+            <Maximize size={16} />
+          </button>
         </DialogHeader>
-        <div className="w-full aspect-video md:aspect-auto md:flex-1 rounded-soft overflow-hidden bg-black relative mt-2">
+        <div ref={containerRef} className="flex-1 w-full h-full rounded-soft overflow-hidden bg-black relative mt-2">
           {embedUrl ? (
             <iframe
               src={embedUrl}
