@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { randomBytes } from 'crypto';
+import { randomBytes, createHash } from 'crypto';
 import { AUTH_CONSTANTS } from 'src/config/auth.constants';
 import { PrismaService } from 'src/database/database.service';
 type UserData = {
@@ -105,16 +105,17 @@ export class OAuthService {
           },
         ),
       ]);
-      const hashedRefreshToken = await (Bun.password as any).hash(
-        refresh_token,
-        {
-          algorithm: 'bcrypt',
-          cost: 10,
+      const hashedRefreshToken = createHash('sha256')
+        .update(refresh_token)
+        .digest('hex');
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 7);
+      await this.prisma.session.create({
+        data: {
+          refreshToken: hashedRefreshToken,
+          userId: user.id,
+          expiresAt,
         },
-      );
-      await this.prisma.user.update({
-        where: { id: user.id },
-        data: { refreshToken: hashedRefreshToken },
       });
       return {
         status: 200,
