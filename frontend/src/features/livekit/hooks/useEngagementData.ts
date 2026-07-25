@@ -110,10 +110,16 @@ export function useEngagementData(meetingId?: string) {
       ? sortedScores.reduce((sum, s) => sum + s.engagementScore, 0) /
         sortedScores.length
       : null;
+  const participants = useRoomContext().remoteParticipants;
+  const isBotConnected = Array.from(participants.values()).some((p) => 
+    p.identity.includes('bot') || p.identity.startsWith('ai-bot-')
+  );
+
   return {
     scores: sortedScores,
     disengagedCount,
     averageScore,
     totalParticipants: sortedScores.length,
+    isBotConnected,
   };
 }

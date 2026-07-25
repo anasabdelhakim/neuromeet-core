@@ -179,6 +179,7 @@ export class MeetingsService {
               },
               take: 5,
             },
+            _count: { select: { enrollments: true } },
           },
         },
         livekitRoomName: true,
@@ -220,6 +221,7 @@ export class MeetingsService {
               },
               take: 5,
             },
+            _count: { select: { enrollments: true } },
           },
         },
         livekitRoomName: true,
@@ -252,6 +254,7 @@ export class MeetingsService {
               },
               take: 5,
             },
+            _count: { select: { enrollments: true } },
           },
         },
         participants: {
@@ -303,7 +306,15 @@ export class MeetingsService {
               },
               take: 5,
             },
+            _count: { select: { enrollments: true } },
           },
+        },
+        host: {
+          select: {
+            id: true,
+            name: true,
+            avatarUrl: true,
+          }
         },
       },
       orderBy: { scheduledAt: 'asc' },
@@ -339,7 +350,15 @@ export class MeetingsService {
               },
               take: 5,
             },
+            _count: { select: { enrollments: true } },
           },
+        },
+        host: {
+          select: {
+            id: true,
+            name: true,
+            avatarUrl: true,
+          }
         },
       },
       orderBy: { scheduledAt: 'asc' },
@@ -1088,7 +1107,7 @@ export class MeetingsService {
 
     for (const meeting of liveMeetings) {
       if (!meeting.livekitRoomName) continue;
-      
+
       let shouldEnd = false;
       try {
         const lkParticipants = await roomService.listParticipants(

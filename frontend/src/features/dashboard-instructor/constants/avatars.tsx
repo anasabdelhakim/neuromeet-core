@@ -32,7 +32,8 @@ export const Avatars = [
 
 import Image from "next/image";
 
-export const AvatarChain = ({ avatars = Avatars, max = 4 }) => {
+export const AvatarChain = ({ avatars = Avatars, max = 4, totalCount }: { avatars?: any[], max?: number, totalCount?: number }) => {
+  const count = totalCount !== undefined ? totalCount : avatars.length;
   return (
     <div className="flex">
       {avatars.slice(0, max).map((avatar, i) => (
@@ -57,12 +58,12 @@ export const AvatarChain = ({ avatars = Avatars, max = 4 }) => {
           )}
         </div>
       ))}
-      {avatars.length > max && (
+      {count > max && (
         <div
           className="relative w-8 h-8 rounded-full border-2 border-background bg-primary-soft-muted flex items-center justify-center text-xs font-bold text-primary-light -ml-3 shadow-soft backdrop-blur-sm"
           style={{ zIndex: 0 }}
         >
-          +{avatars.length - max}
+          +{count - max}
         </div>
       )}
     </div>

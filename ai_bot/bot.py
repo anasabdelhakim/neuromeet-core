@@ -441,21 +441,7 @@ async def main():
             inference_worker(room, buffers, round_robin_queue, semaphore)
         )
 
-    # ── Auto-Kill Monitor (backup polling, 20s interval) ──
-    async def monitor_empty_room():
-        await asyncio.sleep(20)  # Give humans time to join initially
-        while True:
-            humans = [
-                p for p in room.remote_participants.values()
-                if not p.identity.startswith('ai-bot-') and 'bot' not in p.identity
-            ]
-            if len(humans) == 0:
-                logger.info("[bot] Monitor: room empty — auto-killing to save LiveKit minutes.")
-                await room.disconnect()
-                break
-            await asyncio.sleep(20)
 
-    asyncio.create_task(monitor_empty_room())
 
     # ── Subscribe to new tracks ──
     @room.on("track_subscribed")
@@ -498,17 +484,7 @@ async def main():
             del buffers[pid]
             logger.info(f"[bot] Cleaned up buffer for: {pid}")
 
-        # ── INSTANT self-kill check ──
-        # Check if any real humans are still in the room right now.
-        # room.remote_participants is updated by LiveKit BEFORE this event fires,
-        # so it already reflects the participant having left.
-        humans = [
-            p for p in room.remote_participants.values()
-            if not p.identity.startswith('ai-bot-') and 'bot' not in p.identity
-        ]
-        if len(humans) == 0:
-            logger.info(f"[bot] Last human ({pid}) left. Disconnecting immediately to stop billing.")
-            asyncio.create_task(room.disconnect())
+
 
     # ── Subscribe to tracks that already exist when the bot joins ──
     for participant in room.remote_participants.values():

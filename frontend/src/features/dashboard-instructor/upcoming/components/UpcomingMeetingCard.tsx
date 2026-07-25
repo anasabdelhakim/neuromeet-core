@@ -27,6 +27,8 @@ export function UpcomingMeetingCard({ meeting, groups }: UpcomingMeetingCardProp
     color: "bg-primary-soft-muted",
   })) || [];
 
+  const totalCount = (meeting as any).totalEnrollments || 0;
+
   return (
     <Card
       variant={variant}
@@ -55,7 +57,7 @@ export function UpcomingMeetingCard({ meeting, groups }: UpcomingMeetingCardProp
           </div>
 
           <div className="hidden sm:flex items-center gap-4 flex-shrink-0">
-            <AvatarChain avatars={mappedAvatars} max={5} />
+            <AvatarChain avatars={mappedAvatars} max={5} totalCount={totalCount} />
             <Suspense fallback={<div className="w-24 h-10 bg-muted rounded animate-pulse" />}>
               <DynamicMeetingActions dateTime={meeting.dateTime} meetingId={meeting.id} status={(meeting as any).status} />
             </Suspense>

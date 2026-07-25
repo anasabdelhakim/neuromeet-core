@@ -188,7 +188,8 @@ export async function getUpcomingMeetings() {
         duration: m.durationMinutes || 60,
         status: m.status,
         passcode: m.passcode,
-        participants: m.participants || []
+        participants: m.participants || [],
+        totalEnrollments: m.group?._count?.enrollments || 0,
       };
     });
   } catch (error) {
@@ -221,7 +222,8 @@ export async function getTodayMeetings() {
         duration: m.durationMinutes || 60,
         status: m.status,
         passcode: m.passcode,
-        participants: m.participants || []
+        participants: m.participants || [],
+        totalEnrollments: m.group?._count?.enrollments || 0,
       };
     });
   } catch (error) {

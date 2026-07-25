@@ -1,10 +1,28 @@
 "use client";
+import { useState } from "react";
+import { useRoomContext } from "@livekit/components-react";
+import { restartBotAction } from "@/src/features/livekit/actions/livekit-actions";
 import { useEngagementData, ParticipantScore } from '@/src/features/livekit/hooks/useEngagementData';
-import { TrendingUp, AlertCircle } from "lucide-react";
+import { TrendingUp, AlertCircle, RefreshCw } from "lucide-react";
 const DISENGAGEMENT_THRESHOLD = 0.50;
 export function EngagementDashboard() {
-  const { scores, disengagedCount, averageScore, totalParticipants } =
+  const { scores, disengagedCount, averageScore, totalParticipants, isBotConnected } =
     useEngagementData();
+  const room = useRoomContext();
+  const [isRestarting, setIsRestarting] = useState(false);
+
+  const handleRestartBot = async () => {
+    if (!room?.name) return;
+    setIsRestarting(true);
+    try {
+      await restartBotAction(room.name);
+    } catch (e) {
+      console.error("Failed to restart bot", e);
+    } finally {
+      setTimeout(() => setIsRestarting(false), 2000);
+    }
+  };
+
   return (
     <div className="space-y-4 w-full">
       <div className="grid grid-cols-2 gap-2">
@@ -42,12 +60,28 @@ export function EngagementDashboard() {
           </div>
         </div>
       )}
-      {scores.length === 0 ? (
+      {!isBotConnected ? (
+        <div className="flex flex-col items-center justify-center py-10 text-center">
+          <AlertCircle size={28} className="text-destructive mb-3 opacity-80" />
+          <p className="text-sm font-bold text-destructive">AI Bot Offline</p>
+          <p className="text-xs text-destructive opacity-80 mt-1 mb-4">
+            The engagement bot was disconnected or killed.
+          </p>
+          <button 
+            onClick={handleRestartBot}
+            disabled={isRestarting}
+            className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-md bg-destructive text-white hover:bg-destructive/90 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw size={14} className={isRestarting ? "animate-spin" : ""} />
+            {isRestarting ? "Restarting..." : "Restart AI Bot"}
+          </button>
+        </div>
+      ) : scores.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-10 text-center">
           <TrendingUp size={28} className="text-muted-foreground mb-3 opacity-40" />
           <p className="text-sm font-medium text-muted-foreground">Waiting for AI data…</p>
           <p className="text-xs text-muted-foreground opacity-60 mt-1">
-            The engagement bot will connect shortly.
+            The engagement bot is connecting...
           </p>
         </div>
       ) : (

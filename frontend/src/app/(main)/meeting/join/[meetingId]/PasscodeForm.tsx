@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Label } from "@/src/components/ui/label";
-import { Shield, Loader, KeyRound } from "lucide-react";
+import { Shield, Loader, KeyRound, Clock } from "lucide-react";
 import { joinMeetingAction } from "@/src/features/dashboard-student/upcoming/actions/student-meeting-actions";
 
 interface PasscodeFormProps {
@@ -101,6 +101,10 @@ export function PasscodeForm({ meetingId, meetingTitle }: PasscodeFormProps) {
           </>
         )}
       </Button>
+
+      <p className="text-center text-[10px] text-muted-foreground/60 mt-4">
+        * Empty meetings are automatically ended after 5 minutes.
+      </p>
     </form>
   );
 }

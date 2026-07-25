@@ -33,6 +33,8 @@ export async function getStudentUpcomingMeetings() {
         dateTime: m.scheduledAt,
         duration: realDuration,
         status: m.status,
+        host: m.host,
+        totalEnrollments: m.group?._count?.enrollments || 0,
       };
     });
   } catch (error) {
@@ -70,6 +72,8 @@ export async function getStudentTodayMeetings() {
         dateTime: m.scheduledAt,
         duration: realDuration,
         status: m.status,
+        host: m.host,
+        totalEnrollments: m.group?._count?.enrollments || 0,
       };
     });
   } catch (error) {

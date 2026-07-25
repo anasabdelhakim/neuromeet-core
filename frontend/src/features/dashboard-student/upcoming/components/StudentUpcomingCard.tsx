@@ -18,12 +18,31 @@ export function StudentUpcomingCard({ meeting }: Props) {
   const { isArrived, isStartingSoon } = calculateMeetingStatus(meeting.dateTime);
   const variant = isArrived ? "glass" : isStartingSoon ? "gradient" : "default";
 
-  const mappedAvatars = (meeting as any).group?.enrollments?.map((e: any) => ({
+  const host = (meeting as any).host;
+  
+  const mappedAvatars = [];
+  
+  if (host) {
+    mappedAvatars.push({
+      alt: host.name || "Instructor",
+      initials: host.name ? host.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2) : "IN",
+      src: host.avatarUrl,
+      color: "bg-primary text-white border-primary",
+      isInstructor: true
+    });
+  }
+
+  const studentAvatars = (meeting as any).group?.enrollments?.map((e: any) => ({
     alt: e.student?.name || "Unknown",
     initials: e.student?.name ? e.student.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2) : "??",
     src: e.student?.avatarUrl,
     color: "bg-primary-soft-muted",
   })) || [];
+
+  mappedAvatars.push(...studentAvatars);
+  
+  // We want to show a max of 5 avatars. We pass total count to AvatarChain so it shows the correct badge.
+  const totalCount = host ? ((meeting as any).totalEnrollments || 0) + 1 : ((meeting as any).totalEnrollments || 0);
 
   return (
     <Card
@@ -56,7 +75,7 @@ export function StudentUpcomingCard({ meeting }: Props) {
 
         {}
         <div className="hidden sm:flex items-center gap-4 flex-shrink-0">
-          <AvatarChain avatars={mappedAvatars} max={5} />
+          <AvatarChain avatars={mappedAvatars} max={5} totalCount={totalCount} />
           <Suspense fallback={<div className="w-24 h-10 bg-muted rounded animate-pulse" />}>
             <DynamicStudentMeetingActions dateTime={meeting.dateTime} meetingId={meeting.id} />
           </Suspense>
