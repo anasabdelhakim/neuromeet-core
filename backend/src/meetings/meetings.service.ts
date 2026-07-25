@@ -26,6 +26,34 @@ const CACHE_TTL = {
   MEETING_DETAIL: 60,
   PARTICIPANTS: 15,
 } as const;
+
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY
+  ? crypto.createHash('sha256').update(String(process.env.ENCRYPTION_KEY)).digest('base64').substring(0, 32)
+  : crypto.createHash('sha256').update('fallback-secret-do-not-use-in-prod').digest('base64').substring(0, 32);
+
+function encryptPasscode(text: string): string {
+  if (!text) return text;
+  const iv = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
+  let encrypted = cipher.update(text);
+  encrypted = Buffer.concat([encrypted, cipher.final()]);
+  return iv.toString('hex') + ':' + encrypted.toString('hex');
+}
+
+function decryptPasscode(text: string | null): string | null {
+  if (!text || !text.includes(':')) return text;
+  try {
+    const textParts = text.split(':');
+    const iv = Buffer.from(textParts.shift() as string, 'hex');
+    const encryptedText = Buffer.from(textParts.join(':'), 'hex');
+    const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
+    let decrypted = decipher.update(encryptedText);
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    return decrypted.toString();
+  } catch (e) {
+    return text;
+  }
+}
 @Injectable()
 export class MeetingsService {
   constructor(
@@ -49,7 +77,7 @@ export class MeetingsService {
         durationMinutes: dto.durationMinutes,
         status: 'SCHEDULED',
         livekitRoomName: roomName,
-        passcode: rawPasscode,
+        passcode: encryptPasscode(rawPasscode),
       },
       select: {
         id: true,
@@ -118,8 +146,14 @@ export class MeetingsService {
       },
       orderBy: { createdAt: 'desc' },
     });
-    await this.cache.set(cacheKey, meetings, CACHE_TTL.MEETING_LIST);
-    return { status: 'success', data: meetings };
+    
+    const decryptedMeetings = meetings.map(m => ({
+      ...m,
+      passcode: decryptPasscode(m.passcode)
+    }));
+    
+    await this.cache.set(cacheKey, decryptedMeetings, CACHE_TTL.MEETING_LIST);
+    return { status: 'success', data: decryptedMeetings };
   }
   async getUpcomingMeetings(userId: string) {
     const now = new Date();
@@ -152,7 +186,13 @@ export class MeetingsService {
       },
       orderBy: { scheduledAt: 'asc' },
     });
-    return { status: 'success', data: meetings };
+    
+    const decryptedMeetings = meetings.map(m => ({
+      ...m,
+      passcode: decryptPasscode(m.passcode)
+    }));
+    
+    return { status: 'success', data: decryptedMeetings };
   }
   async getTodayMeetings(userId: string) {
     const start = new Date();
@@ -402,6 +442,11 @@ export class MeetingsService {
     if (!isHost && !isParticipant) {
       throw new ForbiddenException('You are not part of this meeting');
     }
+    
+    if (meeting.passcode) {
+      meeting.passcode = decryptPasscode(meeting.passcode);
+    }
+    
     await this.cache.set(cacheKey, meeting, CACHE_TTL.MEETING_DETAIL);
     return { status: 'success', data: meeting };
   }
@@ -494,12 +539,12 @@ export class MeetingsService {
       include: { enrollments: { include: { student: true } } },
     });
     if (!group) throw new NotFoundException('Group not found');
-    const rawPasscode =
-      meeting.passcode ||
-      Math.floor(100000 + Math.random() * 900000).toString();
+    const rawPasscode = meeting.passcode
+      ? decryptPasscode(meeting.passcode) || Math.floor(100000 + Math.random() * 900000).toString()
+      : Math.floor(100000 + Math.random() * 900000).toString();
     await this.prisma.meeting.update({
       where: { id: meetingId },
-      data: { passcode: rawPasscode, groupId },
+      data: { passcode: encryptPasscode(rawPasscode), groupId },
     });
     const studentCachePromises = group.enrollments.map((e) =>
       this.cache.del(`meetings:user:${e.student.id}`),
@@ -586,14 +631,12 @@ export class MeetingsService {
     if (meeting.hostId !== userId) {
       let isValidPasscode = false;
       if (meeting.passcode) {
-        if (meeting.passcode === dto.passcode) {
+        const decryptedPasscode = decryptPasscode(meeting.passcode);
+        if (decryptedPasscode === dto.passcode) {
           isValidPasscode = true;
         } else {
           try {
-            isValidPasscode = await Bun.password.verify(
-              dto.passcode,
-              meeting.passcode,
-            );
+            isValidPasscode = await Bun.password.verify(dto.passcode, meeting.passcode);
           } catch (e) {}
         }
       }
@@ -1018,10 +1061,21 @@ export class MeetingsService {
 
   @Cron(CronExpression.EVERY_5_MINUTES)
   async cleanupGhostMeetings() {
-    const liveMeetings = await this.prisma.meeting.findMany({
-      where: { status: 'LIVE' },
-      select: { id: true, livekitRoomName: true, hostId: true },
-    });
+    let liveMeetings: { id: string; livekitRoomName: string | null; hostId: string }[] = [];
+    try {
+      liveMeetings = await this.prisma.meeting.findMany({
+        where: { status: 'LIVE' },
+        select: { id: true, livekitRoomName: true, hostId: true },
+      });
+    } catch (err: any) {
+      // Ignore database connection timeouts caused by Neon serverless cold starts.
+      if (err.code === 'P1001') {
+        console.warn(`[Cron] Database is sleeping/waking up. Skipping cleanup cycle.`);
+        return;
+      }
+      console.error(`[Cron] Error fetching live meetings: ${err.message}`);
+      return;
+    }
 
     console.log(`[Cron] cleanupGhostMeetings running. Found ${liveMeetings.length} LIVE meeting(s).`);
     if (liveMeetings.length === 0) return;

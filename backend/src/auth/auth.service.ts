@@ -4,6 +4,7 @@ import {
   UnauthorizedException,
   HttpException,
 } from '@nestjs/common';
+import * as crypto from 'crypto';
 import { randomInt, timingSafeEqual } from 'crypto';
 import {
   SignInDto,
@@ -147,26 +148,29 @@ export class AuthService {
       secret: process.env.JWT_SECRET,
       expiresIn: AUTH_CONSTANTS.ACCESS_TOKEN_EXPIRY,
     });
-    const refreshToken = this.jwtService.sign(
-      { ...payload, countEx: AUTH_CONSTANTS.REFRESH_TOKEN_MAX_USES },
-      {
-        secret: process.env.JWT_REFRESH_SECRET,
-        expiresIn: AUTH_CONSTANTS.REFRESH_TOKEN_EXPIRY,
-      },
-    );
-    const hashedRefreshToken = await (Bun.password as any).hash(refreshToken, {
-      algorithm: 'bcrypt',
-      cost: 10,
-    });
-    await this.prisma.user.update({
-      where: { email: data.email },
-      data: {
-        verificationCode: null,
-        otpPurpose: null,
-        otpExpire: null, // RESTORED: Clear expiry after consumption
-        refreshToken: hashedRefreshToken,
-      },
-    });
+    
+    const refreshToken = crypto.randomBytes(32).toString('hex');
+    const hashedRefreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex');
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { email: data.email },
+        data: {
+          verificationCode: null,
+          otpPurpose: null,
+          otpExpire: null,
+        },
+      }),
+      this.prisma.session.create({
+        data: {
+          userId: user.id,
+          refreshToken: hashedRefreshToken,
+          expiresAt,
+        }
+      })
+    ]);
+
     return {
       status: 'success',
       message: 'Code verified successfully',
@@ -189,10 +193,14 @@ export class AuthService {
         failedLoginAttempts: true,
         lockedUntil: true,
         isProfileComplete: true,
+        active: true,
       },
     });
     if (!user) {
       throw new UnauthorizedException('Invalid email or password');
+    }
+    if (!user.active) {
+      throw new UnauthorizedException('Your account has been banned or deactivated');
     }
     if (user.lockedUntil && user.lockedUntil > new Date()) {
       const remainingMs = user.lockedUntil.getTime() - Date.now();
@@ -242,21 +250,19 @@ export class AuthService {
       secret: process.env.JWT_SECRET,
       expiresIn: AUTH_CONSTANTS.ACCESS_TOKEN_EXPIRY,
     });
-    const refreshToken = this.jwtService.sign(
-      { ...payload, countEx: AUTH_CONSTANTS.REFRESH_TOKEN_MAX_USES },
-      {
-        secret: process.env.JWT_REFRESH_SECRET,
-        expiresIn: AUTH_CONSTANTS.REFRESH_TOKEN_EXPIRY,
-      },
-    );
-    const hashedRefreshToken = await (Bun.password as any).hash(refreshToken, {
-      algorithm: 'bcrypt',
-      cost: 10,
+    
+    const refreshToken = crypto.randomBytes(32).toString('hex');
+    const hashedRefreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex');
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    await this.prisma.session.create({
+      data: {
+        userId: user.id,
+        refreshToken: hashedRefreshToken,
+        expiresAt,
+      }
     });
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: { refreshToken: hashedRefreshToken },
-    });
+
     const {
       password,
       failedLoginAttempts,
@@ -410,84 +416,66 @@ export class AuthService {
     };
   }
   async refreshToken(incomingRefreshToken: string) {
-    try {
-      const decoded = await this.jwtService.verifyAsync(incomingRefreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET,
-      });
-      if (!decoded || decoded.countEx <= 0) {
-        throw new UnauthorizedException('Invalid refresh token');
-      }
-      const user = await this.prisma.user.findUnique({
-        where: { id: decoded.id },
-        select: {
-          id: true,
-          email: true,
-          role: true,
-          name: true,
-          active: true,
-          refreshToken: true,
-          created_at: true,
-          updated_at: true,
-        },
-      });
-      if (!user) throw new NotFoundException('User not found');
-      if (!user.refreshToken) {
-        throw new UnauthorizedException(
-          'Session has been revoked. Please sign in again.',
-        );
-      }
-      const isValid = await Bun.password.verify(
-        incomingRefreshToken,
-        user.refreshToken,
-      );
-      if (!isValid) {
-        await this.prisma.user.update({
-          where: { id: user.id },
-          data: { refreshToken: null },
-        });
-        throw new UnauthorizedException(
-          'Token reuse detected — all sessions revoked',
-        );
-      }
-      const payload = {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      };
-      const newAccessToken = this.jwtService.sign(payload, {
-        secret: process.env.JWT_SECRET,
-        expiresIn: AUTH_CONSTANTS.ACCESS_TOKEN_EXPIRY,
-      });
-      const newRefreshToken = this.jwtService.sign(
-        { ...payload, countEx: decoded.countEx - 1 },
-        {
-          secret: process.env.JWT_REFRESH_SECRET,
-          expiresIn: AUTH_CONSTANTS.REFRESH_TOKEN_EXPIRY,
-        },
-      );
-      const hashedNewRefresh = await (Bun.password as any).hash(
-        newRefreshToken,
-        { algorithm: 'bcrypt', cost: 10 },
-      );
-      await this.prisma.user.update({
-        where: { id: user.id },
-        data: { refreshToken: hashedNewRefresh },
-      });
-      const { refreshToken: _, ...userData } = user;
-      return {
-        status: 'success',
-        data: userData,
-        access_token: newAccessToken,
-        refresh_token: newRefreshToken,
-      };
-    } catch (error) {
-      throw new UnauthorizedException('Invalid refresh token');
+    if (!incomingRefreshToken) throw new UnauthorizedException('Invalid refresh token');
+    
+    const hashedToken = crypto.createHash('sha256').update(incomingRefreshToken).digest('hex');
+    
+    const session = await this.prisma.session.findFirst({
+      where: { refreshToken: hashedToken },
+      include: { user: true }
+    });
+
+    if (!session) {
+      throw new UnauthorizedException('Session not found or revoked');
     }
+
+    if (session.expiresAt < new Date()) {
+      await this.prisma.session.delete({ where: { id: session.id } });
+      throw new UnauthorizedException('Session expired. Please sign in again.');
+    }
+
+    if (!session.user.active) {
+      throw new UnauthorizedException('User account is inactive');
+    }
+
+    const payload = {
+      id: session.user.id,
+      email: session.user.email,
+      role: session.user.role,
+    };
+
+    const newAccessToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: AUTH_CONSTANTS.ACCESS_TOKEN_EXPIRY,
+    });
+
+    const newRefreshToken = crypto.randomBytes(32).toString('hex');
+    const newHashedToken = crypto.createHash('sha256').update(newRefreshToken).digest('hex');
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    await this.prisma.$transaction([
+      this.prisma.session.delete({ where: { id: session.id } }),
+      this.prisma.session.create({
+        data: {
+          userId: session.user.id,
+          refreshToken: newHashedToken,
+          expiresAt,
+        }
+      })
+    ]);
+
+    const { password, ...userData } = session.user as any;
+    
+    return {
+      status: 'success',
+      data: userData,
+      access_token: newAccessToken,
+      refresh_token: newRefreshToken,
+    };
   }
   async logout(userId: string) {
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: { refreshToken: null },
+    await this.prisma.session.deleteMany({
+      where: { userId },
     });
     return {
       status: 'success',

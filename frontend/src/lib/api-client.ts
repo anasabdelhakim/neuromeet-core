@@ -10,16 +10,19 @@ export class ApiError extends Error {
     this.name = 'ApiError';
   }
 }
-const globalAny = globalThis as any;
+const refreshPromises = new Map<string, Promise<string | null>>();
+
 async function handleTokenRefresh(): Promise<string | null> {
-  if (globalAny.refreshPromise) {
-    return globalAny.refreshPromise;
+  const cookieStore = await cookies();
+  const refreshToken = cookieStore.get('refresh_token')?.value;
+  if (!refreshToken) return null;
+
+  if (refreshPromises.has(refreshToken)) {
+    return refreshPromises.get(refreshToken)!;
   }
-  globalAny.refreshPromise = (async () => {
+
+  const promise = (async () => {
     try {
-      const cookieStore = await cookies();
-      const refreshToken = cookieStore.get('refresh_token')?.value;
-      if (!refreshToken) return null;
       const res = await fetch(`${BASE_URL}/auth/refresh-token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -35,10 +38,12 @@ async function handleTokenRefresh(): Promise<string | null> {
     } catch (error) {
       return null;
     } finally {
-      globalAny.refreshPromise = null;
+      refreshPromises.delete(refreshToken);
     }
   })();
-  return globalAny.refreshPromise;
+
+  refreshPromises.set(refreshToken, promise);
+  return promise;
 }
 async function request<T>(
   endpoint: string,

@@ -72,25 +72,24 @@ enum InvitationStatus {
 // =========================
 
 model User {
-  id                  String       @id @default(cuid())
+  id                  String      @id @default(cuid())
   name                String
-  email               String       @unique
+  email               String      @unique
   password            String
-  role                Role         @default(STUDENT)
+  role                Role        @default(STUDENT)
   avatarUrl           String?
-  isProfileComplete   Boolean      @default(false)
-  refreshToken        String?
+  isProfileComplete   Boolean     @default(false)
   resetpasswordToken  String?
   resetpasswordExpire DateTime?
   passwordChangedAt   DateTime?
-  failedLoginAttempts Int          @default(0)
+  failedLoginAttempts Int         @default(0)
   lockedUntil         DateTime?
-  active              Boolean      @default(true)
+  active              Boolean     @default(true)
   verificationCode    String?
   otpPurpose          OtpPurpose?
   otpExpire           DateTime?
-  created_at          DateTime     @default(now())
-  updated_at          DateTime     @updatedAt
+  created_at          DateTime    @default(now())
+  updated_at          DateTime    @updatedAt
 
   // Old Relations
   hostedMeetings      Meeting[]            @relation("MeetingHost")
@@ -98,12 +97,12 @@ model User {
   uploadedMaterials   MeetingMaterial[]
 
   // New Relations
-  sessions            Session[]
-  ownedGroups         Group[]      @relation("InstructorGroups")
-  enrollments         Enrollment[] @relation("StudentEnrollments")
-  invitations         Invitation[] @relation("StudentInvitations")
-  notifications       Notification[]
-  recordings          Recording[]  @relation("UserRecordings")
+  sessions      Session[]
+  ownedGroups   Group[]        @relation("InstructorGroups")
+  enrollments   Enrollment[]   @relation("StudentEnrollments")
+  invitations   Invitation[]   @relation("StudentInvitations")
+  notifications Notification[]
+  recordings    Recording[]    @relation("UserRecordings")
 
   @@index([email])
   @@index([verificationCode, created_at])
@@ -117,7 +116,7 @@ model Session {
   createdAt    DateTime @default(now())
   userId       String
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@index([userId])
   @@index([userId, createdAt])
 }
@@ -134,7 +133,7 @@ model Group {
   meetings     Meeting[]
   created_at   DateTime     @default(now())
   updated_at   DateTime     @updatedAt
-  
+
   @@index([instructorId])
 }
 
@@ -145,7 +144,7 @@ model Enrollment {
   student   User     @relation("StudentEnrollments", fields: [studentId], references: [id], onDelete: Cascade)
   groupId   String
   group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  
+
   @@unique([studentId, groupId])
   @@index([groupId])
   @@index([studentId])
@@ -180,24 +179,24 @@ model Meeting {
   startedAt       DateTime?
   endedAt         DateTime?
   createdAt       DateTime        @default(now())
-  updated_at      DateTime        @updatedAt @default(now())
+  updated_at      DateTime        @default(now()) @updatedAt
 
   // New Fields
-  timezone        String        @default("UTC")
-  roomCode        String?       @unique
-  isGroupLocked   Boolean       @default(false)
-  passcode        String?
-  
+  timezone      String  @default("UTC")
+  roomCode      String? @unique
+  isGroupLocked Boolean @default(false)
+  passcode      String?
+
   // Relations
   host         User                 @relation("MeetingHost", fields: [hostId], references: [id])
   participants MeetingParticipant[]
   materials    MeetingMaterial[]
-  
+
   // New Group Relations
-  groupId       String?
-  group         Group?        @relation(fields: [groupId], references: [id])
-  room          Room?
-  recordings    Recording[]
+  groupId    String?
+  group      Group?      @relation(fields: [groupId], references: [id])
+  room       Room?
+  recordings Recording[]
 
   @@index([hostId])
   @@index([status])
@@ -219,11 +218,11 @@ model MeetingParticipant {
   secondsPresent     Int             @default(0)
   avgEngagementScore Float?
   adhdFlagged        Boolean         @default(false)
-  
+
   // Relations
   meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@unique([meetingId, userId])
   @@index([meetingId])
   @@index([userId])
@@ -239,11 +238,11 @@ model MeetingMaterial {
   mimeType     String?
   sizeBytes    Int?
   uploadedAt   DateTime @default(now())
-  
+
   // Relations
   meeting  Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
   uploader User    @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
-  
+
   @@index([meetingId])
 }
 
@@ -270,7 +269,7 @@ model Recording {
   meeting          Meeting?        @relation(fields: [meetingId], references: [id], onDelete: SetNull)
   recordedById     String?
   recordedBy       User?           @relation("UserRecordings", fields: [recordedById], references: [id], onDelete: SetNull)
-  
+
   @@index([meetingId])
   @@index([status])
   @@index([recordedById])
@@ -288,7 +287,7 @@ model Notification {
   created_at DateTime  @default(now())
   userId     String
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@index([userId, read])
   @@index([userId, created_at])
 }
