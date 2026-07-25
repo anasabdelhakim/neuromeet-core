@@ -16,9 +16,17 @@ export function RecordingPlayerModal({ isOpen, onClose, title, gDriveViewLink }:
     <Dialog 
       open={isOpen} 
       onOpenChange={(open) => !open && onClose()}
-      disablePointerDismissal={true}
     >
-      <DialogContent className="max-w-[95vw] sm:max-w-5xl md:max-w-[90vw] xl:max-w-[85vw] w-full max-h-[95vh] h-auto sm:h-[85vh] flex flex-col p-4 rounded-soft border border-border bg-card backdrop-blur-2xl shadow-2xl">
+      <DialogContent 
+        onInteractOutside={(e) => {
+          // SMART UX: Only prevent closing if the user clicks the video (iframe)
+          // This allows them to still click the dark background to close the modal!
+          if (e.target instanceof HTMLIFrameElement) {
+            e.preventDefault();
+          }
+        }}
+        className="max-w-[95vw] sm:max-w-5xl md:max-w-[90vw] xl:max-w-[85vw] w-full max-h-[95vh] h-auto sm:h-[85vh] flex flex-col p-4 rounded-soft border border-border bg-card backdrop-blur-2xl shadow-2xl"
+      >
         <DialogHeader>
           <DialogTitle className="text-white font-semibold text-lg pr-6 truncate">{title}</DialogTitle>
         </DialogHeader>
