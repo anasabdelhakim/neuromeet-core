@@ -20,11 +20,11 @@ export function RecordingPlayerModal({ isOpen, onClose, title, gDriveViewLink }:
       }}
       disablePointerDismissal={true}
     >
-      <DialogContent className="max-w-[95vw] sm:max-w-3xl md:max-w-[80vw] lg:max-w-[75vw] xl:max-w-[70vw] h-[80vh] flex flex-col p-4 rounded-soft border border-border bg-card backdrop-blur-2xl shadow-2xl">
+      <DialogContent className="w-[95vw] max-w-lg sm:max-w-3xl md:max-w-[80vw] lg:max-w-[75vw] xl:max-w-[70vw] h-auto md:h-[80vh] max-h-[90vh] flex flex-col p-3 sm:p-4 rounded-soft border border-border bg-card backdrop-blur-2xl shadow-2xl">
         <DialogHeader>
           <DialogTitle className="text-white font-semibold text-lg">{title}</DialogTitle>
         </DialogHeader>
-        <div className="flex-1 w-full h-full rounded-soft overflow-hidden bg-black relative mt-2">
+        <div className="w-full aspect-video md:aspect-auto md:flex-1 rounded-soft overflow-hidden bg-black relative mt-2">
           {embedUrl ? (
             <iframe
               src={embedUrl}
