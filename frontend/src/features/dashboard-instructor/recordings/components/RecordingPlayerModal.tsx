@@ -10,7 +10,6 @@ interface RecordingPlayerModalProps {
 }
 
 export function RecordingPlayerModal({ isOpen, onClose, title, gDriveViewLink }: RecordingPlayerModalProps) {
-  // Google Drive preview URL conversion
   const embedUrl = gDriveViewLink ? gDriveViewLink.replace("/view", "/preview") : "";
 
   return (
@@ -19,23 +18,13 @@ export function RecordingPlayerModal({ isOpen, onClose, title, gDriveViewLink }:
       onOpenChange={(open) => !open && onClose()}
       disablePointerDismissal={true}
     >
-      {/* 
-        Changed from fixed height (85vh) to a fluid width-based layout. 
-        Added p-0 to remove default padding and bg-black/95 for a cinematic feel.
-      */}
-      <DialogContent className="max-w-5xl w-[95vw] md:w-[90vw] p-0 border border-white/10 bg-black/95 backdrop-blur-3xl shadow-2xl gap-0 overflow-hidden rounded-xl">
-        
-        <DialogHeader className="p-4 md:p-5 border-b border-white/10 bg-black">
-          <DialogTitle className="text-white font-medium text-base md:text-lg truncate pr-6">
-            {title}
-          </DialogTitle>
+      <DialogContent className="max-w-[95vw] sm:max-w-5xl md:max-w-[90vw] xl:max-w-[85vw] w-full max-h-[95vh] h-auto sm:h-[85vh] flex flex-col p-4 rounded-soft border border-border bg-card backdrop-blur-2xl shadow-2xl">
+        <DialogHeader>
+          <DialogTitle className="text-white font-semibold text-lg pr-6 truncate">{title}</DialogTitle>
         </DialogHeader>
-
-        {/* 
-          Aspect-video ensures the iframe scales perfectly on mobile without stretching 
-          or leaving massive empty gaps.
-        */}
-        <div className="w-full relative aspect-video bg-black flex items-center justify-center">
+        
+        {/* min-h-[250px] ensures Google Drive player controls are never squished on tiny phones, flex-1 allows it to fill space */}
+        <div className="w-full flex-1 min-h-[250px] rounded-soft overflow-hidden bg-black relative mt-2">
           {embedUrl ? (
             <iframe
               src={embedUrl}
@@ -44,22 +33,18 @@ export function RecordingPlayerModal({ isOpen, onClose, title, gDriveViewLink }:
               allowFullScreen
             />
           ) : (
-            <div className="flex items-center justify-center w-full h-full text-white/40 text-sm font-medium">
+            <div className="flex items-center justify-center w-full h-full text-muted-foreground text-sm">
               No playable video URL available.
             </div>
           )}
         </div>
         
-        {/* Sleek information footer */}
-        <div className="p-4 md:p-5 bg-black/90">
-          <div className="bg-white/5 border border-white/10 rounded-lg p-3 md:p-4 text-xs md:text-sm text-white/70 flex items-start gap-3 transition-colors hover:bg-white/10">
-            <Info className="text-primary w-5 h-5 shrink-0 mt-0.5" />
-            <p className="leading-relaxed">
-              <strong className="text-white font-medium">Note:</strong> If Google Drive displays <em>"This video file is still being processed for playback"</em>, it means Google is optimizing the video for web streaming. You can still download the full file immediately from the dashboard!
-            </p>
-          </div>
+        <div className="bg-custom-gray border border-border rounded-soft p-3 text-xs text-muted-foreground mt-4 flex items-center gap-2">
+          <Info size={18} className="text-primary shrink-0" />
+          <span>
+            <strong>Note:</strong> If Google Drive displays &quot;This video file is still being processed for playback&quot;, it means Google is currently optimizing the video for web streaming. You can still download the full file immediately using the download button on the card!
+          </span>
         </div>
-
       </DialogContent>
     </Dialog>
   );
