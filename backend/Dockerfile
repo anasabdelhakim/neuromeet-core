@@ -73,6 +73,7 @@ ENV AI_WORKER_PORT=8080
 ENV MODEL_PATH=models/best_model.pth
 
 # Only expose the NestJS port (Hugging Face routes here)
+ENV PORT=7860
 EXPOSE 7860
 
 CMD ["./start.sh"]
