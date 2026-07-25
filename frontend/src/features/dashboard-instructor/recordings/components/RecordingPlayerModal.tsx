@@ -10,7 +10,15 @@ interface RecordingPlayerModalProps {
 export function RecordingPlayerModal({ isOpen, onClose, title, gDriveViewLink }: RecordingPlayerModalProps) {
   const embedUrl = gDriveViewLink.replace("/view", "/preview");
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog 
+      open={isOpen} 
+      onOpenChange={(open, details: any) => {
+        if (!open) {
+          if (details?.reason === 'focusOut') return;
+          onClose();
+        }
+      }}
+    >
       <DialogContent className="max-w-[95vw] sm:max-w-5xl md:max-w-[90vw] xl:max-w-[85vw] h-[85vh] flex flex-col p-4 rounded-soft border border-border bg-card backdrop-blur-2xl shadow-2xl">
         <DialogHeader>
           <DialogTitle className="text-white font-semibold text-lg">{title}</DialogTitle>

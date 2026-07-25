@@ -28,7 +28,7 @@ ENV LIVEKIT_API_SECRET=secret
 ENV AI_WORKER_PORT=7860
 
 # ── Expose dispatch server port ───────────────────────────────────────────────
-EXPOSE 8080
+EXPOSE 7860
 
 # Start the dispatch server (which spawns bot.py subprocesses per room)
-CMD ["uvicorn", "dispatch_server:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "dispatch_server:app", "--host", "0.0.0.0", "--port", "7860"]
