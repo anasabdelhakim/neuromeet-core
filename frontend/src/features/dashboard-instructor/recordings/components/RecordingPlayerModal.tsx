@@ -1,38 +1,30 @@
 "use client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/src/components/ui/dialog";
 import { Info } from "lucide-react";
-
 interface RecordingPlayerModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
   gDriveViewLink: string;
 }
-
 export function RecordingPlayerModal({ isOpen, onClose, title, gDriveViewLink }: RecordingPlayerModalProps) {
-  const embedUrl = gDriveViewLink ? gDriveViewLink.replace("/view", "/preview") : "";
-
+  const embedUrl = gDriveViewLink.replace("/view", "/preview");
   return (
     <Dialog 
       open={isOpen} 
-      onOpenChange={(open) => !open && onClose()}
+      onOpenChange={(open, details: any) => {
+        if (!open) {
+          if (details?.reason === 'focusOut') return;
+          onClose();
+        }
+      }}
+      disablePointerDismissal={true}
     >
-      <DialogContent 
-        onInteractOutside={(e) => {
-          // SMART UX: Only prevent closing if the user clicks the video (iframe)
-          // This allows them to still click the dark background to close the modal!
-          if (e.target instanceof HTMLIFrameElement) {
-            e.preventDefault();
-          }
-        }}
-        className="max-w-[95vw] sm:max-w-5xl md:max-w-[90vw] xl:max-w-[85vw] w-full max-h-[95vh] h-auto sm:h-[85vh] flex flex-col p-4 rounded-soft border border-border bg-card backdrop-blur-2xl shadow-2xl"
-      >
+      <DialogContent className="max-w-[95vw] sm:max-w-3xl md:max-w-[80vw] lg:max-w-[75vw] xl:max-w-[70vw] h-[80vh] flex flex-col p-4 rounded-soft border border-border bg-card backdrop-blur-2xl shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-white font-semibold text-lg pr-6 truncate">{title}</DialogTitle>
+          <DialogTitle className="text-white font-semibold text-lg">{title}</DialogTitle>
         </DialogHeader>
-        
-        {/* min-h-[250px] ensures Google Drive player controls are never squished on tiny phones, flex-1 allows it to fill space */}
-        <div className="w-full flex-1 min-h-[250px] rounded-soft overflow-hidden bg-black relative mt-2">
+        <div className="flex-1 w-full h-full rounded-soft overflow-hidden bg-black relative mt-2">
           {embedUrl ? (
             <iframe
               src={embedUrl}
@@ -46,7 +38,6 @@ export function RecordingPlayerModal({ isOpen, onClose, title, gDriveViewLink }:
             </div>
           )}
         </div>
-        
         <div className="bg-custom-gray border border-border rounded-soft p-3 text-xs text-muted-foreground mt-4 flex items-center gap-2">
           <Info size={18} className="text-primary shrink-0" />
           <span>

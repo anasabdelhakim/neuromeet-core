@@ -121,59 +121,46 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
             height={225}
             className="w-full h-full object-cover"
           />
-          {/* @media(hover:hover) ensures this overlay only triggers on real hover devices, never on touch/mobile */}
-          <div className="absolute inset-0 bg-black-soft-muted items-center justify-center opacity-0 hidden [@media(hover:hover)]:flex group-hover:opacity-100 transition-opacity duration-normal ease-standard">
+          <div className="absolute inset-0 bg-black-soft-muted flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-normal ease-standard">
             <Play className="text-white w-10 h-10 fill-white" />
           </div>
-          {/* REC badge — top left always */}
-          <Badge className="absolute z-20 top-2 left-2 flex items-center gap-1 bg-custom-gray border-border shadow-hard">
-            <span className="relative flex h-2 w-2 mr-0.5">
+          <Badge className="absolute z-20 top-1 left-2 flex items-center gap-1 bg-custom-gray border-border shadow-hard">
+            <span className="relative flex h-2 w-2 mr-0.5 ">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-destructive"></span>
             </span>
-            <span>Record</span>
+            <span>{currentStatus === "PROCESSING" ? progressText : "Record"}</span>
           </Badge>
-          {/* Duration badge — bottom right always */}
-          <Badge className="absolute z-20 bottom-2 right-2 flex items-center gap-1 bg-custom-gray border-border shadow-hard rounded-hard tracking-wider">
+          <Badge className="absolute z-20 bottom-1 right-2 flex items-center gap-1 bg-custom-gray border-border shadow-hard rounded-hard tracking-wider">
             <Clock size={12} />
             <span>{formatDuration(recording.duration)}</span>
           </Badge>
-          {/* Processing overlay — covers the whole thumbnail when uploading */}
-          {currentStatus === "PROCESSING" && (
-            <div className="absolute inset-0 z-10 bg-black/70 flex flex-col items-center justify-center gap-2">
-              <Loader className="w-6 h-6 animate-spin text-primary" />
-              <span className="text-white text-xs font-medium tracking-wide">{progressText}</span>
-            </div>
-          )}
         </div>
         <CardContent>
           <CardTitle>{recording.title}</CardTitle>
           <CardDescription className="my-2">{recording.dateTime || "Recently recorded"}</CardDescription>
-          {/* Action bar — compact row, always reachable on mobile */}
-          <div
-            className="flex gap-2 mt-3 border-t border-border pt-3 px-0 items-center w-full"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Delete — icon-only, left side */}
-            <ActionButton
-              variant="destructive"
-              className="rounded-hard shrink-0"
-              onClick={() => setIsDeleteDialogOpen(true)}
-              disabled={isDeleting || currentStatus === "PROCESSING"}
-            >
-              {isDeleting ? <Loader className="w-4 h-4 animate-spin" /> : <Trash2Icon size={18} />}
-            </ActionButton>
-
-            {/* Play — grows to fill remaining space, fully disabled + dimmed when processing */}
-            <Button
-              className="rounded-medium gap-2 flex-1 min-w-0"
-              onClick={() => currentStatus !== "PROCESSING" && setIsPlayerOpen(true)}
+          <div className="flex gap-2 mt-3 border-t border-border py-3 px-0 justify-between items-center w-full">
+            <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+              <ActionButton label="Delete recording" variant="destructive" className="rounded-hard" onClick={() => setIsDeleteDialogOpen(true)} disabled={isDeleting}>
+                {isDeleting ? <Loader className="w-4 h-4 animate-spin" /> : <Trash2Icon size={18} />}
+              </ActionButton>
+            </div>
+            <Button 
+              className="rounded-medium gap-2" 
+              onClick={(e) => { e.stopPropagation(); currentStatus !== "PROCESSING" && setIsPlayerOpen(true); }}
               disabled={currentStatus === "PROCESSING"}
             >
-              <Play size={16} className="shrink-0" />
-              <span className="truncate">
-                {currentStatus === "PROCESSING" ? progressText : "Play"}
-              </span>
+              {currentStatus === "PROCESSING" ? (
+                <>
+                  <Loader className="w-4 h-4 animate-spin" />
+                  {progressText}
+                </>
+              ) : (
+                <>
+                  <Play size={18} />
+                  Play
+                </>
+              )}
             </Button>
           </div>
         </CardContent>
