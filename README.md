@@ -76,9 +76,9 @@ NeuroMeet's Next.js frontend is highly optimized, achieving perfect or near-perf
 
 [![Performance 100](https://img.shields.io/badge/Performance-100-success?style=for-the-badge)](#) [![Accessibility 96](https://img.shields.io/badge/Accessibility-96-success?style=for-the-badge)](#) [![Best Practices 100](https://img.shields.io/badge/Best_Practices-100-success?style=for-the-badge)](#) [![SEO 100](https://img.shields.io/badge/SEO-100-success?style=for-the-badge)](#)
 
-*   **100 Performance:** Achieved via Server Components, Turbopack, and strict bundle size management.
-*   **100 Best Practices:** Strict TypeScript adherence, secure headers, and modern web APIs.
-*   **100 SEO:** Fully semantic HTML and dynamic Open Graph metadata routing.
+- **100 Performance:** Achieved via Server Components, Turbopack, and strict bundle size management.
+- **100 Best Practices:** Strict TypeScript adherence, secure headers, and modern web APIs.
+- **100 SEO:** Fully semantic HTML and dynamic Open Graph metadata routing.
 
 ![PageSpeed Score](./_docs/assests/report.png)
 
@@ -93,6 +93,19 @@ NeuroMeet's Next.js frontend is highly optimized, achieving perfect or near-perf
 | **🎥 Custom WebRTC Interface**       | Uses the Web Audio API to mix display and microphone streams before uploading via local 2 MB chunks.          | Delivers a fully custom Google Meet-style UI with hardware controls and strict permission enforcement. |
 | **⚡ Server-First Architecture**     | Combines Next.js Edge Middleware, a Fastify-based NestJS backend, and a custom in-memory TTL caching service. | Achieves sub-millisecond hot-path data retrieval and zero-flicker role-based routing.                  |
 | **🧠 Optional AI Engagement Module** | A decoupled Python worker joins as a silent WebRTC participant and runs an ONNX-optimized ViT+LSTM model.     | Live attention scoring for instructors, entirely isolated from the core backend's request path.        |
+
+---
+
+## 🛡️ System Stability & Security Hardening
+
+NeuroMeet implements highly resilient fallback mechanisms and strict security policies to handle edge cases gracefully:
+
+- **Ghost Meeting Cleanup (Webhook + Cron Synergy):**
+  - **Instant Webhooks:** A LiveKit webhook instantly terminates meetings in the database the moment the last human leaves the room.
+  - **5-Minute Fallback Cron:** A NestJS Cron job sweeps every 5 minutes to clean up any "ghost" sessions that might have survived a webhook failure or backend restart. This immediately halts the heavy PyTorch worker and LiveKit room, saving significant compute costs without interrupting active AFK users.
+- **AI Worker Resilience:** Upgraded dependencies (`opencv-python-headless`) for headless deployment stability, resolved critical race conditions in bot dispatch, and implemented moving averages to prevent UI jitter when face detection temporarily fails.
+- **Strict Passcode Security:** Meeting passcodes are validated using cryptographically secure `Bun.password.verify` (bcrypt) to prevent unauthorized access.
+- **Responsive UI Safety:** Enforced `disablePointerDismissal` on critical Base UI modals (e.g., Recording Player) to prevent accidental closure during video interaction on desktop environments.
 
 ---
 
