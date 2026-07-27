@@ -1080,24 +1080,7 @@ export class MeetingsService {
 
   @Cron(CronExpression.EVERY_5_MINUTES)
   async cleanupGhostMeetings() {
-    let liveMeetings: { id: string; livekitRoomName: string | null; hostId: string; startedAt: Date | null }[] = [];
-    try {
-      liveMeetings = await this.prisma.meeting.findMany({
-        where: { status: 'LIVE' },
-        select: { id: true, livekitRoomName: true, hostId: true, startedAt: true },
-      });
-    } catch (err: any) {
-      // Ignore database connection timeouts caused by Neon serverless cold starts.
-      if (err.code === 'P1001') {
-        console.warn(`[Cron] Database is sleeping/waking up. Skipping cleanup cycle.`);
-        return;
-      }
-      console.error(`[Cron] Error fetching live meetings: ${err.message}`);
-      return;
-    }
-
-    console.log(`[Cron] cleanupGhostMeetings running. Found ${liveMeetings.length} LIVE meeting(s).`);
-    if (liveMeetings.length === 0) return;
+    console.log(`[Cron] cleanupGhostMeetings running. Polling LiveKit for active rooms...`);
 
     const roomService = new RoomServiceClient(
       process.env.LIVEKIT_URL || process.env.LIVEKIT_API_URL || '',
@@ -1105,71 +1088,133 @@ export class MeetingsService {
       process.env.LIVEKIT_API_SECRET || '',
     );
 
-    for (const meeting of liveMeetings) {
-      if (!meeting.livekitRoomName) continue;
+    let activeRooms: any[] = [];
+    try {
+      activeRooms = await roomService.listRooms();
+    } catch (err: any) {
+      console.error(`[Cron] Error fetching rooms from LiveKit: ${err.message}`);
+      return;
+    }
+
+    const activeRoomNames = new Set(activeRooms.map(r => r.name));
+    console.log(`[Cron] Found ${activeRooms.length} active room(s) in LiveKit.`);
+
+    // Optimization for Serverless DB (Neon):
+    // If there are zero active rooms in LiveKit, we do NOT need to query the database.
+    // This allows the Neon database to scale to zero (sleep) and saves compute costs!
+    if (activeRooms.length === 0) {
+      console.log(`[Cron] No active LiveKit rooms. Skipping DB sync to allow database to sleep.`);
+      return;
+    }
+
+    // 1. Sync DB: Find meetings marked 'LIVE' but no longer exist in LiveKit
+    try {
+      const dbLiveMeetings = await this.prisma.meeting.findMany({
+        where: { status: 'LIVE' },
+        select: { id: true, livekitRoomName: true, hostId: true },
+      });
+
+      for (const meeting of dbLiveMeetings) {
+        if (meeting.livekitRoomName && !activeRoomNames.has(meeting.livekitRoomName)) {
+          console.log(`[Cron] Meeting ${meeting.id} is 'LIVE' in DB but missing from LiveKit. Syncing to ENDED.`);
+          await this.prisma.meeting.update({
+            where: { id: meeting.id },
+            data: { status: 'ENDED', endedAt: new Date() },
+          });
+          await Promise.all([
+            this.cache.del(`meeting:${meeting.id}`),
+            this.cache.del(`meetings:user:${meeting.hostId}`),
+            this.cache.del(`participants:${meeting.id}`),
+          ]);
+        }
+      }
+    } catch (err: any) {
+      // Ignore database connection timeouts caused by Neon serverless cold starts.
+      if (err.code === 'P1001') {
+        console.warn(`[Cron] Database sleeping. Skipping DB sync phase.`);
+      } else {
+        console.error(`[Cron] Error syncing DB live meetings:`, err);
+      }
+    }
+
+    // 2. Clean up LiveKit rooms
+    for (const room of activeRooms) {
+      const roomName = room.name;
+      // room.creationTime is a Unix timestamp in seconds for LiveKit
+      const creationMs = Number(room.creationTime) * 1000;
+      const durationMinutes = (Date.now() - creationMs) / 60000;
+      
+      const MAX_DURATION = 45; // 45-minute hard limit
+      const GRACE_PERIOD = 10; // 10 minutes grace period for users to join
 
       let shouldEnd = false;
-      const durationMinutes = meeting.startedAt ? (Date.now() - meeting.startedAt.getTime()) / 60000 : 0;
-      const MAX_DURATION = 45; // 45-minute hard limit
 
       try {
-        const lkParticipants = await roomService.listParticipants(
-          meeting.livekitRoomName,
-        );
-        // Filter out any AI bot identities — they all follow the pattern ai-bot-*
+        const lkParticipants = await roomService.listParticipants(roomName);
+        
+        // Filter out any bots (AI bot, egress recording bot, etc.)
         const actualUsers = lkParticipants.filter(
           (p) =>
             !p.identity.startsWith('ai-bot-') &&
             !p.identity.includes('bot') &&
-            p.identity !== 'engagement-bot',
+            p.identity !== 'engagement-bot' &&
+            !p.identity.toLowerCase().includes('egress')
         );
-        
-        console.log(`[Cron] Room ${meeting.livekitRoomName}: ${lkParticipants.length} total, ${actualUsers.length} human(s), Duration: ${Math.round(durationMinutes)}m.`);
-        
-        const GRACE_PERIOD = 10; // 10 minutes grace period for users to join
+
+        console.log(`[Cron] Room ${roomName}: ${lkParticipants.length} total, ${actualUsers.length} human(s), Duration: ${Math.round(durationMinutes)}m.`);
+
         if (actualUsers.length === 0) {
           if (durationMinutes > GRACE_PERIOD) {
-            console.log(`[Cron] Room ${meeting.livekitRoomName} is empty and exceeded ${GRACE_PERIOD}m grace period. Auto-cleaning.`);
+            console.log(`[Cron] Room ${roomName} is empty and exceeded ${GRACE_PERIOD}m grace period. Auto-cleaning.`);
             shouldEnd = true;
           } else {
-            console.log(`[Cron] Room ${meeting.livekitRoomName} is empty, but within ${GRACE_PERIOD}m grace period. Letting it live.`);
+            console.log(`[Cron] Room ${roomName} is empty, but within ${GRACE_PERIOD}m grace period. Letting it live.`);
           }
         } else if (durationMinutes > MAX_DURATION) {
-          console.log(`[Cron] Room ${meeting.livekitRoomName} exceeded max duration of ${MAX_DURATION} minutes. Force closing.`);
+          console.log(`[Cron] Room ${roomName} exceeded max duration of ${MAX_DURATION} minutes. Force closing.`);
           shouldEnd = true;
         }
       } catch (err) {
-        // Room does not exist in LiveKit at all — definitely end it
-        console.log(`[Cron] Room ${meeting.livekitRoomName} not found in LiveKit (already gone). Marking as ENDED.`);
-        shouldEnd = true;
+        console.error(`[Cron] Error fetching participants for room ${roomName}:`, err);
       }
 
       if (shouldEnd) {
-        await this.prisma.meeting.update({
-          where: { id: meeting.id },
-          data: { status: 'ENDED', endedAt: new Date() },
-        });
-
-        await Promise.all([
-          this.cache.del(`meeting:${meeting.id}`),
-          this.cache.del(`meetings:user:${meeting.hostId}`),
-          this.cache.del(`participants:${meeting.id}`),
-        ]);
-
-        // Force-kill the room in LiveKit (this disconnects the bot too)
+        // 1. Force-kill the room in LiveKit (disconnects all bots & participants)
         try {
-          await roomService.deleteRoom(meeting.livekitRoomName);
-          console.log(`[Cron] ✅ LiveKit room force-deleted: ${meeting.livekitRoomName}`);
+          await roomService.deleteRoom(roomName);
+          console.log(`[Cron] ✅ LiveKit room force-deleted: ${roomName}`);
         } catch (e) {
-          console.log(`[Cron] Room already gone from LiveKit: ${meeting.livekitRoomName}`);
+          console.log(`[Cron] Room already gone from LiveKit: ${roomName}`);
         }
 
-        // Also signal dispatch_server to terminate the bot process
-        this.botService.recallBotFromRoom(meeting.livekitRoomName).catch(() =>
-          console.log(`[Cron] Recall signal sent (bot may already be gone).`),
+        // 2. Recall AI bot
+        this.botService.recallBotFromRoom(roomName).catch(() =>
+          console.log(`[Cron] Recall signal sent (bot may already be gone).`)
         );
-        
-        console.log(`[Cron] ✅ Auto-cleaned ghost meeting: ${meeting.id}`);
+
+        // 3. Update DB to ENDED
+        try {
+          const meeting = await this.prisma.meeting.findFirst({
+            where: { livekitRoomName: roomName },
+            select: { id: true, hostId: true },
+          });
+
+          if (meeting) {
+            await this.prisma.meeting.update({
+              where: { id: meeting.id },
+              data: { status: 'ENDED', endedAt: new Date() },
+            });
+
+            await Promise.all([
+              this.cache.del(`meeting:${meeting.id}`),
+              this.cache.del(`meetings:user:${meeting.hostId}`),
+              this.cache.del(`participants:${meeting.id}`),
+            ]);
+            console.log(`[Cron] ✅ DB updated to ENDED for ghost meeting: ${meeting.id}`);
+          }
+        } catch (err) {
+          console.error(`[Cron] Error updating DB for room ${roomName}:`, err);
+        }
       }
     }
   }

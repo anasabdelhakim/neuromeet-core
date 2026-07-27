@@ -23,11 +23,11 @@ logger = logging.getLogger("engagement-bot")
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 SEQ_LEN = 24                 # MUST match the SEQ_LEN used during training and ONNX export
 BUFFER_MAXLEN = 30           # 30 frames at 10 FPS = 3s window — matches ~4s training clips from DAiSEE
-INFERENCE_INTERVAL_S = 2.5   # Run inference every N seconds — set above CPU inference time to avoid queue buildup
-DISENGAGEMENT_THRESHOLD = 0.50  # Below this → is_disengaged=True
+INFERENCE_INTERVAL_S = 3.0   # Run inference every 3 seconds to be less spammy
+DISENGAGEMENT_THRESHOLD = 0.40  # Lowered to 40% so it doesn't instantly flag you if the model is slightly unsure
 MAX_CONCURRENT = 1 if DEVICE.type == "cpu" else 10  # CPU: serialize to avoid thread contention
-EMA_ALPHA_UP = 0.30          # Climb speed
-EMA_ALPHA_DOWN = 0.30        # Drop speed (symmetrical)
+EMA_ALPHA_UP = 0.15          # Climb speed (smoother, less jumpy)
+EMA_ALPHA_DOWN = 0.15        # Drop speed (smoother, less jumpy)
 
 
 # ─── Model Singleton ──────────────────────────────────────────────────────────
@@ -137,9 +137,8 @@ def run_batch_inference(frame_lists: list) -> list:
                 pass # Fallback to PyTorch if OpenCV errors out
                 
         if not has_face:
-            logger.info(f"[DIAG] No face detected. Hardcoding 0.0 engagement and skipping AI math.")
-            final_results[idx] = {"raw_score": 0.0}
-            continue
+            logger.info(f"[DIAG] OpenCV face detector failed to find face. Falling back to full un-cropped frame for AI math.")
+            # We don't skip AI math anymore! The AI can analyze the full frame.
 
         # ── Smart Face Crop to normalize all Aspect Ratios (Mobile vs Laptop) ──
         if best_face is not None:

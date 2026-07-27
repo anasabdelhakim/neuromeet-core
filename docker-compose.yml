@@ -50,7 +50,7 @@ services:
     container_name: neuromeet-ai-worker
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "8080:7860"
     volumes:
       # Mount your trained model checkpoint here
       - ./ai_bot/models:/models:rw
