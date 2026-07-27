@@ -8,7 +8,7 @@ import {
   useParticipants,
 } from "@livekit/components-react";
 import { Track } from "livekit-client";
-import { X, Users, Copy, Check } from "lucide-react";
+import { X, Users, Copy, Check, AlertTriangle } from "lucide-react";
 import { EngagementDashboard } from "./EngagementDashboard";
 import { useEngagementData } from '@/src/features/livekit/hooks/useEngagementData';
 import { useCopyFeedback } from "@/src/hooks/useCopyFeedback";
@@ -119,6 +119,26 @@ interface MeetingRoomProps {
 export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Session", meetingPasscode = "443451", meetingId = room, isGuest = false }: MeetingRoomProps) {
   const [activeTab, setActiveTab] = useState<ActiveSidebarTab>(null);
   const [showJoiningInfoModal, setShowJoiningInfoModal] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
+
+  useEffect(() => {
+    const start = Date.now();
+    const WARNING_THRESHOLD_SEC = 40 * 60; // 40 minutes in seconds
+    const MAX_DURATION_SEC = 45 * 60; // 45 minutes in seconds
+
+    const interval = setInterval(() => {
+      const elapsedSec = Math.floor((Date.now() - start) / 1000);
+      if (elapsedSec >= WARNING_THRESHOLD_SEC && elapsedSec < MAX_DURATION_SEC) {
+        setTimeRemaining(MAX_DURATION_SEC - elapsedSec);
+      } else if (elapsedSec >= MAX_DURATION_SEC) {
+        setTimeRemaining(0);
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const { copiedKey, copy } = useCopyFeedback(2000);
   const participantCount = useParticipants().length;
   useEffect(() => {
@@ -145,6 +165,19 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
   };
   return (
     <div className="flex flex-col h-[100dvh] w-screen bg-background text-foreground overflow-hidden font-sans relative">
+      {timeRemaining !== null && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300">
+          <div className="flex items-center gap-2.5 bg-red-950/90 border border-red-500/50 backdrop-blur-md text-red-50 px-4 py-2.5 rounded-full shadow-2xl">
+            <AlertTriangle size={18} className="text-red-400 animate-pulse shrink-0" />
+            <span className="text-sm font-medium tracking-wide">
+              Meeting will end in <strong className="font-mono text-base">{Math.floor(timeRemaining / 60).toString().padStart(2, '0')}:{(timeRemaining % 60).toString().padStart(2, '0')}</strong>
+            </span>
+            <button onClick={() => setTimeRemaining(null)} className="ml-2 hover:bg-red-500/20 p-1 rounded-full transition-colors shrink-0">
+              <X size={14} className="text-red-400" />
+            </button>
+          </div>
+        </div>
+      )}
       {isInstructor && meetingId && <EngagementSync meetingId={meetingId} />}
       <div className="flex-1 flex overflow-hidden relative w-full">
         <main className="flex-1 flex items-center justify-center p-4 md:p-6 overflow-hidden relative bg-black select-none">

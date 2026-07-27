@@ -102,9 +102,12 @@ export function PasscodeForm({ meetingId, meetingTitle }: PasscodeFormProps) {
         )}
       </Button>
 
-      <p className="text-center text-[10px] text-muted-foreground/60 mt-4">
-        * Empty meetings are automatically ended after 5 minutes.
-      </p>
+      <div className="flex items-start gap-2 bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 rounded-lg p-3 mt-6">
+        <Clock size={16} className="mt-0.5 shrink-0" />
+        <p className="text-xs leading-relaxed font-medium">
+          Empty meetings are automatically closed after 10 minutes to conserve resources. Meeting duration is strictly capped at 45 minutes.
+        </p>
+      </div>
     </form>
   );
 }

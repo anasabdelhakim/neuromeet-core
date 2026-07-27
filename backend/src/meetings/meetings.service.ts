@@ -1080,11 +1080,11 @@ export class MeetingsService {
 
   @Cron(CronExpression.EVERY_5_MINUTES)
   async cleanupGhostMeetings() {
-    let liveMeetings: { id: string; livekitRoomName: string | null; hostId: string }[] = [];
+    let liveMeetings: { id: string; livekitRoomName: string | null; hostId: string; startedAt: Date | null }[] = [];
     try {
       liveMeetings = await this.prisma.meeting.findMany({
         where: { status: 'LIVE' },
-        select: { id: true, livekitRoomName: true, hostId: true },
+        select: { id: true, livekitRoomName: true, hostId: true, startedAt: true },
       });
     } catch (err: any) {
       // Ignore database connection timeouts caused by Neon serverless cold starts.
@@ -1109,6 +1109,9 @@ export class MeetingsService {
       if (!meeting.livekitRoomName) continue;
 
       let shouldEnd = false;
+      const durationMinutes = meeting.startedAt ? (Date.now() - meeting.startedAt.getTime()) / 60000 : 0;
+      const MAX_DURATION = 45; // 45-minute hard limit
+
       try {
         const lkParticipants = await roomService.listParticipants(
           meeting.livekitRoomName,
@@ -1121,9 +1124,18 @@ export class MeetingsService {
             p.identity !== 'engagement-bot',
         );
         
-        console.log(`[Cron] Room ${meeting.livekitRoomName}: ${lkParticipants.length} total, ${actualUsers.length} human(s).`);
+        console.log(`[Cron] Room ${meeting.livekitRoomName}: ${lkParticipants.length} total, ${actualUsers.length} human(s), Duration: ${Math.round(durationMinutes)}m.`);
         
+        const GRACE_PERIOD = 10; // 10 minutes grace period for users to join
         if (actualUsers.length === 0) {
+          if (durationMinutes > GRACE_PERIOD) {
+            console.log(`[Cron] Room ${meeting.livekitRoomName} is empty and exceeded ${GRACE_PERIOD}m grace period. Auto-cleaning.`);
+            shouldEnd = true;
+          } else {
+            console.log(`[Cron] Room ${meeting.livekitRoomName} is empty, but within ${GRACE_PERIOD}m grace period. Letting it live.`);
+          }
+        } else if (durationMinutes > MAX_DURATION) {
+          console.log(`[Cron] Room ${meeting.livekitRoomName} exceeded max duration of ${MAX_DURATION} minutes. Force closing.`);
           shouldEnd = true;
         }
       } catch (err) {
