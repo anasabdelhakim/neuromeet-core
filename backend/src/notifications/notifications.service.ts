@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { NotifType } from '../../lib/prisma/_generated';
-import { PrismaService } from 'src/database/database.service';
+import { PrismaService } from '../database/database.service';
 
 export interface CreateNotificationDto {
   userId: string;

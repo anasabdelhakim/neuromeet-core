@@ -5,8 +5,10 @@ import { LivekitController } from './livekit.controller';
 import { LiveKitBotService } from './livekit-bot.service';
 import { LiveKitBotController } from './livekit-bot.controller';
 import { WorkerPoolService } from './worker-pool.service';
+import { PrismaModule } from '../database/database.module';
+
 @Module({
-  imports: [HttpModule],
+  imports: [HttpModule, PrismaModule],
   controllers: [LivekitController, LiveKitBotController],
   providers: [LivekitService, LiveKitBotService, WorkerPoolService],
   exports: [LiveKitBotService, WorkerPoolService],

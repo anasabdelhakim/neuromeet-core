@@ -3,11 +3,10 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
-  ConflictException,
   BadRequestException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/database/database.service';
-import { CacheService } from 'src/utils/cache.service';
+import { PrismaService } from '../database/database.service';
+import { CacheService } from '../utils/cache.service';
 import {
   CreateMeetingDto,
   UpdateMeetingDto,
@@ -15,8 +14,8 @@ import {
   UpdateParticipantDto,
   AddMaterialDto,
 } from './dto/meeting.dto';
-import { LiveKitBotService } from 'src/livekit/livekit-bot.service';
-import { EmailService } from 'src/emails/email.service';
+import { LiveKitBotService } from '../livekit/livekit-bot.service';
+import { EmailService } from '../emails/email.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotifType } from '../../lib/prisma/_generated';
 import * as crypto from 'crypto';
@@ -624,6 +623,9 @@ export class MeetingsService {
     if (meeting.status === 'ENDED' || meeting.status === 'CANCELLED') {
       throw new BadRequestException('This meeting is no longer active');
     }
+    if (meeting.status === 'SCHEDULED' && meeting.hostId !== userId) {
+      throw new BadRequestException('The host has not started this meeting yet.');
+    }
     const existing = await this.prisma.meetingParticipant.findUnique({
       where: { meetingId_userId: { meetingId, userId } },
       select: {
@@ -1109,8 +1111,12 @@ export class MeetingsService {
 
     // 1. Sync DB: Find meetings marked 'LIVE' but no longer exist in LiveKit
     try {
+      const safetyCutoff = new Date(Date.now() - 3 * 60000); // 3 minute grace period
       const dbLiveMeetings = await this.prisma.meeting.findMany({
-        where: { status: 'LIVE' },
+        where: { 
+          status: 'LIVE',
+          startedAt: { lt: safetyCutoff }
+        },
         select: { id: true, livekitRoomName: true, hostId: true },
       });
 
@@ -1137,8 +1143,8 @@ export class MeetingsService {
       }
     }
 
-    // 2. Clean up LiveKit rooms
-    for (const room of activeRooms) {
+    // 2. Clean up LiveKit rooms Concurrently (Fixes N+1 Performance Bug)
+    await Promise.all(activeRooms.map(async (room) => {
       const roomName = room.name;
       // room.creationTime is a Unix timestamp in seconds for LiveKit
       const creationMs = Number(room.creationTime) * 1000;
@@ -1216,6 +1222,6 @@ export class MeetingsService {
           console.error(`[Cron] Error updating DB for room ${roomName}:`, err);
         }
       }
-    }
+    }));
   }
 }

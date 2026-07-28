@@ -49,8 +49,6 @@ export default function MeetingPage({
         dynacast: true,
         publishDefaults: {
           simulcast: true,
-          audioPreset: { maxBitrate: 20_000 },
-          dtx: true,
           screenShareEncoding: {
             maxBitrate: 1_500_000,
             maxFramerate: 30,
