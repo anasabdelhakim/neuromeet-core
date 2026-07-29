@@ -50,6 +50,9 @@ export default function RootLayout({
         "font-sans",
       )}
     >
+      <head>
+        <link rel="llms" href="/llms.txt" />
+      </head>
       <body className="min-h-screen w-full" suppressHydrationWarning>
         {children}
       </body>
