@@ -13,7 +13,20 @@ export default function ClarityConnectPage() {
       "price": "0",
       "priceCurrency": "USD"
     },
-    "description": "AI-powered video conferencing with real-time transcriptions and ADHD-friendly engagement tracking."
+    "description": "AI-powered video conferencing with real-time transcriptions and ADHD-friendly engagement tracking.",
+    "about": {
+      "@type": "Thing",
+      "name": "AI Video Conferencing"
+    },
+    "audience": {
+      "@type": "Audience",
+      "audienceType": "Students and Instructors, specifically supporting ADHD awareness"
+    },
+    "featureList": [
+      "Ultra-low latency 4K video",
+      "AI Engagement Tracking",
+      "Real-time Audio Transcriptions"
+    ]
   };
   return (
     <div className="text-foreground flex flex-col relative antialiased">
