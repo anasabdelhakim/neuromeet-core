@@ -39,6 +39,14 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: '/mcp',
+        destination: '/.well-known/mcp.json',
+      },
+    ];
+  },
 };
 
 export default nextConfig;
