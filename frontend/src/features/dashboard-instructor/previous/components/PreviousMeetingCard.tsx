@@ -20,8 +20,8 @@ export function PreviousMeetingCard({ meeting }: PreviousMeetingCardProps) {
     : 0;
   const getEngagementDetails = (score: number, exists: boolean) => {
     if (!exists) return { text: "No Data", color: "text-muted-foreground", bg: "bg-muted-foreground/30" };
-    if (score >= 85) return { text: "High", color: "text-status-success", bg: "bg-status-success" };
-    if (score >= 70) return { text: "Good", color: "text-status-warning", bg: "bg-status-warning" };
+    if (score >= 70) return { text: "High", color: "text-status-success", bg: "bg-status-success" };
+    if (score >= 50) return { text: "Good", color: "text-status-warning", bg: "bg-status-warning" };
     return { text: "Low", color: "text-destructive", bg: "bg-destructive" };
   };
   const engagementDetails = getEngagementDetails(engagementScore, hasData);

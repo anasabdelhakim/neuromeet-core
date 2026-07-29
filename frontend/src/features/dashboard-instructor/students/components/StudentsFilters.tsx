@@ -199,7 +199,7 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
                     <div className="flex items-center gap-2 w-full max-w-[120px]">
                       <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden min-w-[40px]">
                         <div 
-                          className={cn("h-full rounded-full", student.avgEngagement >= 85 ? "bg-status-success" : student.avgEngagement >= 70 ? "bg-status-warning" : "bg-destructive")} 
+                          className={cn("h-full rounded-full", student.avgEngagement >= 70 ? "bg-status-success" : student.avgEngagement >= 50 ? "bg-status-warning" : "bg-destructive")} 
                           style={{ width: `${student.avgEngagement}%` }} 
                         />
                       </div>
@@ -369,8 +369,8 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
                   <span>{student.totalMeetings} meetings</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-xs font-bold">
-                  <Activity size={14} className={cn(student.avgEngagement >= 85 ? "text-status-success" : student.avgEngagement >= 70 ? "text-status-warning" : "text-destructive")} />
-                  <span className={cn(student.avgEngagement >= 85 ? "text-status-success" : student.avgEngagement >= 70 ? "text-status-warning" : "text-destructive")}>
+                  <Activity size={14} className={cn(student.avgEngagement >= 70 ? "text-status-success" : student.avgEngagement >= 50 ? "text-status-warning" : "text-destructive")} />
+                  <span className={cn(student.avgEngagement >= 70 ? "text-status-success" : student.avgEngagement >= 50 ? "text-status-warning" : "text-destructive")}>
                     {student.avgEngagement}%
                   </span>
                 </div>
