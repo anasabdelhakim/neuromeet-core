@@ -1,0 +1,43 @@
+{
+  "mcpVersion": "1.0",
+  "server": {
+    "name": "NeuroMeet-Agent-Interface",
+    "version": "1.0.0",
+    "description": "NeuroMeet Model Context Protocol interface for AI Agents to manage meetings and analyze engagement.",
+    "endpoints": {
+      "graphql": "https://neuromeet.anasdev.shop/api/graphql",
+      "rest": "https://neuromeet.anasdev.shop/api"
+    }
+  },
+  "capabilities": {
+    "tools": [
+      {
+        "name": "get_active_meetings",
+        "description": "Retrieves a list of currently active video conferencing rooms.",
+        "parameters": {
+          "type": "object",
+          "properties": {}
+        }
+      },
+      {
+        "name": "analyze_engagement",
+        "description": "Fetches the PyTorch ViT processed ADHD engagement score for a specific meeting participant.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "participantId": {
+              "type": "string",
+              "description": "The unique identifier of the participant."
+            }
+          },
+          "required": ["participantId"]
+        }
+      }
+    ]
+  },
+  "authentication": {
+    "type": "oauth2",
+    "authorizationUrl": "https://neuromeet.anasdev.shop/api/auth/authorize",
+    "tokenUrl": "https://neuromeet.anasdev.shop/api/auth/token"
+  }
+}

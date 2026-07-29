@@ -34,6 +34,13 @@ export const metadata: Metadata = {
     title: "NeuroMeet",
     description: "Smarter meetings. Better outcomes.",
   },
+  alternates: {
+    types: {
+      'text/markdown': [
+        { url: 'https://neuromeet.anasdev.shop/llms.txt', title: 'NeuroMeet AI Description' },
+      ],
+    },
+  },
 };
 export default function RootLayout({
   children,

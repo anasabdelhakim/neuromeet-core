@@ -26,6 +26,19 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Link',
+            value: '<https://neuromeet.anasdev.shop/llms.txt>; rel="describedby"',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
