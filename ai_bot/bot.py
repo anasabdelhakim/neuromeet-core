@@ -116,7 +116,7 @@ def run_batch_inference(frame_lists: list) -> list:
     for idx, frames in enumerate(frame_lists):
         total = len(frames)
         if total == 0:
-            final_results[idx] = {"raw_score": 0.0}
+            final_results[idx] = {"raw_score": 0.0, "has_face": False}
             continue
             
         # Fast Face Detection on the MOST RECENT frame
@@ -137,10 +137,13 @@ def run_batch_inference(frame_lists: list) -> list:
                 pass # Fallback to PyTorch if OpenCV errors out
                 
         if not has_face:
-            logger.info(f"[DIAG] OpenCV face detector failed to find face. Falling back to full un-cropped frame for AI math.")
-            # We don't skip AI math anymore! The AI can analyze the full frame.
+            # Face detector didn't find a face — this is common on mobile cameras, dim lighting,
+            # or tilted angles. We do NOT skip inference. Instead, we fall back to running the
+            # model on the full uncropped frame. The model handles this gracefully.
+            logger.info(f"[DIAG] No face detected by OpenCV — running model on full frame (normal for mobile/dim light).")
 
         # ── Smart Face Crop to normalize all Aspect Ratios (Mobile vs Laptop) ──
+        # Only crop if we actually found a face — otherwise use the full frame.
         if best_face is not None:
             fx, fy, fw, fh = best_face
             img_h, img_w, _ = frames[-1].shape

@@ -13,11 +13,6 @@ export class LivekitController {
     @Query('user') user: string,
     @Query('role') role: string = 'STUDENT',
   ) {
-    if (role === 'INSTRUCTOR') {
-      this.liveKitBotService.dispatchBotToRoom(room).catch((err) => {
-        console.error('Failed to dispatch bot:', err);
-      });
-    }
     return {
       token: await this.livekitService.createToken(room, user, role),
     };
