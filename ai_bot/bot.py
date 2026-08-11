@@ -23,11 +23,11 @@ logger = logging.getLogger("engagement-bot")
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 SEQ_LEN = 24                 # MUST match the SEQ_LEN used during training and ONNX export
 BUFFER_MAXLEN = 30           # 30 frames at 10 FPS = 3s window — matches ~4s training clips from DAiSEE
-INFERENCE_INTERVAL_S = 3.0   # Run inference every 3 seconds to be less spammy
-DISENGAGEMENT_THRESHOLD = 0.40  # Lowered to 40% so it doesn't instantly flag you if the model is slightly unsure
+INFERENCE_INTERVAL_S = 2.5   # Run inference every N seconds — set above CPU inference time to avoid queue buildup
+DISENGAGEMENT_THRESHOLD = 0.50  # Below this → is_disengaged=True
 MAX_CONCURRENT = 1 if DEVICE.type == "cpu" else 10  # CPU: serialize to avoid thread contention
-EMA_ALPHA_UP = 0.15          # Climb speed (smoother, less jumpy)
-EMA_ALPHA_DOWN = 0.15        # Drop speed (smoother, less jumpy)
+EMA_ALPHA_UP = 0.30          # Climb speed
+EMA_ALPHA_DOWN = 0.30        # Drop speed (symmetrical)
 
 
 # ─── Model Singleton ──────────────────────────────────────────────────────────
@@ -116,7 +116,7 @@ def run_batch_inference(frame_lists: list) -> list:
     for idx, frames in enumerate(frame_lists):
         total = len(frames)
         if total == 0:
-            final_results[idx] = {"raw_score": 0.0, "has_face": False}
+            final_results[idx] = {"raw_score": 0.0}
             continue
             
         # Fast Face Detection on the MOST RECENT frame
@@ -137,13 +137,11 @@ def run_batch_inference(frame_lists: list) -> list:
                 pass # Fallback to PyTorch if OpenCV errors out
                 
         if not has_face:
-            # Face detector didn't find a face — this is common on mobile cameras, dim lighting,
-            # or tilted angles. We do NOT skip inference. Instead, we fall back to running the
-            # model on the full uncropped frame. The model handles this gracefully.
-            logger.info(f"[DIAG] No face detected by OpenCV — running model on full frame (normal for mobile/dim light).")
+            logger.info(f"[DIAG] No face detected. Hardcoding 0.0 engagement and skipping AI math.")
+            final_results[idx] = {"raw_score": 0.0}
+            continue
 
         # ── Smart Face Crop to normalize all Aspect Ratios (Mobile vs Laptop) ──
-        # Only crop if we actually found a face — otherwise use the full frame.
         if best_face is not None:
             fx, fy, fw, fh = best_face
             img_h, img_w, _ = frames[-1].shape

@@ -217,27 +217,27 @@ export default function InstructorAnalyticsClient({
               <CardContent>
                 <div className="space-y-4">
                   {formattedMatrix.map((student, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-4 rounded-medium bg-black-soft-muted border border-border/50 hover:bg-black-soft transition-colors">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/50 to-primary flex items-center justify-center text-white font-bold">
+                    <div key={idx} className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-medium bg-black-soft-muted border border-border/50 hover:bg-black-soft transition-colors">
+                      <div className="flex items-center gap-4 min-w-[120px]">
+                        <div className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-primary/50 to-primary flex items-center justify-center text-white font-bold">
                           {student.name.charAt(0).toUpperCase()}
                         </div>
-                        <div>
-                          <h4 className="font-semibold text-foreground">{student.name}</h4>
-                          <p className="text-xs text-muted-foreground">{Math.round(student.totalSeconds / 60)} mins attended</p>
+                        <div className="min-w-0">
+                          <h4 className="font-semibold text-foreground truncate">{student.name}</h4>
+                          <p className="text-xs text-muted-foreground whitespace-nowrap">{Math.round(student.totalSeconds / 60)} mins attended</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-6">
+                      <div className="flex items-center gap-4 sm:gap-6 ml-auto">
                         <div className="text-right">
-                          <p className="text-sm font-medium text-foreground">
+                          <p className="text-sm font-medium text-foreground whitespace-nowrap">
                             {student.engagement > 0 ? `${student.engagement}% Avg` : "No Data"}
                           </p>
-                          <div className="w-24 h-1.5 bg-black-soft rounded-full mt-1 overflow-hidden">
+                          <div className="w-20 sm:w-24 h-1.5 bg-black-soft rounded-full mt-1 overflow-hidden ml-auto">
                             <div className="h-full bg-status-success rounded-full" style={{ width: `${student.engagement}%` }} />
                           </div>
                         </div>
                         {student.adhdFlags > 0 && (
-                          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-status-warning/20 text-status-warning text-xs font-medium border border-status-warning/30">
+                          <div className="flex shrink-0 whitespace-nowrap items-center gap-1.5 px-2.5 py-1 rounded-full bg-status-warning/20 text-status-warning text-xs font-medium border border-status-warning/30">
                             <AlertTriangle size={12} />
                             <span>{student.adhdFlags} Flags</span>
                           </div>
