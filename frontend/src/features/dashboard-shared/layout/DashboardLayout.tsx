@@ -14,7 +14,6 @@ export function DashboardLayout({
     <TooltipProvider>
       <DashboardBackground>
         <div className="flex min-h-screen w-full relative text-foreground flex-col md:flex-row">
-          {}
           <div className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border md:static md:sticky md:top-0 md:h-screen md:bg-transparent md:border-t-0 shrink-0">
             {sidebar}
           </div>

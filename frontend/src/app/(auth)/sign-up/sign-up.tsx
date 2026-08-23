@@ -63,7 +63,6 @@ export function SignUpForm() {
       <AuthTabs activeTab="sign-up" />
       <CardContent>
         <form action={handleAction} className="space-y-4">
-          {}
           {state.errorMessage?.server && (
             <div>
               <p className="text-destructive text-sm text-center bg-destructive-soft rounded-medium py-2 px-3">
@@ -71,7 +70,6 @@ export function SignUpForm() {
               </p>
             </div>
           )}
-          {}
           <div>
             <Field>
               <FieldLabel htmlFor="name">Name</FieldLabel>
@@ -97,7 +95,6 @@ export function SignUpForm() {
               </FieldError>
             </Field>
           </div>
-          {}
           <div>
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -122,7 +119,6 @@ export function SignUpForm() {
               </FieldError>
             </Field>
           </div>
-          {}
           <div>
             <Field>
               <FieldLabel htmlFor="password">Password</FieldLabel>
@@ -154,7 +150,6 @@ export function SignUpForm() {
               <PasswordStrengthUI control={control} error={errors.password} />
             </Field>
           </div>
-          {}
           <div>
             <Field>
               <FieldLabel htmlFor="confirmPassword">
@@ -181,7 +176,6 @@ export function SignUpForm() {
               </FieldError>
             </Field>
           </div>
-          {}
           <div className="pt-2">
             <Button
               type="submit"

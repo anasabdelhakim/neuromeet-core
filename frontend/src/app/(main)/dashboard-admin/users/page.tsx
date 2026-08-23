@@ -16,7 +16,6 @@ async function AdminUsersLoader() {
 export default function AdminUsersPage() {
   return (
     <div className="flex flex-col gap-6 animate-page-entrance">
-      {}
       <div className="hidden sm:flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="hidden sm:block">
           <h2 className="text-3xl font-bold tracking-tight">User Management</h2>

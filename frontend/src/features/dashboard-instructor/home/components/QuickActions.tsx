@@ -276,7 +276,7 @@ export function QuickActions() {
                     <FieldError>{errorsSchedule.title?.message}</FieldError>
                   </Field>
                 </div>
-                <div className="grid grid-cols-2 gap-4 w-full">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
                   <div className="space-y-2 flex-1">
                     <Label className="text-sm font-medium text-muted-foreground-mid">Date <span className="text-red-500">*</span></Label>
                     <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
@@ -285,12 +285,12 @@ export function QuickActions() {
                           variant="outline"
                           disabled={pending}
                           className={cn(
-                            "w-full justify-between font-normal bg-black-soft-muted h-12 border-none rounded-soft hover:bg-black-soft-deep hover:text-white transition-all duration-fast ease-standard focus-visible:ring-action-schedule-input outline-none mb-1",
+                            "w-full justify-between font-normal bg-black-soft-muted h-12 border-none rounded-soft hover:bg-black-soft-deep hover:text-white transition-all duration-fast ease-standard focus-visible:ring-action-schedule-input outline-none mb-1 overflow-hidden",
                             !date && "text-muted-foreground",
                           )}
                         >
-                          {date ? formatEgyptTime(date, "PPP") : <span>Pick a date</span>}
-                          <ChevronDownIcon className="h-4 w-4 opacity-50" />
+                          <span className="truncate">{date ? formatEgyptTime(date, "PPP") : "Pick a date"}</span>
+                          <ChevronDownIcon className="h-4 w-4 opacity-50 shrink-0 ml-2" />
                         </Button>
                       } />
                       <PopoverContent

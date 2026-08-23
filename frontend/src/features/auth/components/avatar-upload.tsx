@@ -82,7 +82,6 @@ export function AvatarUploadControl({ error, disabled, initialUrl }: AvatarUploa
           accept="image/png, image/jpeg, image/jpg, image/webp"
         />
 
-        {}
         <div className={cn(
           "absolute inset-0 rounded-full border-2 border-dashed transition-all duration-normal",
           isDragging ? "border-primary scale-105 bg-primary-soft-subtle opacity-100" : "border-transparent scale-100 opacity-0",
@@ -100,7 +99,6 @@ export function AvatarUploadControl({ error, disabled, initialUrl }: AvatarUploa
           </AvatarFallback>
         </Avatar>
 
-        {}
         <div className={cn(
           "absolute inset-1.5 rounded-full bg-black/40 backdrop-blur-sm transition-all duration-normal flex items-center justify-center",
           isHovered ? "opacity-100 scale-100" : "opacity-0 scale-95"
@@ -110,7 +108,6 @@ export function AvatarUploadControl({ error, disabled, initialUrl }: AvatarUploa
            }
         </div>
 
-        {}
         {!isDragging && (
           <div className={cn(
             "absolute bottom-2 right-2 flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-brand-cyan to-brand-purple text-white shadow-hard ring-4 ring-background transition-transform duration-fast",

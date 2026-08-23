@@ -42,7 +42,6 @@ export default function ForgetPasswordPreview() {
     <Card variant="gradient">
       <CardContent>
         <form action={handleAction} className="space-y-4">
-          {}
           {state.errorMessage?.server && (
             <div className="animate-alert-entrance">
               <p className="text-destructive text-sm text-center bg-destructive-soft rounded-medium py-2 px-3">
@@ -50,7 +49,6 @@ export default function ForgetPasswordPreview() {
               </p>
             </div>
           )}
-          {}
           <div>
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -81,7 +79,6 @@ export default function ForgetPasswordPreview() {
               </FieldDescription>
             </Field>
           </div>
-          {}
           <div className="pt-2">
             <Button
               type="submit"

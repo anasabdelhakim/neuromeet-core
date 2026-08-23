@@ -44,7 +44,8 @@ class RecallRequest(BaseModel):
 
 
 @app.post("/api/dispatch")
-def dispatch(req: DispatchRequest):
+async def dispatch(req: DispatchRequest):
+    print(f"[DEBUG] Received dispatch: {req.dict()}")
     if req.room_name in active_bots:
         proc = active_bots[req.room_name]
         if proc.poll() is None:
@@ -82,7 +83,7 @@ def dispatch(req: DispatchRequest):
 
 
 @app.post("/api/recall")
-def recall(req: RecallRequest):
+async def recall(req: RecallRequest):
     proc = active_bots.pop(req.room_name, None)
     if proc and proc.poll() is None:
         proc.terminate()

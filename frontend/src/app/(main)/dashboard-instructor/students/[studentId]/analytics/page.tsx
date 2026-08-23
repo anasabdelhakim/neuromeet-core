@@ -35,13 +35,11 @@ export default function SpecificStudentAnalyticsPage({
 function AnalyticsSkeleton() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500 w-full">
-      {}
       <div className="hidden sm:block">
         <div className="h-8 w-64 bg-white-soft-muted animate-pulse rounded-medium" />
         <div className="h-4 w-96 bg-white-soft-muted animate-pulse rounded-medium mt-2" />
       </div>
 
-      {}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[1, 2, 3, 4].map((i) => (
           <div key={i} className="h-28 bg-black-soft-subtle border border-border animate-pulse rounded-soft p-3 sm:p-5 flex flex-col justify-between">
@@ -55,7 +53,6 @@ function AnalyticsSkeleton() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-        {}
         <div className="col-span-1 lg:col-span-3 h-[400px] bg-black-soft-subtle border border-border animate-pulse rounded-soft p-5 flex flex-col">
           <div className="h-5 w-40 bg-white-soft-muted rounded-medium mb-1" />
           <div className="h-3 w-56 bg-white-soft-muted rounded-medium mb-6 opacity-60" />

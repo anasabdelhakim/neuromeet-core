@@ -33,7 +33,6 @@ export default function AnalyticsPage({ searchParams }: { searchParams: Promise<
 function AnalyticsSkeleton() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500 w-full mt-4">
-      {}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {[1, 2, 3, 4].map((i) => (
           <div key={i} className="h-28 bg-black-soft-subtle border border-border animate-pulse rounded-soft p-3 sm:p-5 flex flex-col justify-between">
@@ -47,7 +46,6 @@ function AnalyticsSkeleton() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {}
         <div className="col-span-1 lg:col-span-3 h-[400px] bg-black-soft-subtle border border-border animate-pulse rounded-soft p-5 flex flex-col">
           <div className="h-5 w-40 bg-white-soft-muted rounded-medium mb-1" />
           <div className="h-3 w-56 bg-white-soft-muted rounded-medium mb-6 opacity-60" />
@@ -55,7 +53,6 @@ function AnalyticsSkeleton() {
         </div>
       </div>
 
-      {}
       <div className="w-full bg-black-soft-subtle border border-border rounded-soft p-5 flex flex-col gap-4 animate-pulse">
          <div className="h-5 w-48 bg-white-soft-muted rounded-medium mb-1" />
          <div className="h-3 w-64 bg-white-soft-muted rounded-medium mb-2 opacity-60" />

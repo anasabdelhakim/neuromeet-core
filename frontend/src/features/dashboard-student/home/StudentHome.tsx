@@ -64,7 +64,6 @@ export function StudentHome() {
         <StudentHeroClockWrapper />
       </Suspense>
 
-      {}
       <Suspense
         fallback={
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -77,7 +76,6 @@ export function StudentHome() {
         <StudentStatsContainer />
       </Suspense>
 
-      {}
       <section className="mt-8 w-full">
         <div className="flex items-center justify-between mb-6">
           <div>

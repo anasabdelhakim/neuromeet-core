@@ -95,9 +95,7 @@ export async function StudentsList() {
   };
   return (
     <>
-      {}
       <StudentsStats stats={stats} />
-      {}
       <StudentsFilters
         groups={studentGroups}
         students={students}

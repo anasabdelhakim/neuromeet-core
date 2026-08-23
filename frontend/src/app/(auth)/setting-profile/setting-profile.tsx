@@ -28,7 +28,6 @@ export default function ProfileCompletionForm({ initialAvatarUrl }: { initialAva
     <Card variant="gradient">
       <CardContent className="pt-6">
         <form action={action} className="space-y-4">
-          {}
           <div>
             <AvatarUploadControl
               error={state.errorMessage?.avatar?.[0]}
@@ -37,14 +36,12 @@ export default function ProfileCompletionForm({ initialAvatarUrl }: { initialAva
             />
           </div>
 
-          {}
           {state.errorMessage?.server && (
             <div className="p-3 rounded-card bg-destructive-soft border border-destructive/20 text-destructive text-sm text-center">
               {state.errorMessage.server[0]}
             </div>
           )}
 
-          {}
           <div className="pt-2 space-y-4">
             <Button
               type="submit"

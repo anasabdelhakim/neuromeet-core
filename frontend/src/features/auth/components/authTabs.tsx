@@ -8,7 +8,6 @@ export function AuthTabs({ activeTab }: AuthTabsProps) {
   return (
     <div className="pt-1 flex justify-center w-11/12 mx-auto">
       <div className="flex w-full bg-muted rounded-soft">
-        {}
         <Link
           href="/sign-in"
           className={`
@@ -24,7 +23,6 @@ export function AuthTabs({ activeTab }: AuthTabsProps) {
           <LogIn className="w-5 h-5" />
           Sign In
         </Link>
-        {}
         <Link
           href="/sign-up"
           className={`

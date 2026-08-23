@@ -30,7 +30,6 @@ export function PasswordStrengthUI({
     100;
   return (
     <>
-      {}
       <div className="flex gap-2 items-center mt-2">
         <div className="w-11/12 flex gap-1">
           {[25, 50, 75, 100].map((limit, idx) => (
@@ -68,7 +67,6 @@ export function PasswordStrengthUI({
                   : ""}
         </span>
       </div>
-      {}
       <div className="pt-2 grid grid-cols-2 gap-y-2">
         {passwordStatus.map((rule) => (
           <p

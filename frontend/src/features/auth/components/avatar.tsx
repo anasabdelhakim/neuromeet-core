@@ -119,9 +119,7 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
           sideOffset={16}
           className="w-64 z-modal relative overflow-visible shadow-hard border-border"
         >
-          {}
           <span className="absolute w-3 h-3 bg-card border-t border-l border-border rotate-45 -top-1.5 right-3.5 z-20"></span>
-          {}
           <div className="flex items-center gap-3 mb-1">
             <Avatar className="h-12 w-12 overflow-hidden">
               <AvatarImage src={avatarSrc} alt={displayName} className="object-cover" referrerPolicy="no-referrer" />
@@ -181,7 +179,6 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
               Manage your personal information, instructor permissions, and account deletion.
             </DialogDescription>
           </DialogHeader>
-          {}
           <div className="flex flex-col gap-4 border-b border-border pb-6">
             <h4 className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider text-left">Profile Information</h4>
             <div className="flex flex-col sm:flex-row items-start text-left gap-4">
@@ -203,7 +200,6 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
               </div>
             </div>
           </div>
-          {}
           {userRole === "INSTRUCTOR" && (
             <div className="flex flex-col gap-4 border-b border-border pb-6">
               <h4 className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider text-left">Meeting Recording Permissions</h4>
@@ -232,7 +228,6 @@ const AvatarSec = ({ profile }: AvatarSecProps) => {
               </div>
             </div>
           )}
-          {}
           <div className="flex flex-col gap-4">
             <h4 className="text-xs sm:text-sm font-semibold text-destructive uppercase tracking-wider text-center sm:text-left">Danger Zone</h4>
             <div className="flex flex-col sm:flex-row items-center text-center sm:text-left justify-between bg-destructive/10 border border-destructive/20 rounded-soft p-4 gap-4 sm:gap-2">

@@ -131,7 +131,6 @@ export default function InstructorAnalyticsClient({
         <div className="flex justify-center p-12 text-muted-foreground">Failed to load analytics for this meeting.</div>
       ) : (
         <>
-          {}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <DataCard
               icon={Users}
@@ -164,7 +163,7 @@ export default function InstructorAnalyticsClient({
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {}
+            
             <Card className="col-span-1 lg:col-span-3 bg-black-soft-subtle border-border rounded-soft shadow-none">
               <CardHeader>
                 <CardTitle className="text-xl">Student Focus Matrix</CardTitle>
@@ -207,8 +206,6 @@ export default function InstructorAnalyticsClient({
               </CardContent>
             </Card>
           </div>
-
-          {}
           <Card className="bg-black-soft-subtle border-border rounded-soft shadow-none flex flex-col">
               <CardHeader>
                 <CardTitle className="text-xl">Student Detail Report</CardTitle>
@@ -217,22 +214,22 @@ export default function InstructorAnalyticsClient({
               <CardContent>
                 <div className="space-y-4">
                   {formattedMatrix.map((student, idx) => (
-                    <div key={idx} className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-medium bg-black-soft-muted border border-border/50 hover:bg-black-soft transition-colors">
-                      <div className="flex items-center gap-4 min-w-[120px]">
+                    <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 p-4 rounded-medium bg-black-soft-muted border border-border/50 hover:bg-black-soft transition-colors">
+                      <div className="flex items-center gap-4 w-full sm:w-auto">
                         <div className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-primary/50 to-primary flex items-center justify-center text-white font-bold">
                           {student.name.charAt(0).toUpperCase()}
                         </div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <h4 className="font-semibold text-foreground truncate">{student.name}</h4>
                           <p className="text-xs text-muted-foreground whitespace-nowrap">{Math.round(student.totalSeconds / 60)} mins attended</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 sm:gap-6 ml-auto">
-                        <div className="text-right">
+                      <div className="flex items-center justify-between sm:justify-end gap-4 sm:gap-6 w-full sm:w-auto pl-14 sm:pl-0 mt-1 sm:mt-0">
+                        <div className="flex-1 sm:flex-none text-left sm:text-right">
                           <p className="text-sm font-medium text-foreground whitespace-nowrap">
                             {student.engagement > 0 ? `${student.engagement}% Avg` : "No Data"}
                           </p>
-                          <div className="w-20 sm:w-24 h-1.5 bg-black-soft rounded-full mt-1 overflow-hidden ml-auto">
+                          <div className="w-full sm:w-24 h-1.5 bg-black-soft rounded-full mt-1.5 sm:mt-1 overflow-hidden sm:ml-auto">
                             <div className="h-full bg-status-success rounded-full" style={{ width: `${student.engagement}%` }} />
                           </div>
                         </div>

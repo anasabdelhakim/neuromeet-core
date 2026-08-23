@@ -5,7 +5,6 @@ function PreviousMeetingsSkeleton() {
     <div className="flex flex-col gap-4">
       {[1, 2, 3].map((i) => (
         <div key={i} className="w-full p-4 sm:p-5 border border-border bg-card rounded-soft flex flex-col gap-4 animate-pulse">
-          {}
           <div className="flex items-start sm:items-center justify-between gap-4">
             <div className="flex flex-col gap-2 flex-1">
               <div className="flex items-center gap-2">
@@ -17,7 +16,6 @@ function PreviousMeetingsSkeleton() {
                 <div className="h-4 w-28 bg-muted rounded-medium" />
               </div>
             </div>
-            {}
             <div className="hidden sm:flex items-center gap-3">
               <div className="flex -space-x-2 overflow-hidden">
                 {[1, 2, 3].map((a) => (
@@ -28,7 +26,6 @@ function PreviousMeetingsSkeleton() {
               <div className="h-9 w-20 bg-muted rounded-medium" />
             </div>
           </div>
-          {}
           <div className="flex flex-col gap-2 w-full pt-2">
             <div className="flex justify-between items-center">
               <div className="h-3 w-24 bg-muted rounded-medium" />

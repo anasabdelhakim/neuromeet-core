@@ -133,7 +133,6 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
 
   return (
     <div className="flex flex-col gap-6">
-      {}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-end bg-black-soft-subtle p-6 rounded-soft border border-border">
         <div className="space-y-2 flex-1">
           <Link href="/dashboard-instructor/groups" className="text-sm text-primary-light hover:underline flex items-center mb-2">
@@ -208,7 +207,6 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
         </div>
       </div>
 
-      {}
       <Card className="bg-black-soft-subtle border-border rounded-soft p-2 overflow-hidden">
         <div className="sm:p-3 py-3 px-1 gap-2 border-b border-border flex items-center justify-between">
           <h3 className="font-semibold px-2 text-lg">Students</h3>

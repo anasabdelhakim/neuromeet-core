@@ -34,7 +34,6 @@ export function ParticipantList({ meetingTitle = "Instant Session", meetingPassc
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      {}
       {localIsInstructor && (
         <div className="border-b border-border bg-black-soft-subtle/50 flex-shrink-0 select-text">
           <button
@@ -159,7 +158,6 @@ export function ParticipantList({ meetingTitle = "Instant Session", meetingPassc
                   {p.isCameraEnabled ? <Video size={14} /> : <VideoOff size={14} className="text-destructive" />}
                 </div>
 
-                {}
                 {localIsInstructor && !isInstructor && p.identity !== room.localParticipant.identity && (
                   <button 
                     onClick={() => handleKick(p.identity)}

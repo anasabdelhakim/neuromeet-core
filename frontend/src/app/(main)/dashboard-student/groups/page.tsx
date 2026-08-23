@@ -11,7 +11,6 @@ import { StudentInvitationsList } from "@/src/features/dashboard-student/groups/
 export default function StudentGroupsPage() {
   return (
     <div className="flex flex-col gap-6 animate-page-entrance w-full">
-      {}
       <div className="hidden sm:flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="hidden sm:block">
           <h2 className="text-3xl font-bold tracking-tight">My Classes</h2>
@@ -25,7 +24,6 @@ export default function StudentGroupsPage() {
         <StudentInvitationsList />
       </Suspense>
 
-      {}
       <Suspense fallback={<StudentGroupsSkeleton />}>
         <StudentGroupsList />
       </Suspense>

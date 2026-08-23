@@ -54,6 +54,8 @@ services:
     volumes:
       # Mount your trained model checkpoint here
       - ./ai_bot/models:/models:rw
+      # Mount the python code so you don't have to rebuild Docker!
+      - ./ai_bot:/app:rw
     env_file:
       - ./backend/.env
     environment:

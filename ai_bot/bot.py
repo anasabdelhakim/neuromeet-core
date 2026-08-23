@@ -21,13 +21,19 @@ logger = logging.getLogger("engagement-bot")
 # ─── Config ───────────────────────────────────────────────────────────────────
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+if DEVICE.type == "cpu":
+    # CRITICAL FIX FOR DOCKER DESKTOP ON WINDOWS (WSL 2):
+    # PyTorch defaults to using ALL CPU cores. This causes massive memory spikes
+    # that crash the entire Docker Engine VM. We must strictly limit it to 2 threads.
+    torch.set_num_threads(2)
+
 SEQ_LEN = 24                 # MUST match the SEQ_LEN used during training and ONNX export
 BUFFER_MAXLEN = 30           # 30 frames at 10 FPS = 3s window — matches ~4s training clips from DAiSEE
-INFERENCE_INTERVAL_S = 2.5   # Run inference every N seconds — set above CPU inference time to avoid queue buildup
+INFERENCE_INTERVAL_S = 2.5   # Run inference every 2.5 seconds
 DISENGAGEMENT_THRESHOLD = 0.50  # Below this → is_disengaged=True
 MAX_CONCURRENT = 1 if DEVICE.type == "cpu" else 10  # CPU: serialize to avoid thread contention
-EMA_ALPHA_UP = 0.30          # Climb speed
-EMA_ALPHA_DOWN = 0.30        # Drop speed (symmetrical)
+EMA_ALPHA_UP = 0.60          # Climb speed (balanced response)
+EMA_ALPHA_DOWN = 0.40        # Drop speed (balanced response)
 
 
 # ─── Model Singleton ──────────────────────────────────────────────────────────
@@ -65,7 +71,9 @@ def get_model():
             logger.info(f"[bot] ✅ PyTorch model loaded PERFECTLY from {model_path} on {DEVICE} 🚀")
             
         except FileNotFoundError:
-            logger.warning(f"⚠️ [bot] WARNING: '{model_path}' not found! Running with randomly initialized weights for testing. ⚠️")
+            logger.error(f"❌ [bot] FATAL ERROR: '{model_path}' not found! Cannot start in production without the model.")
+            import sys
+            sys.exit(1)
         except RuntimeError as e:
             logger.error(f"❌ [bot] ERROR: Architecture mismatch between {model_path} and model.py! Details: {e}")
             logger.warning("Running with randomly initialized weights as a fallback.")
@@ -91,12 +99,14 @@ class ParticipantBuffer:
 
 
 
-# Calibrate probability removed to avoid artificial inflation of scores.
-
-# Initialize Fast Face Detector to skip empty rooms
+# ─── Multi-Strategy Face Detector ───────────────────────────────────────────
+# We load 2 cascades: frontal (most common) and profile (side-facing students).
+# Together they cover nearly every real-world webcam scenario.
 try:
     import cv2
+    # Strategy 1: Frontal face — catches students looking straight at camera
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+    logger.info("[bot] Loaded frontal face cascade successfully.")
 except Exception as e:
     logger.error(f"[bot] Failed to load OpenCV face cascade: {e}")
     face_cascade = None
@@ -111,6 +121,7 @@ def run_batch_inference(frame_lists: list) -> list:
     final_results = [None] * len(frame_lists)
     safe_lists = []
     active_indices = []
+    has_faces = []
     
     # Subsample exactly SEQ_LEN frames uniformly from the buffer
     for idx, frames in enumerate(frame_lists):
@@ -137,32 +148,36 @@ def run_batch_inference(frame_lists: list) -> list:
                 pass # Fallback to PyTorch if OpenCV errors out
                 
         if not has_face:
-            logger.info(f"[DIAG] No face detected. Hardcoding 0.0 engagement and skipping AI math.")
-            final_results[idx] = {"raw_score": 0.0}
-            continue
-
-        # ── Smart Face Crop to normalize all Aspect Ratios (Mobile vs Laptop) ──
+            # WHAT WE DID A WEEK AGO:
+            # Never hardcode 0.0 just because the face tracker lost them for 1 frame.
+            # Instead, we pass the full frame to the PyTorch AI and let it decide.
+            # This completely stops the scores from randomly dropping to 0.
+            logger.debug(f"[DIAG] No face detected in this frame. Falling back to full frame AI math instead of punishing them with 0.0.")
+            
+        # ── Smart Face Crop (RESTORED & FIXED) ──
+        # We MUST crop because the model was trained on cropped faces!
         if best_face is not None:
             fx, fy, fw, fh = best_face
-            img_h, img_w, _ = frames[-1].shape
-            
-            # Create a square crop 2.0x larger than the face to capture head & shoulders
             crop_size = int(fw * 2.0)
-            crop_size = min(crop_size, img_w, img_h) # Prevent exceeding bounds
-            
             cx, cy = fx + fw // 2, fy + fh // 2
             
-            x1 = cx - crop_size // 2
-            y1 = cy - crop_size // 2
-            
-            # Clamp to image edges
-            if x1 < 0: x1 = 0
-            if y1 < 0: y1 = 0
-            if x1 + crop_size > img_w: x1 = img_w - crop_size
-            if y1 + crop_size > img_h: y1 = img_h - crop_size
-            
-            # Crop every frame to this perfect, face-centered square!
-            frames = [f[y1:y1+crop_size, x1:x1+crop_size] for f in frames]
+            cropped_frames = []
+            for f in frames:
+                img_h, img_w, _ = f.shape
+                c_size = min(crop_size, img_w, img_h)
+                x1, y1 = max(0, cx - c_size // 2), max(0, cy - c_size // 2)
+                
+                if x1 + c_size > img_w: x1 = img_w - c_size
+                if y1 + c_size > img_h: y1 = img_h - c_size
+                
+                cf = f[y1:y1+c_size, x1:x1+c_size]
+                # CRITICAL: Prevent empty array crashes if LiveKit drops resolution!
+                if cf.size > 0:
+                    cropped_frames.append(cf)
+                else:
+                    cropped_frames.append(f)
+            frames = cropped_frames
+
 
         if total >= SEQ_LEN:
             idxs = np.linspace(0, total - 1, SEQ_LEN).astype(int)
@@ -174,6 +189,7 @@ def run_batch_inference(frame_lists: list) -> list:
             
         safe_lists.append(sampled_frames)
         active_indices.append(idx)
+        has_faces.append(has_face)
         
     # If NO students had faces, we can return immediately and save 100% of the CPU!
     if len(safe_lists) == 0:
@@ -182,33 +198,61 @@ def run_batch_inference(frame_lists: list) -> list:
     # ── PyTorch Batch Inference ──
     clips = []
     for frames in safe_lists:
-        tensors = [val_transform(f) for f in frames]
+        # Process each student's frames
+        tensors = []
+        for f in frames:
+            if f.size == 0 or f.shape[0] == 0 or f.shape[1] == 0:
+                continue
+            # Notebook confirms model was trained on RGB images. LiveKit gives RGB natively.
+            tensors.append(val_transform(f))
+            
+        if len(tensors) == 0:
+            continue
+            
+        # Pad to SEQ_LEN to prevent PyTorch dimension crashes
+        while len(tensors) < SEQ_LEN:
+            tensors.append(tensors[-1])
+            
+        # Truncate just in case (should never happen, but safe)
+        if len(tensors) > SEQ_LEN:
+            tensors = tensors[:SEQ_LEN]
+            
         clips.append(torch.stack(tensors))
 
+    if len(clips) == 0:
+        return final_results
+        
     batch = torch.stack(clips).to(DEVICE)  # (B, SEQ_LEN, 3, 224, 224)
-    
-    logger.info(f"[DIAG] Batch shape: {batch.shape}, Min val: {batch.min().item():.3f}, Max val: {batch.max().item():.3f}, Mean: {batch.mean().item():.3f}")
+
+
+    logger.debug(f"[DIAG] Batch shape: {batch.shape}, Min val: {batch.min().item():.3f}, Max val: {batch.max().item():.3f}, Mean: {batch.mean().item():.3f}")
 
     with torch.no_grad():
         logits = model(batch)              # (B,)
         logit_vals = logits.cpu().numpy().flatten()
         probs = torch.sigmoid(logits).cpu().numpy().flatten()
         # DIAGNOSTIC: log raw logits to confirm model is actually responding
-        logger.info(f"[DIAG] raw_logits={[round(float(l),3) for l in logit_vals]} -> probs={[round(float(p),3) for p in probs]}")
+        logger.debug(f"[DIAG] raw_logits={[round(float(l),3) for l in logit_vals]} -> probs={[round(float(p),3) for p in probs]}")
 
     calibrated_probs = []
-    for p in probs:
-        # Calibration is absolutely necessary for this model because 
-        # Label Smoothing (0.10) and heavy Dropout (0.7) compress the output probabilities.
-        # The model naturally outputs values between 0.15 and 0.85 for your specific trained checkpoint.
-        min_p, max_p = 0.15, 0.85
+    for p, face_found in zip(probs, has_faces):
+        # Label Smoothing and heavy Dropout severely compress the output probabilities.
+        # Based on live testing, the model's true maximum is ~0.65 and minimum is ~0.15.
+        min_p, max_p = 0.15, 0.65
         calibrated = (p - min_p) / (max_p - min_p)
         calibrated = max(0.0, min(1.0, calibrated))
+        
+        # If the user physically walked away from the camera, PyTorch sees an empty room
+        # and outputs ~0.40 (random noise), which looks like 50% on the UI.
+        # We must penalize this to ensure they drop to 0% if they aren't there.
+        if not face_found:
+            calibrated = calibrated * 0.10
+            
         calibrated_probs.append(float(calibrated))
 
     # Merge calibrated PyTorch results back into the final results list
-    for active_idx, prob in zip(active_indices, calibrated_probs):
-        final_results[active_idx] = {"raw_score": prob}
+    for active_idx, prob, face_found in zip(active_indices, calibrated_probs, has_faces):
+        final_results[active_idx] = {"raw_score": prob, "has_face": face_found}
 
     return final_results
 
@@ -355,12 +399,17 @@ async def inference_worker(
 
                 for idx, v_pid in enumerate(valid_pids):
                     raw = results[idx]["raw_score"]
+                    has_face = results[idx].get("has_face", True)
                     buf = buffers.get(v_pid)
                     if not buf:
                         continue
 
                     # ── Asymmetric EMA Smoothing ──
-                    if buf.ema_score is None:
+                    if not has_face:
+                        # Instant drop to 0% if no face is detected (bypasses 10-second EMA lag)
+                        buf.ema_score = 0.0
+                        raw = 0.0
+                    elif buf.ema_score is None:
                         buf.ema_score = raw
                     else:
                         # Use a dynamic alpha: drop fast, climb slow

@@ -1,7 +1,6 @@
 export default function Loading() {
   return (
     <div className="flex flex-col gap-6 animate-pulse animate-page-entrance">
-      {}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-end bg-black-soft-subtle p-6 rounded-soft border border-border">
         <div className="space-y-3 flex-1 w-full">
           <div className="h-4 w-32 bg-white-soft-muted rounded-medium" />
@@ -12,7 +11,6 @@ export default function Loading() {
         <div className="h-10 w-32 bg-white-soft-muted rounded-medium mt-4 md:mt-0" />
       </div>
 
-      {}
       <div className="w-full bg-black-soft-subtle border border-border rounded-soft p-5 flex flex-col gap-4">
          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border pb-4">
             <div className="h-6 w-24 bg-white-soft-muted rounded-medium" />

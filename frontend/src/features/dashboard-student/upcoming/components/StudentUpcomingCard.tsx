@@ -49,10 +49,8 @@ export function StudentUpcomingCard({ meeting }: Props) {
       variant={variant}
       className="w-full rounded-soft p-4 sm:p-5 flex flex-col gap-4 border transition-all duration-normal ease-standard transform-gpu"
     >
-      {}
       <div className="flex items-start sm:items-center justify-between w-full gap-4">
         <div className="flex w-full justify-between">
-          {}
         <div className="flex flex-col gap-1.5 flex-1 min-w-0">
           <div className="flex items-center gap-3">
             <CardTitle className="text-base sm:text-lg font-bold text-foreground max-sm:max-w-60 truncate">
@@ -73,7 +71,6 @@ export function StudentUpcomingCard({ meeting }: Props) {
           </CardDescription>
         </div>
 
-        {}
         <div className="hidden sm:flex items-center gap-4 flex-shrink-0">
           <AvatarChain avatars={mappedAvatars} max={5} totalCount={totalCount} />
           <Suspense fallback={<div className="w-24 h-10 bg-muted rounded animate-pulse" />}>
@@ -83,21 +80,18 @@ export function StudentUpcomingCard({ meeting }: Props) {
       </div>
     </div>
 
-      {}
       <div className="sm:hidden px-1 w-full">
         <Suspense fallback={<div className="w-full h-2 bg-muted rounded animate-pulse mt-8" />}>
           <DynamicStudentMeetingStatusBar dateTime={meeting.dateTime} duration={meeting.duration} />
         </Suspense>
       </div>
 
-      {}
       <div className="sm:hidden w-full pt-1">
         <Suspense fallback={<div className="w-full h-10 bg-muted rounded animate-pulse" />}>
           <DynamicStudentMeetingActions dateTime={meeting.dateTime} meetingId={meeting.id} />
         </Suspense>
       </div>
 
-      {}
       <div className="hidden sm:block px-1 -mt-2">
         <Suspense fallback={<div className="w-full h-2 bg-muted rounded animate-pulse mt-8" />}>
           <DynamicStudentMeetingStatusBar dateTime={meeting.dateTime} duration={meeting.duration} />

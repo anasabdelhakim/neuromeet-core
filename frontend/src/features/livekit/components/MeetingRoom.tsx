@@ -200,7 +200,6 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
               <InstructorBadgedTile />
             </GridLayout>
           </div>
-          {}
           {showJoiningInfoModal && (
             <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-40 w-[calc(100vw-32px)] max-w-[320px] sm:max-w-[340px] bg-card/95 border border-border rounded-xl p-4 shadow-[0_8px_32px_rgba(0,0,0,0.4)] backdrop-blur-xl animate-in fade-in-50 slide-in-from-bottom-5 duration-300 select-text">
               <div className="flex items-center justify-between pb-2.5 border-b border-border">
@@ -277,7 +276,6 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
           participantCount={participantCount}
         />
       </div>
-      {}
       <MeetingControls
         room={room}
         activeTab={activeTab}
