@@ -5,7 +5,7 @@ export const passwordRules = [
   },
   {
     test: (password: string) => /[A-Z]/.test(password),
-    message: 'Require uppercase letter',
+    message: 'Require uppercase',
   },
   {
     test: (password: string) => /[0-9]/.test(password),
@@ -13,6 +13,6 @@ export const passwordRules = [
   },
   {
     test: (password: string) => /[^A-Za-z0-9]/.test(password),
-    message: 'Require a special symbol',
+    message: 'Require a symbol',
   },
 ];
