@@ -11,7 +11,7 @@ export function InstructorSidebar() {
           alt="NeuroMeet Logo"
           className=""
         />
-        <span className="font-extrabold tracking-tight bg-logo-gradient bg-clip-text text-transparent text-2xl max-lg:hidden">
+        <span className="font-bold tracking-tight text-foreground text-2xl max-lg:hidden">
           NeuroMeet
         </span>
       </div>

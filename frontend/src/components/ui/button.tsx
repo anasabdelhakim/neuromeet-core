@@ -17,11 +17,11 @@ const buttonVariants = cva(
           "bg-destructive-soft text-destructive hover:bg-destructive-soft-hover focus-visible:border-destructive-hover focus-visible:ring-destructive-soft dark:bg-destructive-soft-hover dark:hover:bg-destructive-hover-strong dark:focus-visible:ring-destructive-hover-strong",
         link: "text-primary underline-offset-4 hover:underline",
         effect:
-          "border-none bg-gradient-to-r from-primary to-brand-purple text-white shadow-lg shadow-brand-cyan-soft transition-all duration-normal ease-standard hover:shadow-brand-cyan-hover hover:-translate-y-0.5",
+          "border border-primary/20 bg-primary text-primary-foreground shadow-xs transition-colors duration-200 hover:bg-primary/90 hover:border-primary/40 active:translate-y-px",
         live:
-          "border-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 font-semibold text-white transition-all duration-normal ease-standard hover:opacity-90 hover:scale-105",
+          "border border-primary/30 bg-primary text-primary-foreground font-semibold shadow-xs transition-colors duration-200 hover:bg-primary/90",
         gradient:
-          "bg-gradient-to-r from-brand-cyan to-brand-purple text-white transition-all duration-normal ease-standard hover:from-brand-cyan-hover hover:to-brand-purple-hover",
+          "bg-primary text-primary-foreground font-medium shadow-xs transition-colors duration-200 hover:bg-primary/90",
       },
       size: {
         default:

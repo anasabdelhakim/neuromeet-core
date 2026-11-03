@@ -8,9 +8,9 @@ const cardVariants = cva(
       variant: {
         default: "",
         glass:
-          "rounded-2xl border border-border bg-transparent ring-0 backdrop-blur-2xl transition-all duration-normal ease-standard hover:shadow-xl bg-gradient-to-br from-brand-cyan-soft-muted to-brand-purple-soft-muted [animation:glow-pulse_2.2s_ease-out_infinite]",
+          "rounded-2xl border border-border/80 bg-card/60 backdrop-blur-xl ring-0 transition-colors duration-200 hover:border-border hover:shadow-xs",
         gradient:
-          "rounded-2xl border border-border bg-gradient-to-br from-brand-cyan-soft-subtle to-brand-purple-soft-sutble transition-all duration-normal ease-standard hover:shadow-xl hover:border-primary-hover",
+          "rounded-2xl border border-border/80 bg-card shadow-xs transition-colors duration-200 hover:border-border",
       },
     },
     defaultVariants: {
