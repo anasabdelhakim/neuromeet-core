@@ -48,12 +48,12 @@ export const QuickJoin = () => {
   };
   return (
     <section className="w-full max-w-2xl mx-auto mb-20 max-sm:mb-4">
-      <Card className="bg-card border border-border/80 rounded-2xl shadow-xs">
+      <Card variant="gradient">
         <CardHeader className="text-center pb-4">
-          <CardDescription className="text-sm font-medium text-muted-foreground mb-1">
-            Direct Access
+          <CardDescription className="font-medium text-lg text-muted-foreground mb-1">
+            Quick Join
           </CardDescription>
-          <CardTitle className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+          <CardTitle className="text-3xl font-bold text-foreground">
             Join a Meeting Instantly
           </CardTitle>
         </CardHeader>

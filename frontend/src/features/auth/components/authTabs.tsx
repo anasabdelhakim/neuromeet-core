@@ -7,35 +7,35 @@ export function AuthTabs({ activeTab }: AuthTabsProps) {
   const isSignUp = activeTab === "sign-up";
   return (
     <div className="pt-1 flex justify-center w-11/12 mx-auto">
-      <div className="flex w-full bg-muted/60 p-1 rounded-xl border border-border/50">
+      <div className="flex w-full bg-muted rounded-soft">
         <Link
           href="/sign-in"
           className={`
             flex-1 flex items-center justify-center gap-2 
-            px-4 py-2.5 rounded-lg text-sm whitespace-nowrap transition-all duration-200
+            px-6 py-3 rounded-l-soft text-sm whitespace-nowrap 
             ${
               !isSignUp
-                ? "bg-card text-foreground font-semibold shadow-xs"
-                : "text-muted-foreground font-medium hover:text-foreground"
+                ? "bg-primary text-primary-foreground font-bold shadow-soft"
+                : "text-muted-foreground font-semibold hover:text-foreground duration-fast"
             }
           `}
         >
-          <LogIn className="w-4 h-4" />
+          <LogIn className="w-5 h-5" />
           Sign In
         </Link>
         <Link
           href="/sign-up"
           className={`
-            flex-1 flex items-center justify-center gap-2 
-            px-4 py-2.5 rounded-lg text-sm whitespace-nowrap transition-all duration-200
+            flex-1 rounded-r-soft flex items-center justify-center gap-2 
+            px-6 py-3 text-sm whitespace-nowrap 
             ${
               isSignUp
-                ? "bg-card text-foreground font-semibold shadow-xs"
-                : "text-muted-foreground font-medium hover:text-foreground"
+                ? "bg-primary text-primary-foreground font-bold shadow-soft"
+                : "text-muted-foreground font-semibold hover:text-foreground duration-fast"
             }
           `}
         >
-          <UserPlus className="w-4 h-4" />
+          <UserPlus className="w-5 h-5" />
           Sign Up
         </Link>
       </div>

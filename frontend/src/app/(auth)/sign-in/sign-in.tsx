@@ -7,7 +7,7 @@ import { Field, FieldLabel, FieldError } from "@/src/components/ui/field";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Loader, KeyRound } from "lucide-react";
+import { Loader, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/src/lib/utils";
@@ -199,16 +199,16 @@ export function LoginForm() {
             <Dialog open={isDemoDialogOpen} onOpenChange={setIsDemoDialogOpen}>
               <DialogTrigger
                 render={
-                  <Button variant="ghost" className="text-muted-foreground hover:text-foreground hover:bg-muted/50 gap-2 text-xs">
-                    <KeyRound size={14} />
+                  <Button variant="ghost" className="text-primary hover:text-primary hover:bg-primary/10 gap-2">
+                    <Sparkles size={16} />
                     View Demo Credentials
                   </Button>
                 }
               />
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                  <DialogTitle className="flex items-center gap-2 text-foreground font-semibold">
-                    <KeyRound size={16} />
+                  <DialogTitle className="flex items-center gap-2 text-primary">
+                    <Sparkles size={18} />
                     Demo Access
                   </DialogTitle>
                 </DialogHeader>

@@ -38,7 +38,7 @@ export default function ClarityConnectPage() {
         priority
         className="object-cover -z-10"
       />
-      <header className="w-full max-w-8xl mx-auto py-3 px-3 md:px-12 lg:px-24 flex items-center justify-between sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-md">
+      <header className="w-full max-w-8xl mx-auto py-3 px-3 md:px-12 lg:px-24 flex items-center justify-between sticky top-0 z-50  bg-header-gradient">
         <Logo />
         <Suspense fallback={<div className="w-[100px] h-10 animate-pulse bg-muted rounded-full" />}>
           <Avtar />
