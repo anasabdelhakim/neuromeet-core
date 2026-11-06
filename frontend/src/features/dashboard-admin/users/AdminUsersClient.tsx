@@ -316,7 +316,7 @@ export function AdminUsersClient({ initialData }: Props) {
                   disabled={pending}
                   className={cn(
                     "h-8 w-8 shrink-0 rounded-medium text-xs font-bold snap-start", 
-                    page !== idx + 1 && "text-muted-foreground hover:bg-white/5"
+                    page !== idx + 1 && "text-muted-foreground hover:bg-white-soft-muted"
                   )}
                 >
                   {idx + 1}

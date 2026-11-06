@@ -1,6 +1,6 @@
-import { Suspense } from 'react';
-import { Loader } from 'lucide-react';
-import Otp from '@/src/features/auth/components/otp';
+import { Suspense } from "react";
+import { Loader } from "lucide-react";
+import Otp from "@/src/features/auth/components/otp";
 import { Metadata } from "next";
 import AuthWrapper from "@/src/features/auth/providers/auth-wrapper";
 
@@ -8,11 +8,13 @@ export const metadata: Metadata = {
   title: "Verify Email",
   description: "Verify your email address.",
 };
+
 export default function OTPPage() {
   return (
     <AuthWrapper
       title="Check your inbox"
       description="Enter the 6-digit code sent to your email"
+      showLogo={true}
     >
       <Suspense
         fallback={

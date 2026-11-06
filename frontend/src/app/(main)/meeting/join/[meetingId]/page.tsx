@@ -70,7 +70,7 @@ export default function JoinMeetingPage({
   params: Promise<{ meetingId: string }>;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen w-full bg-background relative overflow-hidden px-4">
+    <div className="dark flex flex-col items-center justify-center min-h-screen w-full bg-background relative overflow-hidden px-4">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-soft-subtle rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-xl aspect-square bg-brand-cyan opacity-5 rounded-full blur-3xl pointer-events-none" />
 

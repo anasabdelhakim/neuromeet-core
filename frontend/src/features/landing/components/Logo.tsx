@@ -1,17 +1,16 @@
-import Image from "next/image";
+"use client";
+
+import { BrandLottieLogo } from "./BrandLottieLogo";
+import { useReducedMotionLottie } from "../hooks/use-reduced-motion-lottie";
+
 export const Logo = () => {
+  const lottieRef = useReducedMotionLottie();
   return (
-    <div className="flex items-center justify-center gap-2 select-none">
-      <Image
-        src="/logo.webp"
-        alt="NeuroMeet Logo"
-        width={500}
-        height={500}
-        className="w-14 h-14 max-sm:w-12 max-sm:h-12 object-contain shadow-soft"
-      />
-      <h1 className="text-4xl max-sm:hidden font-extrabold tracking-tight bg-logo-gradient bg-clip-text text-transparent">
-        NeuroMeet
-      </h1>
-    </div>
+    <BrandLottieLogo
+      dotLottieRefCallback={lottieRef}
+      iconClassName="w-16 h-16 sm:w-20 sm:h-20"
+      textClassName="text-2xl sm:text-3xl"
+      href="/"
+    />
   );
 };

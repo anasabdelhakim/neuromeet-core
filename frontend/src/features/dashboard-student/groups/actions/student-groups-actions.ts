@@ -30,7 +30,7 @@ export async function getPendingInvitationsAction() {
 
 export async function acceptInvitationAction(invitationId: string) {
   try {
-    const res = await apiPost(`/groups/invitations/${invitationId}/accept`, {});
+    const res = await apiPost<{ data?: any }>(`/groups/invitations/${invitationId}/accept`, {});
     updateTag("student-invitations");
     updateTag("student-groups");
     updateTag("dashboard");

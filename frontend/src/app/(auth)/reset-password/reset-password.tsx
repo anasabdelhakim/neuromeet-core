@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
-import { Card, CardContent } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import {
   Field,
@@ -54,9 +53,8 @@ export default function ResetPasswordForm() {
       }
     };
   return (
-    <Card variant="gradient">
-      <CardContent>
-        <form action={handleAction} className="space-y-4">
+    <div className="w-full">
+      <form action={handleAction} className="space-y-4">
           {state.errorMessage?.server && (
             <div className="animate-alert-entrance">
               <p className="text-destructive text-sm text-center bg-destructive-soft rounded-medium py-2 px-3">
@@ -72,9 +70,9 @@ export default function ResetPasswordForm() {
                 pending={pending}
                 registerProps={{
                   ...passwordRest,
-                  onBlur: (e: { target: any; type?: any }) => {
+                  onBlur: async (e: { target: any; type?: any }) => {
                     if (e.target.value !== "") {
-                      passwordOnBlur(e);
+                      await passwordOnBlur(e);
                     }
                   },
                 }}
@@ -138,7 +136,6 @@ export default function ResetPasswordForm() {
             </Button>
           </div>
         </form>
-      </CardContent>
-    </Card>
+    </div>
   );
 }

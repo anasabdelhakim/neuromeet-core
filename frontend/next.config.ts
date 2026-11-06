@@ -14,7 +14,6 @@ const nextConfig: NextConfig = {
     optimizePackageImports: [
       'lucide-react',
       'date-fns',
-      '@livekit/components-react',
     ],
   },
   images: {

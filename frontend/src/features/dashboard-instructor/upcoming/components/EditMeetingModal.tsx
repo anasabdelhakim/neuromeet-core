@@ -140,7 +140,7 @@ export function EditMeetingModal({
                   className="w-auto p-0 border-none bg-transparent shadow-none"
                   align="start"
                 >
-                  <Card className="mx-auto w-fit bg-card backdrop-blur-3xl text-white shadow-hard rounded-soft overflow-hidden">
+                  <Card className="mx-auto w-fit bg-card backdrop-blur-3xl shadow-hard rounded-soft overflow-hidden">
                     <CardContent className="p-0">
                       <Calendar
                         mode="single"

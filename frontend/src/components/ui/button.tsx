@@ -19,7 +19,7 @@ const buttonVariants = cva(
         effect:
           "border-none bg-gradient-to-r from-primary to-brand-purple text-white shadow-lg shadow-brand-cyan-soft transition-all duration-normal ease-standard hover:shadow-brand-cyan-hover hover:-translate-y-0.5",
         live:
-          "border-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 font-semibold text-white transition-all duration-normal ease-standard hover:opacity-90 hover:scale-105",
+          "border-0 bg-gradient-to-r from-primary via-brand-cyan-hover to-brand-purple font-semibold text-white transition-all duration-normal ease-standard hover:opacity-90 hover:scale-105",
         gradient:
           "bg-gradient-to-r from-brand-cyan to-brand-purple text-white transition-all duration-normal ease-standard hover:from-brand-cyan-hover hover:to-brand-purple-hover",
       },

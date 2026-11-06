@@ -11,7 +11,7 @@ import { GROUP_COLORS } from "../../groups/constants/groups-constants";
 export async function InstructorGroups() {
   const result = await getGroupsAction();
   if (!result.success) {
-    throw new Error(result.errorMessage || result.error || "Failed to load groups");
+    throw new Error(result.error || "Failed to load groups");
   }
   const groups = result.data ? result.data.slice(0, 3) : []; // Show top 3
   return (

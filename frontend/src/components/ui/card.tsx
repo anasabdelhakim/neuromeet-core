@@ -10,7 +10,7 @@ const cardVariants = cva(
         glass:
           "rounded-2xl border border-border bg-transparent ring-0 backdrop-blur-2xl transition-all duration-normal ease-standard hover:shadow-xl bg-gradient-to-br from-brand-cyan-soft-muted to-brand-purple-soft-muted [animation:glow-pulse_2.2s_ease-out_infinite]",
         gradient:
-          "rounded-2xl border border-border bg-gradient-to-br from-brand-cyan-soft-subtle to-brand-purple-soft-sutble transition-all duration-normal ease-standard hover:shadow-xl hover:border-primary-hover",
+          "rounded-2xl border border-border bg-gradient-to-br from-brand-cyan-soft-subtle to-brand-purple-soft-subtle transition-all duration-normal ease-standard hover:shadow-xl hover:border-primary-hover",
       },
     },
     defaultVariants: {

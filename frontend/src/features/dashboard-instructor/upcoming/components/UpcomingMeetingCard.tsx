@@ -71,7 +71,7 @@ export function UpcomingMeetingCard({ meeting, groups }: UpcomingMeetingCardProp
           status={(meeting as any).status} 
           variant="active" 
           groups={groups} 
-          participantsCount={meeting.participants?.length || 0}
+          participantsCount={(meeting as any).participants?.length || 0}
           isPast={isArrived}
         />
       </div>

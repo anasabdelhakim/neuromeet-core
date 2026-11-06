@@ -104,7 +104,7 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
               "px-4 py-2 rounded-full text-xs font-semibold tracking-wider transition-all duration-fast border whitespace-nowrap snap-start",
               !selectedGroup 
                 ? "bg-primary text-primary-foreground border-primary shadow-soft" 
-                : "bg-black-soft-muted text-muted-foreground border-border hover:bg-black-soft-subtle hover:text-foreground"
+                : "bg-black-soft-muted text-muted-foreground border-border hover:bg-white-soft-muted hover:text-foreground"
             )}
           >
             All Groups
@@ -117,7 +117,7 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
                 "px-4 py-2 rounded-full text-xs font-semibold tracking-wider transition-all duration-fast border flex items-center gap-2 whitespace-nowrap snap-start",
                 selectedGroup === group.name
                   ? "bg-primary text-primary-foreground border-primary shadow-soft"
-                  : "bg-black-soft-muted text-muted-foreground border-border hover:bg-black-soft-subtle hover:text-foreground"
+                  : "bg-black-soft-muted text-muted-foreground border-border hover:bg-white-soft-muted hover:text-foreground"
               )}
             >
               <span className={cn("w-2 h-2 rounded-full", group.color)} />
@@ -264,7 +264,7 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
                   onClick={() => setCurrentPage(idx + 1)}
                   className={cn(
                     "h-8 w-8 shrink-0 rounded-medium text-xs font-bold snap-start", 
-                    safePage !== idx + 1 && "text-muted-foreground hover:bg-white/5"
+                    safePage !== idx + 1 && "text-muted-foreground hover:bg-white-soft-muted"
                   )}
                 >
                   {idx + 1}
@@ -394,7 +394,7 @@ export function StudentsFilters({ groups, students }: StudentsFiltersProps) {
                   onClick={() => setCurrentPage(idx + 1)}
                   className={cn(
                     "h-8 w-8 shrink-0 rounded-medium text-xs font-bold snap-start", 
-                    safePage !== idx + 1 && "text-muted-foreground hover:bg-white/5"
+                    safePage !== idx + 1 && "text-muted-foreground hover:bg-white-soft-muted"
                   )}
                 >
                   {idx + 1}

@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Loader } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
-import { Card, CardContent } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import { forgetPasswordSchema } from "@/src/validations/zod";
 import { forgotPasswordAction } from "@/src/features/auth/actions/auth-actions";
@@ -39,9 +38,8 @@ export default function ForgetPasswordPreview() {
   const showEmailError = !!errors.email && (isSubmitted || touchedFields.email);
   const { onBlur: emailOnBlur, ...emailRest } = register("email");
   return (
-    <Card variant="gradient">
-      <CardContent>
-        <form action={handleAction} className="space-y-4">
+    <div className="w-full">
+      <form action={handleAction} className="space-y-4">
           {state.errorMessage?.server && (
             <div className="animate-alert-entrance">
               <p className="text-destructive text-sm text-center bg-destructive-soft rounded-medium py-2 px-3">
@@ -96,7 +94,6 @@ export default function ForgetPasswordPreview() {
             </Button>
           </div>
         </form>
-      </CardContent>
-    </Card>
+    </div>
   );
 }

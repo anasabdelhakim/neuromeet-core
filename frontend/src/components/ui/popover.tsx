@@ -29,7 +29,7 @@ function PopoverContent({
         sideOffset={sideOffset}
         className={cn(
           "isolate z-50",
-          className?.split(" ").find((c) => c.startsWith("z-"))
+          typeof className === "string" ? className.split(" ").find((c: string) => c.startsWith("z-")) : undefined
         )}
       >
         <PopoverPrimitive.Popup

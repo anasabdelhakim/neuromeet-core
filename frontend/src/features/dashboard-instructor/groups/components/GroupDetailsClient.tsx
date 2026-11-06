@@ -191,7 +191,7 @@ export function GroupDetailsClient({ group, allStudents }: GroupDetailsClientPro
                           <Button 
                             variant="secondary" 
                             size="sm" 
-                            className="h-7 text-xs bg-black-soft hover:bg-white/10"
+                            className="h-7 text-xs bg-black-soft hover:bg-white-soft-muted"
                             onClick={(e) => handleInviteStudent(student.id, e as any)}
                           >
                             Add

@@ -182,7 +182,7 @@ export class MeetingsService {
           },
         },
         livekitRoomName: true,
-        passcode: true, // we'll need this for instructor to see
+        passcode: true,
       },
       orderBy: { scheduledAt: 'asc' },
     });
@@ -751,7 +751,6 @@ export class MeetingsService {
         process.env.LIVEKIT_API_KEY || '',
         process.env.LIVEKIT_API_SECRET || '',
       );
-      // Recall bot first, then delete room — both awaited so errors surface clearly
       try {
         await this.botService.recallBotFromRoom(meeting.livekitRoomName);
       } catch (err) {
@@ -767,13 +766,12 @@ export class MeetingsService {
     return { status: 'success', message: 'Meeting ended successfully' };
   }
 
-  /** Called by the LiveKit webhook when a room empties — no userId check needed */
   async endMeetingByRoomName(roomName: string): Promise<void> {
     const meeting = await this.prisma.meeting.findFirst({
       where: { livekitRoomName: roomName, status: 'LIVE' },
       select: { id: true, hostId: true },
     });
-    if (!meeting) return; // Already ended or not found — nothing to do
+    if (!meeting) return;
 
     await this.prisma.meeting.update({
       where: { id: meeting.id },
@@ -1101,17 +1099,13 @@ export class MeetingsService {
     const activeRoomNames = new Set(activeRooms.map(r => r.name));
     console.log(`[Cron] Found ${activeRooms.length} active room(s) in LiveKit.`);
 
-    // Optimization for Serverless DB (Neon):
-    // If there are zero active rooms in LiveKit, we do NOT need to query the database.
-    // This allows the Neon database to scale to zero (sleep) and saves compute costs!
     if (activeRooms.length === 0) {
       console.log(`[Cron] No active LiveKit rooms. Skipping DB sync to allow database to sleep.`);
       return;
     }
 
-    // 1. Sync DB: Find meetings marked 'LIVE' but no longer exist in LiveKit
     try {
-      const safetyCutoff = new Date(Date.now() - 3 * 60000); // 3 minute grace period
+      const safetyCutoff = new Date(Date.now() - 3 * 60000);
       const dbLiveMeetings = await this.prisma.meeting.findMany({
         where: { 
           status: 'LIVE',
@@ -1135,7 +1129,6 @@ export class MeetingsService {
         }
       }
     } catch (err: any) {
-      // Ignore database connection timeouts caused by Neon serverless cold starts.
       if (err.code === 'P1001') {
         console.warn(`[Cron] Database sleeping. Skipping DB sync phase.`);
       } else {
@@ -1143,22 +1136,19 @@ export class MeetingsService {
       }
     }
 
-    // 2. Clean up LiveKit rooms Concurrently (Fixes N+1 Performance Bug)
     await Promise.all(activeRooms.map(async (room) => {
       const roomName = room.name;
-      // room.creationTime is a Unix timestamp in seconds for LiveKit
       const creationMs = Number(room.creationTime) * 1000;
       const durationMinutes = (Date.now() - creationMs) / 60000;
       
-      const MAX_DURATION = 45; // 45-minute hard limit
-      const GRACE_PERIOD = 10; // 10 minutes grace period for users to join
+      const MAX_DURATION = 45;
+      const GRACE_PERIOD = 10;
 
       let shouldEnd = false;
 
       try {
         const lkParticipants = await roomService.listParticipants(roomName);
         
-        // Filter out any bots (AI bot, egress recording bot, etc.)
         const actualUsers = lkParticipants.filter(
           (p) =>
             !p.identity.startsWith('ai-bot-') &&
@@ -1185,7 +1175,6 @@ export class MeetingsService {
       }
 
       if (shouldEnd) {
-        // 1. Force-kill the room in LiveKit (disconnects all bots & participants)
         try {
           await roomService.deleteRoom(roomName);
           console.log(`[Cron] ✅ LiveKit room force-deleted: ${roomName}`);
@@ -1193,12 +1182,10 @@ export class MeetingsService {
           console.log(`[Cron] Room already gone from LiveKit: ${roomName}`);
         }
 
-        // 2. Recall AI bot
         this.botService.recallBotFromRoom(roomName).catch(() =>
           console.log(`[Cron] Recall signal sent (bot may already be gone).`)
         );
 
-        // 3. Update DB to ENDED
         try {
           const meeting = await this.prisma.meeting.findFirst({
             where: { livekitRoomName: roomName },

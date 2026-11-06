@@ -4,7 +4,6 @@ import { useActionState, useTransition } from "react";
 import { Loader } from "lucide-react";
 
 import { Button } from "@/src/components/ui/button";
-import { Card, CardContent } from "@/src/components/ui/card";
 
 import { AvatarUploadControl } from "@/src/features/auth/components/avatar-upload";
 import { ProfileSettingsState, updateUserProfile, skipProfileCompletion } from "@/src/features/auth/actions/auth-actions";
@@ -25,9 +24,8 @@ export default function ProfileCompletionForm({ initialAvatarUrl }: { initialAva
   };
 
   return (
-    <Card variant="gradient">
-      <CardContent className="pt-6">
-        <form action={action} className="space-y-4">
+    <div className="w-full">
+      <form action={action} className="space-y-4">
           <div>
             <AvatarUploadControl
               error={state.errorMessage?.avatar?.[0]}
@@ -68,7 +66,6 @@ export default function ProfileCompletionForm({ initialAvatarUrl }: { initialAva
             </Button>
           </div>
         </form>
-      </CardContent>
-    </Card>
+    </div>
   );
 }

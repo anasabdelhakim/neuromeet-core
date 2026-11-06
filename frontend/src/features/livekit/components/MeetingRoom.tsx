@@ -164,7 +164,7 @@ export function MeetingRoom({ isInstructor, room, meetingTitle = "Instant Sessio
     setActiveTab((prev) => (prev === tab ? null : tab));
   };
   return (
-    <div className="flex flex-col h-[100dvh] w-screen bg-background text-foreground overflow-hidden font-sans relative">
+    <div className="dark flex flex-col h-[100dvh] w-screen bg-background text-foreground overflow-hidden font-sans relative">
       {timeRemaining !== null && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-top-4 fade-in duration-300">
           <div className="flex items-center gap-2.5 bg-red-950/90 border border-red-500/50 backdrop-blur-md text-red-50 px-4 py-2.5 rounded-full shadow-2xl">

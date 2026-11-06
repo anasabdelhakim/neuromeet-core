@@ -2,6 +2,7 @@ import { UpcomingMeetingCard } from "./UpcomingMeetingCard";
 import { connection } from "next/server"; 
 import { getUpcomingMeetings } from "../../home/actions/meeting-actions";
 import { getGroupsAction } from "../../groups/actions/groups-actions";
+import type { UpcomingMeeting } from "../types";
 
 export async function UpcomingMeetingsList() {
   await connection();
@@ -25,7 +26,7 @@ export async function UpcomingMeetingsList() {
 
   return (
     <div className="flex flex-col gap-4">
-      {meetings.map((meeting) => (
+      {meetings.map((meeting: UpcomingMeeting) => (
         <UpcomingMeetingCard key={meeting.id} meeting={meeting} groups={groups} />
       ))}
     </div>

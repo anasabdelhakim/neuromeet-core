@@ -2,8 +2,17 @@
 @import "shadcn/tailwind.css";
 @custom-variant dark (&:is(.dark *));
 
-/* ─── Tailwind Theme ──────────────────────────────────────────────────────── */
+/* ظ¤ظ¤ظ¤ Tailwind Theme ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ */
 @theme inline {
+  --color-landing-surface: var(--landing-surface);
+  --color-landing-dark: var(--landing-dark);
+  --color-landing-lilac: var(--landing-lilac);
+  --color-landing-participant: var(--landing-participant);
+  --color-landing-participant-hover: var(--landing-participant-hover);
+  --color-landing-muted-border: var(--landing-muted-border);
+  --color-landing-canvas: var(--landing-canvas);
+  --color-landing-focus-ring: var(--landing-focus-ring);
+
   /* Core Tokens */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -145,10 +154,10 @@
   --shadow-action-yellow-muted: var(--val-shadow-action-yellow-muted);
   --shadow-action-yellow-subtle: var(--val-shadow-action-yellow-subtle);
 
-  /* ─── Glow Shadows ────────────────────────────────────────────────────── */
+  /* ظ¤ظ¤ظ¤ Glow Shadows ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ */
   --shadow-glow-cyan: var(--val-shadow-glow-cyan);
 
-  /* ─── Generic Shadows ─────────────────────────────────────────────────── */
+  /* ظ¤ظ¤ظ¤ Generic Shadows ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ */
   --shadow-soft: var(--val-shadow-soft);
   --shadow-medium: var(--val-shadow-medium);
   --shadow-hard: var(--val-shadow-hard);
@@ -243,8 +252,27 @@
   }
 }
 
-/* ─── Design Tokens ───────────────────────────────────────────────────────── */
+/* ظ¤ظ¤ظ¤ Design Tokens ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ */
 :root {
+  --landing-surface: #FFFFFF;
+  --landing-dark: #141414;
+  --landing-lilac: #ECECFE;
+  --landing-participant: #185584;
+  --landing-participant-hover: #124267;
+  --landing-muted-border: #D8DCE5;
+  --landing-canvas: #FAFAFC;
+  --landing-focus-ring: #185584;
+  --landing-muted-foreground: #555867;
+  --landing-primary-soft: #E5EDF5;
+  --landing-rating: #996112;
+  --landing-inverse-surface: #252B35;
+  --landing-inverse-muted: #BAC5D2;
+  --landing-inverse-border: #697586;
+  --landing-error: #B42318;
+  --landing-scrollbar: #8995A5;
+  --landing-shadow: 0 8px 24px rgb(20 20 20 / 6%);
+  --landing-media-shadow: 0 12px 36px rgb(20 20 20 / 8%);
+
   /* Shadcn Core - Lifted L axis slightly for a brighter, less oppressive UI */
   --background: oklch(0.12 0.012 265);
   --foreground: oklch(0.98 0.008 265);
@@ -437,7 +465,7 @@
   --header-gradient: linear-gradient(to right, #1a2050,#0a0f27);
 }
 
-/* ─── Base Layer ──────────────────────────────────────────────────────────── */
+/* ظ¤ظ¤ظ¤ Base Layer ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ */
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -456,7 +484,7 @@
   }
 }
 
-/* ─── Custom Scrollbar (webkit) ───────────────────────────────────────────── */
+/* ظ¤ظ¤ظ¤ Custom Scrollbar (webkit) ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ظ¤ */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -478,7 +506,7 @@
 }
 
 @layer components {
-  /* ── Popover Backdrop Overlay ── */
+  /* ظ¤ظ¤ Popover Backdrop Overlay ظ¤ظ¤ */
   .bg-overlay {
     @apply fixed inset-0 z-overlay bg-gradient-to-b from-transparent via-black-soft-deep to-black-soft-muted animate-fade-in-standard;
   }

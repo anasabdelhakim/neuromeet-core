@@ -124,14 +124,14 @@ export function RecordingCard({ recording, isInstructor = true }: { recording: R
           <div className="absolute inset-0 bg-black-soft-muted flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-normal ease-standard">
             <Play className="text-white w-10 h-10 fill-white" />
           </div>
-          <Badge className="absolute z-20 top-1 left-2 flex items-center gap-1 bg-custom-gray border-border shadow-hard">
+          <Badge className="absolute z-20 top-1 left-2 flex items-center gap-1 bg-custom-gray border-border text-foreground shadow-hard">
             <span className="relative flex h-2 w-2 mr-0.5 ">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-destructive"></span>
             </span>
             <span>{currentStatus === "PROCESSING" ? progressText : "Record"}</span>
           </Badge>
-          <Badge className="absolute z-20 bottom-1 right-2 flex items-center gap-1 bg-custom-gray border-border shadow-hard rounded-hard tracking-wider">
+          <Badge className="absolute z-20 bottom-1 right-2 flex items-center gap-1 bg-custom-gray border-border text-foreground shadow-hard rounded-hard tracking-wider">
             <Clock size={12} />
             <span>{formatDuration(recording.duration)}</span>
           </Badge>

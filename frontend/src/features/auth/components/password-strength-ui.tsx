@@ -2,32 +2,37 @@ import { Check, Circle } from "lucide-react";
 import { useWatch, type Control, type FieldError } from "react-hook-form";
 import { cn } from "@/src/lib/utils";
 import { passwordRules } from "@/src/validations/passwordRules";
+
 const PASSWORD_COLORS = [
   "var(--destructive)",
   "var(--status-warning)",
   "var(--action-join)",
   "var(--status-success)",
 ];
+
 interface PasswordStrengthUIProps {
-  control: Control<any>;
+  control: any;
   error?: FieldError;
 }
+
 export function PasswordStrengthUI({
   control,
   error,
 }: PasswordStrengthUIProps) {
-  const passwordValue = useWatch({
-    control,
+  const passwordValue = (useWatch({
+    control: control as any,
     name: "password",
     defaultValue: "",
-  });
+  }) || "") as string;
+
   const passwordStatus = passwordRules.map((rule) => ({
     ...rule,
     passed: rule.test(passwordValue),
   }));
+
   const passwordStrength =
-    (passwordStatus.filter((r) => r.passed).length / passwordRules.length) *
-    100;
+    (passwordStatus.filter((r) => r.passed).length / passwordRules.length) * 100;
+
   return (
     <>
       <div className="flex gap-2 items-center mt-2">
@@ -51,45 +56,41 @@ export function PasswordStrengthUI({
             color:
               passwordStrength > 0
                 ? PASSWORD_COLORS[
-                    Math.max(0, Math.ceil(passwordStrength / 25) - 1)
+                    Math.min(
+                      Math.floor(passwordStrength / 25),
+                      PASSWORD_COLORS.length - 1,
+                    )
                   ]
-                : "inherit",
+                : "var(--muted-foreground)",
           }}
         >
-          {passwordStrength === 100
-            ? "Strong"
-            : passwordStrength >= 75
-              ? "Good"
-              : passwordStrength >= 50
-                ? "Medium"
-                : passwordStrength > 0
-                  ? "Weak"
-                  : ""}
+          {passwordStrength <= 25 && passwordStrength > 0 && "Weak"}
+          {passwordStrength > 25 && passwordStrength <= 50 && "Fair"}
+          {passwordStrength > 50 && passwordStrength <= 75 && "Good"}
+          {passwordStrength > 75 && "Strong"}
         </span>
       </div>
-      <div className="pt-2 grid grid-cols-2 gap-y-2">
-        {passwordStatus.map((rule) => (
-          <p
-            key={rule.message}
+
+      <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-2">
+        {passwordStatus.map((rule, idx) => (
+          <div
+            key={idx}
             className={cn(
-              "flex items-center gap-2 text-xs transition-colors duration-normal",
+              "flex items-center gap-1.5 text-xs transition-colors duration-fast ease-standard",
               rule.passed
-                ? "text-status-success"
+                ? "text-status-success font-medium"
                 : error
                   ? "text-destructive"
                   : "text-muted-foreground",
             )}
           >
             {rule.passed ? (
-              <Check
-                size={14}
-                className="animate-in zoom-in spin-in-12 duration-normal text-status-success"
-              />
+              <Check className="size-3.5 shrink-0 stroke-[2.5]" />
             ) : (
-              <Circle size={14} className="opacity-50" />
+              <Circle className="size-3.5 shrink-0 stroke-[1.5]" />
             )}
-            {rule.message}
-          </p>
+            <span>{rule.message}</span>
+          </div>
         ))}
       </div>
     </>

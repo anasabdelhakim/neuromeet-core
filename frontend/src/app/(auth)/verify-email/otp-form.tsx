@@ -6,7 +6,6 @@ import { z } from "zod";
 import { Loader } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/src/components/ui/button";
-import { Card, CardContent } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/input";
 import { Field, FieldLabel, FieldError } from "@/src/components/ui/field";
 import { otpFormSchema } from "@/src/validations/zod";
@@ -73,9 +72,8 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
     }
   }, []);
   return (
-    <Card variant="gradient">
-      <CardContent>
-        <form action={handleAction} className="space-y-4">
+    <div className="w-full">
+      <form action={handleAction} className="space-y-4">
           <input type="hidden" name="flow" value={flow} />
           {(state.errorMessage?.server || resendError) && (
             <div className="animate-alert-entrance">
@@ -171,7 +169,6 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
             </p>
           </div>
         </form>
-      </CardContent>
-    </Card>
+    </div>
   );
 }

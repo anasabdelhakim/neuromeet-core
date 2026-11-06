@@ -141,7 +141,7 @@ async function StudentHomeUpcomingList() {
 
   return (
     <div className="flex flex-col gap-4">
-      {meetings.map((meeting) => (
+      {meetings.map((meeting: any) => (
         <StudentUpcomingCard key={meeting.id} meeting={meeting} />
       ))}
     </div>

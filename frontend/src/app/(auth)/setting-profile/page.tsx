@@ -12,6 +12,7 @@ export default function Page() {
     <AuthWrapper
       title="Complete Your Profile"
       description="Upload an avatar so your students and peers can recognize you."
+      showLogo={false}
     >
       <ProfileCompletionForm />
     </AuthWrapper>

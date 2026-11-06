@@ -72,37 +72,33 @@ enum InvitationStatus {
 // =========================
 
 model User {
-  id                  String      @id @default(cuid())
+  id                  String               @id @default(cuid())
   name                String
-  email               String      @unique
+  email               String               @unique
   password            String
-  role                Role        @default(STUDENT)
+  role                Role                 @default(STUDENT)
   avatarUrl           String?
-  isProfileComplete   Boolean     @default(false)
+  isProfileComplete   Boolean              @default(false)
   resetpasswordToken  String?
   resetpasswordExpire DateTime?
   passwordChangedAt   DateTime?
-  failedLoginAttempts Int         @default(0)
+  failedLoginAttempts Int                  @default(0)
   lockedUntil         DateTime?
-  active              Boolean     @default(true)
+  active              Boolean              @default(true)
   verificationCode    String?
   otpPurpose          OtpPurpose?
   otpExpire           DateTime?
-  created_at          DateTime    @default(now())
-  updated_at          DateTime    @updatedAt
-
-  // Old Relations
+  created_at          DateTime             @default(now())
+  updated_at          DateTime             @updatedAt
   hostedMeetings      Meeting[]            @relation("MeetingHost")
   meetingParticipants MeetingParticipant[]
   uploadedMaterials   MeetingMaterial[]
-
-  // New Relations
-  sessions      Session[]
-  ownedGroups   Group[]        @relation("InstructorGroups")
-  enrollments   Enrollment[]   @relation("StudentEnrollments")
-  invitations   Invitation[]   @relation("StudentInvitations")
-  notifications Notification[]
-  recordings    Recording[]    @relation("UserRecordings")
+  sessions            Session[]
+  ownedGroups         Group[]              @relation("InstructorGroups")
+  enrollments         Enrollment[]         @relation("StudentEnrollments")
+  invitations         Invitation[]         @relation("StudentInvitations")
+  notifications       Notification[]
+  recordings          Recording[]          @relation("UserRecordings")
 
   @@index([email])
   @@index([verificationCode, created_at])
@@ -218,10 +214,8 @@ model MeetingParticipant {
   secondsPresent     Int             @default(0)
   avgEngagementScore Float?
   adhdFlagged        Boolean         @default(false)
-
-  // Relations
-  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  meeting            Meeting         @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  user               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([meetingId, userId])
   @@index([meetingId])
@@ -238,10 +232,8 @@ model MeetingMaterial {
   mimeType     String?
   sizeBytes    Int?
   uploadedAt   DateTime @default(now())
-
-  // Relations
-  meeting  Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
-  uploader User    @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
+  meeting      Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  uploader     User     @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
 
   @@index([meetingId])
 }

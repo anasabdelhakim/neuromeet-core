@@ -104,7 +104,7 @@ export function ShareMeetingModal({ meetingId, meetingTitle, groups = [], isOpen
                     const studentCount = g._count?.enrollments || 0;
                     const isEmpty = studentCount === 0;
                     return (
-                      <SelectItem key={g.id} value={g.id} disabled={isEmpty} className="py-2 px-2 font-medium hover:bg-white/5 cursor-pointer rounded-medium transition-colors w-full">
+                      <SelectItem key={g.id} value={g.id} disabled={isEmpty} className="py-2 px-2 font-medium hover:bg-white-soft-muted cursor-pointer rounded-medium transition-colors w-full">
                         <div className="flex items-center justify-between w-full gap-4">
                           <span className="font-semibold text-foreground truncate pl-2">{g.name}</span>
                           <div className="flex items-center gap-2 shrink-0">

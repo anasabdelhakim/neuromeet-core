@@ -3,4 +3,5 @@ export interface NavItem {
   icon: LucideIcon;
   label: string;
   href: string;
+  hideOnMobile?: boolean;
 }
