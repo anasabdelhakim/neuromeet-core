@@ -5,6 +5,10 @@ export default function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="h-[100dvh] min-h-[100dvh] w-full overflow-hidden bg-[#0A0D18]">{children}</div>;
+  return (
+    <div className="fixed inset-0 h-dvh w-screen overflow-hidden bg-[#0A0D18]">
+      {children}
+    </div>
+  );
 }
 
