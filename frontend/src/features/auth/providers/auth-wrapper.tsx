@@ -17,7 +17,7 @@ export default function AuthWrapper({
   children,
 }: AuthWrapperProps) {
   return (
-    <div className="relative min-h-[100dvh] lg:h-screen lg:overflow-hidden w-full bg-[#0A0D18] text-foreground font-sans flex flex-col lg:grid lg:grid-cols-[40%_60%]">
+    <div className="relative h-[100dvh] min-h-[100dvh] w-full overflow-hidden bg-[#0A0D18] text-foreground font-sans flex flex-col lg:grid lg:grid-cols-[40%_60%]">
       <div className="absolute -top-32 -left-28 w-96 h-96 scale-[1.25] rounded-full pointer-events-none blur-3xl bg-auth-scene-before-radial opacity-30" />
       <div className="absolute -bottom-20 -right-20 w-96 h-96 rounded-full pointer-events-none blur-3xl bg-auth-scene-after-radial opacity-30" />
       <AuthFormColumn title={title} description={description}>
@@ -55,8 +55,8 @@ const AuthFormColumn = ({
   description?: string;
   children: React.ReactNode;
 }) => (
-  <div className="relative z-10 w-full flex flex-col justify-start px-4 sm:px-6 lg:px-8 py-2 sm:py-4 min-h-[100dvh] lg:h-full lg:min-h-0 overflow-y-auto overflow-x-hidden">
-    <div className="w-full max-w-sm mx-auto flex flex-col gap-3 pt-3 sm:pt-5 pb-4 sm:pb-6">
+  <div className="relative z-10 w-full flex flex-col justify-center px-4 sm:px-6 lg:px-8 py-2 h-full min-h-full overflow-y-auto overflow-x-hidden">
+    <div className="w-full max-w-sm mx-auto flex flex-col gap-2.5 my-auto">
       <AuthHeader title={title} description={description} />
       <div className="w-full">{children}</div>
     </div>
