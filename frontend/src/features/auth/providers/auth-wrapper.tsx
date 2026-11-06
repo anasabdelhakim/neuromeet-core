@@ -64,14 +64,14 @@ const AuthFormColumn = ({
     className={cn(
       "relative z-10 w-full flex flex-col px-4 sm:px-6 lg:px-8 h-full min-h-full overflow-y-auto overflow-x-hidden",
       position === "start"
-        ? "justify-start py-6 sm:py-10 lg:py-14"
+        ? "justify-center lg:justify-start py-6 sm:py-8 lg:py-14"
         : "justify-center py-4 sm:py-6"
     )}
   >
     <div
       className={cn(
         "w-full max-w-sm mx-auto flex flex-col gap-3",
-        position === "center" && "my-auto"
+        position === "start" ? "my-auto lg:my-0" : "my-auto"
       )}
     >
       <AuthHeader title={title} description={description} />
