@@ -7,6 +7,7 @@ export default async function Page() {
       showLogo={true}
       title="Create an account"
       description="Sign up for your NeuroMeet account"
+      position="start"
     >
       <SignUpForm />
     </AuthWrapper>
