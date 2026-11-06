@@ -21,7 +21,7 @@ type SignUpFormValues = z.infer<typeof SignUpFormSchema>;
 export function SignUpForm() {
   const formState = useSignUpFormState();
   return (
-    <div className="w-full flex flex-col gap-3">
+    <div className="w-full flex flex-col gap-4">
       <SignUpGoogleButton
         isGoogleLoading={formState.isGoogleLoading}
         setIsGoogleLoading={formState.setIsGoogleLoading}
@@ -54,7 +54,7 @@ interface SignUpFormBodyProps {
 }
 
 const SignUpFormBody = ({ formState }: SignUpFormBodyProps) => (
-  <form action={formState.action} className="space-y-2">
+  <form action={formState.action} className="space-y-3">
     {formState.state.errorMessage?.server && (
       <p className="text-destructive text-sm text-center bg-destructive/10 border border-destructive/20 rounded-md py-1.5 px-3">
         {formState.state.errorMessage.server[0]}
@@ -73,8 +73,8 @@ const NameField = ({ formState }: SignUpFormBodyProps) => {
   const { onBlur, ...rest } = form.register("username");
   const error = form.formState.errors.username?.message || state.errorMessage?.username?.[0];
   return (
-    <Field>
-      <FieldLabel htmlFor="username" className="text-xs font-medium text-zinc-300">Name</FieldLabel>
+    <Field className="gap-2.5">
+      <FieldLabel htmlFor="username" className="text-sm font-medium text-zinc-300">Name</FieldLabel>
       <Input
         id="username"
         type="text"
@@ -86,7 +86,7 @@ const NameField = ({ formState }: SignUpFormBodyProps) => {
         aria-invalid={!!error}
         required
         autoFocus
-        className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 h-8 text-sm"
+        className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 h-10 text-sm"
       />
       <FieldError>{error}</FieldError>
     </Field>
@@ -98,8 +98,8 @@ const EmailField = ({ formState }: SignUpFormBodyProps) => {
   const { onBlur, ...rest } = form.register("email");
   const error = form.formState.errors.email?.message || state.errorMessage?.email?.[0];
   return (
-    <Field>
-      <FieldLabel htmlFor="email" className="text-xs font-medium text-zinc-300">Email</FieldLabel>
+    <Field className="gap-2.5">
+      <FieldLabel htmlFor="email" className="text-sm font-medium text-zinc-300">Email</FieldLabel>
       <Input
         id="email"
         type="email"
@@ -110,7 +110,7 @@ const EmailField = ({ formState }: SignUpFormBodyProps) => {
         onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); form.setFocus("password"); } }}
         aria-invalid={!!error}
         required
-        className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 h-8 text-sm"
+        className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 h-10 text-sm"
       />
       <FieldError>{error}</FieldError>
     </Field>
@@ -122,8 +122,8 @@ const PasswordField = ({ formState }: SignUpFormBodyProps) => {
   const rest = form.register("password");
   const error = form.formState.errors.password?.message || state.errorMessage?.password?.[0];
   return (
-    <Field>
-      <FieldLabel htmlFor="password" className="text-xs font-medium text-zinc-300">Password</FieldLabel>
+    <Field className="gap-2.5">
+      <FieldLabel htmlFor="password" className="text-sm font-medium text-zinc-300">Password</FieldLabel>
       <PasswordInput
         control={form.control as unknown as Control<FieldValues>}
         pending={pending}
@@ -142,8 +142,8 @@ const ConfirmPasswordField = ({ formState }: SignUpFormBodyProps) => {
   const { onBlur, ...rest } = form.register("confirmPassword");
   const error = form.formState.errors.confirmPassword?.message || state.errorMessage?.confirmPassword?.[0];
   return (
-    <Field>
-      <FieldLabel htmlFor="confirmPassword" className="text-xs font-medium text-zinc-300">Confirm Password</FieldLabel>
+    <Field className="gap-2.5">
+      <FieldLabel htmlFor="confirmPassword" className="text-sm font-medium text-zinc-300">Confirm Password</FieldLabel>
       <Input
         id="confirmPassword"
         type="password"
@@ -153,7 +153,7 @@ const ConfirmPasswordField = ({ formState }: SignUpFormBodyProps) => {
         onBlur={(e) => { if (e.target.value.trim() !== "") onBlur(e); }}
         aria-invalid={!!error}
         required
-        className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 h-8 text-sm"
+        className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 h-10 text-sm"
       />
       <FieldError>{error}</FieldError>
     </Field>
@@ -164,7 +164,7 @@ const SubmitSignUpButton = ({ pending }: { pending: boolean }) => (
   <Button
     type="submit"
     disabled={pending}
-    className="w-full h-9 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg text-sm transition-all mt-1"
+    className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg text-sm transition-all mt-1"
   >
     {pending ? (
       <span className="flex items-center gap-2">
@@ -188,7 +188,7 @@ const SignUpGoogleButton = ({
 }) => (
   <Button
     className={cn(
-      "w-full h-9 border-white/10 flex items-center justify-center hover:bg-white/10 bg-white/5 text-white text-sm font-medium rounded-lg transition-all",
+      "w-full h-10 border-white/10 flex items-center justify-center hover:bg-white/10 bg-white/5 text-white text-sm font-medium rounded-lg transition-all",
       (disabled || isGoogleLoading) && "pointer-events-none opacity-50 cursor-not-allowed"
     )}
     nativeButton={false}
@@ -225,7 +225,7 @@ const SignUpOrDivider = () => (
 );
 
 const SignUpSwitchPrompt = () => (
-  <p className="text-center text-xs text-zinc-400 pt-0.5">
+  <p className="text-center text-sm text-zinc-400 pt-0.5">
     Already have an account?{" "}
     <Link href="/sign-in" className="text-white hover:underline font-semibold ml-1">
       Sign in

@@ -63,7 +63,7 @@ export default function ResetPasswordForm() {
             </div>
           )}
           <div>
-            <Field>
+            <Field className="gap-2.5">
               <FieldLabel htmlFor="password">New Password</FieldLabel>
               <PasswordInput
                 control={control as any}
@@ -94,7 +94,7 @@ export default function ResetPasswordForm() {
             </Field>
           </div>
           <div>
-            <Field>
+            <Field className="gap-2.5">
               <FieldLabel htmlFor="confirmPassword">
                 Confirm Password
               </FieldLabel>
@@ -102,7 +102,7 @@ export default function ResetPasswordForm() {
                 id="confirmPassword"
                 type="password"
                 placeholder="Confirm your password"
-                className="transition-all focus:ring-2 focus:ring-primary-soft-subtle"
+                className="h-10 transition-all focus:ring-2 focus:ring-primary-soft-subtle"
                 disabled={pending}
                 required
                 {...confirmPasswordRest}

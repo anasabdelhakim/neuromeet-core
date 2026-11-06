@@ -27,7 +27,7 @@ type LoginFormValues = z.infer<typeof loginFormSchema>;
 export function LoginForm() {
   const form = useLoginFormState();
   return (
-    <div className="w-full flex flex-col gap-3">
+    <div className="w-full flex flex-col gap-4">
       <GoogleAuthButton
         isGoogleLoading={form.isGoogleLoading}
         setIsGoogleLoading={form.setIsGoogleLoading}
@@ -82,7 +82,7 @@ interface LoginFormBodyProps {
 }
 
 const LoginFormBody = ({ form }: LoginFormBodyProps) => (
-  <form action={form.action} className="space-y-2">
+  <form action={form.action} className="space-y-3">
     {form.state.errorMessage?.server && (
       <p className="text-destructive text-sm text-center bg-destructive/10 border border-destructive/20 rounded-md py-1.5 px-3">
         {form.state.errorMessage.server[0]}
@@ -99,8 +99,8 @@ const EmailField = ({ form }: LoginFormBodyProps) => {
   const { onBlur, ...rest } = rhf.register("email");
   const error = rhf.formState.errors.email?.message || state.errorMessage?.email?.[0];
   return (
-    <Field>
-      <FieldLabel htmlFor="email" className="text-xs font-medium text-zinc-300">Email</FieldLabel>
+    <Field className="gap-2.5">
+      <FieldLabel htmlFor="email" className="text-sm font-medium text-zinc-300">Email</FieldLabel>
       <Input
         id="email"
         type="email"
@@ -113,7 +113,7 @@ const EmailField = ({ form }: LoginFormBodyProps) => {
         aria-invalid={!!error}
         required
         autoFocus
-        className="h-9 bg-white/5 border-white/10 text-white placeholder-zinc-500 focus:border-primary focus:ring-primary text-sm rounded-lg"
+        className="h-10 bg-white/5 border-white/10 text-white placeholder-zinc-500 focus:border-primary focus:ring-primary text-sm rounded-lg"
       />
       <FieldError className="text-xs text-destructive">{error}</FieldError>
     </Field>
@@ -124,10 +124,10 @@ const PasswordField = ({ form }: LoginFormBodyProps) => {
   const { form: rhf, pending, state, isGoogleLoading } = form;
   const error = rhf.formState.errors.password?.message || state.errorMessage?.password?.[0];
   return (
-    <Field>
+    <Field className="gap-2.5">
       <div className="flex items-center justify-between">
-        <FieldLabel htmlFor="password" className="text-xs font-medium text-zinc-300">Password</FieldLabel>
-        <Link href="/forget-password" className="text-xs text-zinc-400 hover:text-white transition-colors">
+        <FieldLabel htmlFor="password" className="text-sm font-medium text-zinc-300">Password</FieldLabel>
+        <Link href="/forget-password" className="text-sm text-zinc-400 hover:text-white transition-colors">
           Forgot password?
         </Link>
       </div>
@@ -146,7 +146,7 @@ const SubmitSignInButton = ({ pending }: { pending: boolean }) => (
   <Button
     type="submit"
     disabled={pending}
-    className="w-full h-9 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm rounded-lg transition-all shadow-xs cursor-pointer"
+    className="w-full h-10 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm rounded-lg transition-all shadow-xs cursor-pointer"
   >
     {pending ? (
       <span className="flex items-center gap-2">
@@ -170,7 +170,7 @@ const GoogleAuthButton = ({
 }) => (
   <Button
     className={cn(
-      "w-full h-9 border-white/10 flex items-center justify-center hover:bg-white/10 bg-white/5 text-white text-sm font-medium rounded-lg transition-all",
+      "w-full h-10 border-white/10 flex items-center justify-center hover:bg-white/10 bg-white/5 text-white text-sm font-medium rounded-lg transition-all",
       (disabled || isGoogleLoading) && "pointer-events-none opacity-50 cursor-not-allowed"
     )}
     nativeButton={false}
@@ -215,7 +215,7 @@ const AuthSwitchPrompt = ({
   actionText: string;
   actionHref: string;
 }) => (
-  <p className="text-center text-xs text-zinc-400 pt-0.5">
+  <p className="text-center text-sm text-zinc-400 pt-0.5">
     {promptText}{" "}
     <Link href={actionHref} className="text-white hover:underline font-semibold ml-1">
       {actionText}

@@ -9,7 +9,7 @@ export const Logo = () => {
     <BrandLottieLogo
       dotLottieRefCallback={lottieRef}
       iconClassName="w-16 h-16 sm:w-20 sm:h-20"
-      textClassName="text-2xl sm:text-3xl"
+      textClassName="hidden text-2xl sm:inline sm:text-3xl"
       href="/"
     />
   );

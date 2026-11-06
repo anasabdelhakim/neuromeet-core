@@ -48,7 +48,7 @@ export default function ForgetPasswordPreview() {
             </div>
           )}
           <div>
-            <Field>
+            <Field className="gap-2.5">
               <FieldLabel htmlFor="email">Email</FieldLabel>
               <Input
                 id="email"
@@ -56,7 +56,7 @@ export default function ForgetPasswordPreview() {
                 autoFocus
                 placeholder="johndoe@mail.com"
                 autoComplete="email"
-                className="transition-all focus:ring-2 focus:ring-primary-soft-subtle"
+                className="h-10 transition-all focus:ring-2 focus:ring-primary-soft-subtle"
                 disabled={pending}
                 {...emailRest}
                 required

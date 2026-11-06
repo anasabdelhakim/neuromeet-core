@@ -95,7 +95,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
             </p>
           </div>
           <div>
-            <Field>
+            <Field className="gap-2.5">
               <FieldLabel htmlFor="otp">Verification code</FieldLabel>
               <Input
                 id="otp"
@@ -104,7 +104,7 @@ export default function OTPForm({ initialSecondsRemaining }: OTPFormProps) {
                 required
                 maxLength={6}
                 placeholder="Enter OTP"
-                className="transition-all focus:ring-2 focus:ring-primary-soft-subtle text-center text-lg tracking-widest"
+                className="h-11 transition-all focus:ring-2 focus:ring-primary-soft-subtle text-center text-lg tracking-widest"
                 disabled={pending}
                 {...otpRest}
                 onBlur={(e) => {

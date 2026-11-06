@@ -14,10 +14,10 @@ export const HeroSection = () => (
 
 const HeroTextColumn = () => (
   <div className="flex flex-col items-start gap-6 lg:col-span-5">
-    <h1 className="text-5xl font-bold leading-[1.05] tracking-tight text-white text-balance sm:text-6xl lg:text-[60px]">
+    <h1 className="text-[2.75rem] font-bold leading-[1.05] tracking-tight text-white text-balance sm:text-6xl lg:text-[60px]">
       Smarter Video Meetings
     </h1>
-    <p className="max-w-xl text-lg leading-relaxed text-zinc-300">
+    <p className="max-w-xl text-base leading-relaxed text-zinc-300 sm:text-lg">
       Experience the future of video meetings. Real-time AI transcriptions, ADHD focus insights, and seamless collaborative conferencing for learners and instructors.
     </p>
     <Link

@@ -44,7 +44,7 @@ export function PasswordInput({
         type={seePassword ? "text" : "password"}
         placeholder={placeholder}
         className={cn(
-          "h-9 bg-white/5 border-white/10 text-white placeholder:text-zinc-500 pr-10 focus:border-primary focus:ring-primary text-sm rounded-lg transition-all",
+          "h-10 bg-white/5 border-white/10 text-white placeholder:text-zinc-500 pr-10 focus:border-primary focus:ring-primary text-sm rounded-lg transition-all",
           errorMsg && "border-destructive bg-destructive/10 text-destructive",
           className
         )}

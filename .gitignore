@@ -36,3 +36,6 @@ backend/ai_bot/scratch_test.py
 # Generated agent / browser artifacts
 .playwright-mcp/
 agent-skills/
+
+# Local study notes
+_study/

@@ -56,7 +56,7 @@ const AuthFormColumn = ({
   children: React.ReactNode;
 }) => (
   <div className="relative z-10 w-full flex flex-col justify-center p-6 sm:p-8 lg:p-8 xl:p-10 min-h-[100dvh] lg:min-h-0 lg:h-full lg:overflow-y-auto">
-    <div className="w-full max-w-sm mx-auto flex flex-col gap-4 py-2">
+    <div className="w-full max-w-sm mx-auto flex flex-col gap-5 py-2">
       <AuthHeader title={title} description={description} />
       <div className="w-full">{children}</div>
     </div>
