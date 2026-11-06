@@ -82,7 +82,7 @@ interface LoginFormBodyProps {
 }
 
 const LoginFormBody = ({ form }: LoginFormBodyProps) => (
-  <form action={form.action} className="space-y-3">
+  <form action={form.action} className="space-y-3.5">
     {form.state.errorMessage?.server && (
       <p className="text-destructive text-sm text-center bg-destructive/10 border border-destructive/20 rounded-md py-1.5 px-3">
         {form.state.errorMessage.server[0]}

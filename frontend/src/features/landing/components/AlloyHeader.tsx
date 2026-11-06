@@ -3,7 +3,7 @@ import { Logo } from "./Logo";
 
 export const AlloyHeader = () => (
   <header className="sticky top-0 z-50 border-b border-white/10 bg-[#080B14]/90 backdrop-blur-md shadow-xs">
-    <div className="mx-auto flex h-20 min-h-20 w-full max-w-7xl flex-nowrap items-center justify-between gap-4 px-4 sm:px-8 lg:px-16">
+    <div className="mx-auto flex h-18 min-h-18 sm:h-20 sm:min-h-20 w-full max-w-7xl flex-nowrap items-center justify-between gap-4 px-4 sm:px-8 lg:px-16">
       <Logo />
       <AccountNavigation />
     </div>

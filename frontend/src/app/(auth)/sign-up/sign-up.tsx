@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Field, FieldLabel, FieldError } from "@/src/components/ui/field";
@@ -8,9 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type Control, type FieldValues } from "react-hook-form";
 import type { z } from "zod";
 import { Loader } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
-import { cn } from "@/src/lib/utils";
 import { SignUpFormSchema } from "@/src/validations/zod";
 import { PasswordInput } from "@/src/features/auth/components/password-input";
 import { PasswordStrengthUI } from "@/src/features/auth/components/password-strength-ui";
@@ -21,13 +19,7 @@ type SignUpFormValues = z.infer<typeof SignUpFormSchema>;
 export function SignUpForm() {
   const formState = useSignUpFormState();
   return (
-    <div className="w-full flex flex-col gap-3">
-      <SignUpGoogleButton
-        isGoogleLoading={formState.isGoogleLoading}
-        setIsGoogleLoading={formState.setIsGoogleLoading}
-        disabled={formState.pending}
-      />
-      <SignUpOrDivider />
+    <div className="w-full flex flex-col gap-4">
       <SignUpFormBody formState={formState} />
       <SignUpSwitchPrompt />
     </div>
@@ -45,8 +37,7 @@ function useSignUpFormState() {
     signUpAction,
     { success: false, errorMessage: {} }
   );
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  return { form, state, action, pending, isGoogleLoading, setIsGoogleLoading };
+  return { form, state, action, pending };
 }
 
 interface SignUpFormBodyProps {
@@ -54,7 +45,7 @@ interface SignUpFormBodyProps {
 }
 
 const SignUpFormBody = ({ formState }: SignUpFormBodyProps) => (
-  <form action={formState.action} className="space-y-2 sm:space-y-2.5">
+  <form action={formState.action} className="space-y-3.5">
     {formState.state.errorMessage?.server && (
       <p className="text-destructive text-sm text-center bg-destructive/10 border border-destructive/20 rounded-md py-1 px-3">
         {formState.state.errorMessage.server[0]}
@@ -73,8 +64,8 @@ const NameField = ({ formState }: SignUpFormBodyProps) => {
   const { onBlur, ...rest } = form.register("username");
   const error = form.formState.errors.username?.message || state.errorMessage?.username?.[0];
   return (
-    <Field className="gap-1 sm:gap-1.5">
-      <FieldLabel htmlFor="username" className="text-xs sm:text-sm font-medium text-zinc-300">Name</FieldLabel>
+    <Field className="gap-2.5">
+      <FieldLabel htmlFor="username" className="text-sm font-medium text-zinc-300">Name</FieldLabel>
       <Input
         id="username"
         type="text"
@@ -86,9 +77,9 @@ const NameField = ({ formState }: SignUpFormBodyProps) => {
         aria-invalid={!!error}
         required
         autoFocus
-        className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 h-9 sm:h-10 text-sm"
+        className="h-10 bg-white/5 border-white/10 text-white placeholder-zinc-500 focus:border-primary focus:ring-primary text-sm rounded-lg"
       />
-      <FieldError>{error}</FieldError>
+      <FieldError className="text-xs text-destructive">{error}</FieldError>
     </Field>
   );
 };
@@ -98,8 +89,8 @@ const EmailField = ({ formState }: SignUpFormBodyProps) => {
   const { onBlur, ...rest } = form.register("email");
   const error = form.formState.errors.email?.message || state.errorMessage?.email?.[0];
   return (
-    <Field className="gap-1 sm:gap-1.5">
-      <FieldLabel htmlFor="email" className="text-xs sm:text-sm font-medium text-zinc-300">Email</FieldLabel>
+    <Field className="gap-2.5">
+      <FieldLabel htmlFor="email" className="text-sm font-medium text-zinc-300">Email</FieldLabel>
       <Input
         id="email"
         type="email"
@@ -110,9 +101,9 @@ const EmailField = ({ formState }: SignUpFormBodyProps) => {
         onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); form.setFocus("password"); } }}
         aria-invalid={!!error}
         required
-        className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 h-9 sm:h-10 text-sm"
+        className="h-10 bg-white/5 border-white/10 text-white placeholder-zinc-500 focus:border-primary focus:ring-primary text-sm rounded-lg"
       />
-      <FieldError>{error}</FieldError>
+      <FieldError className="text-xs text-destructive">{error}</FieldError>
     </Field>
   );
 };
@@ -122,8 +113,8 @@ const PasswordField = ({ formState }: SignUpFormBodyProps) => {
   const rest = form.register("password");
   const error = form.formState.errors.password?.message || state.errorMessage?.password?.[0];
   return (
-    <Field className="gap-1 sm:gap-1.5">
-      <FieldLabel htmlFor="password" className="text-xs sm:text-sm font-medium text-zinc-300">Password</FieldLabel>
+    <Field className="gap-2.5">
+      <FieldLabel htmlFor="password" className="text-sm font-medium text-zinc-300">Password</FieldLabel>
       <PasswordInput
         control={form.control as unknown as Control<FieldValues>}
         pending={pending}
@@ -131,7 +122,7 @@ const PasswordField = ({ formState }: SignUpFormBodyProps) => {
         errorMsg={error}
         onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); form.setFocus("confirmPassword"); } }}
       />
-      <FieldError>{error}</FieldError>
+      <FieldError className="text-xs text-destructive">{error}</FieldError>
       <PasswordStrengthUI control={form.control} error={form.formState.errors.password} />
     </Field>
   );
@@ -142,8 +133,8 @@ const ConfirmPasswordField = ({ formState }: SignUpFormBodyProps) => {
   const { onBlur, ...rest } = form.register("confirmPassword");
   const error = form.formState.errors.confirmPassword?.message || state.errorMessage?.confirmPassword?.[0];
   return (
-    <Field className="gap-1 sm:gap-1.5">
-      <FieldLabel htmlFor="confirmPassword" className="text-xs sm:text-sm font-medium text-zinc-300">Confirm Password</FieldLabel>
+    <Field className="gap-2.5">
+      <FieldLabel htmlFor="confirmPassword" className="text-sm font-medium text-zinc-300">Confirm Password</FieldLabel>
       <Input
         id="confirmPassword"
         type="password"
@@ -153,9 +144,9 @@ const ConfirmPasswordField = ({ formState }: SignUpFormBodyProps) => {
         onBlur={(e) => { if (e.target.value.trim() !== "") onBlur(e); }}
         aria-invalid={!!error}
         required
-        className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 h-9 sm:h-10 text-sm"
+        className="h-10 bg-white/5 border-white/10 text-white placeholder-zinc-500 focus:border-primary focus:ring-primary text-sm rounded-lg"
       />
-      <FieldError>{error}</FieldError>
+      <FieldError className="text-xs text-destructive">{error}</FieldError>
     </Field>
   );
 };
@@ -175,53 +166,6 @@ const SubmitSignUpButton = ({ pending }: { pending: boolean }) => (
       "Sign up"
     )}
   </Button>
-);
-
-const SignUpGoogleButton = ({
-  isGoogleLoading,
-  setIsGoogleLoading,
-  disabled,
-}: {
-  isGoogleLoading: boolean;
-  setIsGoogleLoading: (value: boolean) => void;
-  disabled: boolean;
-}) => (
-  <Button
-    className={cn(
-      "w-full h-10 border-white/10 flex items-center justify-center hover:bg-white/10 bg-white/5 text-white text-sm font-medium rounded-lg transition-all",
-      (disabled || isGoogleLoading) && "pointer-events-none opacity-50 cursor-not-allowed"
-    )}
-    nativeButton={false}
-    render={<a href="/api/auth/google" />}
-    variant="outline"
-    onClick={() => {
-      setIsGoogleLoading(true);
-      setTimeout(() => setIsGoogleLoading(false), 3000);
-    }}
-  >
-    {isGoogleLoading ? (
-      <div className="flex items-center gap-2">
-        <Loader className="animate-spin text-zinc-400" size={16} />
-        <span>Connecting...</span>
-      </div>
-    ) : (
-      <>
-        <Image src="/icons8-google-logo.svg" alt="Google" width={16} height={16} />
-        <span className="ml-2">Continue with Google</span>
-      </>
-    )}
-  </Button>
-);
-
-const SignUpOrDivider = () => (
-  <div className="relative my-0.5">
-    <div className="absolute inset-0 flex items-center">
-      <span className="w-full border-t border-white/10" />
-    </div>
-    <div className="relative flex justify-center text-xs">
-      <span className="bg-[#0A0D18] px-3 text-zinc-400">or</span>
-    </div>
-  </div>
 );
 
 const SignUpSwitchPrompt = () => (
