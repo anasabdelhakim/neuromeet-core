@@ -60,7 +60,7 @@ export default function RootLayout({
       <head>
         <link rel="llms" href="/llms.txt" />
       </head>
-      <body className="min-h-screen w-full" suppressHydrationWarning>
+      <body className="min-h-screen w-full bg-[#080B14] text-foreground antialiased overflow-x-hidden selection:bg-primary/20 selection:text-white" suppressHydrationWarning>
         {children}
       </body>
     </html>

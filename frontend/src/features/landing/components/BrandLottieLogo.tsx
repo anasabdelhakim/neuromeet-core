@@ -89,7 +89,7 @@ const LogoInner = ({
 
 export const BrandLottieLogo = ({
   href = "/",
-  iconClassName = "w-16 h-16 sm:w-20 sm:h-20",
+  iconClassName = "w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24",
   showText = true,
   ...props
 }: BrandLottieLogoProps) => {

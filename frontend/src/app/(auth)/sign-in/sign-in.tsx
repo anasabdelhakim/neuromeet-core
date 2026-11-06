@@ -232,22 +232,31 @@ interface CredentialRowProps {
 }
 
 const CredentialRow = ({ role, title, email, pass, onFill }: CredentialRowProps) => (
-  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-background/50 rounded-lg border border-border gap-3">
-    <div>
+  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-2.5 sm:p-3 bg-background/50 rounded-lg border border-border gap-2 sm:gap-3 w-full min-w-0">
+    <div className="min-w-0 flex-1">
       <p className="text-xs font-bold text-foreground">{title}</p>
-      <p className="text-xs text-muted-foreground mt-1">
-        User: <code className="bg-muted px-1 py-0.5 rounded font-mono text-primary font-semibold">{email}</code>
-        <br />
-        Pass: <code className="bg-muted px-1 py-0.5 rounded font-mono text-primary font-semibold">{pass}</code>
-      </p>
+      <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
+        <div className="flex items-center gap-1 min-w-0">
+          <span className="shrink-0 text-zinc-400">User:</span>
+          <code className="bg-muted px-1 py-0.5 rounded font-mono text-primary font-semibold text-[11px] truncate block max-w-[190px] sm:max-w-[220px]" title={email}>
+            {email}
+          </code>
+        </div>
+        <div className="flex items-center gap-1 min-w-0">
+          <span className="shrink-0 text-zinc-400">Pass:</span>
+          <code className="bg-muted px-1 py-0.5 rounded font-mono text-primary font-semibold text-[11px]">
+            {pass}
+          </code>
+        </div>
+      </div>
     </div>
     <Button
       type="button"
       variant="outline"
       onClick={() => onFill(role)}
-      className="text-xs bg-primary/10 hover:bg-primary/20 text-primary font-semibold py-1.5 px-3 rounded-md transition-colors border border-primary/20 h-9"
+      className="text-xs bg-primary/10 hover:bg-primary/20 text-primary font-semibold py-1 px-2.5 rounded-md transition-colors border border-primary/20 h-8 shrink-0 self-start sm:self-auto cursor-pointer"
     >
-      ⚡ Fill {title}
+      ⚡ Fill
     </Button>
   </div>
 );
@@ -261,32 +270,31 @@ const DemoCredentialsDialog = ({
   onOpenChange: (open: boolean) => void;
   onFill: (role: "student" | "instructor") => void;
 }) => (
-  <div className="flex justify-center mt-2">
+  <div className="flex justify-center mt-2 w-full max-w-full">
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger
         render={
           <button
             type="button"
-            className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-primary active:text-primary focus:text-primary data-[state=open]:text-primary bg-transparent hover:bg-transparent active:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent outline-none focus-visible:outline-none ring-0 focus-visible:ring-0 cursor-pointer select-none transition-none shadow-none"
+            className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-primary hover:text-primary active:text-primary focus:text-primary data-[state=open]:text-primary bg-transparent outline-none ring-0 cursor-pointer select-none transition-none shadow-none"
           >
-            <Sparkles size={16} className="text-primary shrink-0" />
+            <Sparkles size={15} className="text-primary shrink-0" />
             View Demo Credentials
           </button>
         }
       />
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="w-[calc(100vw-2rem)] max-w-sm sm:max-w-md max-h-[88dvh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-primary">
+          <DialogTitle className="flex items-center gap-2 text-primary text-base sm:text-lg">
             <Sparkles size={18} />
             Demo Access
           </DialogTitle>
         </DialogHeader>
-        <div className="space-y-3 mt-2">
-          <p className="text-sm text-muted-foreground leading-relaxed">
+        <div className="space-y-2.5 mt-2">
+          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
             Test the platform&apos;s advanced features using these pre-configured accounts.
             <br />
-            <br />
-            <span className="font-medium text-foreground">Note:</span> If you sign in normally with Google, you will automatically be assigned the <b>Student</b> role by default.
+            <span className="font-medium text-foreground">Note:</span> Default Google sign-in is assigned the <b>Student</b> role.
           </p>
           <CredentialRow
             role="instructor"

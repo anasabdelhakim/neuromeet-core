@@ -13,7 +13,7 @@ export const NeuroFooter = () => (
 );
 
 const FooterBackgroundWatermark = () => (
-  <div className="absolute -right-20 -bottom-24 opacity-[0.04] pointer-events-none text-white" aria-hidden="true">
+  <div className="absolute left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:-right-20 -bottom-24 opacity-[0.04] pointer-events-none text-white" aria-hidden="true">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" className="w-[580px] h-[580px]">
       <path d="M12 2a4 4 0 0 1 4 4c0 .88-.29 1.7-.78 2.36A4.5 4.5 0 0 1 20 12c0 1.28-.53 2.44-1.39 3.26.25.54.39 1.14.39 1.74a4 4 0 0 1-4 4c-.75 0-1.44-.2-2.04-.56A4 4 0 0 1 12 22a4 4 0 0 1-.96-1.56A4 4 0 0 1 9 21a4 4 0 0 1-4-4c0-.6.14-1.2.39-1.74A4.5 4.5 0 0 1 4 12c0-1.92 1.2-3.56 2.78-4.24A4 4 0 0 1 8 6a4 4 0 0 1 4-4z" />
       <path d="M12 2v20M8 6c0 4 8 4 8 8s-8 4-8 8M16 6c0 4-8 4-8 8s8 4 8 8" />
