@@ -1,40 +1,48 @@
 import Link from "next/link";
-import { Logo } from "./Logo";
+import { cookies } from "next/headers";
+import { decodeJwtRole } from "@/src/lib/jwt";
 import { getUserProfile } from "@/src/features/auth/actions/auth-actions";
-
-interface HeaderUser {
-  role?: string;
-  name?: string;
-  email?: string;
-}
+import { Logo } from "./Logo";
 
 export const AlloyHeader = async () => {
-  const user = (await getUserProfile()) as HeaderUser | null;
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token")?.value;
+  let role: string | null = null;
+
+  if (accessToken) {
+    role = decodeJwtRole(accessToken);
+  }
+  if (!role) {
+    const user = await getUserProfile();
+    role = user?.role || null;
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[#080B14]/90 backdrop-blur-md shadow-xs">
       <div className="mx-auto flex h-18 min-h-18 sm:h-20 sm:min-h-20 w-full max-w-7xl flex-nowrap items-center justify-between gap-4 px-4 sm:px-8 lg:px-16">
         <Logo />
-        <AccountNavigation user={user} />
+        <AccountNavigation role={role} />
       </div>
     </header>
   );
 };
 
-const getDashboardUrl = (role?: string) => {
+const getDashboardUrl = (role?: string | null) => {
   const normalized = role?.toUpperCase();
   if (normalized === "ADMIN") return "/dashboard-admin";
   if (normalized === "STUDENT") return "/dashboard-student";
+  if (normalized === "INSTRUCTOR") return "/dashboard-instructor";
   return "/dashboard-instructor";
 };
 
-const AccountNavigation = ({ user }: { user: HeaderUser | null }) => {
-  if (user) {
-    return <AuthenticatedNav role={user.role} />;
+const AccountNavigation = ({ role }: { role: string | null }) => {
+  if (role) {
+    return <AuthenticatedNav role={role} />;
   }
   return <GuestNav />;
 };
 
-const AuthenticatedNav = ({ role }: { role?: string }) => (
+const AuthenticatedNav = ({ role }: { role?: string | null }) => (
   <nav aria-label="Account" className="flex items-center justify-end gap-3 sm:gap-4 shrink-0 flex-nowrap">
     <Link
       href={getDashboardUrl(role)}
