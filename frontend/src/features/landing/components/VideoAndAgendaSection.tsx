@@ -20,8 +20,8 @@ const VideoMediaColumn = () => (
   <div className="order-2 flex justify-center lg:order-1 lg:col-span-5">
     <div className="relative aspect-square w-full max-w-[480px] overflow-hidden rounded-xl border border-border bg-card shadow-hard">
       <Image
-        src="/images/instructor-meeting.webp"
-        alt="Instructor hosting an interactive NeuroMeet session"
+        src="/images/meeting-boys.webp"
+        alt="Male engineers collaborating in a modern meeting room"
         fill
         sizes="(max-width: 1024px) 100vw, 40vw"
         className="object-cover"
