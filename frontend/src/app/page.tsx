@@ -6,8 +6,6 @@ import {
   NeuroFooter,
 } from "@/src/features/landing";
 
-export const dynamic = "force-dynamic";
-
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen w-full flex-col bg-[#080B14] font-sans text-foreground overflow-x-clip">
