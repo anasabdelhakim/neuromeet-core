@@ -1,6 +1,6 @@
 "use client";
 
-import { BrandLottieLogo } from "@/src/features/landing";
+import { BrandLottieLogo } from "@/src/features/landing/components/BrandLottieLogo";
 import { SidebarNavLinks } from "./NavLinks";
 
 export function AdminSidebar() {

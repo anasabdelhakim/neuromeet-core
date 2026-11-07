@@ -1,5 +1,4 @@
 export { AlloyHeader } from "./components/AlloyHeader";
-export { Avtar } from "./components/Avtar";
 export { HeroSection } from "./components/HeroSection";
 export { VideoAndAgendaSection } from "./components/VideoAndAgendaSection";
 export { TestimonialCarousel } from "./components/TestimonialCarousel";
